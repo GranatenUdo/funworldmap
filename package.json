@@ -10,7 +10,8 @@
     "lint": "eslint src/",
     "format": "prettier --write src/",
     "test:e2e": "playwright test",
-    "test:unit": "vitest run"
+    "test:unit": "vitest run",
+    "update-data": "tsx scripts/fetch-countries.ts"
   },
   "dependencies": {
     "@vis.gl/react-maplibre": "^8.1.1",
