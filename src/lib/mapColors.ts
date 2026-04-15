@@ -4,19 +4,19 @@ import type maplibregl from 'maplibre-gl'
 // Using exact IDs (not substring matching) to avoid modifying
 // landcover/landuse layers whose large geometries create artifacts.
 const DARK_OVERRIDES: Record<string, Record<string, string>> = {
-  background: { 'background-color': '#1a1b26' },
-  water: { 'fill-color': '#151927' },
-  waterway: { 'line-color': '#1a1d30' },
-  park: { 'fill-color': '#1a2010' },
-  building: { 'fill-color': '#1e1f2e' },
+  background: { 'background-color': '#0f1219' },
+  water: { 'fill-color': '#0a0e1a' },
+  waterway: { 'line-color': '#111827' },
+  park: { 'fill-color': '#0f1a10' },
+  building: { 'fill-color': '#161b22' },
 }
 
 const LIGHT_OVERRIDES: Record<string, Record<string, string>> = {
-  background: { 'background-color': '#f2efe9' },
-  water: { 'fill-color': '#aad3df' },
-  waterway: { 'line-color': '#aad3df' },
-  park: { 'fill-color': '#d8e8c8' },
-  building: { 'fill-color': '#dfdbd7' },
+  background: { 'background-color': '#f0ede6' },
+  water: { 'fill-color': '#c4dae4' },
+  waterway: { 'line-color': '#b8d0dc' },
+  park: { 'fill-color': '#d4e4c8' },
+  building: { 'fill-color': '#e4e0da' },
 }
 
 /** Apply dark or light mode paint properties to the basemap layers.
@@ -46,12 +46,12 @@ export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void
       map.setPaintProperty(
         layer.id,
         'text-color',
-        mode === 'dark' ? '#9ca3af' : '#333',
+        mode === 'dark' ? '#8b949e' : '#374151',
       )
       map.setPaintProperty(
         layer.id,
         'text-halo-color',
-        mode === 'dark' ? '#1a1b26' : '#ffffff',
+        mode === 'dark' ? '#0f1219' : '#f0ede6',
       )
     } catch {
       // Not all symbol layers have text paint — skip

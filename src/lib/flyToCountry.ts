@@ -1,5 +1,6 @@
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from './types'
+import { DEFAULT_PITCH } from './mapStyles'
 
 /**
  * Calculate zoom level from country area using a logarithmic scale.
@@ -26,9 +27,13 @@ export function flyToCountry(map: maplibregl.Map, country: CountryData): void {
   const zoom = zoomFromArea(country.area)
   const duration = prefersReducedMotion() ? 0 : 1500
 
+  const reducedMotion = prefersReducedMotion()
+
   map.flyTo({
     center: [lng, lat],
     zoom,
+    pitch: reducedMotion ? 0 : DEFAULT_PITCH,
     duration,
+    curve: 1.4,
   })
 }

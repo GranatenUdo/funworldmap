@@ -26,13 +26,30 @@ function Field({
 }) {
   return (
     <div className="flex items-start gap-2 py-1.5">
-      <span className="text-slate-500 dark:text-slate-400 text-sm min-w-[100px] shrink-0">
+      <span className="text-ground-500 dark:text-void-100 text-sm min-w-[100px] shrink-0">
         {label}
       </span>
-      <span className="text-sm text-slate-800 dark:text-slate-200 flex items-center flex-wrap gap-1">
+      <span className="text-sm text-ground-900 dark:text-void-50 flex items-center flex-wrap gap-1">
         {children}
         <SourceTooltip field={field} fieldSources={country._fieldSources} sources={sources} />
       </span>
+    </div>
+  )
+}
+
+function FieldSection({
+  children,
+  delay,
+}: {
+  children: React.ReactNode
+  delay: number
+}) {
+  return (
+    <div
+      className="border-l-2 border-accent/20 dark:border-accent-light/20 pl-3 py-1"
+      style={{ animation: `panel-field-in 250ms ease-out ${delay}ms both` }}
+    >
+      {children}
     </div>
   )
 }
@@ -42,7 +59,16 @@ function formatPopulation(n: number): string {
 }
 
 function formatArea(n: number): string {
-  return `${n.toLocaleString('en-US')} km²`
+  return `${n.toLocaleString('en-US')} km\u00B2`
+}
+
+const REGION_BADGE: Record<string, string> = {
+  Africa: 'bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
+  Americas: 'bg-emerald-100/80 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
+  Asia: 'bg-rose-100/80 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300',
+  Europe: 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+  Oceania: 'bg-cyan-100/80 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-300',
+  Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-900/30 dark:text-slate-300',
 }
 
 export default function CountryPanel({
@@ -59,125 +85,135 @@ export default function CountryPanel({
 
   // Sidebar on desktop, bottom sheet on mobile
   const panelClasses = isDesktop
-    ? 'fixed top-0 right-0 h-full w-[380px] bg-white dark:bg-slate-900 shadow-xl z-40 overflow-y-auto transition-transform duration-200'
-    : `fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 shadow-xl z-40 overflow-y-auto transition-[height] duration-200 rounded-t-2xl ${
+    ? 'fixed top-0 right-0 h-full w-[380px] bg-white/[0.92] dark:bg-void-400/[0.92] backdrop-blur-sm shadow-2xl z-40 overflow-y-auto transition-transform duration-200'
+    : `fixed bottom-0 left-0 right-0 bg-white dark:bg-void-400 shadow-2xl z-40 overflow-y-auto transition-[height] duration-200 rounded-t-2xl ${
         expanded ? 'h-[80vh]' : 'h-[40vh]'
       }`
 
   return (
     <div className={panelClasses} role="complementary" aria-label="Country information" data-testid="country-panel">
       {/* Header */}
-      <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 px-4 py-3 flex items-center justify-between z-10">
-        <div className="flex items-center gap-3 min-w-0">
-          {/* Flag */}
-          <img
-            src={country.flag}
-            alt={country.flagAlt || `Flag of ${country.name.common}`}
-            className="w-10 h-7 object-cover rounded shadow-sm shrink-0"
-          />
-          {/* Name */}
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white truncate">
-              {country.name.common}
-            </h2>
-            {country.name.official !== country.name.common && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                {country.name.official}
-              </p>
-            )}
+      <div className="sticky top-0 bg-white/95 dark:bg-void-400/95 backdrop-blur-md border-b border-ground-200/50 dark:border-void-200/30 px-5 py-4 z-10">
+        <div className="flex items-start justify-between gap-3">
+          <div
+            className="flex items-start gap-3.5 min-w-0"
+            style={{ animation: 'fade-up 200ms ease-out' }}
+          >
+            {/* Flag — larger */}
+            <img
+              src={country.flag}
+              alt={country.flagAlt || `Flag of ${country.name.common}`}
+              className="w-[72px] h-[50px] object-cover rounded-lg shadow-md shrink-0"
+            />
+            {/* Name */}
+            <div className="min-w-0 pt-0.5">
+              <h2 className="font-display text-xl text-ground-900 dark:text-void-50 truncate tracking-tight">
+                {country.name.common}
+              </h2>
+              {country.name.official !== country.name.common && (
+                <p className="text-xs text-ground-500 dark:text-void-100 truncate mt-0.5">
+                  {country.name.official}
+                </p>
+              )}
+              {/* Region badge */}
+              <span
+                className={`inline-block text-[10px] font-medium px-2 py-0.5 rounded-full mt-1.5 ${
+                  REGION_BADGE[country.region] || 'bg-ground-100 text-ground-600 dark:bg-void-200 dark:text-void-100'
+                }`}
+              >
+                {country.region}
+                {country.subregion && ` / ${country.subregion}`}
+              </span>
+            </div>
           </div>
-        </div>
 
-        <div className="flex items-center gap-1 shrink-0">
-          {/* Expand/collapse on mobile */}
-          {!isDesktop && (
+          <div className="flex items-center gap-1 shrink-0">
+            {/* Expand/collapse on mobile */}
+            {!isDesktop && (
+              <button
+                onClick={() => setExpanded(!expanded)}
+                className="p-2 rounded-lg hover:bg-ground-100 dark:hover:bg-void-300 text-ground-500 dark:text-void-100 transition-colors"
+                aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+              >
+                <svg className={`w-5 h-5 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                </svg>
+              </button>
+            )}
+
+            {/* Close */}
             <button
-              onClick={() => setExpanded(!expanded)}
-              className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
-              aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+              onClick={onClose}
+              className="p-2 rounded-lg hover:bg-ground-100 dark:hover:bg-void-300 text-ground-500 dark:text-void-100 transition-colors"
+              aria-label="Close panel"
+              data-testid="panel-close"
             >
-              <svg className={`w-5 h-5 transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-          )}
-
-          {/* Close */}
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500"
-            aria-label="Close panel"
-            data-testid="panel-close"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="px-4 py-3 space-y-0.5">
+      <div className="px-5 py-4 space-y-3">
         {/* Primary fields — always visible */}
-        <Field label="Capital" field="capital" country={country} sources={sources}>
-          {country.capital.length > 0 ? country.capital.join(', ') : '—'}
-        </Field>
-
-        <Field label="Region" field="region" country={country} sources={sources}>
-          {country.region}
-          {country.subregion && ` / ${country.subregion}`}
-        </Field>
+        <FieldSection delay={0}>
+          <Field label="Capital" field="capital" country={country} sources={sources}>
+            {country.capital.length > 0 ? country.capital.join(', ') : '\u2014'}
+          </Field>
+          <Field label="Population" field="population" country={country} sources={sources}>
+            {formatPopulation(country.population)}
+          </Field>
+          <Field label="Area" field="area" country={country} sources={sources}>
+            {formatArea(country.area)}
+          </Field>
+        </FieldSection>
 
         {/* Secondary fields — visible on desktop or when expanded on mobile */}
         {showSecondary && (
           <>
-            <div className="border-t border-slate-100 dark:border-slate-800 my-2" />
-
-            <Field label="Population" field="population" country={country} sources={sources}>
-              {formatPopulation(country.population)}
-            </Field>
-
-            <Field label="Area" field="area" country={country} sources={sources}>
-              {formatArea(country.area)}
-            </Field>
-
-            {country.governmentType && (
-              <Field label="Government" field="governmentType" country={country} sources={sources}>
-                {country.governmentType}
+            <FieldSection delay={60}>
+              {country.governmentType && (
+                <Field label="Government" field="governmentType" country={country} sources={sources}>
+                  {country.governmentType}
+                </Field>
+              )}
+              <Field label="UN Member" field="unMember" country={country} sources={sources}>
+                {country.unMember ? 'Yes' : 'No'}
               </Field>
-            )}
-
-            {Object.keys(country.languages).length > 0 && (
-              <Field label="Languages" field="languages" country={country} sources={sources}>
-                {Object.values(country.languages).join(', ')}
+              <Field label="Independent" field="independent" country={country} sources={sources}>
+                {country.independent ? 'Yes' : 'No'}
               </Field>
-            )}
+            </FieldSection>
 
-            {Object.keys(country.currencies).length > 0 && (
-              <Field label="Currencies" field="currencies" country={country} sources={sources}>
-                {Object.values(country.currencies)
-                  .map((c) => `${c.name} (${c.symbol})`)
-                  .join(', ')}
+            <FieldSection delay={120}>
+              {Object.keys(country.languages).length > 0 && (
+                <Field label="Languages" field="languages" country={country} sources={sources}>
+                  {Object.values(country.languages).join(', ')}
+                </Field>
+              )}
+              {Object.keys(country.currencies).length > 0 && (
+                <Field label="Currencies" field="currencies" country={country} sources={sources}>
+                  {Object.values(country.currencies)
+                    .map((c) => `${c.name} (${c.symbol})`)
+                    .join(', ')}
+                </Field>
+              )}
+              <Field label="Timezones" field="timezones" country={country} sources={sources}>
+                {country.timezones.join(', ')}
               </Field>
-            )}
+            </FieldSection>
 
-            <Field label="Timezones" field="timezones" country={country} sources={sources}>
-              {country.timezones.join(', ')}
-            </Field>
-
-            <Field label="UN Member" field="unMember" country={country} sources={sources}>
-              {country.unMember ? 'Yes' : 'No'}
-            </Field>
-
-            <Field label="Independent" field="independent" country={country} sources={sources}>
-              {country.independent ? 'Yes' : 'No'}
-            </Field>
-
-            {/* Border chips */}
+            {/* Neighbor chips */}
             {country.borders.length > 0 && (
-              <div className="pt-2">
-                <div className="text-slate-500 dark:text-slate-400 text-sm mb-2 flex items-center">
-                  Neighbors
+              <div
+                className="pt-1"
+                style={{ animation: 'panel-field-in 250ms ease-out 180ms both' }}
+              >
+                <div className="text-ground-500 dark:text-void-100 text-sm mb-2 flex items-center">
+                  Borders
                   <SourceTooltip
                     field="borders"
                     fieldSources={country._fieldSources}
@@ -192,8 +228,13 @@ export default function CountryPanel({
                         <button
                           key={code}
                           onClick={() => onSelect(code)}
-                          className="px-2.5 py-1 text-xs rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-full bg-accent/8 dark:bg-accent-light/10 text-accent dark:text-accent-light hover:bg-accent/15 dark:hover:bg-accent-light/20 transition-all duration-150 hover:-translate-y-px hover:shadow-sm"
                         >
+                          <img
+                            src={neighbor.flag}
+                            alt=""
+                            className="w-4 h-3 object-cover rounded-sm shrink-0"
+                          />
                           {neighbor.name.common}
                         </button>
                       )
@@ -201,7 +242,7 @@ export default function CountryPanel({
                     return (
                       <span
                         key={code}
-                        className="px-2.5 py-1 text-xs rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400"
+                        className="px-2.5 py-1 text-xs rounded-full bg-ground-100 dark:bg-void-300 text-ground-400 dark:text-void-100"
                       >
                         {code}
                       </span>
