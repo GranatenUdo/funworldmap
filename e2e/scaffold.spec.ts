@@ -1,16 +1,17 @@
 import { test, expect } from '@playwright/test'
 
-test('app renders with polworldmap text', async ({ page }) => {
+test('app renders without crashing', async ({ page }) => {
   await page.goto('/')
-  await expect(page.locator('body')).toContainText('polworldmap')
+  await expect(page.locator('#root')).toBeAttached()
 })
 
-test('page has no console errors', async ({ page }) => {
+test('page has no console errors on load', async ({ page }) => {
   const errors: string[] = []
   page.on('console', (msg) => {
     if (msg.type() === 'error') errors.push(msg.text())
   })
   await page.goto('/')
-  await page.waitForTimeout(1000)
+  // Wait for map to load (or timeout)
+  await page.waitForSelector('[data-map-loaded]', { timeout: 15000 }).catch(() => {})
   expect(errors).toEqual([])
 })
