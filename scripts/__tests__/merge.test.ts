@@ -162,3 +162,69 @@ describe('validateJoinIntegrity', () => {
     expect(unmatched).toEqual([])
   })
 })
+
+describe('GeoJSON ↔ countries.json join integrity', () => {
+  it('most world-atlas features have a string id (some disputed territories may not)', async () => {
+    const topojsonClient = await import('topojson-client')
+    const worldAtlas = await import('world-atlas/countries-50m.json')
+    const topology = worldAtlas.default as unknown as TopoJSON.Topology
+    const geojson = topojsonClient.feature(
+      topology,
+      topology.objects.countries,
+    ) as GeoJSON.FeatureCollection
+
+    const withId = geojson.features.filter((f) => f.id != null)
+    const withoutId = geojson.features.filter((f) => f.id == null)
+
+    // Vast majority should have IDs
+    expect(withId.length).toBeGreaterThan(230)
+    // A few disputed territories may lack IDs
+    expect(withoutId.length).toBeLessThan(20)
+
+    // All features with IDs should have string IDs
+    for (const feature of withId) {
+      expect(typeof feature.id).toBe('string')
+    }
+  })
+
+  it('world-atlas features do NOT have properties.id (id is top-level only)', async () => {
+    const topojsonClient = await import('topojson-client')
+    const worldAtlas = await import('world-atlas/countries-50m.json')
+    const topology = worldAtlas.default as unknown as TopoJSON.Topology
+    const geojson = topojsonClient.feature(
+      topology,
+      topology.objects.countries,
+    ) as GeoJSON.FeatureCollection
+
+    // Documents the gotcha: id is top-level, NOT in properties
+    const firstFeature = geojson.features[0]
+    expect(firstFeature.properties).toBeDefined()
+    expect('id' in (firstFeature.properties ?? {})).toBe(false)
+    expect(firstFeature.id).toBeDefined()
+  })
+
+  it('majority of world-atlas feature IDs match a countries.json ccn3', async () => {
+    const topojsonClient = await import('topojson-client')
+    const worldAtlas = await import('world-atlas/countries-50m.json')
+    const countriesFile = await import('../../src/data/countries.json')
+
+    const topology = worldAtlas.default as unknown as TopoJSON.Topology
+    const geojson = topojsonClient.feature(
+      topology,
+      topology.objects.countries,
+    ) as GeoJSON.FeatureCollection
+
+    const ccn3Set = new Set(
+      (countriesFile as unknown as { countries: Array<{ ccn3: string }> }).countries.map(
+        (c) => c.ccn3,
+      ),
+    )
+
+    const featureIds = geojson.features.map((f) => String(f.id))
+    const matched = featureIds.filter((id) => ccn3Set.has(id))
+
+    // At least 90% of features should match (some disputed territories won't)
+    expect(matched.length / featureIds.length).toBeGreaterThan(0.9)
+    expect(matched.length).toBeGreaterThan(200)
+  })
+})
