@@ -26,3 +26,6 @@ playwright-report/
 
 # Vitest
 coverage/
+
+# Worktrees
+.worktrees/
