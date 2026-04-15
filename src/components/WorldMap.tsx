@@ -6,6 +6,8 @@ import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
   DEFAULT_PITCH,
+  SATELLITE_TILES,
+  SATELLITE_ATTRIBUTION,
 } from '../lib/mapStyles'
 import { flyToCountry } from '../lib/flyToCountry'
 import { applyMapTheme } from '../lib/mapColors'
@@ -21,6 +23,7 @@ interface Props {
   byNumeric: Map<string, CountryData>
   selected: CountryData | null
   resolvedTheme: 'light' | 'dark'
+  satellite: boolean
   onSelect: (cca3: string) => void
   onDeselect: () => void
 }
@@ -29,7 +32,7 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect, onDeselect }: Props) {
+export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite, onSelect, onDeselect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [supported, setSupported] = useState(true)
@@ -90,6 +93,21 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
         }
       }
     }
+
+    // Satellite raster source — hidden by default, toggled by satellite prop
+    map.addSource('satellite', {
+      type: 'raster',
+      tiles: [SATELLITE_TILES],
+      tileSize: 256,
+      attribution: SATELLITE_ATTRIBUTION,
+    })
+
+    map.addLayer({
+      id: 'satellite-layer',
+      type: 'raster',
+      source: 'satellite',
+      layout: { visibility: 'none' },
+    })
 
     map.addSource('countries', {
       type: 'geojson',
@@ -344,6 +362,66 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       // Layers may not exist yet
     }
   }, [resolvedTheme, loaded])
+
+  // Toggle satellite view — show/hide satellite layer and basemap layers
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded) return
+
+    try {
+      // Toggle satellite raster layer
+      map.setLayoutProperty(
+        'satellite-layer',
+        'visibility',
+        satellite ? 'visible' : 'none',
+      )
+
+      // Toggle basemap layers visibility (everything that's not our custom layers)
+      const style = map.getStyle()
+      if (style?.layers) {
+        const customPrefixes = ['country-', 'satellite-']
+        for (const layer of style.layers) {
+          const isCustom = customPrefixes.some((p) => layer.id.startsWith(p))
+          if (!isCustom) {
+            try {
+              map.setLayoutProperty(
+                layer.id,
+                'visibility',
+                satellite ? 'none' : 'visible',
+              )
+            } catch {
+              // Some layers may not support visibility — skip
+            }
+          }
+        }
+      }
+
+      // Adjust country overlays for satellite: lighter borders, slightly less fill
+      if (satellite) {
+        map.setPaintProperty('country-borders', 'line-color', 'rgba(255,255,255,0.35)')
+        map.setPaintProperty('country-borders', 'line-opacity', 0.6)
+        map.setPaintProperty('country-fill', 'fill-opacity', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          0.32,
+          0.03,
+        ])
+      } else {
+        // Restore normal theme-based values
+        const isDark = resolvedTheme === 'dark'
+        map.setPaintProperty('country-borders', 'line-color', isDark ? '#1e293b' : '#94a3b8')
+        map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
+        map.setPaintProperty('country-fill', 'fill-opacity', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          0.28,
+          0.05,
+        ])
+      }
+    } catch {
+      // Layers may not exist yet
+    }
+  }, [satellite, loaded, resolvedTheme])
 
   if (!supported) {
     return (

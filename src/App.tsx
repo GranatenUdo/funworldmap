@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import WorldMap from './components/WorldMap'
 import Header from './components/Header'
 import CountryPanel from './components/CountryPanel'
@@ -17,6 +17,8 @@ export default function App() {
   const [mapReady, setMapReady] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [hintDismissed, setHintDismissed] = useState(false)
+  const [satellite, setSatellite] = useState(false)
+  const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
 
   useEffect(() => {
     const name = selected?.name.common ?? null
@@ -117,14 +119,17 @@ export default function App() {
         byNumeric={byNumeric}
         selected={selected}
         resolvedTheme={resolved}
+        satellite={satellite}
         onSelect={select}
         onDeselect={deselect}
       />
       <Header
         countries={countries}
         theme={theme}
+        satellite={satellite}
         onSelect={select}
         onThemeCycle={cycle}
+        onSatelliteToggle={toggleSatellite}
       />
 
       {/* Empty state hint */}
