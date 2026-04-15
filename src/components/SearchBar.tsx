@@ -94,6 +94,7 @@ export default function SearchBar({ countries, onSelect }: Props) {
           if (query.trim()) setIsOpen(true)
         }}
         className="w-full px-4 py-2 rounded-lg bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        id="search-input"
         data-testid="search-input"
       />
 

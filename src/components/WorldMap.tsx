@@ -215,6 +215,7 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       ref={containerRef}
       className="h-screen w-screen"
       data-map-loaded={loaded || undefined}
+      tabIndex={0}
       role="application"
       aria-label="Interactive world map"
       aria-description="Use search to select countries by keyboard"
