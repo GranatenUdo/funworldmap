@@ -6,7 +6,7 @@ import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 
 export default function App() {
-  const { byNumeric, byCca3, sources } = useCountryData()
+  const { countries, byNumeric, byCca3, sources } = useCountryData()
   const { selected, select, deselect } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
 
@@ -18,7 +18,7 @@ export default function App() {
         onSelect={select}
         onDeselect={deselect}
       />
-      <Header />
+      <Header countries={countries} onSelect={select} />
       {selected && (
         <CountryPanel
           country={selected}

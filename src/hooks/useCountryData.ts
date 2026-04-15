@@ -5,6 +5,8 @@ import type { CountryData, CountriesFile } from '../lib/types'
 const data = countriesFile as unknown as CountriesFile
 
 export interface CountryLookups {
+  /** All countries as an array (for search index) */
+  countries: CountryData[]
   /** ccn3 (numeric ID) → CountryData. Used for map click (feature ID → metadata). */
   byNumeric: Map<string, CountryData>
   /** cca3 (3-letter code) → CountryData. Used for URL hash and border chips. */
@@ -23,6 +25,6 @@ export function useCountryData(): CountryLookups {
       byCca3.set(country.cca3, country)
     }
 
-    return { byNumeric, byCca3, sources: data._sources }
+    return { countries: data.countries, byNumeric, byCca3, sources: data._sources }
   }, [])
 }
