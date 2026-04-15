@@ -50,6 +50,36 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       }
     }
 
+    // Fix antimeridian artifacts: normalize polygons that cross 180° longitude.
+    // Shift negative longitudes to positive (e.g., -170° → 190°) so the polygon
+    // doesn't wrap around the globe. MapLibre handles coordinates > 180° correctly.
+    for (const feature of geojson.features) {
+      const polygons =
+        feature.geometry.type === 'MultiPolygon'
+          ? (feature.geometry as GeoJSON.MultiPolygon).coordinates
+          : feature.geometry.type === 'Polygon'
+            ? [(feature.geometry as GeoJSON.Polygon).coordinates]
+            : []
+
+      for (const polygon of polygons) {
+        let hasHighPositive = false
+        let hasHighNegative = false
+        for (const ring of polygon) {
+          for (const coord of ring) {
+            if (coord[0] > 170) hasHighPositive = true
+            if (coord[0] < -170) hasHighNegative = true
+          }
+        }
+        if (hasHighPositive && hasHighNegative) {
+          for (const ring of polygon) {
+            for (const coord of ring) {
+              if (coord[0] < 0) coord[0] += 360
+            }
+          }
+        }
+      }
+    }
+
     map.addSource('countries', {
       type: 'geojson',
       data: geojson,
