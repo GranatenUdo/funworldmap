@@ -1,8 +1,11 @@
 import { writeFileSync, readFileSync, existsSync } from 'node:fs'
 import { join } from 'node:path'
+import { createRequire } from 'node:module'
 import { feature } from 'topojson-client'
 import type { Topology } from 'topojson-specification'
 import type { FeatureCollection, Geometry } from 'geojson'
+
+const require = createRequire(import.meta.url)
 
 import { fetchRestCountries } from './sources/rest-countries.js'
 import { fetchCiaFactbook } from './sources/cia-factbook.js'

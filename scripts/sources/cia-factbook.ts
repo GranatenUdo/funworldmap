@@ -9,20 +9,31 @@ const CODES_CSV_URL =
 const FACTBOOK_BASE =
   'https://raw.githubusercontent.com/factbook/factbook.json/master'
 
-/** Parse codesxref.csv: GEC → ISO alpha-3 */
+/** Parse codesxref.csv: GEC → ISO alpha-3
+ *  Header: Name,GEC,A3,A2,NUM,STANAG,INTERNET
+ *  Despite the names, A2 column contains 3-letter ISO codes (e.g., AFG, DZA)
+ *  and A3 column contains 2-letter ISO codes. Entries with "-" have no mapping. */
 function parseCodesXref(csv: string): Map<string, string> {
   const map = new Map<string, string>()
   const lines = csv.trim().split('\n')
-  // Header: Name,GEC,A3,A2,NUM,STANAG,INTERNET
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(',')
     const gec = cols[1]?.trim().toLowerCase()
-    const iso3 = cols[2]?.trim()
-    if (gec && iso3 && iso3.length === 3) {
+    const iso3 = cols[3]?.trim() // A2 column = ISO alpha-3 (counterintuitively)
+    if (gec && iso3 && iso3 !== '-' && iso3.length === 3) {
       map.set(gec, iso3)
     }
   }
   return map
+}
+
+/** Normalize region name to directory format: "South Asia" → "south-asia" */
+function regionToDir(region: string): string {
+  return region
+    .toLowerCase()
+    .replace(/\s+&\s+/g, '-n-')       // "East & Southeast Asia" → "east-n-southeast-asia"
+    .replace(/\s+/g, '-')             // spaces → hyphens
+    .replace(/[^a-z0-9-]/g, '')       // remove other chars
 }
 
 /** Parse codes.csv: GEC → region directory name */
@@ -35,7 +46,7 @@ function parseCodesRegion(csv: string): Map<string, string> {
     const gec = cols[0]?.trim().toLowerCase()
     const region = cols[3]?.trim()
     if (gec && region) {
-      map.set(gec, region)
+      map.set(gec, regionToDir(region))
     }
   }
   return map
