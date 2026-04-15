@@ -3,16 +3,18 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { BASEMAP_STYLE, DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
 import { flyToCountry } from '../lib/flyToCountry'
+import { applyMapTheme } from '../lib/mapColors'
 import type { CountryData } from '../lib/types'
 
 interface Props {
   byNumeric: Map<string, CountryData>
   selected: CountryData | null
+  resolvedTheme: 'light' | 'dark'
   onSelect: (cca3: string) => void
   onDeselect: () => void
 }
 
-export default function WorldMap({ byNumeric, selected, onSelect, onDeselect }: Props) {
+export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect, onDeselect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [supported, setSupported] = useState(true)
@@ -186,6 +188,13 @@ export default function WorldMap({ byNumeric, selected, onSelect, onDeselect }: 
       map.setFilter('country-selected-border', ['==', ['get', 'id'], ''])
     }
   }, [selected, loaded])
+
+  // Apply basemap dark/light mode
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded) return
+    applyMapTheme(map, resolvedTheme)
+  }, [resolvedTheme, loaded])
 
   if (!supported) {
     return (

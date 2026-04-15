@@ -1,0 +1,89 @@
+import { test, expect } from '@playwright/test'
+
+test.setTimeout(30000)
+
+test.describe('Theme System', () => {
+  test.beforeEach(async ({ page }) => {
+    // Clear localStorage before each test
+    await page.goto('/')
+    await page.evaluate(() => localStorage.removeItem('polworldmap-theme'))
+    await page.reload()
+    await page.waitForTimeout(500)
+  })
+
+  test('defaults to system theme (no dark class if system is light)', async ({ page }) => {
+    // Playwright uses light color scheme by default
+    const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
+    expect(hasDark).toBe(false)
+  })
+
+  test('toggle cycles: light → dark → system → light', async ({ page }) => {
+    const toggle = page.getByTestId('theme-toggle')
+
+    // Default is system (light in Playwright)
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to light mode')
+
+    // Click → light
+    await toggle.click()
+    await page.waitForTimeout(200)
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to dark mode')
+    expect(await page.evaluate(() => document.documentElement.classList.contains('dark'))).toBe(
+      false,
+    )
+
+    // Click → dark
+    await toggle.click()
+    await page.waitForTimeout(200)
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to system theme')
+    expect(await page.evaluate(() => document.documentElement.classList.contains('dark'))).toBe(
+      true,
+    )
+
+    // Click → system
+    await toggle.click()
+    await page.waitForTimeout(200)
+    await expect(toggle).toHaveAttribute('aria-label', 'Switch to light mode')
+  })
+
+  test('dark class is applied to html when dark mode active', async ({ page }) => {
+    const toggle = page.getByTestId('theme-toggle')
+
+    // Cycle to dark: system → light → dark
+    await toggle.click() // → light
+    await toggle.click() // → dark
+    await page.waitForTimeout(200)
+
+    const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
+    expect(hasDark).toBe(true)
+  })
+
+  test('theme persists across page reload', async ({ page }) => {
+    const toggle = page.getByTestId('theme-toggle')
+
+    // Set to dark
+    await toggle.click() // → light
+    await toggle.click() // → dark
+    await page.waitForTimeout(200)
+
+    // Reload
+    await page.reload()
+    await page.waitForTimeout(500)
+
+    // Should still be dark
+    const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
+    expect(hasDark).toBe(true)
+
+    const stored = await page.evaluate(() => localStorage.getItem('polworldmap-theme'))
+    expect(stored).toBe('dark')
+  })
+
+  test('respects prefers-color-scheme: dark when in system mode', async ({ page }) => {
+    // Emulate dark system preference
+    await page.emulateMedia({ colorScheme: 'dark' })
+    await page.reload()
+    await page.waitForTimeout(500)
+
+    const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
+    expect(hasDark).toBe(true)
+  })
+})
