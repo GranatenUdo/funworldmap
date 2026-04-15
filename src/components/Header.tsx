@@ -13,15 +13,15 @@ interface Props {
 export default function Header({ countries, theme, onSelect, onThemeCycle }: Props) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-      <div className="flex items-center justify-between px-4 py-4 backdrop-blur-lg bg-white/75 dark:bg-[#0d1117]/75 border-b border-ground-200/50 dark:border-void-200/30">
-        {/* Wordmark — desktop only */}
-        <div className="pointer-events-auto hidden lg:flex items-baseline gap-1.5 mr-4 shrink-0">
-          <span className="font-display text-xl text-ground-900 dark:text-void-50 tracking-tight">
+      <div className="flex items-center justify-between px-4 py-3">
+        {/* Wordmark — desktop only, floating */}
+        <div className="pointer-events-auto hidden lg:flex items-baseline mr-4 shrink-0">
+          <span className="text-lg font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">
             polworldmap
           </span>
         </div>
 
-        <div className="pointer-events-auto flex-1 max-w-md">
+        <div className="pointer-events-auto flex-1 max-w-md mx-auto lg:mx-0">
           <SearchBar countries={countries} onSelect={onSelect} />
         </div>
 

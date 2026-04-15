@@ -1,27 +1,23 @@
 import type maplibregl from 'maplibre-gl'
 
-// Exact Positron style layer IDs to modify for dark mode.
-// Using exact IDs (not substring matching) to avoid modifying
-// landcover/landuse layers whose large geometries create artifacts.
+// Warm Explorer basemap overrides.
+// Dark: deep warm charcoal ocean/land. Light: warm sand atlas feel.
 const DARK_OVERRIDES: Record<string, Record<string, string>> = {
-  background: { 'background-color': '#0f1219' },
-  water: { 'fill-color': '#0a0e1a' },
-  waterway: { 'line-color': '#111827' },
-  park: { 'fill-color': '#0f1a10' },
-  building: { 'fill-color': '#161b22' },
+  background: { 'background-color': '#10141a' },
+  water: { 'fill-color': '#060a12' },
+  waterway: { 'line-color': '#0c1018' },
+  park: { 'fill-color': '#0f1a12' },
+  building: { 'fill-color': '#161a22' },
 }
 
 const LIGHT_OVERRIDES: Record<string, Record<string, string>> = {
-  background: { 'background-color': '#f0ede6' },
-  water: { 'fill-color': '#c4dae4' },
-  waterway: { 'line-color': '#b8d0dc' },
-  park: { 'fill-color': '#d4e4c8' },
-  building: { 'fill-color': '#e4e0da' },
+  background: { 'background-color': '#e8e3da' },
+  water: { 'fill-color': '#d4dde6' },
+  waterway: { 'line-color': '#c4d2de' },
+  park: { 'fill-color': '#d0dcc4' },
+  building: { 'fill-color': '#ddd8d0' },
 }
 
-/** Apply dark or light mode paint properties to the basemap layers.
- *  Uses exact Positron layer IDs. If IDs are unrecognized (style changed),
- *  fails silently — basemap stays as-is. */
 export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void {
   const overrides = mode === 'dark' ? DARK_OVERRIDES : LIGHT_OVERRIDES
 
@@ -36,7 +32,6 @@ export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void
     }
   }
 
-  // Darken text labels
   const style = map.getStyle()
   if (!style?.layers) return
 
@@ -46,12 +41,12 @@ export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void
       map.setPaintProperty(
         layer.id,
         'text-color',
-        mode === 'dark' ? '#8b949e' : '#374151',
+        mode === 'dark' ? '#475569' : '#78716c',
       )
       map.setPaintProperty(
         layer.id,
         'text-halo-color',
-        mode === 'dark' ? '#0f1219' : '#f0ede6',
+        mode === 'dark' ? '#10141a' : '#e8e3da',
       )
     } catch {
       // Not all symbol layers have text paint — skip

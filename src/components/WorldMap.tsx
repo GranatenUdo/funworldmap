@@ -11,11 +11,11 @@ import { flyToCountry } from '../lib/flyToCountry'
 import { applyMapTheme } from '../lib/mapColors'
 import type { CountryData } from '../lib/types'
 
-/** Accent colors — violet for exploration, orange for commitment */
-const ACCENT_VIOLET = '#7c3aed'
-const ACCENT_VIOLET_DARK = '#a78bfa'
-const WARM_ORANGE = '#ea580c'
-const WARM_ORANGE_DARK = '#fb923c'
+/** Warm Explorer palette — teal for exploration, coral for selection */
+const TEAL = '#14b8a6'
+const TEAL_LIGHT = '#5eead4'
+const CORAL = '#f43f5e'
+const CORAL_LIGHT = '#fb7185'
 
 interface Props {
   byNumeric: Map<string, CountryData>
@@ -36,7 +36,6 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
   const [loaded, setLoaded] = useState(false)
   const hoveredRef = useRef<string | null>(null)
 
-  // Store callbacks in refs to avoid re-creating map on prop changes
   const onSelectRef = useRef(onSelect)
   onSelectRef.current = onSelect
   const onDeselectRef = useRef(onDeselect)
@@ -56,20 +55,13 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       topology.objects.countries,
     ) as GeoJSON.FeatureCollection
 
-    // Copy top-level feature.id into properties so that:
-    // - promoteId: 'id' can find it (reads from properties, not top-level)
-    // - ['get', 'id'] filter expressions can match it (reads from properties)
     for (const feature of geojson.features) {
       if (feature.id != null && feature.properties) {
         feature.properties.id = String(feature.id)
       }
     }
 
-    // Fix antimeridian artifacts: normalize polygons that cross 180° longitude.
-    // Shift negative longitudes to positive (e.g., -170° → 190°) so the polygon
-    // doesn't wrap around the globe. MapLibre handles coordinates > 180° correctly.
-    // Skip polar-wrapping polygons (latitude ≤ -85° or ≥ 85°) like Antarctica's
-    // main polygon — these converge at the pole, not cross the antimeridian.
+    // Antimeridian fix — skip polar-wrapping polygons
     for (const feature of geojson.features) {
       const polygons =
         feature.geometry.type === 'MultiPolygon'
@@ -102,115 +94,111 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
     map.addSource('countries', {
       type: 'geojson',
       data: geojson,
-      promoteId: 'id', // needed for feature-state with string IDs
+      promoteId: 'id',
     })
 
-    // Base fill layer — for click targeting and subtle hover tint
+    // Base fill — dramatic 5% → 28% opacity jump on hover ("ignite" effect)
     map.addLayer({
       id: 'country-fill',
       type: 'fill',
       source: 'countries',
       paint: {
-        'fill-color': ACCENT_VIOLET,
+        'fill-color': TEAL,
         'fill-opacity': [
           'case',
           ['boolean', ['feature-state', 'hover'], false],
-          0.22,
-          0.06,
+          0.28,
+          0.05,
         ],
       },
     })
 
-    // Country borders
+    // Country borders — subtle in dark, warmer in light
     map.addLayer({
       id: 'country-borders',
       type: 'line',
       source: 'countries',
-      paint: { 'line-color': '#94a3b8', 'line-width': 0.5, 'line-opacity': 0.5 },
+      paint: { 'line-color': '#334155', 'line-width': 0.5, 'line-opacity': 0.4 },
     })
 
-    // 3D extrusion layer — countries rise on hover.
-    // Uses a FILTER (not feature-state opacity) to only render the hovered country.
-    // fill-extrusion-opacity is layer-level, not per-feature, so feature-state
-    // expressions on it are silently ignored — causing artifacts on large polygons.
+    // Hover glow — soft teal border that appears on hover
+    map.addLayer({
+      id: 'country-hover-border',
+      type: 'line',
+      source: 'countries',
+      paint: {
+        'line-color': TEAL,
+        'line-width': 2,
+        'line-opacity': 0.6,
+      },
+      filter: ['==', ['get', 'id'], ''],
+    })
+
+    // 3D extrusion — filter-based, only hovered country
     map.addLayer({
       id: 'country-extrusion',
       type: 'fill-extrusion',
       source: 'countries',
       paint: {
-        'fill-extrusion-color': ACCENT_VIOLET,
-        'fill-extrusion-height': 40000,
+        'fill-extrusion-color': TEAL,
+        'fill-extrusion-height': 60000,
         'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': 0.6,
+        'fill-extrusion-opacity': 0.65,
       },
       filter: ['==', ['get', 'id'], ''],
     })
 
-    // Selected country glow (wide blurred line beneath selection border)
+    // --- Selection layers ---
     map.addLayer({
       id: 'country-selected-glow',
       type: 'line',
       source: 'countries',
       paint: {
-        'line-color': WARM_ORANGE,
-        'line-width': 8,
-        'line-blur': 4,
-        'line-opacity': 0.25,
+        'line-color': CORAL,
+        'line-width': 10,
+        'line-blur': 5,
+        'line-opacity': 0.3,
       },
       filter: ['==', ['get', 'id'], ''],
     })
 
-    // Selected country fill
     map.addLayer({
       id: 'country-selected',
       type: 'fill',
       source: 'countries',
-      paint: { 'fill-color': WARM_ORANGE, 'fill-opacity': 0.30 },
+      paint: { 'fill-color': CORAL, 'fill-opacity': 0.32 },
       filter: ['==', ['get', 'id'], ''],
     })
 
-    // Selected country border
     map.addLayer({
       id: 'country-selected-border',
       type: 'line',
       source: 'countries',
-      paint: { 'line-color': WARM_ORANGE, 'line-width': 2 },
+      paint: { 'line-color': CORAL, 'line-width': 2.5 },
       filter: ['==', ['get', 'id'], ''],
     })
 
-    // Selected country extrusion (taller than hover)
     map.addLayer({
       id: 'country-selected-extrusion',
       type: 'fill-extrusion',
       source: 'countries',
       paint: {
-        'fill-extrusion-color': WARM_ORANGE,
-        'fill-extrusion-height': 60000,
+        'fill-extrusion-color': CORAL,
+        'fill-extrusion-height': 80000,
         'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': 0.5,
+        'fill-extrusion-opacity': 0.55,
       },
       filter: ['==', ['get', 'id'], ''],
     })
 
-    // Apply selected extrusion transition
-    try {
-      map.setPaintProperty(
-        'country-selected-extrusion',
-        'fill-extrusion-height-transition' as never,
-        { duration: 400, delay: 0 } as never,
-      )
-    } catch {
-      // Transition properties may not be supported in all versions
-    }
-
-    // Lighting for 3D depth
+    // Lighting — warm directional
     map.setLight({
       anchor: 'viewport',
       position: [1.5, 210, 30],
-      intensity: 0.25,
+      intensity: 0.3,
     })
 
-    // --- Hover interaction ---
+    // --- Hover ---
     map.on('mousemove', 'country-fill', (e) => {
       if (e.features && e.features.length > 0) {
         const id = String(e.features[0].id)
@@ -219,8 +207,8 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
         }
         hoveredRef.current = id
         map.setFeatureState({ source: 'countries', id }, { hover: true })
-        // Update extrusion filter to only render hovered country
         map.setFilter('country-extrusion', ['==', ['get', 'id'], id])
+        map.setFilter('country-hover-border', ['==', ['get', 'id'], id])
         map.getCanvas().style.cursor = 'pointer'
       }
     })
@@ -230,12 +218,12 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
         map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
         hoveredRef.current = null
       }
-      // Clear extrusion — no country hovered
       map.setFilter('country-extrusion', ['==', ['get', 'id'], ''])
+      map.setFilter('country-hover-border', ['==', ['get', 'id'], ''])
       map.getCanvas().style.cursor = ''
     })
 
-    // --- Click interaction ---
+    // --- Click ---
     map.on('click', 'country-fill', (e) => {
       if (e.features && e.features.length > 0) {
         const featureId = String(e.features[0].id)
@@ -246,7 +234,6 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       }
     })
 
-    // Deselect on click on empty space (ocean)
     map.on('click', (e) => {
       const features = map.queryRenderedFeatures(e.point, { layers: ['country-fill'] })
       if (features.length === 0) {
@@ -257,7 +244,6 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
     setLoaded(true)
   }, [])
 
-  // Initialize map
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -304,13 +290,12 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
     }
   }, [addCountryLayers])
 
-  // Update highlight + camera when selection changes
+  // Selection highlight + camera
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
 
     if (selected) {
-      // Update selected layer filters
       const filter: maplibregl.FilterSpecification = ['==', ['get', 'id'], selected.ccn3]
       map.setFilter('country-selected', filter)
       map.setFilter('country-selected-border', filter)
@@ -318,7 +303,6 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       map.setFilter('country-selected-extrusion', filter)
       flyToCountry(map, selected)
     } else {
-      // Clear selection
       const emptyFilter: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
       map.setFilter('country-selected', emptyFilter)
       map.setFilter('country-selected-border', emptyFilter)
@@ -327,50 +311,45 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
     }
   }, [selected, loaded])
 
-  // Apply basemap dark/light mode + theme-aware accent colors
+  // Theme-aware colors
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
     applyMapTheme(map, resolvedTheme)
 
-    // Update accent colors for theme
     const isDark = resolvedTheme === 'dark'
-    const violet = isDark ? ACCENT_VIOLET_DARK : ACCENT_VIOLET
-    const orange = isDark ? WARM_ORANGE_DARK : WARM_ORANGE
+    const teal = isDark ? TEAL_LIGHT : TEAL
+    const coral = isDark ? CORAL_LIGHT : CORAL
 
     try {
-      // Fill layer accent
-      map.setPaintProperty('country-fill', 'fill-color', violet)
+      map.setPaintProperty('country-fill', 'fill-color', teal)
+      map.setPaintProperty('country-extrusion', 'fill-extrusion-color', teal)
+      map.setPaintProperty('country-hover-border', 'line-color', teal)
 
-      // Extrusion accent (filter-based, so simple color is sufficient)
-      map.setPaintProperty('country-extrusion', 'fill-extrusion-color', violet)
+      map.setPaintProperty('country-selected', 'fill-color', coral)
+      map.setPaintProperty('country-selected-border', 'line-color', coral)
+      map.setPaintProperty('country-selected-glow', 'line-color', coral)
+      map.setPaintProperty('country-selected-extrusion', 'fill-extrusion-color', coral)
 
-      // Selection layers
-      map.setPaintProperty('country-selected', 'fill-color', orange)
-      map.setPaintProperty('country-selected-border', 'line-color', orange)
-      map.setPaintProperty('country-selected-glow', 'line-color', orange)
-      map.setPaintProperty('country-selected-extrusion', 'fill-extrusion-color', orange)
+      map.setPaintProperty('country-borders', 'line-color', isDark ? '#1e293b' : '#94a3b8')
+      map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
 
-      // Border color adjusts for dark mode
-      map.setPaintProperty('country-borders', 'line-color', isDark ? '#30363d' : '#94a3b8')
-
-      // Atmospheric fog
       ;(map as never as { setFog: (fog: Record<string, unknown>) => void }).setFog({
-        range: [2, 12],
-        color: isDark ? 'rgba(13, 17, 23, 0.6)' : 'rgba(240, 237, 230, 0.5)',
-        'high-color': isDark ? '#0d1117' : '#afd2e6',
-        'horizon-blend': 0.08,
+        range: [1.5, 10],
+        color: isDark ? 'rgba(16, 20, 26, 0.7)' : 'rgba(232, 227, 218, 0.5)',
+        'high-color': isDark ? '#10141a' : '#c4d8e6',
+        'horizon-blend': 0.1,
       })
     } catch {
-      // Layers may not exist yet during initial render
+      // Layers may not exist yet
     }
   }, [resolvedTheme, loaded])
 
   if (!supported) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-ground-100 dark:bg-void-500 text-ground-700 dark:text-void-50 p-8 text-center">
+      <div className="h-screen w-screen flex items-center justify-center bg-sand-100 dark:bg-dark-500 text-sand-700 dark:text-dark-50 p-8 text-center">
         <div>
-          <h1 className="text-2xl font-semibold mb-4 font-display">WebGL2 Not Supported</h1>
+          <h1 className="text-2xl font-bold mb-4">WebGL2 Not Supported</h1>
           <p>
             polworldmap requires WebGL2 to render the map. Please update your browser or enable
             hardware acceleration in your browser settings.

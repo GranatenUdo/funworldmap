@@ -14,7 +14,6 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
   const sourceKey = fieldSources[field]
   const source = sourceKey ? sources[sourceKey] : null
 
-  // Close on click outside
   useEffect(() => {
     if (!open) return
     const handler = (e: MouseEvent) => {
@@ -31,7 +30,7 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
   return (
     <div ref={ref} className="relative inline-block ml-1">
       <button
-        className="text-ground-400 dark:text-void-100 hover:text-ground-600 dark:hover:text-void-50 text-xs w-4 h-4 rounded-full border border-ground-300 dark:border-void-200 inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-light/50"
+        className="text-sand-400 dark:text-dark-100 hover:text-teal dark:hover:text-teal-light text-xs w-4 h-4 rounded-full border border-sand-300 dark:border-dark-200 inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 transition-colors"
         onClick={() => setOpen(!open)}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
@@ -44,19 +43,19 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
       {open && (
         <div
           role="tooltip"
-          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-ground-900 dark:bg-void-300 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-50"
-          style={{ animation: 'fade-up 120ms ease-out' }}
+          className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-dark-400 dark:bg-dark-300 text-white text-xs rounded-lg shadow-lg whitespace-nowrap z-50"
+          style={{ animation: 'fade-up 100ms ease-out' }}
         >
           <div className="font-medium">{source.name}</div>
           <a
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-accent-light hover:text-[#c4b5fd] underline"
+            className="text-teal-light hover:text-teal underline"
           >
             {source.url}
           </a>
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-ground-900 dark:border-t-void-300" />
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-dark-400 dark:border-t-dark-300" />
         </div>
       )}
     </div>
