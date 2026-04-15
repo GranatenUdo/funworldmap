@@ -1,41 +1,60 @@
 import type maplibregl from 'maplibre-gl'
 
+// Exact Positron style layer IDs to modify for dark mode.
+// Using exact IDs (not substring matching) to avoid modifying
+// landcover/landuse layers whose large geometries create artifacts.
+const DARK_OVERRIDES: Record<string, Record<string, string>> = {
+  background: { 'background-color': '#1a1b26' },
+  water: { 'fill-color': '#151927' },
+  waterway: { 'line-color': '#1a1d30' },
+  park: { 'fill-color': '#1a2010' },
+  building: { 'fill-color': '#1e1f2e' },
+}
+
+const LIGHT_OVERRIDES: Record<string, Record<string, string>> = {
+  background: { 'background-color': '#f2efe9' },
+  water: { 'fill-color': '#aad3df' },
+  waterway: { 'line-color': '#aad3df' },
+  park: { 'fill-color': '#d8e8c8' },
+  building: { 'fill-color': '#dfdbd7' },
+}
+
 /** Apply dark or light mode paint properties to the basemap layers.
- *  Modifies OpenFreeMap Positron style layers via setPaintProperty.
- *  If layer IDs are unrecognized (style spec changed), fails silently — basemap stays light. */
+ *  Uses exact Positron layer IDs. If IDs are unrecognized (style changed),
+ *  fails silently — basemap stays as-is. */
 export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void {
+  const overrides = mode === 'dark' ? DARK_OVERRIDES : LIGHT_OVERRIDES
+
+  for (const [layerId, props] of Object.entries(overrides)) {
+    if (!map.getLayer(layerId)) continue
+    for (const [prop, value] of Object.entries(props)) {
+      try {
+        map.setPaintProperty(layerId, prop, value)
+      } catch {
+        // Skip silently
+      }
+    }
+  }
+
+  // Darken text labels
   const style = map.getStyle()
   if (!style?.layers) return
 
   for (const layer of style.layers) {
-    const id = layer.id
-    const type = layer.type
-
+    if (layer.type !== 'symbol') continue
     try {
-      if (type === 'background') {
-        map.setPaintProperty(id, 'background-color', mode === 'dark' ? '#1a1b26' : '#f2efe9')
-      } else if (type === 'fill') {
-        // Land and landuse fills
-        if (id.includes('land') || id.includes('earth')) {
-          map.setPaintProperty(id, 'fill-color', mode === 'dark' ? '#1e1f2e' : '#f2efe9')
-        } else if (id.includes('water')) {
-          map.setPaintProperty(id, 'fill-color', mode === 'dark' ? '#151927' : '#aad3df')
-        }
-      } else if (type === 'line') {
-        if (id.includes('water')) {
-          map.setPaintProperty(id, 'line-color', mode === 'dark' ? '#1a1d30' : '#aad3df')
-        }
-      } else if (type === 'symbol') {
-        // Text labels
-        if ('text-color' in (layer.paint ?? {})) {
-          map.setPaintProperty(id, 'text-color', mode === 'dark' ? '#9ca3af' : '#333')
-        }
-        if ('text-halo-color' in (layer.paint ?? {})) {
-          map.setPaintProperty(id, 'text-halo-color', mode === 'dark' ? '#1a1b26' : '#ffffff')
-        }
-      }
+      map.setPaintProperty(
+        layer.id,
+        'text-color',
+        mode === 'dark' ? '#9ca3af' : '#333',
+      )
+      map.setPaintProperty(
+        layer.id,
+        'text-halo-color',
+        mode === 'dark' ? '#1a1b26' : '#ffffff',
+      )
     } catch {
-      // Layer might not support the property — skip silently
+      // Not all symbol layers have text paint — skip
     }
   }
 }
