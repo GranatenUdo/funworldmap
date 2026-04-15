@@ -68,6 +68,8 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
     // Fix antimeridian artifacts: normalize polygons that cross 180° longitude.
     // Shift negative longitudes to positive (e.g., -170° → 190°) so the polygon
     // doesn't wrap around the globe. MapLibre handles coordinates > 180° correctly.
+    // Skip polar-wrapping polygons (latitude ≤ -85° or ≥ 85°) like Antarctica's
+    // main polygon — these converge at the pole, not cross the antimeridian.
     for (const feature of geojson.features) {
       const polygons =
         feature.geometry.type === 'MultiPolygon'
@@ -79,13 +81,15 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       for (const polygon of polygons) {
         let hasHighPositive = false
         let hasHighNegative = false
+        let touchesPole = false
         for (const ring of polygon) {
           for (const coord of ring) {
             if (coord[0] > 170) hasHighPositive = true
             if (coord[0] < -170) hasHighNegative = true
+            if (coord[1] <= -85 || coord[1] >= 85) touchesPole = true
           }
         }
-        if (hasHighPositive && hasHighNegative) {
+        if (hasHighPositive && hasHighNegative && !touchesPole) {
           for (const ring of polygon) {
             for (const coord of ring) {
               if (coord[0] < 0) coord[0] += 360
@@ -125,39 +129,22 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       paint: { 'line-color': '#94a3b8', 'line-width': 0.5, 'line-opacity': 0.5 },
     })
 
-    // 3D extrusion layer — countries rise on hover
+    // 3D extrusion layer — countries rise on hover.
+    // Uses a FILTER (not feature-state opacity) to only render the hovered country.
+    // fill-extrusion-opacity is layer-level, not per-feature, so feature-state
+    // expressions on it are silently ignored — causing artifacts on large polygons.
     map.addLayer({
       id: 'country-extrusion',
       type: 'fill-extrusion',
       source: 'countries',
       paint: {
-        'fill-extrusion-color': [
-          'case',
-          ['boolean', ['feature-state', 'hover'], false],
-          ACCENT_VIOLET,
-          'transparent',
-        ],
-        'fill-extrusion-height': [
-          'case',
-          ['boolean', ['feature-state', 'hover'], false],
-          40000,
-          0,
-        ],
+        'fill-extrusion-color': ACCENT_VIOLET,
+        'fill-extrusion-height': 40000,
         'fill-extrusion-base': 0,
         'fill-extrusion-opacity': 0.6,
       },
+      filter: ['==', ['get', 'id'], ''],
     })
-
-    // Apply extrusion transition for smooth hover animation
-    try {
-      map.setPaintProperty(
-        'country-extrusion',
-        'fill-extrusion-height-transition' as never,
-        { duration: 300, delay: 0 } as never,
-      )
-    } catch {
-      // Transition properties may not be supported in all versions
-    }
 
     // Selected country glow (wide blurred line beneath selection border)
     map.addLayer({
@@ -232,6 +219,8 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
         }
         hoveredRef.current = id
         map.setFeatureState({ source: 'countries', id }, { hover: true })
+        // Update extrusion filter to only render hovered country
+        map.setFilter('country-extrusion', ['==', ['get', 'id'], id])
         map.getCanvas().style.cursor = 'pointer'
       }
     })
@@ -241,6 +230,8 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
         map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
         hoveredRef.current = null
       }
+      // Clear extrusion — no country hovered
+      map.setFilter('country-extrusion', ['==', ['get', 'id'], ''])
       map.getCanvas().style.cursor = ''
     })
 
@@ -351,13 +342,8 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       // Fill layer accent
       map.setPaintProperty('country-fill', 'fill-color', violet)
 
-      // Extrusion accent
-      map.setPaintProperty('country-extrusion', 'fill-extrusion-color', [
-        'case',
-        ['boolean', ['feature-state', 'hover'], false],
-        violet,
-        'transparent',
-      ])
+      // Extrusion accent (filter-based, so simple color is sufficient)
+      map.setPaintProperty('country-extrusion', 'fill-extrusion-color', violet)
 
       // Selection layers
       map.setPaintProperty('country-selected', 'fill-color', orange)
