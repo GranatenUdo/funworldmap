@@ -19,7 +19,7 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [supported, setSupported] = useState(true)
   const [loaded, setLoaded] = useState(false)
-  const hoveredRef = useRef<number | null>(null)
+  const hoveredRef = useRef<string | null>(null)
 
   // Store callbacks in refs to avoid re-creating map on prop changes
   const onSelectRef = useRef(onSelect)
@@ -40,6 +40,15 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
       topology,
       topology.objects.countries,
     ) as GeoJSON.FeatureCollection
+
+    // Copy top-level feature.id into properties so that:
+    // - promoteId: 'id' can find it (reads from properties, not top-level)
+    // - ['get', 'id'] filter expressions can match it (reads from properties)
+    for (const feature of geojson.features) {
+      if (feature.id != null && feature.properties) {
+        feature.properties.id = String(feature.id)
+      }
+    }
 
     map.addSource('countries', {
       type: 'geojson',
@@ -88,7 +97,7 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, onSelect,
     // --- Hover interaction ---
     map.on('mousemove', 'country-fill', (e) => {
       if (e.features && e.features.length > 0) {
-        const id = e.features[0].id as number
+        const id = String(e.features[0].id)
         if (hoveredRef.current !== null && hoveredRef.current !== id) {
           map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
         }
