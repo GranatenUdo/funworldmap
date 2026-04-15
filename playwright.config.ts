@@ -10,14 +10,36 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
-    launchOptions: {
-      args: ['--use-gl=swiftshader'],
-    },
   },
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          args: ['--use-gl=swiftshader'],
+        },
+      },
+      // DOM-only tests work fine with SwiftShader
+      testMatch: [
+        'scaffold.spec.ts',
+        'search.spec.ts',
+        'theme-and-responsive.spec.ts',
+        'accessibility.spec.ts',
+        'panel-and-deeplink.spec.ts',
+      ],
+    },
+    {
+      name: 'chromium-gpu',
+      use: {
+        ...devices['Desktop Chrome'],
+        // No SwiftShader — uses real GPU for WebGL2
+        launchOptions: {
+          args: ['--use-gl=angle', '--use-angle=default'],
+        },
+      },
+      // Map interaction tests need real GPU
+      testMatch: ['map-and-countries.spec.ts'],
     },
   ],
   webServer: {

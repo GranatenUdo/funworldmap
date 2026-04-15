@@ -10,14 +10,14 @@ test.describe('Search', () => {
 
   test('typing shows results dropdown', async ({ page }) => {
     await page.getByTestId('search-input').fill('France')
-    await page.waitForTimeout(300) // debounce + render
+    await page.waitForTimeout(500) // debounce (150ms) + render
 
     const results = page.getByTestId('search-results')
     await expect(results).toBeVisible()
-    const options = results.getByRole('option')
-    expect(await options.count()).toBeGreaterThan(0)
+    // Wait for options to appear
+    await expect(results.getByRole('option').first()).toBeVisible({ timeout: 3000 })
     // France should be the first result
-    await expect(options.first()).toContainText('France')
+    await expect(results.getByRole('option').first()).toContainText('France')
   })
 
   test('selecting a result opens the country panel', async ({ page }) => {

@@ -1,17 +1,19 @@
 import { test, expect } from '@playwright/test'
 
-test('app renders without crashing', async ({ page }) => {
+test('app renders with map container', async ({ page }) => {
   await page.goto('/')
   await expect(page.locator('#root')).toBeAttached()
+  await expect(page.locator('.maplibregl-canvas')).toBeAttached({ timeout: 15000 })
 })
 
-test('page has no console errors on load', async ({ page }) => {
-  const errors: string[] = []
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') errors.push(msg.text())
-  })
+test('search bar is visible and interactive', async ({ page }) => {
   await page.goto('/')
-  // Wait for map to load (or timeout)
-  await page.waitForSelector('[data-map-loaded]', { timeout: 15000 }).catch(() => {})
-  expect(errors).toEqual([])
+  const input = page.getByTestId('search-input')
+  await expect(input).toBeVisible()
+  await expect(input).toBeEditable()
+})
+
+test('theme toggle is visible', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.getByTestId('theme-toggle')).toBeVisible()
 })

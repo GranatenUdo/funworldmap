@@ -75,6 +75,31 @@ test.describe('Country Panel', () => {
     await expect(panel).toContainText('Government')
     await expect(panel).toContainText('semi-presidential republic')
   })
+
+  test('search → select → panel opens → close → panel gone', async ({ page }) => {
+    await page.goto('/')
+    await page.waitForTimeout(1000)
+
+    // Search for France
+    await page.getByTestId('search-input').fill('France')
+    await page.waitForTimeout(500)
+    await page.getByTestId('search-results').getByRole('option').first().click()
+    await page.waitForTimeout(500)
+
+    // Panel should show France
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toBeVisible()
+    await expect(panel).toContainText('France')
+    await expect(panel).toContainText('Paris')
+
+    // Close panel
+    await page.getByTestId('panel-close').click()
+    await page.waitForTimeout(500)
+
+    // Panel should be gone, hash cleared
+    await expect(panel).not.toBeAttached()
+    expect(await page.evaluate(() => window.location.hash)).toBe('')
+  })
 })
 
 test.describe('Bottom sheet on mobile', () => {
