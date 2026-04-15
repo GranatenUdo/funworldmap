@@ -2,12 +2,30 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { BASEMAP_STYLE, DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
+import { flyToCountry } from '../lib/flyToCountry'
+import type { CountryData } from '../lib/types'
 
-export default function WorldMap() {
+interface Props {
+  byNumeric: Map<string, CountryData>
+  selected: CountryData | null
+  onSelect: (cca3: string) => void
+  onDeselect: () => void
+}
+
+export default function WorldMap({ byNumeric, selected, onSelect, onDeselect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [supported, setSupported] = useState(true)
   const [loaded, setLoaded] = useState(false)
+  const hoveredRef = useRef<number | null>(null)
+
+  // Store callbacks in refs to avoid re-creating map on prop changes
+  const onSelectRef = useRef(onSelect)
+  onSelectRef.current = onSelect
+  const onDeselectRef = useRef(onDeselect)
+  onDeselectRef.current = onDeselect
+  const byNumericRef = useRef(byNumeric)
+  byNumericRef.current = byNumeric
 
   const addCountryLayers = useCallback(async (map: maplibregl.Map) => {
     const [topojsonClient, worldAtlas] = await Promise.all([
@@ -21,7 +39,11 @@ export default function WorldMap() {
       topology.objects.countries,
     ) as GeoJSON.FeatureCollection
 
-    map.addSource('countries', { type: 'geojson', data: geojson })
+    map.addSource('countries', {
+      type: 'geojson',
+      data: geojson,
+      promoteId: 'id', // needed for feature-state with string IDs
+    })
 
     map.addLayer({
       id: 'country-fill',
@@ -50,7 +72,7 @@ export default function WorldMap() {
       type: 'fill',
       source: 'countries',
       paint: { 'fill-color': '#6366f1', 'fill-opacity': 0.35 },
-      filter: ['==', ['id'], ''],
+      filter: ['==', ['get', 'id'], ''],
     })
 
     map.addLayer({
@@ -58,12 +80,53 @@ export default function WorldMap() {
       type: 'line',
       source: 'countries',
       paint: { 'line-color': '#4f46e5', 'line-width': 2 },
-      filter: ['==', ['id'], ''],
+      filter: ['==', ['get', 'id'], ''],
+    })
+
+    // --- Hover interaction ---
+    map.on('mousemove', 'country-fill', (e) => {
+      if (e.features && e.features.length > 0) {
+        const id = e.features[0].id as number
+        if (hoveredRef.current !== null && hoveredRef.current !== id) {
+          map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
+        }
+        hoveredRef.current = id
+        map.setFeatureState({ source: 'countries', id }, { hover: true })
+        map.getCanvas().style.cursor = 'pointer'
+      }
+    })
+
+    map.on('mouseleave', 'country-fill', () => {
+      if (hoveredRef.current !== null) {
+        map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
+        hoveredRef.current = null
+      }
+      map.getCanvas().style.cursor = ''
+    })
+
+    // --- Click interaction ---
+    map.on('click', 'country-fill', (e) => {
+      if (e.features && e.features.length > 0) {
+        const featureId = String(e.features[0].id)
+        const country = byNumericRef.current.get(featureId)
+        if (country) {
+          onSelectRef.current(country.cca3)
+        }
+      }
+    })
+
+    // Deselect on click on empty space (ocean)
+    map.on('click', (e) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: ['country-fill'] })
+      if (features.length === 0) {
+        onDeselectRef.current()
+      }
     })
 
     setLoaded(true)
   }, [])
 
+  // Initialize map
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -86,7 +149,6 @@ export default function WorldMap() {
 
     mapRef.current = map
 
-    // Expose map instance in dev mode immediately for Playwright tests
     if (import.meta.env.DEV) {
       ;(window as unknown as Record<string, unknown>).__polworldmap_map = map
     }
@@ -107,6 +169,23 @@ export default function WorldMap() {
       }
     }
   }, [addCountryLayers])
+
+  // Update highlight + camera when selection changes
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded) return
+
+    if (selected) {
+      // Update selected layer filter
+      map.setFilter('country-selected', ['==', ['get', 'id'], selected.ccn3])
+      map.setFilter('country-selected-border', ['==', ['get', 'id'], selected.ccn3])
+      flyToCountry(map, selected)
+    } else {
+      // Clear selection
+      map.setFilter('country-selected', ['==', ['get', 'id'], ''])
+      map.setFilter('country-selected-border', ['==', ['get', 'id'], ''])
+    }
+  }, [selected, loaded])
 
   if (!supported) {
     return (

@@ -1,18 +1,15 @@
 import { test, expect } from '@playwright/test'
 
-// SwiftShader may lose WebGL context, so map tests need longer timeouts
-// and should test what's possible in headless mode
+// SwiftShader may lose WebGL context — map tests need longer timeouts
 test.setTimeout(60000)
 
 test('map canvas renders', async ({ page }) => {
   await page.goto('/')
-  // MapLibre creates a canvas even if WebGL context is later lost
   await expect(page.locator('.maplibregl-canvas')).toBeAttached({ timeout: 15000 })
 })
 
 test('map instance is exposed in dev mode', async ({ page }) => {
   await page.goto('/')
-  // Wait for the map to be constructed (exposed immediately, before tiles load)
   const hasMap = await page.waitForFunction(
     () => !!(window as unknown as Record<string, unknown>).__polworldmap_map,
     { timeout: 15000 },
@@ -30,23 +27,57 @@ test('map has correct ARIA attributes', async ({ page }) => {
   )
 })
 
-test('country layers are added after style loads', async ({ page }) => {
+test('URL hash selects a country and sets data-selected-country', async ({ page }) => {
+  // Navigate directly with hash
+  await page.goto('/#FRA')
+
+  // Wait for app to process the hash
+  await page.waitForTimeout(2000)
+
+  // The data-selected-country attribute should be set on the app root
+  const selectedAttr = await page.locator('[data-selected-country]').getAttribute('data-selected-country')
+  expect(selectedAttr).toBe('250') // France's ccn3
+})
+
+test('URL hash is set to country cca3 code', async ({ page }) => {
+  await page.goto('/#DEU')
+  await page.waitForTimeout(1000)
+
+  const hash = await page.evaluate(() => window.location.hash)
+  expect(hash).toBe('#DEU')
+
+  const selectedAttr = await page.locator('[data-selected-country]').getAttribute('data-selected-country')
+  expect(selectedAttr).toBe('276') // Germany's ccn3
+})
+
+test('invalid hash is cleared silently', async ({ page }) => {
+  await page.goto('/#INVALID')
+  await page.waitForTimeout(1000)
+
+  // Hash should be cleared
+  const hash = await page.evaluate(() => window.location.hash)
+  expect(hash).toBe('')
+
+  // No country should be selected
+  const count = await page.locator('[data-selected-country]').count()
+  expect(count).toBe(0)
+})
+
+test('country layers are added when map fully loads', async ({ page }) => {
   await page.goto('/')
 
-  // Wait for map instance
   await page.waitForFunction(
     () => !!(window as unknown as Record<string, unknown>).__polworldmap_map,
     { timeout: 15000 },
   )
 
-  // Wait for data-map-loaded or timeout (SwiftShader may lose context before tiles load)
+  // Wait for data-map-loaded or timeout (SwiftShader may lose context)
   const mapLoaded = await page
     .waitForSelector('[data-map-loaded]', { timeout: 30000 })
     .then(() => true)
     .catch(() => false)
 
   if (mapLoaded) {
-    // If the map fully loaded, verify layers exist
     const hasLayers = await page.evaluate(() => {
       const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
         getLayer: (id: string) => unknown
@@ -60,9 +91,5 @@ test('country layers are added after style loads', async ({ page }) => {
     expect(hasLayers.fill).toBe(true)
     expect(hasLayers.borders).toBe(true)
     expect(hasLayers.selected).toBe(true)
-  } else {
-    // SwiftShader context loss is expected in headless — skip layer checks
-    // The layers will work in real browsers
-    console.log('Map did not fully load (expected with SwiftShader) — skipping layer checks')
   }
 })
