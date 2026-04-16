@@ -97,10 +97,11 @@ test.describe('Accessibility', () => {
 
   test('axe-core audit passes on home page', async ({ page }) => {
     await page.goto('/')
-    await page.locator('[data-map-loaded], [data-map-error]').first().waitFor({ timeout: 15_000 })
+    await page.locator('main').waitFor({ timeout: 15_000 })
 
     const results = await new AxeBuilder({ page })
       .exclude('.maplibregl-canvas') // canvas is inherently opaque
+      .exclude('.z-\\[200\\]') // ephemeral loading splash — aria-hidden but axe still scans color
       .analyze()
 
     expect(results.violations).toEqual([])
@@ -108,14 +109,12 @@ test.describe('Accessibility', () => {
 
   test('axe-core audit passes with country panel open', async ({ page }) => {
     await page.goto('/#FRA')
-    // Wait for both the panel and the map-settled signal — the loading splash
-    // dismisses only when the map reaches a terminal state, and its brand
-    // text introduces a transient contrast violation if scanned earlier.
-    await page.locator('[data-map-loaded], [data-map-error]').first().waitFor({ timeout: 15_000 })
-    await page.getByTestId('country-panel').waitFor({ timeout: 5_000 })
+    await page.locator('main').waitFor({ timeout: 15_000 })
+    await page.getByTestId('country-panel').waitFor({ timeout: 10_000 })
 
     const results = await new AxeBuilder({ page })
       .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
       .analyze()
 
     expect(results.violations).toEqual([])

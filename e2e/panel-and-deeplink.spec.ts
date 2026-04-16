@@ -78,13 +78,14 @@ test.describe('Country Panel', () => {
 
   test('search → select → panel opens → close → panel gone', async ({ page }) => {
     await page.goto('/')
-    // Deterministic wait for app readiness under parallel-worker contention.
-    await page.locator('[data-map-loaded], [data-map-error]').first().waitFor({ timeout: 15_000 })
+    // Wait for the search input (appears as soon as the header renders) —
+    // independent of map rendering, which is slow under CI SwiftShader.
+    await page.getByTestId('search-input').waitFor({ timeout: 15_000 })
 
     // Search for France
     await page.getByTestId('search-input').fill('France')
     const firstResult = page.getByTestId('search-results').getByRole('option').first()
-    await firstResult.waitFor({ timeout: 5_000 })
+    await firstResult.waitFor({ timeout: 15_000 })
     await firstResult.click()
 
     // Panel should show France

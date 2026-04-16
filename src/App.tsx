@@ -149,9 +149,12 @@ export default function App() {
 
       <div ref={liveRegionRef} aria-live="polite" aria-atomic="true" className="sr-only" />
 
-      {/* Loading screen */}
+      {/* Loading screen — decorative; screen readers will announce content once it mounts */}
       {!mapReady && (
-        <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300">
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300"
+        >
           <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">
             funworldmap
           </span>
@@ -171,24 +174,27 @@ export default function App() {
 
       <Toast />
 
-      {/* Vignette — gentle focus */}
+      {/* Vignette — decorative */}
       <div
+        aria-hidden="true"
         className="fixed inset-0 pointer-events-none z-10"
         style={{
           background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.10) 100%)',
         }}
       />
 
-      <WorldMap
-        byNumeric={byNumeric}
-        selected={selected}
-        compareWith={compareWith}
-        comparePickingMode={comparePickingMode}
-        resolvedTheme={resolved}
-        satellite={satellite}
-        onSelect={onMapSelect}
-        onDeselect={deselect}
-      />
+      <main>
+        <WorldMap
+          byNumeric={byNumeric}
+          selected={selected}
+          compareWith={compareWith}
+          comparePickingMode={comparePickingMode}
+          resolvedTheme={resolved}
+          satellite={satellite}
+          onSelect={onMapSelect}
+          onDeselect={deselect}
+        />
+      </main>
       <Header
         countries={countries}
         theme={theme}
@@ -202,6 +208,7 @@ export default function App() {
       {/* Empty state hint */}
       {showHint && !selected && (
         <div
+          role="status"
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
