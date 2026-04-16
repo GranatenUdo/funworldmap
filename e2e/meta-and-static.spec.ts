@@ -6,7 +6,7 @@ test.describe('head metadata', () => {
   })
 
   test('has Open Graph tags', async ({ page }) => {
-    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /polworldmap/i)
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /funworldmap/i)
     await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', /.{40,}/)
     await expect(page.locator('meta[property="og:type"]')).toHaveAttribute('content', 'website')
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og-image\.png$/)
@@ -15,7 +15,7 @@ test.describe('head metadata', () => {
 
   test('has Twitter Card tags', async ({ page }) => {
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image')
-    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', /polworldmap/i)
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', /funworldmap/i)
     await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute('content', /og-image\.png$/)
   })
 
