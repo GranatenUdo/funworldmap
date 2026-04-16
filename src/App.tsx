@@ -153,7 +153,7 @@ export default function App() {
       {!mapReady && (
         <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300">
           <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">
-            polworldmap
+            funworldmap
           </span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => (

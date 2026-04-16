@@ -20,7 +20,7 @@ export default function Header({ countries, theme, satellite, comparePickingMode
         {/* Wordmark — desktop only */}
         <div className="pointer-events-auto hidden lg:flex items-baseline mr-4 shrink-0">
           <span className="text-lg font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">
-            polworldmap
+            funworldmap
           </span>
         </div>
 

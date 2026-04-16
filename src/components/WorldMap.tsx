@@ -757,7 +757,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
         <div>
           <h1 className="text-2xl font-bold mb-4">WebGL2 Not Supported</h1>
           <p>
-            polworldmap requires WebGL2 to render the map. Please update your browser or enable
+            funworldmap requires WebGL2 to render the map. Please update your browser or enable
             hardware acceleration in your browser settings.
           </p>
         </div>
