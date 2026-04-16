@@ -27,6 +27,7 @@ export default defineConfig({
         'theme-and-responsive.spec.ts',
         'accessibility.spec.ts',
         'panel-and-deeplink.spec.ts',
+        'meta-and-static.spec.ts',
       ],
     },
     {
