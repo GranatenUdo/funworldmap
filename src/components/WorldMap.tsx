@@ -61,13 +61,24 @@ class ResetViewControl implements maplibregl.IControl {
     svg.setAttribute('stroke-linecap', 'round')
     svg.setAttribute('stroke-linejoin', 'round')
 
-    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path1.setAttribute('d', 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z')
-    const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
-    path2.setAttribute('points', '9 22 9 12 15 12 15 22')
+    // Globe with reset-arrow icon
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+    circle.setAttribute('cx', '12')
+    circle.setAttribute('cy', '12')
+    circle.setAttribute('r', '7')
 
-    svg.appendChild(path1)
-    svg.appendChild(path2)
+    const meridian = document.createElementNS('http://www.w3.org/2000/svg', 'ellipse')
+    meridian.setAttribute('cx', '12')
+    meridian.setAttribute('cy', '12')
+    meridian.setAttribute('rx', '3')
+    meridian.setAttribute('ry', '7')
+
+    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    arrow.setAttribute('d', 'M20 4 L20 9 L15 9')
+
+    svg.appendChild(circle)
+    svg.appendChild(meridian)
+    svg.appendChild(arrow)
     button.appendChild(svg)
 
     button.addEventListener('click', () => {
@@ -297,7 +308,7 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
         map.setFilter('country-hover-border', ['==', ['get', 'id'], id])
         map.getCanvas().style.cursor = 'pointer'
 
-        // Update tooltip content
+        // Update tooltip content (flag + name + capital)
         const tooltip = tooltipRef.current
         if (tooltip) {
           const country = byNumericRef.current.get(id)
@@ -307,7 +318,23 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
             img.src = country.flag
             img.alt = ''
             tooltip.appendChild(img)
-            tooltip.appendChild(document.createTextNode(country.name.common))
+
+            const textWrap = document.createElement('div')
+            textWrap.className = 'tooltip-text'
+
+            const nameEl = document.createElement('div')
+            nameEl.className = 'tooltip-name'
+            nameEl.textContent = country.name.common
+            textWrap.appendChild(nameEl)
+
+            if (country.capital.length > 0) {
+              const capitalEl = document.createElement('div')
+              capitalEl.className = 'tooltip-capital'
+              capitalEl.textContent = country.capital[0]
+              textWrap.appendChild(capitalEl)
+            }
+
+            tooltip.appendChild(textWrap)
             tooltip.classList.add('visible')
           }
         }
