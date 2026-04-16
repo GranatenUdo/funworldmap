@@ -6,7 +6,7 @@ test.describe('Theme System', () => {
   test.beforeEach(async ({ page }) => {
     // Clear localStorage before each test
     await page.goto('/')
-    await page.evaluate(() => localStorage.removeItem('polworldmap-theme'))
+    await page.evaluate(() => localStorage.removeItem('funworldmap-theme'))
     await page.reload()
     await page.waitForTimeout(500)
   })
@@ -73,7 +73,7 @@ test.describe('Theme System', () => {
     const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
     expect(hasDark).toBe(true)
 
-    const stored = await page.evaluate(() => localStorage.getItem('polworldmap-theme'))
+    const stored = await page.evaluate(() => localStorage.getItem('funworldmap-theme'))
     expect(stored).toBe('dark')
   })
 

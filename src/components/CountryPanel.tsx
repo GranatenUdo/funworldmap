@@ -201,7 +201,7 @@ export default function CountryPanel({
     } else {
       window.prompt('Copy this link:', url)
     }
-    window.dispatchEvent(new CustomEvent('polworldmap:toast', { detail: 'Link copied' }))
+    window.dispatchEvent(new CustomEvent('funworldmap:toast', { detail: 'Link copied' }))
   }
 
   const compareMode = compareWith !== null

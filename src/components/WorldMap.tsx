@@ -506,7 +506,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
     tooltipRef.current = tooltip
 
     if (import.meta.env.DEV) {
-      ;(window as unknown as Record<string, unknown>).__polworldmap_map = map
+      ;(window as unknown as Record<string, unknown>).__funworldmap_map = map
     }
 
     // Watchdog — if 'load' never fires, surface a visible error.
@@ -546,7 +546,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
       map.remove()
       mapRef.current = null
       if (import.meta.env.DEV) {
-        delete (window as unknown as Record<string, unknown>).__polworldmap_map
+        delete (window as unknown as Record<string, unknown>).__funworldmap_map
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -19,7 +19,7 @@ test.describe('Map rendering', () => {
     await waitForMapReady(page)
 
     const hasLayers = await page.evaluate(() => {
-      const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
         getLayer: (id: string) => unknown
         getSource: (id: string) => unknown
       }
@@ -45,7 +45,7 @@ test.describe('Map rendering', () => {
     await page.waitForTimeout(2000)
 
     const result = await page.evaluate(() => {
-      const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
         queryRenderedFeatures: (
           point: [number, number],
           options: { layers: string[] },
@@ -91,7 +91,7 @@ test.describe('Country click interaction', () => {
 
     // Find a country feature at the center of the viewport and click it
     const clicked = await page.evaluate(() => {
-      const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
         queryRenderedFeatures: (
           point: [number, number],
           options: { layers: string[] },
@@ -137,7 +137,7 @@ test.describe('Country click interaction', () => {
 
     // First, click a country to select it
     const countryPoint = await page.evaluate(() => {
-      const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
         queryRenderedFeatures: (
           point: [number, number],
           options: { layers: string[] },
@@ -171,7 +171,7 @@ test.describe('Country click interaction', () => {
     // Jump camera to mid-Pacific (guaranteed ocean) without changing hash
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
-        const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
+        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
           jumpTo: (opts: { center: [number, number]; zoom: number }) => void
           once: (event: string, fn: () => void) => void
         }
@@ -210,7 +210,7 @@ test.describe('Country selection via hash', () => {
 
     // The country-selected layer filter should match France's ID
     const filter = await page.evaluate(() => {
-      const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
         getFilter: (layerId: string) => unknown
       }
       return map.getFilter('country-selected')
@@ -238,7 +238,7 @@ test.describe('Hover interaction', () => {
 
     // Find a country feature
     const point = await page.evaluate(() => {
-      const map = (window as unknown as Record<string, unknown>).__polworldmap_map as {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
         queryRenderedFeatures: (
           point: [number, number],
           options: { layers: string[] },

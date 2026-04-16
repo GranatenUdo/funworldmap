@@ -81,11 +81,11 @@ export default function App() {
 
   useEffect(() => {
     if (!mapReady || selected || hintDismissed) return
-    if (sessionStorage.getItem('polworldmap-hint-shown')) return
+    if (sessionStorage.getItem('funworldmap-hint-shown')) return
 
     const timer = setTimeout(() => {
       setShowHint(true)
-      sessionStorage.setItem('polworldmap-hint-shown', '1')
+      sessionStorage.setItem('funworldmap-hint-shown', '1')
     }, 1500)
     return () => clearTimeout(timer)
   }, [mapReady, selected, hintDismissed])

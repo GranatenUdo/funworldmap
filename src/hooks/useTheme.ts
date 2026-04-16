@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 
 export type Theme = 'light' | 'dark' | 'system'
 
-const STORAGE_KEY = 'polworldmap-theme'
+const STORAGE_KEY = 'funworldmap-theme'
 
 function getStoredTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY)
