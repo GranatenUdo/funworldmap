@@ -33,3 +33,9 @@ npm run update-data   # Regenerate countries.json from source APIs
 ## Documentation
 
 See [docs/index.md](docs/index.md) for the full system design documentation.
+
+## License
+
+Source code is MIT licensed — see [LICENSE](./LICENSE).
+
+Data, fonts, and flag assets retain their upstream licenses; see [docs/systems/data.md](docs/systems/data.md) for source-by-source attribution.
