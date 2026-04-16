@@ -47,5 +47,11 @@ export default defineConfig({
     command: 'npm run dev',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
+    env: {
+      // Vite uses GITHUB_ACTIONS as a build-time signal to set base to
+      // /funworldmap/ for GH Pages. During tests we serve from root, so
+      // force it unset for the webServer child process.
+      GITHUB_ACTIONS: '',
+    },
   },
 })
