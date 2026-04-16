@@ -126,14 +126,16 @@ test.describe('Bottom sheet on mobile', () => {
 
     const panel = page.getByTestId('country-panel')
 
-    // In peek state, population should not be visible (mobile)
-    await expect(panel.getByText('Population')).not.toBeVisible()
+    // Primary fields (Capital, Population, Area, Region) are visible in peek;
+    // secondary fields (UN Member, Languages, Government, etc.) only render
+    // when showSecondary is true — i.e. after expand is clicked.
+    await expect(panel.getByText('UN Member')).not.toBeVisible()
 
     // Click expand
     await page.getByLabel('Expand panel').click()
     await page.waitForTimeout(500)
 
-    // Now population should be visible
-    await expect(panel.getByText('Population')).toBeVisible()
+    // Now the secondary field should be visible
+    await expect(panel.getByText('UN Member')).toBeVisible()
   })
 })
