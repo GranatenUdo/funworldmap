@@ -78,13 +78,14 @@ test.describe('Country Panel', () => {
 
   test('search → select → panel opens → close → panel gone', async ({ page }) => {
     await page.goto('/')
-    await page.waitForTimeout(1000)
+    // Deterministic wait for app readiness under parallel-worker contention.
+    await page.locator('[data-map-loaded], [data-map-error]').first().waitFor({ timeout: 15_000 })
 
     // Search for France
     await page.getByTestId('search-input').fill('France')
-    await page.waitForTimeout(500)
-    await page.getByTestId('search-results').getByRole('option').first().click()
-    await page.waitForTimeout(500)
+    const firstResult = page.getByTestId('search-results').getByRole('option').first()
+    await firstResult.waitFor({ timeout: 5_000 })
+    await firstResult.click()
 
     // Panel should show France
     const panel = page.getByTestId('country-panel')
@@ -94,7 +95,6 @@ test.describe('Country Panel', () => {
 
     // Close panel
     await page.getByTestId('panel-close').click()
-    await page.waitForTimeout(500)
 
     // Panel should be gone, hash cleared
     await expect(panel).not.toBeAttached()

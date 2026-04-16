@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
-test.setTimeout(30000)
+test.setTimeout(60_000)
 
 test.describe('Accessibility', () => {
   test('skip to search link works', async ({ page }) => {
