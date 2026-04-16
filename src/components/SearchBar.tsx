@@ -4,6 +4,7 @@ import type { CountryData } from '../lib/types'
 
 interface Props {
   countries: CountryData[]
+  comparePickingMode?: boolean
   onSelect: (cca3: string) => void
 }
 
@@ -18,7 +19,7 @@ const REGION_COLORS: Record<string, string> = {
   Antarctic: 'bg-slate-100 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
 
-export default function SearchBar({ countries, onSelect }: Props) {
+export default function SearchBar({ countries, comparePickingMode, onSelect }: Props) {
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(-1)
   const [isOpen, setIsOpen] = useState(false)
@@ -101,7 +102,7 @@ export default function SearchBar({ countries, onSelect }: Props) {
         aria-controls={LISTBOX_ID}
         aria-activedescendant={activeId}
         aria-autocomplete="list"
-        placeholder="Search countries..."
+        placeholder={comparePickingMode ? 'Choose country to compare...' : 'Search countries...'}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={onKeyDown}

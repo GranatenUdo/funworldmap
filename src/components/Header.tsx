@@ -7,12 +7,13 @@ interface Props {
   countries: CountryData[]
   theme: Theme
   satellite: boolean
+  comparePickingMode: boolean
   onSelect: (cca3: string) => void
   onThemeCycle: () => void
   onSatelliteToggle: () => void
 }
 
-export default function Header({ countries, theme, satellite, onSelect, onThemeCycle, onSatelliteToggle }: Props) {
+export default function Header({ countries, theme, satellite, comparePickingMode, onSelect, onThemeCycle, onSatelliteToggle }: Props) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className="flex items-center justify-between px-4 py-3">
@@ -24,7 +25,7 @@ export default function Header({ countries, theme, satellite, onSelect, onThemeC
         </div>
 
         <div className="pointer-events-auto flex-1 max-w-md mx-auto lg:mx-0">
-          <SearchBar countries={countries} onSelect={onSelect} />
+          <SearchBar countries={countries} comparePickingMode={comparePickingMode} onSelect={onSelect} />
         </div>
 
         <div className="pointer-events-auto ml-3 flex items-center gap-2">

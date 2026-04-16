@@ -184,7 +184,8 @@ export default function App() {
         countries={countries}
         theme={theme}
         satellite={satellite}
-        onSelect={select}
+        comparePickingMode={comparePickingMode}
+        onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
       />
