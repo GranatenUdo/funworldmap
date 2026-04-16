@@ -141,6 +141,37 @@ body {
   }
 }
 
+/* Country name tooltip — positioned by JS, not React */
+.country-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 100;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(18, 21, 24, 0.88);
+  color: #5eead4;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 100ms ease-out;
+}
+
+.country-tooltip.visible {
+  opacity: 1;
+}
+
+.country-tooltip img {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

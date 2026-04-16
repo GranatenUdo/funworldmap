@@ -8,7 +8,19 @@ export const SATELLITE_TILES =
 export const SATELLITE_ATTRIBUTION =
   '<a href="https://s2maps.eu" target="_blank">Sentinel-2 cloudless</a> by EOX (Copernicus Sentinel data 2024)'
 
-/** Default map view — 20° pitch for visible 3D */
+/** AWS Terrain Tiles — terrarium encoding, no API key (AWS Open Data) */
+export const TERRAIN_TILES =
+  'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'
+
+export const TERRAIN_ATTRIBUTION =
+  '<a href="https://registry.opendata.aws/terrain-tiles/" target="_blank">AWS Terrain Tiles</a>'
+
+/** Default map view */
 export const DEFAULT_CENTER: [number, number] = [0, 20]
 export const DEFAULT_ZOOM = 1.8
 export const DEFAULT_PITCH = 20
+
+/** Navigation constraints */
+export const MIN_ZOOM = 1.5
+export const MAX_ZOOM = 12
+export const MAX_PITCH = 60
