@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://granatenudo.github.io/funworldmap/sitemap.xml
+Sitemap: https://funworldmap.com/sitemap.xml
