@@ -172,6 +172,74 @@ body {
   border-radius: 2px;
 }
 
+/* Tooltip two-line layout (name + capital) */
+.country-tooltip .tooltip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.country-tooltip .tooltip-name {
+  font-weight: 500;
+  font-size: 13px;
+  color: #5eead4;
+}
+
+.country-tooltip .tooltip-capital {
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.7);
+}
+
+/* MapLibre navigation control restyling — scoped to bottom-right */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+  background: rgba(18, 21, 24, 0.88);
+  border: 1px solid rgba(94, 234, 212, 0.25);
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
+  color: #5eead4;
+  background: transparent;
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover {
+  background: rgba(94, 234, 212, 0.12);
+}
+
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
+  border-top: 1px solid rgba(94, 234, 212, 0.15);
+}
+
+/* MapLibre compass/zoom icon color override (uses an img element with filter) */
+.maplibregl-ctrl-bottom-right .maplibregl-ctrl-icon {
+  filter: brightness(0) saturate(100%) invert(83%) sepia(37%) saturate(356%) hue-rotate(122deg) brightness(92%) contrast(93%);
+}
+
+/* Compare A/B badges */
+.compare-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.compare-badge-a {
+  background: #f43f5e;
+}
+
+.compare-badge-b {
+  background: #0d9488;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
