@@ -21,12 +21,15 @@ import type { CountryData } from '../lib/types'
 /** Warm Explorer palette — teal for exploration, coral for selection */
 const TEAL = '#14b8a6'
 const TEAL_LIGHT = '#5eead4'
+const TEAL_DIM = '#0d9488'
 const CORAL = '#f43f5e'
 const CORAL_LIGHT = '#fb7185'
 
 interface Props {
   byNumeric: Map<string, CountryData>
   selected: CountryData | null
+  compareWith: CountryData | null
+  comparePickingMode: boolean
   resolvedTheme: 'light' | 'dark'
   satellite: boolean
   onSelect: (cca3: string) => void
@@ -100,7 +103,7 @@ class ResetViewControl implements maplibregl.IControl {
   }
 }
 
-export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite, onSelect, onDeselect }: Props) {
+export default function WorldMap({ byNumeric, selected, compareWith, comparePickingMode, resolvedTheme, satellite, onSelect, onDeselect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [supported, setSupported] = useState(true)
@@ -288,6 +291,49 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       filter: ['==', ['get', 'id'], ''],
     })
 
+    // --- Compare layers (second country "B" when in compare mode) ---
+    map.addLayer({
+      id: 'country-compare-glow',
+      type: 'line',
+      source: 'countries',
+      paint: {
+        'line-color': TEAL_DIM,
+        'line-width': 10,
+        'line-blur': 5,
+        'line-opacity': 0.3,
+      },
+      filter: ['==', ['get', 'id'], ''],
+    })
+
+    map.addLayer({
+      id: 'country-compare-fill',
+      type: 'fill',
+      source: 'countries',
+      paint: { 'fill-color': TEAL_DIM, 'fill-opacity': 0.32 },
+      filter: ['==', ['get', 'id'], ''],
+    })
+
+    map.addLayer({
+      id: 'country-compare-border',
+      type: 'line',
+      source: 'countries',
+      paint: { 'line-color': TEAL_DIM, 'line-width': 2.5 },
+      filter: ['==', ['get', 'id'], ''],
+    })
+
+    map.addLayer({
+      id: 'country-compare-extrusion',
+      type: 'fill-extrusion',
+      source: 'countries',
+      paint: {
+        'fill-extrusion-color': TEAL_DIM,
+        'fill-extrusion-height': 80000,
+        'fill-extrusion-base': 0,
+        'fill-extrusion-opacity': 0.55,
+      },
+      filter: ['==', ['get', 'id'], ''],
+    })
+
     // Lighting — warm directional
     map.setLight({
       anchor: 'viewport',
@@ -306,7 +352,11 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
         map.setFeatureState({ source: 'countries', id }, { hover: true })
         map.setFilter('country-extrusion', ['==', ['get', 'id'], id])
         map.setFilter('country-hover-border', ['==', ['get', 'id'], id])
-        map.getCanvas().style.cursor = 'pointer'
+        // Keep crosshair during picking mode
+        const canvas = map.getCanvas()
+        if (canvas.style.cursor !== 'crosshair') {
+          canvas.style.cursor = 'pointer'
+        }
 
         // Update tooltip content (flag + name + capital)
         const tooltip = tooltipRef.current
@@ -357,7 +407,10 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       }
       map.setFilter('country-extrusion', ['==', ['get', 'id'], ''])
       map.setFilter('country-hover-border', ['==', ['get', 'id'], ''])
-      map.getCanvas().style.cursor = 'grab'
+      const canvas = map.getCanvas()
+      if (canvas.style.cursor !== 'crosshair') {
+        canvas.style.cursor = 'grab'
+      }
 
       const tooltip = tooltipRef.current
       if (tooltip) {
@@ -389,7 +442,10 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       map.getCanvas().style.cursor = 'grabbing'
     })
     map.on('dragend', () => {
-      map.getCanvas().style.cursor = hoveredRef.current ? 'pointer' : 'grab'
+      const canvas = map.getCanvas()
+      if (canvas.style.cursor !== 'crosshair') {
+        canvas.style.cursor = hoveredRef.current ? 'pointer' : 'grab'
+      }
     })
 
     // Disable double-click zoom — prevents race condition with country click
@@ -482,6 +538,67 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       map.setFilter('country-selected-extrusion', emptyFilter)
     }
   }, [selected, loaded])
+
+  // Compare-with highlight
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded) return
+
+    if (compareWith) {
+      const filter: maplibregl.FilterSpecification = ['==', ['get', 'id'], compareWith.ccn3]
+      map.setFilter('country-compare-fill', filter)
+      map.setFilter('country-compare-border', filter)
+      map.setFilter('country-compare-glow', filter)
+      map.setFilter('country-compare-extrusion', filter)
+    } else {
+      const emptyFilter: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
+      map.setFilter('country-compare-fill', emptyFilter)
+      map.setFilter('country-compare-border', emptyFilter)
+      map.setFilter('country-compare-glow', emptyFilter)
+      map.setFilter('country-compare-extrusion', emptyFilter)
+    }
+  }, [compareWith, loaded])
+
+  // Lock hover and dim borders when in compare viewing mode
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded) return
+
+    const emptyFilter: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
+    const inCompareView = compareWith !== null
+
+    try {
+      if (inCompareView) {
+        map.setPaintProperty('country-fill', 'fill-opacity', 0.05)
+        map.setFilter('country-hover-border', emptyFilter)
+        map.setFilter('country-extrusion', emptyFilter)
+        map.setPaintProperty('country-borders', 'line-opacity', 0.15)
+      } else if (!satellite) {
+        map.setPaintProperty('country-fill', 'fill-opacity', [
+          'case',
+          ['boolean', ['feature-state', 'hover'], false],
+          0.28,
+          0.05,
+        ])
+        const isDark = resolvedTheme === 'dark'
+        map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
+      }
+    } catch {
+      // Layers may not exist yet
+    }
+  }, [compareWith, loaded, satellite, resolvedTheme])
+
+  // Crosshair cursor during compare picking mode
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded) return
+
+    if (comparePickingMode) {
+      map.getCanvas().style.cursor = 'crosshair'
+    } else {
+      map.getCanvas().style.cursor = hoveredRef.current ? 'pointer' : 'grab'
+    }
+  }, [comparePickingMode, loaded])
 
   // Theme-aware colors
   useEffect(() => {
