@@ -3,6 +3,7 @@ import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {
   BASEMAP_STYLE,
+  BASEMAP_LOAD_TIMEOUT_MS,
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
   DEFAULT_PITCH,
@@ -16,7 +17,14 @@ import {
 } from '../lib/mapStyles'
 import { flyToCountry } from '../lib/flyToCountry'
 import { applyMapTheme } from '../lib/mapColors'
+import { MapErrorOverlay } from './MapErrorOverlay'
+import { BasemapBanner } from './BasemapBanner'
+import { probeBasemap } from '../lib/probeBasemap'
 import type { CountryData } from '../lib/types'
+
+type MapErrorReason = 'timeout' | 'style' | 'country-data'
+
+const BASEMAP_PROBE_TIMEOUT_MS = 3_000
 
 /** Warm Explorer palette — teal for exploration, coral for selection */
 const TEAL = '#14b8a6'
@@ -108,6 +116,8 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [supported, setSupported] = useState(true)
   const [loaded, setLoaded] = useState(false)
+  const [mapError, setMapError] = useState<MapErrorReason | null>(null)
+  const [basemapDegraded, setBasemapDegraded] = useState(false)
   const hoveredRef = useRef<string | null>(null)
   const tooltipRef = useRef<HTMLDivElement | null>(null)
 
@@ -457,6 +467,12 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
   useEffect(() => {
     if (!containerRef.current) return
 
+    let cancelled = false
+    probeBasemap(BASEMAP_STYLE, BASEMAP_PROBE_TIMEOUT_MS).then((result) => {
+      if (cancelled) return
+      if (result === 'fail') setBasemapDegraded(true)
+    })
+
     const reducedMotion = prefersReducedMotion()
 
     let map: maplibregl.Map
@@ -493,21 +509,38 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
       ;(window as unknown as Record<string, unknown>).__polworldmap_map = map
     }
 
+    // Watchdog — if 'load' never fires, surface a visible error.
+    const watchdog = window.setTimeout(() => {
+      setMapError((prev) => prev ?? 'timeout')
+    }, BASEMAP_LOAD_TIMEOUT_MS)
+
     map.on('load', () => {
+      window.clearTimeout(watchdog)
+
       // Enable globe projection
       map.setProjection({ type: 'globe' })
 
       // Smooth trackpad zoom
       map.scrollZoom.setZoomRate(1 / 150)
 
-      addCountryLayers(map).catch(console.error)
+      addCountryLayers(map).catch((err) => {
+        console.error(err)
+        setMapError((prev) => prev ?? 'country-data')
+      })
     })
 
     map.on('error', (e) => {
       console.warn('Map error:', e.error?.message || e)
+      // Only surface pre-load errors as style failures; after load, these are
+      // transient tile issues that don't warrant a full-screen overlay.
+      if (!loaded) {
+        setMapError((prev) => prev ?? 'style')
+      }
     })
 
     return () => {
+      cancelled = true
+      window.clearTimeout(watchdog)
       tooltipRef.current?.remove()
       tooltipRef.current = null
       map.remove()
@@ -516,6 +549,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
         delete (window as unknown as Record<string, unknown>).__polworldmap_map
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addCountryLayers])
 
   // Selection highlight + camera
@@ -732,14 +766,21 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
   }
 
   return (
-    <div
-      ref={containerRef}
-      className="h-screen w-screen"
-      data-map-loaded={loaded || undefined}
-      tabIndex={0}
-      role="application"
-      aria-label="Interactive world map"
-      aria-description="Use search to select countries by keyboard"
-    />
+    <div className="relative h-screen w-screen">
+      <div
+        ref={containerRef}
+        className="h-full w-full"
+        data-map-loaded={loaded || undefined}
+        data-map-error={mapError ?? undefined}
+        tabIndex={0}
+        role="application"
+        aria-label="Interactive world map"
+        aria-description="Use search to select countries by keyboard"
+      />
+      {basemapDegraded && mapError === null && <BasemapBanner />}
+      {mapError !== null && (
+        <MapErrorOverlay reason={mapError} onRetry={() => window.location.reload()} />
+      )}
+    </div>
   )
 }

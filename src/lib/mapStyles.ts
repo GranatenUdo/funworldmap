@@ -24,3 +24,6 @@ export const DEFAULT_PITCH = 20
 export const MIN_ZOOM = 1.5
 export const MAX_ZOOM = 12
 export const MAX_PITCH = 60
+
+/** Time to wait for MapLibre 'load' event before showing an error overlay. */
+export const BASEMAP_LOAD_TIMEOUT_MS = 10_000

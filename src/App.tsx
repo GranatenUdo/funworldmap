@@ -58,15 +58,21 @@ export default function App() {
   }, [selected])
 
   useEffect(() => {
+    // Dismiss the splash when the map either loads or surfaces an error —
+    // otherwise a failed map leaves the splash over the error overlay.
+    const check = () => document.querySelector('[data-map-loaded], [data-map-error]')
     const observer = new MutationObserver(() => {
-      const mapEl = document.querySelector('[data-map-loaded]')
-      if (mapEl) {
+      if (check()) {
         setMapReady(true)
         observer.disconnect()
       }
     })
-    observer.observe(document.body, { subtree: true, attributes: true, attributeFilter: ['data-map-loaded'] })
-    if (document.querySelector('[data-map-loaded]')) {
+    observer.observe(document.body, {
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-map-loaded', 'data-map-error'],
+    })
+    if (check()) {
       setMapReady(true)
       observer.disconnect()
     }

@@ -33,3 +33,41 @@ npm run update-data   # Regenerate countries.json from source APIs
 ## Documentation
 
 See [docs/index.md](docs/index.md) for the full system design documentation.
+
+## Error reporting
+
+Production builds can report runtime errors to Sentry. To enable:
+
+1. Create a project at https://sentry.io/ and copy its DSN.
+2. In this repo, go to Settings → Secrets and variables → Actions and add a new repository secret:
+   - Name: `VITE_SENTRY_DSN`
+   - Value: the DSN from step 1.
+3. Trigger a new deploy (empty commit + push).
+
+Without a DSN, the app works normally — Sentry is a no-op.
+
+## Pre-launch checklist
+
+Before the site goes public, replace the placeholder host `https://polworldmap.example/` with the real URL in these files:
+
+- `index.html` (canonical, og:url, og:image, twitter:image)
+- `public/robots.txt` (sitemap line)
+- `public/sitemap.xml` (loc)
+
+Grep:
+
+```bash
+grep -rn "polworldmap.example" index.html public/
+```
+
+## Follow-up work not yet in this branch
+
+- **Basemap failover to a second provider.** Today we detect failure and show a degraded banner; the bundled country polygons remain interactive. To add a real second provider (Stadia Maps / MapTiler), sign up for an API key and wire a `FALLBACK_BASEMAP_STYLE` in `src/lib/mapStyles.ts` and a fall-through path in `WorldMap.tsx`.
+- **Data refresh runbook.** `npm run update-data` is not scheduled; decide an owner and cadence before launch.
+- **Bandwidth watch.** GH Pages soft-caps at ~100 GB/month. Watch repo Insights → Traffic.
+
+## License
+
+Source code is MIT licensed — see [LICENSE](./LICENSE).
+
+Data, fonts, and flag assets retain their upstream licenses; see [docs/systems/data.md](docs/systems/data.md) for source-by-source attribution.

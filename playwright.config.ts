@@ -27,6 +27,7 @@ export default defineConfig({
         'theme-and-responsive.spec.ts',
         'accessibility.spec.ts',
         'panel-and-deeplink.spec.ts',
+        'meta-and-static.spec.ts',
       ],
     },
     {
@@ -39,7 +40,7 @@ export default defineConfig({
         },
       },
       // Map interaction tests need real GPU
-      testMatch: ['map-and-countries.spec.ts'],
+      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts'],
     },
   ],
   webServer: {
