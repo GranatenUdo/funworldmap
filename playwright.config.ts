@@ -40,7 +40,7 @@ export default defineConfig({
         },
       },
       // Map interaction tests need real GPU
-      testMatch: ['map-and-countries.spec.ts'],
+      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts'],
     },
   ],
   webServer: {
