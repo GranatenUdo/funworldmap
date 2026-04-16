@@ -9,7 +9,7 @@ import { useTheme } from './hooks/useTheme'
 
 export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
-  const { selected, select, deselect } = useSelectedCountry(byCca3)
+  const { selected, compareWith, select, compareSelect, clearCompare, deselect } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const liveRegionRef = useRef<HTMLDivElement>(null)
@@ -19,6 +19,27 @@ export default function App() {
   const [hintDismissed, setHintDismissed] = useState(false)
   const [satellite, setSatellite] = useState(false)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
+  const [comparePickingMode, setComparePickingMode] = useState(false)
+  const enterComparePicking = useCallback(() => {
+    if (selected) setComparePickingMode(true)
+  }, [selected])
+  const exitCompare = useCallback(() => {
+    setComparePickingMode(false)
+    clearCompare()
+  }, [clearCompare])
+  const onMapSelect = useCallback(
+    (cca3: string) => {
+      if (comparePickingMode) {
+        if (selected && cca3.toUpperCase() !== selected.cca3) {
+          compareSelect(cca3)
+          setComparePickingMode(false)
+        }
+      } else {
+        select(cca3)
+      }
+    },
+    [comparePickingMode, selected, select, compareSelect],
+  )
 
   useEffect(() => {
     const name = selected?.name.common ?? null
@@ -69,6 +90,40 @@ export default function App() {
     }
   }, [selected, showHint])
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (compareWith || comparePickingMode) {
+          exitCompare()
+          return
+        }
+        if (selected) {
+          deselect()
+          return
+        }
+        const searchInput = document.getElementById('search-input') as HTMLInputElement | null
+        if (searchInput && searchInput.value) {
+          searchInput.value = ''
+          searchInput.dispatchEvent(new Event('input', { bubbles: true }))
+          return
+        }
+        return
+      }
+
+      const target = e.target as HTMLElement | null
+      if (target && target.matches('input, textarea, [contenteditable]')) return
+
+      if (e.key === '/') {
+        e.preventDefault()
+        document.getElementById('search-input')?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [selected, compareWith, comparePickingMode, exitCompare, deselect])
+
   return (
     <div data-selected-country={selected?.ccn3 || undefined} className="grain">
       {/* Skip links */}
@@ -118,9 +173,11 @@ export default function App() {
       <WorldMap
         byNumeric={byNumeric}
         selected={selected}
+        compareWith={compareWith}
+        comparePickingMode={comparePickingMode}
         resolvedTheme={resolved}
         satellite={satellite}
-        onSelect={select}
+        onSelect={onMapSelect}
         onDeselect={deselect}
       />
       <Header
@@ -145,10 +202,14 @@ export default function App() {
       {selected && (
         <CountryPanel
           country={selected}
+          compareWith={compareWith}
+          comparePickingMode={comparePickingMode}
           sources={sources}
           isDesktop={isDesktop}
-          onSelect={select}
+          onSelect={onMapSelect}
           onClose={deselect}
+          onEnterCompare={enterComparePicking}
+          onExitCompare={exitCompare}
           byCca3={byCca3}
         />
       )}
