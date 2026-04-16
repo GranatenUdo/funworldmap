@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import WorldMap from './components/WorldMap'
 import Header from './components/Header'
 import CountryPanel from './components/CountryPanel'
+import Toast from './components/Toast'
 import { useCountryData } from './hooks/useCountryData'
 import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
@@ -161,6 +162,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <Toast />
 
       {/* Vignette — gentle focus */}
       <div
