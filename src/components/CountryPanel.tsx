@@ -58,6 +58,125 @@ const REGION_BADGE: Record<string, string> = {
   Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
 
+function CompareField({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <div className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light">
+        {label}
+      </div>
+      <div className="text-sm text-sand-800 dark:text-dark-50">{children}</div>
+    </div>
+  )
+}
+
+function CountryColumn({
+  country,
+  byCca3,
+  onSelect,
+  onClose,
+  badgeLetter,
+  badgeColor,
+  showColumnClose,
+}: {
+  country: CountryData
+  byCca3: Map<string, CountryData>
+  onSelect: (cca3: string) => void
+  onClose: () => void
+  badgeLetter: 'A' | 'B'
+  badgeColor: 'a' | 'b'
+  showColumnClose: boolean
+}) {
+  return (
+    <div className="flex flex-col h-full overflow-y-auto">
+      {/* Column header */}
+      <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0" style={{ animation: 'fade-up 200ms ease-out' }}>
+            <span className={`compare-badge compare-badge-${badgeColor} mt-1`}>{badgeLetter}</span>
+            <img
+              src={country.flag}
+              alt={country.flagAlt || `Flag of ${country.name.common}`}
+              className="w-[56px] h-[38px] object-cover rounded-lg shadow-md shrink-0"
+            />
+            <div className="min-w-0 pt-0.5">
+              <h2 className="text-lg font-bold text-sand-900 dark:text-dark-50 truncate tracking-tight leading-tight">
+                {country.name.common}
+              </h2>
+              {country.capital.length > 0 && (
+                <p className="text-xs text-teal dark:text-teal-light truncate mt-0.5">
+                  {country.capital[0]}
+                </p>
+              )}
+              <span className="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full mt-1.5 bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100">
+                {country.region}
+              </span>
+            </div>
+          </div>
+          {showColumnClose && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-500 dark:text-dark-100 transition-colors"
+              aria-label="Exit compare"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Column content */}
+      <div className="px-5 py-3 space-y-2">
+        <CompareField label="Population">{country.population.toLocaleString('en-US')}</CompareField>
+        <CompareField label="Area">{`${country.area.toLocaleString('en-US')} km\u00B2`}</CompareField>
+        <CompareField label="Region">
+          {country.region}
+          {country.subregion && ` / ${country.subregion}`}
+        </CompareField>
+        {country.governmentType && (
+          <CompareField label="Government">{country.governmentType}</CompareField>
+        )}
+        {Object.keys(country.languages).length > 0 && (
+          <CompareField label="Languages">{Object.values(country.languages).join(', ')}</CompareField>
+        )}
+        {Object.keys(country.currencies).length > 0 && (
+          <CompareField label="Currencies">
+            {Object.values(country.currencies).map((c) => `${c.name} (${c.symbol})`).join(', ')}
+          </CompareField>
+        )}
+        <CompareField label="UN Member">{country.unMember ? 'Yes' : 'No'}</CompareField>
+        {country.borders.length > 0 && (
+          <div>
+            <div className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-1.5">
+              Borders
+            </div>
+            <div className="flex flex-wrap gap-1">
+              {country.borders.slice(0, 6).map((code) => {
+                const neighbor = byCca3.get(code)
+                return (
+                  <button
+                    key={code}
+                    onClick={() => onSelect(code)}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-full border border-teal/20 dark:border-teal-light/15 bg-teal/5 dark:bg-teal-light/5 text-teal-dim dark:text-teal-light hover:bg-teal/12 dark:hover:bg-teal-light/12 transition-colors"
+                  >
+                    {neighbor ? neighbor.name.common : code}
+                  </button>
+                )
+              })}
+              {country.borders.length > 6 && (
+                <span className="px-2 py-0.5 text-[11px] text-sand-400 dark:text-dark-100">
+                  +{country.borders.length - 6}
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function CountryPanel({
   country,
   compareWith,
@@ -72,8 +191,6 @@ export default function CountryPanel({
 }: Props) {
   const [expanded, setExpanded] = useState(false)
   const showSecondary = isDesktop || expanded
-  // onExitCompare used in Task 8 compare layout; silence unused warning
-  void onExitCompare
 
   const onShareLink = () => {
     const base = `${window.location.origin}${window.location.pathname}`
@@ -87,12 +204,62 @@ export default function CountryPanel({
     window.dispatchEvent(new CustomEvent('polworldmap:toast', { detail: 'Link copied' }))
   }
 
+  const compareMode = compareWith !== null
+
   // Floating card on desktop, bottom sheet on mobile
   const panelClasses = isDesktop
-    ? 'fixed right-4 top-16 bottom-4 w-[360px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 overflow-y-auto rounded-2xl border border-sand-200/50 dark:border-dark-200/20'
-    : `fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 overflow-y-auto rounded-t-2xl transition-[height] duration-200 ${
-        expanded ? 'h-[80vh]' : 'h-[40vh]'
-      }`
+    ? compareMode
+      ? 'fixed right-4 top-16 bottom-4 w-[656px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 rounded-2xl border border-sand-200/50 dark:border-dark-200/20 overflow-hidden'
+      : 'fixed right-4 top-16 bottom-4 w-[360px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 overflow-y-auto rounded-2xl border border-sand-200/50 dark:border-dark-200/20'
+    : compareMode
+      ? 'fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-2xl h-[80vh] overflow-hidden'
+      : `fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 overflow-y-auto rounded-t-2xl transition-[height] duration-200 ${
+          expanded ? 'h-[80vh]' : 'h-[40vh]'
+        }`
+
+  // Compare layout: desktop = two columns, mobile = vertical split
+  if (compareMode && compareWith) {
+    return (
+      <div
+        className={panelClasses}
+        role="complementary"
+        aria-label="Country comparison"
+        data-testid="country-panel"
+        style={isDesktop ? { animation: 'panel-card-in 250ms cubic-bezier(0.34, 1.3, 0.64, 1)' } : undefined}
+      >
+        <div className={isDesktop ? 'grid grid-cols-2 h-full' : 'flex flex-col h-full'}>
+          <div
+            className={
+              isDesktop
+                ? 'border-r border-sand-200/50 dark:border-dark-200/30'
+                : 'flex-1 border-b-2 border-dashed border-sand-300/50 dark:border-dark-200/30 min-h-0'
+            }
+          >
+            <CountryColumn
+              country={country}
+              byCca3={byCca3}
+              onSelect={onSelect}
+              onClose={onClose}
+              badgeLetter="A"
+              badgeColor="a"
+              showColumnClose={false}
+            />
+          </div>
+          <div className={isDesktop ? '' : 'flex-1 min-h-0'}>
+            <CountryColumn
+              country={compareWith}
+              byCca3={byCca3}
+              onSelect={onSelect}
+              onClose={onExitCompare}
+              badgeLetter="B"
+              badgeColor="b"
+              showColumnClose={true}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div
