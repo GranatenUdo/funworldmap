@@ -29,3 +29,10 @@ coverage/
 
 # Worktrees
 .worktrees/
+
+# Playwright MCP session artifacts
+.playwright-mcp/
+
+# Ad-hoc debugging screenshots
+/screenshot-*.png
+/screenshots/
