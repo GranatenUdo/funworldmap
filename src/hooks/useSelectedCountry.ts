@@ -1,38 +1,38 @@
 import { useState, useEffect, useCallback } from 'react'
 import type { CountryData } from '../lib/types'
+import { parseHash, writeHash } from '../lib/hashState'
 
-/**
- * URL hash is the single source of truth for country selection.
- * All selection actions (map click, search, border chip) update the hash.
- * This hook reads the hash and resolves it to a CountryData object.
- */
 export function useSelectedCountry(
   byCca3: Map<string, CountryData>,
 ): {
   selected: CountryData | null
+  compareWith: CountryData | null
   select: (cca3: string) => void
+  compareSelect: (cca3: string) => void
+  clearCompare: () => void
   deselect: () => void
 } {
   const [selected, setSelected] = useState<CountryData | null>(null)
+  const [compareWith, setCompareWith] = useState<CountryData | null>(null)
 
-  // Resolve current hash to a country
   const resolveHash = useCallback(() => {
-    const hash = window.location.hash.slice(1) // remove '#'
-    if (!hash) {
-      setSelected(null)
-      return
-    }
-    const country = byCca3.get(hash.toUpperCase())
-    if (country) {
-      setSelected(country)
-    } else {
-      // Invalid hash — clear it silently
+    const { selected: selCode, compareWith: cmpCode } = parseHash(window.location.hash)
+
+    const selCountry = selCode ? byCca3.get(selCode) ?? null : null
+    const cmpCountry = cmpCode ? byCca3.get(cmpCode) ?? null : null
+
+    // Invalid selected silently cleared
+    if (selCode && !selCountry) {
       history.replaceState(null, '', window.location.pathname)
       setSelected(null)
+      setCompareWith(null)
+      return
     }
+
+    setSelected(selCountry)
+    setCompareWith(cmpCountry)
   }, [byCca3])
 
-  // Listen for hash changes
   useEffect(() => {
     resolveHash()
     window.addEventListener('hashchange', resolveHash)
@@ -40,15 +40,28 @@ export function useSelectedCountry(
   }, [resolveHash])
 
   const select = useCallback((cca3: string) => {
-    // Push new hash entry for country-to-country navigation
-    window.location.hash = cca3
+    // New selection clears any existing compareWith
+    window.location.hash = writeHash(cca3.toUpperCase(), null)
+  }, [])
+
+  const compareSelect = useCallback((cca3: string) => {
+    // Pair compareWith with the existing selected (from hash at call time)
+    const currentHash = parseHash(window.location.hash)
+    if (!currentHash.selected) return
+    window.location.hash = writeHash(currentHash.selected, cca3.toUpperCase())
+  }, [])
+
+  const clearCompare = useCallback(() => {
+    const currentHash = parseHash(window.location.hash)
+    if (!currentHash.selected) return
+    window.location.hash = writeHash(currentHash.selected, null)
   }, [])
 
   const deselect = useCallback(() => {
-    // Replace current entry (no blank # in history)
     history.replaceState(null, '', window.location.pathname)
     setSelected(null)
+    setCompareWith(null)
   }, [])
 
-  return { selected, select, deselect }
+  return { selected, compareWith, select, compareSelect, clearCompare, deselect }
 }
