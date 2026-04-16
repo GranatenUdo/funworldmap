@@ -8,6 +8,11 @@ import {
   DEFAULT_PITCH,
   SATELLITE_TILES,
   SATELLITE_ATTRIBUTION,
+  TERRAIN_TILES,
+  TERRAIN_ATTRIBUTION,
+  MIN_ZOOM,
+  MAX_ZOOM,
+  MAX_PITCH,
 } from '../lib/mapStyles'
 import { flyToCountry } from '../lib/flyToCountry'
 import { applyMapTheme } from '../lib/mapColors'
@@ -32,12 +37,65 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+/** Custom MapLibre control — reset to world view */
+class ResetViewControl implements maplibregl.IControl {
+  _container?: HTMLDivElement
+
+  onAdd(map: maplibregl.Map): HTMLElement {
+    this._container = document.createElement('div')
+    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group'
+
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.title = 'Reset to world view'
+    button.setAttribute('aria-label', 'Reset to world view')
+    button.style.cssText = 'display:flex;align-items:center;justify-content:center;cursor:pointer;'
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    svg.setAttribute('viewBox', '0 0 24 24')
+    svg.setAttribute('width', '22')
+    svg.setAttribute('height', '22')
+    svg.setAttribute('fill', 'none')
+    svg.setAttribute('stroke', 'currentColor')
+    svg.setAttribute('stroke-width', '2')
+    svg.setAttribute('stroke-linecap', 'round')
+    svg.setAttribute('stroke-linejoin', 'round')
+
+    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    path1.setAttribute('d', 'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z')
+    const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'polyline')
+    path2.setAttribute('points', '9 22 9 12 15 12 15 22')
+
+    svg.appendChild(path1)
+    svg.appendChild(path2)
+    button.appendChild(svg)
+
+    button.addEventListener('click', () => {
+      map.flyTo({
+        center: DEFAULT_CENTER,
+        zoom: DEFAULT_ZOOM,
+        pitch: prefersReducedMotion() ? 0 : DEFAULT_PITCH,
+        bearing: 0,
+        duration: prefersReducedMotion() ? 0 : 1400,
+      })
+    })
+
+    this._container.appendChild(button)
+    return this._container
+  }
+
+  onRemove(): void {
+    this._container?.remove()
+  }
+}
+
 export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite, onSelect, onDeselect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const [supported, setSupported] = useState(true)
   const [loaded, setLoaded] = useState(false)
   const hoveredRef = useRef<string | null>(null)
+  const tooltipRef = useRef<HTMLDivElement | null>(null)
 
   const onSelectRef = useRef(onSelect)
   onSelectRef.current = onSelect
@@ -107,6 +165,16 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       type: 'raster',
       source: 'satellite',
       layout: { visibility: 'none' },
+    })
+
+    // Terrain DEM source — loaded but inactive until satellite toggle enables it
+    map.addSource('terrain-dem', {
+      type: 'raster-dem',
+      tiles: [TERRAIN_TILES],
+      encoding: 'terrarium',
+      tileSize: 256,
+      maxzoom: 15,
+      attribution: TERRAIN_ATTRIBUTION,
     })
 
     map.addSource('countries', {
@@ -228,6 +296,30 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
         map.setFilter('country-extrusion', ['==', ['get', 'id'], id])
         map.setFilter('country-hover-border', ['==', ['get', 'id'], id])
         map.getCanvas().style.cursor = 'pointer'
+
+        // Update tooltip content
+        const tooltip = tooltipRef.current
+        if (tooltip) {
+          const country = byNumericRef.current.get(id)
+          if (country) {
+            tooltip.textContent = ''
+            const img = document.createElement('img')
+            img.src = country.flag
+            img.alt = ''
+            tooltip.appendChild(img)
+            tooltip.appendChild(document.createTextNode(country.name.common))
+            tooltip.classList.add('visible')
+          }
+        }
+      }
+    })
+
+    // Position tooltip at cursor
+    map.on('mousemove', (e) => {
+      const tooltip = tooltipRef.current
+      if (tooltip && tooltip.classList.contains('visible')) {
+        tooltip.style.left = `${e.point.x + 15}px`
+        tooltip.style.top = `${e.point.y + 15}px`
       }
     })
 
@@ -238,7 +330,12 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       }
       map.setFilter('country-extrusion', ['==', ['get', 'id'], ''])
       map.setFilter('country-hover-border', ['==', ['get', 'id'], ''])
-      map.getCanvas().style.cursor = ''
+      map.getCanvas().style.cursor = 'grab'
+
+      const tooltip = tooltipRef.current
+      if (tooltip) {
+        tooltip.classList.remove('visible')
+      }
     })
 
     // --- Click ---
@@ -259,6 +356,18 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       }
     })
 
+    // Grab cursor for map dragging
+    map.getCanvas().style.cursor = 'grab'
+    map.on('dragstart', () => {
+      map.getCanvas().style.cursor = 'grabbing'
+    })
+    map.on('dragend', () => {
+      map.getCanvas().style.cursor = hoveredRef.current ? 'pointer' : 'grab'
+    })
+
+    // Disable double-click zoom — prevents race condition with country click
+    map.doubleClickZoom.disable()
+
     setLoaded(true)
   }, [])
 
@@ -275,6 +384,9 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
         center: DEFAULT_CENTER,
         zoom: DEFAULT_ZOOM,
         pitch: reducedMotion ? 0 : DEFAULT_PITCH,
+        minZoom: MIN_ZOOM,
+        maxZoom: MAX_ZOOM,
+        maxPitch: MAX_PITCH,
         attributionControl: false,
       })
     } catch {
@@ -282,16 +394,29 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
       return
     }
 
-    map.addControl(new maplibregl.NavigationControl(), 'bottom-right')
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right')
+    map.addControl(new ResetViewControl(), 'bottom-right')
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-left')
 
     mapRef.current = map
+
+    // Tooltip DOM element (raw DOM, not React — avoids re-render on mousemove)
+    const tooltip = document.createElement('div')
+    tooltip.className = 'country-tooltip'
+    containerRef.current!.parentElement!.appendChild(tooltip)
+    tooltipRef.current = tooltip
 
     if (import.meta.env.DEV) {
       ;(window as unknown as Record<string, unknown>).__polworldmap_map = map
     }
 
     map.on('load', () => {
+      // Enable globe projection
+      map.setProjection({ type: 'globe' })
+
+      // Smooth trackpad zoom
+      map.scrollZoom.setZoomRate(1 / 150)
+
       addCountryLayers(map).catch(console.error)
     })
 
@@ -300,6 +425,8 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
     })
 
     return () => {
+      tooltipRef.current?.remove()
+      tooltipRef.current = null
       map.remove()
       mapRef.current = null
       if (import.meta.env.DEV) {
@@ -358,6 +485,22 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
         'high-color': isDark ? '#10141a' : '#c4d8e6',
         'horizon-blend': 0.1,
       })
+
+      // Atmosphere — visible on globe at low zoom, fades as you zoom in
+      ;(map as never as { setSky: (sky: Record<string, unknown>) => void }).setSky({
+        'sky-color': isDark ? '#0a1a2e' : '#88c6fc',
+        'horizon-color': isDark ? '#1a2030' : '#f0ede6',
+        'fog-color': isDark ? '#10141a' : '#e8e3da',
+        'fog-ground-blend': 0.5,
+        'horizon-fog-blend': 0.8,
+        'sky-horizon-blend': 0.8,
+        'atmosphere-blend': [
+          'interpolate', ['linear'], ['zoom'],
+          0, 1,
+          5, 1,
+          7, 0,
+        ],
+      })
     } catch {
       // Layers may not exist yet
     }
@@ -375,6 +518,13 @@ export default function WorldMap({ byNumeric, selected, resolvedTheme, satellite
         'visibility',
         satellite ? 'visible' : 'none',
       )
+
+      // Enable/disable 3D terrain with satellite
+      if (satellite) {
+        map.setTerrain({ source: 'terrain-dem', exaggeration: 1.5 })
+      } else {
+        map.setTerrain(null)
+      }
 
       // Toggle basemap layers visibility (everything that's not our custom layers)
       const style = map.getStyle()
