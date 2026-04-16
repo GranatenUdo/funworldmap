@@ -18,9 +18,13 @@ import {
 import { flyToCountry } from '../lib/flyToCountry'
 import { applyMapTheme } from '../lib/mapColors'
 import { MapErrorOverlay } from './MapErrorOverlay'
+import { BasemapBanner } from './BasemapBanner'
+import { probeBasemap } from '../lib/probeBasemap'
 import type { CountryData } from '../lib/types'
 
 type MapErrorReason = 'timeout' | 'style' | 'country-data'
+
+const BASEMAP_PROBE_TIMEOUT_MS = 3_000
 
 /** Warm Explorer palette — teal for exploration, coral for selection */
 const TEAL = '#14b8a6'
@@ -113,6 +117,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
   const [supported, setSupported] = useState(true)
   const [loaded, setLoaded] = useState(false)
   const [mapError, setMapError] = useState<MapErrorReason | null>(null)
+  const [basemapDegraded, setBasemapDegraded] = useState(false)
   const hoveredRef = useRef<string | null>(null)
   const tooltipRef = useRef<HTMLDivElement | null>(null)
 
@@ -462,6 +467,12 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
   useEffect(() => {
     if (!containerRef.current) return
 
+    let cancelled = false
+    probeBasemap(BASEMAP_STYLE, BASEMAP_PROBE_TIMEOUT_MS).then((result) => {
+      if (cancelled) return
+      if (result === 'fail') setBasemapDegraded(true)
+    })
+
     const reducedMotion = prefersReducedMotion()
 
     let map: maplibregl.Map
@@ -528,6 +539,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
     })
 
     return () => {
+      cancelled = true
       window.clearTimeout(watchdog)
       tooltipRef.current?.remove()
       tooltipRef.current = null
@@ -765,6 +777,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
         aria-label="Interactive world map"
         aria-description="Use search to select countries by keyboard"
       />
+      {basemapDegraded && mapError === null && <BasemapBanner />}
       {mapError !== null && (
         <MapErrorOverlay reason={mapError} onRetry={() => window.location.reload()} />
       )}

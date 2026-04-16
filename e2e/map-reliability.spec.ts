@@ -28,4 +28,22 @@ test.describe('map reliability', () => {
     await retry.click({ noWaitAfter: true })
     await expect(page.getByTestId('map-error-overlay')).toBeVisible({ timeout: 20_000 })
   })
+
+  test('shows degraded-mode banner when basemap probe fails', async ({ page }) => {
+    // Abort only the probe request (distinguished by ?probe=1), let
+    // MapLibre's style fetch through — simulates a provider that fails
+    // our explicit probe but is otherwise reachable.
+    await page.route('**/tiles.openfreemap.org/styles/positron**', (route) => {
+      if (route.request().url().includes('probe=1')) return route.abort('failed')
+      return route.continue()
+    })
+
+    await page.goto('/')
+
+    const banner = page.getByTestId('basemap-banner')
+    await expect(banner).toBeVisible({ timeout: 8_000 })
+
+    await banner.getByRole('button', { name: /dismiss/i }).click()
+    await expect(banner).toBeHidden()
+  })
 })
