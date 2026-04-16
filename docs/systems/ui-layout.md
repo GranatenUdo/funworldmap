@@ -124,8 +124,8 @@ Three-state theme: **light**, **dark**, and **system** (follow OS preference).
 ## Deep Linking
 
 The URL hash reflects the selected country using cca3 codes:
-- Select France → URL becomes `polworldmap.com/#FRA`
-- Open `polworldmap.com/#FRA` → map flies to France, panel opens
+- Select France → URL becomes `funworldmap.com/#FRA`
+- Open `funworldmap.com/#FRA` → map flies to France, panel opens
 
 This enables:
 - Sharing links to specific countries

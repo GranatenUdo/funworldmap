@@ -6,7 +6,7 @@ WCAG 2.1 Level AA. This is a baseline requirement for every component from the s
 
 ## Challenges Specific to Maps
 
-Interactive maps are inherently difficult for accessibility. The primary interface (a WebGL2 canvas) is opaque to screen readers, and individual country polygons cannot receive keyboard focus. polworldmap addresses this through:
+Interactive maps are inherently difficult for accessibility. The primary interface (a WebGL2 canvas) is opaque to screen readers, and individual country polygons cannot receive keyboard focus. funworldmap addresses this through:
 
 1. **Search as the keyboard-first path** — country selection is accessible through the search combobox. A keyboard user types a country name, navigates results with arrow keys, and selects with Enter.
 2. **ARIA live regions** — map state changes are announced to screen readers

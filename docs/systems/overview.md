@@ -1,6 +1,6 @@
 # System Overview
 
-polworldmap is a fully client-side single-page application. There is no backend server. All code, data, and assets are delivered as static files from a CDN. The browser does all the work.
+funworldmap is a fully client-side single-page application. There is no backend server. All code, data, and assets are delivered as static files from a CDN. The browser does all the work.
 
 ## Architecture
 

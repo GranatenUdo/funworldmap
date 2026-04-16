@@ -1,13 +1,13 @@
-# polworldmap Documentation
+# funworldmap Documentation
 
-**Audience**: Developers implementing and maintaining the polworldmap application.
+**Audience**: Developers implementing and maintaining the funworldmap application.
 
 ## Reading Order
 
 Start with the purpose, then read the system overview for architecture context, then dive into individual systems as needed.
 
 ### Project
-- [Purpose](purpose.md) — what polworldmap is, who it's for, core principles, scope
+- [Purpose](purpose.md) — what funworldmap is, who it's for, core principles, scope
 
 ### Systems
 - [System Overview](systems/overview.md) — architecture, external dependencies, data flows, error handling

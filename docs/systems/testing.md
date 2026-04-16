@@ -2,7 +2,7 @@
 
 ## Tool
 
-**Playwright** — browser automation framework for end-to-end testing. Tests run against the Vite development server (`npm run dev`) in a real browser (Chromium). Tier 2 map integration tests require the development build because the map instance is only exposed via `window.__polworldmap_map` when `import.meta.env.DEV` is true (see Exposing the Map Instance below).
+**Playwright** — browser automation framework for end-to-end testing. Tests run against the Vite development server (`npm run dev`) in a real browser (Chromium). Tier 2 map integration tests require the development build because the map instance is only exposed via `window.__funworldmap_map` when `import.meta.env.DEV` is true (see Exposing the Map Instance below).
 
 ## The Canvas Challenge
 
@@ -39,9 +39,9 @@ Test everything outside the canvas — panels, search, header, theme toggle, URL
 Test map state by reaching into the MapLibre API through the browser's JavaScript context.
 
 **Techniques:**
-- `page.evaluate(() => (window as any).__polworldmap_map.getZoom())` — verify zoom level
-- `page.evaluate(() => (window as any).__polworldmap_map.getCenter())` — verify camera position
-- `page.evaluate(([x, y]) => (window as any).__polworldmap_map.queryRenderedFeatures([x, y]), [x, y])` — check what features exist at a pixel
+- `page.evaluate(() => (window as any).__funworldmap_map.getZoom())` — verify zoom level
+- `page.evaluate(() => (window as any).__funworldmap_map.getCenter())` — verify camera position
+- `page.evaluate(([x, y]) => (window as any).__funworldmap_map.queryRenderedFeatures([x, y]), [x, y])` — check what features exist at a pixel
 - `page.mouse.click(x, y)` at known country coordinates — trigger map interactions
 - `expect(page).toHaveScreenshot()` — visual regression testing
 
@@ -58,13 +58,13 @@ For Tier 2 tests to work, the map instance must be accessible from `page.evaluat
 ```ts
 // In WorldMap.tsx onLoad handler:
 if (import.meta.env.DEV) {
-  (window as any).__polworldmap_map = mapRef.current;
+  (window as any).__funworldmap_map = mapRef.current;
 }
 ```
 
 Tests access it via:
 ```ts
-const zoom = await page.evaluate(() => (window as any).__polworldmap_map.getZoom());
+const zoom = await page.evaluate(() => (window as any).__funworldmap_map.getZoom());
 ```
 
 This is only available in development builds — production builds do not expose the map.

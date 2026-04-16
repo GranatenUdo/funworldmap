@@ -1,12 +1,12 @@
-# polworldmap
+# funworldmap
 
 ## What It Is
 
-polworldmap is a free, interactive political world map website. It presents geopolitical information through a map interface that anyone can use — no accounts, no paywalls, no barriers.
+funworldmap is a free, interactive political world map website. It presents geopolitical information through a map interface that anyone can use — no accounts, no paywalls, no barriers.
 
 ## Purpose
 
-The world's geopolitical landscape is complex. Country boundaries, governance structures, demographics, and regional relationships are hard to grasp from text alone. polworldmap makes this information spatial and explorable.
+The world's geopolitical landscape is complex. Country boundaries, governance structures, demographics, and regional relationships are hard to grasp from text alone. funworldmap makes this information spatial and explorable.
 
 A student researching South American governments can click through the continent. A journalist checking border relationships can see neighboring countries at a glance. A curious person can search for any country and immediately understand its political context.
 
@@ -36,7 +36,7 @@ Typing a country name, capital, or region immediately narrows results. Fuzzy mat
 
 ## Audience
 
-polworldmap is for everyone, but these users inform design decisions:
+funworldmap is for everyone, but these users inform design decisions:
 
 - **Students** exploring geography and political science
 - **Educators** demonstrating geopolitical concepts

@@ -1,4 +1,4 @@
-# polworldmap
+# funworldmap
 
 Free, interactive political world map. Explore countries, borders, and geopolitical facts through a map-first interface.
 
@@ -48,7 +48,7 @@ Without a DSN, the app works normally — Sentry is a no-op.
 
 ## Pre-launch checklist
 
-Before the site goes public, replace the placeholder host `https://polworldmap.example/` with the real URL in these files:
+Before the site goes public, replace the placeholder host `https://funworldmap.example/` with the real URL in these files:
 
 - `index.html` (canonical, og:url, og:image, twitter:image)
 - `public/robots.txt` (sitemap line)
@@ -57,7 +57,7 @@ Before the site goes public, replace the placeholder host `https://polworldmap.e
 Grep:
 
 ```bash
-grep -rn "polworldmap.example" index.html public/
+grep -rn "funworldmap.example" index.html public/
 ```
 
 ## Follow-up work not yet in this branch

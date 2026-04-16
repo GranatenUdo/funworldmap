@@ -2,7 +2,7 @@
 
 ## Purpose
 
-polworldmap aggregates country data from multiple authoritative sources. The data collection tool runs on demand (not at build time), fetches from each source, merges the results, and writes a single `countries.json` file that is committed to the repository.
+funworldmap aggregates country data from multiple authoritative sources. The data collection tool runs on demand (not at build time), fetches from each source, merges the results, and writes a single `countries.json` file that is committed to the repository.
 
 ## Design Principles
 

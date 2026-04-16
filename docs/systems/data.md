@@ -1,6 +1,6 @@
 # Data System
 
-polworldmap uses multiple data sources, all bundled into the application at build time. There are zero runtime API calls or external data fetches (basemap tiles excepted). Every data point carries source attribution.
+funworldmap uses multiple data sources, all bundled into the application at build time. There are zero runtime API calls or external data fetches (basemap tiles excepted). Every data point carries source attribution.
 
 ## Data Sources
 
@@ -158,7 +158,7 @@ When no match is found, the application displays:
 
 ## Disputed Territories
 
-polworldmap takes no political positions. Boundaries are displayed using Natural Earth's de facto defaults — showing territories as they are controlled in practice, not as any government claims.
+funworldmap takes no political positions. Boundaries are displayed using Natural Earth's de facto defaults — showing territories as they are controlled in practice, not as any government claims.
 
 Natural Earth data includes options for de jure boundaries and point-of-view-specific variants, which could be explored in future versions.
 
