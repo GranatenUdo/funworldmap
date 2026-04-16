@@ -18,7 +18,7 @@ test.describe('Country Panel', () => {
     await page.goto('/#DEU')
     await page.waitForTimeout(1500)
 
-    const flag = page.getByTestId('country-panel').locator('img')
+    const flag = page.getByTestId('country-panel').getByTestId('country-flag')
     await expect(flag).toBeAttached()
     await expect(flag).toHaveAttribute('src', 'flags/DE.svg')
   })

@@ -94,6 +94,7 @@ function CountryColumn({
           <div className="flex items-start gap-3 min-w-0" style={{ animation: 'fade-up 200ms ease-out' }}>
             <span className={`compare-badge compare-badge-${badgeColor} mt-1`}>{badgeLetter}</span>
             <img
+              data-testid="country-flag"
               src={country.flag}
               alt={country.flagAlt || `Flag of ${country.name.common}`}
               className="w-[56px] h-[38px] object-cover rounded-lg shadow-md shrink-0"
@@ -283,6 +284,7 @@ export default function CountryPanel({
           >
             {/* Flag */}
             <img
+              data-testid="country-flag"
               src={country.flag}
               alt={country.flagAlt || `Flag of ${country.name.common}`}
               className="w-[72px] h-[50px] object-cover rounded-xl shadow-lg shrink-0"
