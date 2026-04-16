@@ -4,10 +4,14 @@ import SourceTooltip from './SourceTooltip'
 
 interface Props {
   country: CountryData
+  compareWith: CountryData | null
+  comparePickingMode: boolean
   sources: CountriesFile['_sources']
   isDesktop: boolean
   onSelect: (cca3: string) => void
   onClose: () => void
+  onEnterCompare: () => void
+  onExitCompare: () => void
   byCca3: Map<string, CountryData>
 }
 
@@ -56,14 +60,32 @@ const REGION_BADGE: Record<string, string> = {
 
 export default function CountryPanel({
   country,
+  compareWith,
+  comparePickingMode,
   sources,
   isDesktop,
   onSelect,
   onClose,
+  onEnterCompare,
+  onExitCompare,
   byCca3,
 }: Props) {
   const [expanded, setExpanded] = useState(false)
   const showSecondary = isDesktop || expanded
+  // onExitCompare used in Task 8 compare layout; silence unused warning
+  void onExitCompare
+
+  const onShareLink = () => {
+    const base = `${window.location.origin}${window.location.pathname}`
+    const hash = compareWith ? `#${country.cca3},${compareWith.cca3}` : `#${country.cca3}`
+    const url = base + hash
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url))
+    } else {
+      window.prompt('Copy this link:', url)
+    }
+    window.dispatchEvent(new CustomEvent('polworldmap:toast', { detail: 'Link copied' }))
+  }
 
   // Floating card on desktop, bottom sheet on mobile
   const panelClasses = isDesktop
@@ -82,6 +104,11 @@ export default function CountryPanel({
     >
       {/* Header */}
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
+        {comparePickingMode && (
+          <div className="mb-3 px-3 py-2 rounded-lg bg-teal/10 dark:bg-teal-light/10 border border-teal/20 dark:border-teal-light/20 text-xs text-teal dark:text-teal-light">
+            Pick a country to compare with...
+          </div>
+        )}
         <div className="flex items-start justify-between gap-3">
           <div
             className="flex items-start gap-3.5 min-w-0"
@@ -103,6 +130,11 @@ export default function CountryPanel({
                   {country.name.official}
                 </p>
               )}
+              {country.capital.length > 0 && (
+                <p className="text-xs text-teal dark:text-teal-light truncate mt-0.5">
+                  {country.capital[0]}
+                </p>
+              )}
               <span
                 className={`inline-block text-[10px] font-medium px-2 py-0.5 rounded-full mt-1.5 ${
                   REGION_BADGE[country.region] || 'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
@@ -115,6 +147,33 @@ export default function CountryPanel({
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
+            {/* Compare button — only when no compare active */}
+            {!compareWith && !comparePickingMode && (
+              <button
+                onClick={onEnterCompare}
+                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-teal dark:text-teal-light transition-colors"
+                aria-label="Compare with another country"
+                title="Compare"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <circle cx="9" cy="12" r="6" strokeWidth="1.75" />
+                  <circle cx="15" cy="12" r="6" strokeWidth="1.75" />
+                </svg>
+              </button>
+            )}
+
+            {/* Share link button */}
+            <button
+              onClick={onShareLink}
+              className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-500 dark:text-dark-100 transition-colors"
+              aria-label="Copy link to this country"
+              title="Copy link"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+            </button>
+
             {!isDesktop && (
               <button
                 onClick={() => setExpanded(!expanded)}
