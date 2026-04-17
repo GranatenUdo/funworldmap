@@ -19,3 +19,9 @@ Start with the purpose, then read the system overview for architecture context, 
 - [Accessibility](systems/accessibility.md) — WCAG AA, keyboard navigation, screen readers, reduced motion
 - [Testing](systems/testing.md) — Playwright two-tier strategy, WebGL2 headless, fixtures
 - [Build & Deploy](systems/build.md) — Vite, Tailwind 4, build output, deployment
+
+### Operations
+- [Runbook](ops/runbook.md) — bandwidth watch, data freshness, basemap degradation, incident response
+
+### Decisions
+- [ADR README](adr/README.md) — architecture decision record filing convention

@@ -34,6 +34,22 @@ npm run update-data   # Regenerate countries.json from source APIs
 
 See [docs/index.md](docs/index.md) for the full system design documentation.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, PR expectations, and how to propose a new data source.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for reporting procedure.
+
+## Decision Records
+
+Architectural decisions live under [docs/adr/](docs/adr/). See [docs/adr/README.md](docs/adr/README.md) for filing conventions.
+
+## Operations
+
+See [docs/ops/runbook.md](docs/ops/runbook.md) for bandwidth watch, data freshness cadence, basemap degradation handling, and incident response.
+
 ## Error reporting
 
 Production builds can report runtime errors to Sentry. To enable:
@@ -63,8 +79,6 @@ grep -rn "funworldmap.example" index.html public/
 ## Follow-up work not yet in this branch
 
 - **Basemap failover to a second provider.** Today we detect failure and show a degraded banner; the bundled country polygons remain interactive. To add a real second provider (Stadia Maps / MapTiler), sign up for an API key and wire a `FALLBACK_BASEMAP_STYLE` in `src/lib/mapStyles.ts` and a fall-through path in `WorldMap.tsx`.
-- **Data refresh runbook.** `npm run update-data` is not scheduled; decide an owner and cadence before launch.
-- **Bandwidth watch.** GH Pages soft-caps at ~100 GB/month. Watch repo Insights → Traffic.
 
 ## License
 
