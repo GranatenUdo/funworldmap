@@ -7,10 +7,6 @@ import {
   DEFAULT_CENTER,
   DEFAULT_ZOOM,
   DEFAULT_PITCH,
-  SATELLITE_TILES,
-  SATELLITE_ATTRIBUTION,
-  TERRAIN_TILES,
-  TERRAIN_ATTRIBUTION,
   MIN_ZOOM,
   MAX_ZOOM,
   MAX_PITCH,
@@ -20,9 +16,18 @@ import { applyMapTheme } from '../lib/mapColors'
 import { MapErrorOverlay } from './MapErrorOverlay'
 import { BasemapBanner } from './BasemapBanner'
 import { probeBasemap } from '../lib/probeBasemap'
-import { TEAL, TEAL_LIGHT, TEAL_DIM, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
+import { TEAL, TEAL_LIGHT, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
 import { ResetViewControl, prefersReducedMotion } from '../lib/resetViewControl'
 import { loadCountryGeojson } from '../lib/loadCountryGeojson'
+import {
+  addRasterSources,
+  addCountrySource,
+  addBaseCountryLayers,
+  addHoverLayers,
+  addSelectionLayers,
+  addCompareLayers,
+  applyWarmLighting,
+} from '../lib/mapLayers'
 import type { CountryData } from '../lib/types'
 
 type MapErrorReason = 'timeout' | 'style' | 'country-data'
@@ -59,181 +64,13 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
 
   const addCountryLayers = useCallback(async (map: maplibregl.Map) => {
     const geojson = await loadCountryGeojson()
-
-    // Satellite raster source — hidden by default, toggled by satellite prop
-    map.addSource('satellite', {
-      type: 'raster',
-      tiles: [SATELLITE_TILES],
-      tileSize: 256,
-      attribution: SATELLITE_ATTRIBUTION,
-    })
-
-    map.addLayer({
-      id: 'satellite-layer',
-      type: 'raster',
-      source: 'satellite',
-      layout: { visibility: 'none' },
-    })
-
-    // Terrain DEM source — loaded but inactive until satellite toggle enables it
-    map.addSource('terrain-dem', {
-      type: 'raster-dem',
-      tiles: [TERRAIN_TILES],
-      encoding: 'terrarium',
-      tileSize: 256,
-      maxzoom: 15,
-      attribution: TERRAIN_ATTRIBUTION,
-    })
-
-    map.addSource('countries', {
-      type: 'geojson',
-      data: geojson,
-      promoteId: 'id',
-    })
-
-    // Base fill — dramatic 5% → 28% opacity jump on hover ("ignite" effect)
-    map.addLayer({
-      id: 'country-fill',
-      type: 'fill',
-      source: 'countries',
-      paint: {
-        'fill-color': TEAL,
-        'fill-opacity': [
-          'case',
-          ['boolean', ['feature-state', 'hover'], false],
-          0.28,
-          0.05,
-        ],
-      },
-    })
-
-    // Country borders — subtle in dark, warmer in light
-    map.addLayer({
-      id: 'country-borders',
-      type: 'line',
-      source: 'countries',
-      paint: { 'line-color': '#334155', 'line-width': 0.5, 'line-opacity': 0.4 },
-    })
-
-    // Hover glow — soft teal border that appears on hover
-    map.addLayer({
-      id: 'country-hover-border',
-      type: 'line',
-      source: 'countries',
-      paint: {
-        'line-color': TEAL,
-        'line-width': 2,
-        'line-opacity': 0.6,
-      },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    // 3D extrusion — filter-based, only hovered country
-    map.addLayer({
-      id: 'country-extrusion',
-      type: 'fill-extrusion',
-      source: 'countries',
-      paint: {
-        'fill-extrusion-color': TEAL,
-        'fill-extrusion-height': 60000,
-        'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': 0.65,
-      },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    // --- Selection layers ---
-    map.addLayer({
-      id: 'country-selected-glow',
-      type: 'line',
-      source: 'countries',
-      paint: {
-        'line-color': CORAL,
-        'line-width': 10,
-        'line-blur': 5,
-        'line-opacity': 0.3,
-      },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    map.addLayer({
-      id: 'country-selected',
-      type: 'fill',
-      source: 'countries',
-      paint: { 'fill-color': CORAL, 'fill-opacity': 0.32 },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    map.addLayer({
-      id: 'country-selected-border',
-      type: 'line',
-      source: 'countries',
-      paint: { 'line-color': CORAL, 'line-width': 2.5 },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    map.addLayer({
-      id: 'country-selected-extrusion',
-      type: 'fill-extrusion',
-      source: 'countries',
-      paint: {
-        'fill-extrusion-color': CORAL,
-        'fill-extrusion-height': 80000,
-        'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': 0.55,
-      },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    // --- Compare layers (second country "B" when in compare mode) ---
-    map.addLayer({
-      id: 'country-compare-glow',
-      type: 'line',
-      source: 'countries',
-      paint: {
-        'line-color': TEAL_DIM,
-        'line-width': 10,
-        'line-blur': 5,
-        'line-opacity': 0.3,
-      },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    map.addLayer({
-      id: 'country-compare-fill',
-      type: 'fill',
-      source: 'countries',
-      paint: { 'fill-color': TEAL_DIM, 'fill-opacity': 0.32 },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    map.addLayer({
-      id: 'country-compare-border',
-      type: 'line',
-      source: 'countries',
-      paint: { 'line-color': TEAL_DIM, 'line-width': 2.5 },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    map.addLayer({
-      id: 'country-compare-extrusion',
-      type: 'fill-extrusion',
-      source: 'countries',
-      paint: {
-        'fill-extrusion-color': TEAL_DIM,
-        'fill-extrusion-height': 80000,
-        'fill-extrusion-base': 0,
-        'fill-extrusion-opacity': 0.55,
-      },
-      filter: ['==', ['get', 'id'], ''],
-    })
-
-    // Lighting — warm directional
-    map.setLight({
-      anchor: 'viewport',
-      position: [1.5, 210, 30],
-      intensity: 0.3,
-    })
+    addRasterSources(map)
+    addCountrySource(map, geojson)
+    addBaseCountryLayers(map)
+    addHoverLayers(map)
+    addSelectionLayers(map)
+    addCompareLayers(map)
+    applyWarmLighting(map)
 
     // --- Hover ---
     map.on('mousemove', 'country-fill', (e) => {
