@@ -12,7 +12,8 @@ import {
   MAX_PITCH,
 } from '../lib/mapStyles'
 import { probeBasemap } from '../lib/probeBasemap'
-import { ResetViewControl, prefersReducedMotion } from '../lib/resetViewControl'
+import { ResetViewControl, flyToHome } from '../lib/resetViewControl'
+import { prefersReducedMotion } from '../lib/motion'
 import { useMap } from './useMap'
 
 export type MapErrorReason = 'timeout' | 'style' | 'country-data'
@@ -97,13 +98,7 @@ export function useMapInstance({
 
       if (e.key === 'Home') {
         e.preventDefault()
-        map.flyTo({
-          center: DEFAULT_CENTER,
-          zoom: DEFAULT_ZOOM,
-          pitch: prefersReducedMotion() ? 0 : DEFAULT_PITCH,
-          bearing: 0,
-          duration: prefersReducedMotion() ? 0 : 1400,
-        })
+        flyToHome(map)
         window.dispatchEvent(new CustomEvent('funworldmap:announce', { detail: 'View reset' }))
       }
     }

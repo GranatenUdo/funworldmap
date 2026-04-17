@@ -1,15 +1,12 @@
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from './types'
 import { DEFAULT_PITCH } from './mapStyles'
+import { prefersReducedMotion } from './motion'
 
 function zoomFromArea(areaKm2: number): number {
   if (areaKm2 <= 0) return 6
   const zoom = 11 - Math.log10(areaKm2) * 1.7
   return Math.max(2, Math.min(16, zoom))
-}
-
-function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export function flyToCountry(map: maplibregl.Map, country: CountryData): void {

@@ -2,9 +2,12 @@ import { useEffect } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { flyToCountry } from '../lib/flyToCountry'
+import {
+  EMPTY_FILTER as EMPTY,
+  DEFAULT_FILL_OPACITY,
+  applyDefaultBorderPaint,
+} from '../lib/mapLayers'
 import { useMap } from './useMap'
-
-const EMPTY: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
 interface Options {
   loaded: boolean
@@ -74,14 +77,8 @@ export function useSelectionHighlight({
         map.setFilter('country-extrusion', EMPTY)
         map.setPaintProperty('country-borders', 'line-opacity', 0.15)
       } else if (!satellite) {
-        map.setPaintProperty('country-fill', 'fill-opacity', [
-          'case',
-          ['boolean', ['feature-state', 'hover'], false],
-          0.28,
-          0.05,
-        ])
-        const isDark = resolvedTheme === 'dark'
-        map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
+        map.setPaintProperty('country-fill', 'fill-opacity', DEFAULT_FILL_OPACITY)
+        applyDefaultBorderPaint(map, resolvedTheme === 'dark')
       }
     } catch {
       // Layers may not exist yet.

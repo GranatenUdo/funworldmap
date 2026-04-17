@@ -1,8 +1,17 @@
 import maplibregl from 'maplibre-gl'
 import { DEFAULT_CENTER, DEFAULT_ZOOM, DEFAULT_PITCH } from './mapStyles'
+import { prefersReducedMotion } from './motion'
 
-export function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+/** Fly the map back to the initial world view, respecting reduced motion. */
+export function flyToHome(map: maplibregl.Map): void {
+  const reducedMotion = prefersReducedMotion()
+  map.flyTo({
+    center: DEFAULT_CENTER,
+    zoom: DEFAULT_ZOOM,
+    pitch: reducedMotion ? 0 : DEFAULT_PITCH,
+    bearing: 0,
+    duration: reducedMotion ? 0 : 1400,
+  })
 }
 
 /** Custom MapLibre control — reset to world view. */
@@ -48,15 +57,7 @@ export class ResetViewControl implements maplibregl.IControl {
     svg.appendChild(arrow)
     button.appendChild(svg)
 
-    button.addEventListener('click', () => {
-      map.flyTo({
-        center: DEFAULT_CENTER,
-        zoom: DEFAULT_ZOOM,
-        pitch: prefersReducedMotion() ? 0 : DEFAULT_PITCH,
-        bearing: 0,
-        duration: prefersReducedMotion() ? 0 : 1400,
-      })
-    })
+    button.addEventListener('click', () => flyToHome(map))
 
     this._container.appendChild(button)
     return this._container

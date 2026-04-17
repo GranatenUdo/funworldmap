@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { DEFAULT_FILL_OPACITY, applyDefaultBorderPaint } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -74,15 +75,8 @@ export function useSatelliteMode({
           0.03,
         ])
       } else {
-        const isDark = resolvedTheme === 'dark'
-        map.setPaintProperty('country-borders', 'line-color', isDark ? '#1e293b' : '#94a3b8')
-        map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
-        map.setPaintProperty('country-fill', 'fill-opacity', [
-          'case',
-          ['boolean', ['feature-state', 'hover'], false],
-          0.28,
-          0.05,
-        ])
+        applyDefaultBorderPaint(map, resolvedTheme === 'dark')
+        map.setPaintProperty('country-fill', 'fill-opacity', DEFAULT_FILL_OPACITY)
       }
     } catch {
       // Layers may not exist yet.

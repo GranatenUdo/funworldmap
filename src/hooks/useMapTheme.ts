@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { applyMapTheme } from '../lib/mapColors'
 import { TEAL, TEAL_LIGHT, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
+import { applyDefaultBorderPaint } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -30,8 +31,7 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
       map.setPaintProperty('country-selected-glow', 'line-color', coral)
       map.setPaintProperty('country-selected-extrusion', 'fill-extrusion-color', coral)
 
-      map.setPaintProperty('country-borders', 'line-color', isDark ? '#1e293b' : '#94a3b8')
-      map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
+      applyDefaultBorderPaint(map, isDark)
 
       ;(map as never as { setFog: (fog: Record<string, unknown>) => void }).setFog({
         range: [1.5, 10],

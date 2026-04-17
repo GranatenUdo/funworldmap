@@ -50,12 +50,7 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
     source: 'countries',
     paint: {
       'fill-color': TEAL,
-      'fill-opacity': [
-        'case',
-        ['boolean', ['feature-state', 'hover'], false],
-        0.28,
-        0.05,
-      ],
+      'fill-opacity': DEFAULT_FILL_OPACITY,
     },
   })
 
@@ -91,35 +86,43 @@ export function addHoverLayers(map: maplibregl.Map): void {
   })
 }
 
-/** Add the selection layer stack (fill / border / glow / extrusion). */
-export function addSelectionLayers(map: maplibregl.Map): void {
+/** Add a 4-layer highlight stack (glow / fill / border / extrusion) under a
+ *  shared id prefix and color. Used for both selection (coral) and compare
+ *  (teal-dim). The glow id keeps the `-glow` suffix; the fill is bare prefix. */
+function addHighlightStack(
+  map: maplibregl.Map,
+  prefix: 'country-selected' | 'country-compare',
+  color: string,
+): void {
   map.addLayer({
-    id: 'country-selected-glow',
+    id: `${prefix}-glow`,
     type: 'line',
     source: 'countries',
-    paint: { 'line-color': CORAL, 'line-width': 10, 'line-blur': 5, 'line-opacity': 0.3 },
+    paint: { 'line-color': color, 'line-width': 10, 'line-blur': 5, 'line-opacity': 0.3 },
     filter: EMPTY_FILTER,
   })
+  // Compare's fill keeps the '-fill' suffix to preserve historic ids.
+  const fillId = prefix === 'country-compare' ? `${prefix}-fill` : prefix
   map.addLayer({
-    id: 'country-selected',
+    id: fillId,
     type: 'fill',
     source: 'countries',
-    paint: { 'fill-color': CORAL, 'fill-opacity': 0.32 },
+    paint: { 'fill-color': color, 'fill-opacity': 0.32 },
     filter: EMPTY_FILTER,
   })
   map.addLayer({
-    id: 'country-selected-border',
+    id: `${prefix}-border`,
     type: 'line',
     source: 'countries',
-    paint: { 'line-color': CORAL, 'line-width': 2.5 },
+    paint: { 'line-color': color, 'line-width': 2.5 },
     filter: EMPTY_FILTER,
   })
   map.addLayer({
-    id: 'country-selected-extrusion',
+    id: `${prefix}-extrusion`,
     type: 'fill-extrusion',
     source: 'countries',
     paint: {
-      'fill-extrusion-color': CORAL,
+      'fill-extrusion-color': color,
       'fill-extrusion-height': 80000,
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.55,
@@ -128,41 +131,14 @@ export function addSelectionLayers(map: maplibregl.Map): void {
   })
 }
 
-/** Add the compare layer stack (same shape as selection, using teal-dim). */
+/** Add the selection (coral) highlight stack. */
+export function addSelectionLayers(map: maplibregl.Map): void {
+  addHighlightStack(map, 'country-selected', CORAL)
+}
+
+/** Add the compare (teal-dim) highlight stack. */
 export function addCompareLayers(map: maplibregl.Map): void {
-  map.addLayer({
-    id: 'country-compare-glow',
-    type: 'line',
-    source: 'countries',
-    paint: { 'line-color': TEAL_DIM, 'line-width': 10, 'line-blur': 5, 'line-opacity': 0.3 },
-    filter: EMPTY_FILTER,
-  })
-  map.addLayer({
-    id: 'country-compare-fill',
-    type: 'fill',
-    source: 'countries',
-    paint: { 'fill-color': TEAL_DIM, 'fill-opacity': 0.32 },
-    filter: EMPTY_FILTER,
-  })
-  map.addLayer({
-    id: 'country-compare-border',
-    type: 'line',
-    source: 'countries',
-    paint: { 'line-color': TEAL_DIM, 'line-width': 2.5 },
-    filter: EMPTY_FILTER,
-  })
-  map.addLayer({
-    id: 'country-compare-extrusion',
-    type: 'fill-extrusion',
-    source: 'countries',
-    paint: {
-      'fill-extrusion-color': TEAL_DIM,
-      'fill-extrusion-height': 80000,
-      'fill-extrusion-base': 0,
-      'fill-extrusion-opacity': 0.55,
-    },
-    filter: EMPTY_FILTER,
-  })
+  addHighlightStack(map, 'country-compare', TEAL_DIM)
 }
 
 /** Apply the warm directional lighting. */
@@ -174,4 +150,21 @@ export function applyWarmLighting(map: maplibregl.Map): void {
   })
 }
 
+/** The "no country selected" feature filter — used to clear filters on
+ *  selection / compare / hover layers. */
 export { EMPTY_FILTER }
+
+/** The default `fill-opacity` expression for `country-fill`: 5% by default,
+ *  28% when the country has the `hover` feature state. */
+export const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
+  'case',
+  ['boolean', ['feature-state', 'hover'], false],
+  0.28,
+  0.05,
+]
+
+/** Apply the theme-appropriate paint to `country-borders` (color + opacity). */
+export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): void {
+  map.setPaintProperty('country-borders', 'line-color', isDark ? '#1e293b' : '#94a3b8')
+  map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
+}

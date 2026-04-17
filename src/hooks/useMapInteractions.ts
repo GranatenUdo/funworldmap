@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { useMap } from './useMap'
@@ -11,9 +11,18 @@ interface Options {
 }
 
 /** Attach hover, click, tooltip, and cursor behaviors to the map.
- *  Must run after country layers are added (i.e. `loaded === true`). */
+ *  Must run after country layers are added (i.e. `loaded === true`).
+ *  Callbacks are read via refs so the listener stack attaches once and survives
+ *  caller-side re-creations (e.g. when `comparePickingMode` toggles). */
 export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: Options): void {
   const { mapRef, hoveredRef, tooltipRef } = useMap()
+
+  const onSelectRef = useRef(onSelect)
+  onSelectRef.current = onSelect
+  const onDeselectRef = useRef(onDeselect)
+  onDeselectRef.current = onDeselect
+  const byNumericRef = useRef(byNumeric)
+  byNumericRef.current = byNumeric
 
   useEffect(() => {
     const map = mapRef.current
@@ -34,7 +43,7 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
 
         const tooltip = tooltipRef.current
         if (tooltip) {
-          const country = byNumeric.get(id)
+          const country = byNumericRef.current.get(id)
           if (country) {
             tooltip.replaceChildren()
             const img = document.createElement('img')
@@ -89,14 +98,14 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
     const clickCountry = (e: maplibregl.MapLayerMouseEvent) => {
       if (e.features && e.features.length > 0) {
         const featureId = String(e.features[0].id)
-        const country = byNumeric.get(featureId)
-        if (country) onSelect(country.cca3)
+        const country = byNumericRef.current.get(featureId)
+        if (country) onSelectRef.current(country.cca3)
       }
     }
 
     const clickMap = (e: maplibregl.MapMouseEvent) => {
       const features = map.queryRenderedFeatures(e.point, { layers: ['country-fill'] })
-      if (features.length === 0) onDeselect()
+      if (features.length === 0) onDeselectRef.current()
     }
 
     const dragStart = () => {
@@ -129,5 +138,5 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
       map.off('dragstart', dragStart)
       map.off('dragend', dragEnd)
     }
-  }, [loaded, byNumeric, onSelect, onDeselect, mapRef, hoveredRef, tooltipRef])
+  }, [loaded, mapRef, hoveredRef, tooltipRef])
 }
