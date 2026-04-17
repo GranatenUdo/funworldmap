@@ -4,10 +4,6 @@ import { test, expect } from '@playwright/test'
 // If these fail, that's a real bug — not silently skipped.
 test.setTimeout(60000)
 
-// Skip in CI where GPU is unavailable — these require real WebGL2 rendering
-const skipInCI = !!process.env.CI
-test.skip(skipInCI, 'Map interaction tests require GPU — run locally')
-
 /** Wait for the map to be fully loaded with country layers */
 async function waitForMapReady(page: import('@playwright/test').Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 45000 })
