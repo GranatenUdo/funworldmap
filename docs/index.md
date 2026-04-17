@@ -25,3 +25,6 @@ Start with the purpose, then read the system overview for architecture context, 
 
 ### Decisions
 - [ADR README](adr/README.md) — architecture decision record filing convention
+
+### Process
+- [Superpowers Workspace](superpowers/README.md) — planning convention for `plans/` and `specs/`
