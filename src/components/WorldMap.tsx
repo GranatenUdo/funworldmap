@@ -20,18 +20,12 @@ import { applyMapTheme } from '../lib/mapColors'
 import { MapErrorOverlay } from './MapErrorOverlay'
 import { BasemapBanner } from './BasemapBanner'
 import { probeBasemap } from '../lib/probeBasemap'
+import { TEAL, TEAL_LIGHT, TEAL_DIM, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
 import type { CountryData } from '../lib/types'
 
 type MapErrorReason = 'timeout' | 'style' | 'country-data'
 
 const BASEMAP_PROBE_TIMEOUT_MS = 3_000
-
-/** Warm Explorer palette — teal for exploration, coral for selection */
-const TEAL = '#14b8a6'
-const TEAL_LIGHT = '#5eead4'
-const TEAL_DIM = '#0d9488'
-const CORAL = '#f43f5e'
-const CORAL_LIGHT = '#fb7185'
 
 interface Props {
   byNumeric: Map<string, CountryData>
