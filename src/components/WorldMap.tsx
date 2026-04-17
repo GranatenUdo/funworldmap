@@ -22,6 +22,7 @@ import { BasemapBanner } from './BasemapBanner'
 import { probeBasemap } from '../lib/probeBasemap'
 import { TEAL, TEAL_LIGHT, TEAL_DIM, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
 import { ResetViewControl, prefersReducedMotion } from '../lib/resetViewControl'
+import { loadCountryGeojson } from '../lib/loadCountryGeojson'
 import type { CountryData } from '../lib/types'
 
 type MapErrorReason = 'timeout' | 'style' | 'country-data'
@@ -57,52 +58,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
   byNumericRef.current = byNumeric
 
   const addCountryLayers = useCallback(async (map: maplibregl.Map) => {
-    const [topojsonClient, worldAtlas] = await Promise.all([
-      import('topojson-client'),
-      import('world-atlas/countries-50m.json'),
-    ])
-
-    const topology = worldAtlas.default as unknown as TopoJSON.Topology
-    const geojson = topojsonClient.feature(
-      topology,
-      topology.objects.countries,
-    ) as GeoJSON.FeatureCollection
-
-    for (const feature of geojson.features) {
-      if (feature.id != null && feature.properties) {
-        feature.properties.id = String(feature.id)
-      }
-    }
-
-    // Antimeridian fix — skip polar-wrapping polygons
-    for (const feature of geojson.features) {
-      const polygons =
-        feature.geometry.type === 'MultiPolygon'
-          ? (feature.geometry as GeoJSON.MultiPolygon).coordinates
-          : feature.geometry.type === 'Polygon'
-            ? [(feature.geometry as GeoJSON.Polygon).coordinates]
-            : []
-
-      for (const polygon of polygons) {
-        let hasHighPositive = false
-        let hasHighNegative = false
-        let touchesPole = false
-        for (const ring of polygon) {
-          for (const coord of ring) {
-            if (coord[0] > 170) hasHighPositive = true
-            if (coord[0] < -170) hasHighNegative = true
-            if (coord[1] <= -85 || coord[1] >= 85) touchesPole = true
-          }
-        }
-        if (hasHighPositive && hasHighNegative && !touchesPole) {
-          for (const ring of polygon) {
-            for (const coord of ring) {
-              if (coord[0] < 0) coord[0] += 360
-            }
-          }
-        }
-      }
-    }
+    const geojson = await loadCountryGeojson()
 
     // Satellite raster source — hidden by default, toggled by satellite prop
     map.addSource('satellite', {
