@@ -505,9 +505,8 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
     containerRef.current!.parentElement!.appendChild(tooltip)
     tooltipRef.current = tooltip
 
-    if (import.meta.env.DEV) {
-      ;(window as unknown as Record<string, unknown>).__funworldmap_map = map
-    }
+    // Test seam — exposed in production too so e2e can introspect MapLibre state.
+    ;(window as unknown as Record<string, unknown>).__funworldmap_map = map
 
     // Watchdog — if 'load' never fires, surface a visible error.
     const watchdog = window.setTimeout(() => {
@@ -545,9 +544,7 @@ export default function WorldMap({ byNumeric, selected, compareWith, comparePick
       tooltipRef.current = null
       map.remove()
       mapRef.current = null
-      if (import.meta.env.DEV) {
-        delete (window as unknown as Record<string, unknown>).__funworldmap_map
-      }
+      delete (window as unknown as Record<string, unknown>).__funworldmap_map
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addCountryLayers])

@@ -44,14 +44,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run dev',
+    command: 'npm run build && npm run preview -- --port 5173 --strictPort',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
-    env: {
-      // Vite uses GITHUB_ACTIONS as a build-time signal to set base to
-      // /funworldmap/ for GH Pages. During tests we serve from root, so
-      // force it unset for the webServer child process.
-      GITHUB_ACTIONS: '',
-    },
+    timeout: 180_000,
   },
 })
