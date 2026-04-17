@@ -7,6 +7,7 @@ import { useCountryData } from './hooks/useCountryData'
 import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
+import { MapProvider } from './hooks/useMap'
 
 export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
@@ -184,16 +185,18 @@ export default function App() {
       />
 
       <main>
-        <WorldMap
-          byNumeric={byNumeric}
-          selected={selected}
-          compareWith={compareWith}
-          comparePickingMode={comparePickingMode}
-          resolvedTheme={resolved}
-          satellite={satellite}
-          onSelect={onMapSelect}
-          onDeselect={deselect}
-        />
+        <MapProvider>
+          <WorldMap
+            byNumeric={byNumeric}
+            selected={selected}
+            compareWith={compareWith}
+            comparePickingMode={comparePickingMode}
+            resolvedTheme={resolved}
+            satellite={satellite}
+            onSelect={onMapSelect}
+            onDeselect={deselect}
+          />
+        </MapProvider>
       </main>
       <Header
         countries={countries}
