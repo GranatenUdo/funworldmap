@@ -69,6 +69,25 @@ export default function App() {
     return () => window.removeEventListener('funworldmap:announce', handler)
   }, [])
 
+  const focusReturnRef = useRef<HTMLElement | null>(null)
+  useEffect(() => {
+    if (selected && !focusReturnRef.current) {
+      focusReturnRef.current = document.activeElement as HTMLElement | null
+      requestAnimationFrame(() => {
+        const close = document.querySelector<HTMLButtonElement>('[data-testid="panel-close"]')
+        close?.focus()
+      })
+    } else if (!selected && focusReturnRef.current) {
+      const target = focusReturnRef.current
+      focusReturnRef.current = null
+      if (target && document.body.contains(target) && typeof target.focus === 'function') {
+        target.focus()
+      } else {
+        document.getElementById('search-input')?.focus()
+      }
+    }
+  }, [selected])
+
   useEffect(() => {
     // Dismiss the splash when the map either loads or surfaces an error —
     // otherwise a failed map leaves the splash over the error overlay.
