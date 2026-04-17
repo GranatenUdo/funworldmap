@@ -63,5 +63,4 @@ The first version focuses on countries:
 - Light and dark themes
 
 ### Future Vision
-- **Government type sentiment**: Users vote on what they believe the government type to be. Aggregated alongside NGO classifications. Shows community perception vs. official designations. Requires a backend service — separate phase.
 - Multi-language support, regional groupings (EU, NATO, ASEAN), sub-national divisions, economic comparisons, historical boundary timelines.

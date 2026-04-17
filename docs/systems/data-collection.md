@@ -121,7 +121,3 @@ To add a new data source:
 5. Run `npm run update-data` and review the diff
 
 The architecture supports adding sources like Wikidata, World Bank, or UN data in future.
-
-## Future: Voting & NGO Sentiment
-
-A future phase will add user-submitted government type classifications alongside official data. This requires a backend service (undefined) and changes the data model to support multiple opinions per field rather than a single source of truth. Documented here for architectural awareness — not part of the current data collection pipeline.
