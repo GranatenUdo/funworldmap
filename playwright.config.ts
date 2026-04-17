@@ -28,6 +28,7 @@ export default defineConfig({
         'accessibility.spec.ts',
         'panel-and-deeplink.spec.ts',
         'meta-and-static.spec.ts',
+        'panel-focus.spec.ts',
       ],
     },
     {
@@ -40,7 +41,7 @@ export default defineConfig({
         },
       },
       // Map interaction tests need real GPU
-      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts'],
+      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts', 'keyboard-map-nav.spec.ts'],
     },
   ],
   webServer: {

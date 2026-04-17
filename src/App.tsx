@@ -70,14 +70,19 @@ export default function App() {
   }, [])
 
   const focusReturnRef = useRef<HTMLElement | null>(null)
+  const panelWasOpenRef = useRef(false)
   useEffect(() => {
-    if (selected && !focusReturnRef.current) {
-      focusReturnRef.current = document.activeElement as HTMLElement | null
+    if (selected && !panelWasOpenRef.current) {
+      panelWasOpenRef.current = true
+      const active = document.activeElement as HTMLElement | null
+      // Body is not a useful focus return target — fall back to search instead.
+      focusReturnRef.current = active && active !== document.body ? active : null
       requestAnimationFrame(() => {
         const close = document.querySelector<HTMLButtonElement>('[data-testid="panel-close"]')
         close?.focus()
       })
-    } else if (!selected && focusReturnRef.current) {
+    } else if (!selected && panelWasOpenRef.current) {
+      panelWasOpenRef.current = false
       const target = focusReturnRef.current
       focusReturnRef.current = null
       if (target && document.body.contains(target) && typeof target.focus === 'function') {
@@ -178,7 +183,7 @@ export default function App() {
         Skip to map
       </button>
 
-      <div ref={liveRegionRef} aria-live="polite" aria-atomic="true" className="sr-only" />
+      <div ref={liveRegionRef} data-testid="announce-region" aria-live="polite" aria-atomic="true" className="sr-only" />
 
       {/* Loading screen — decorative; screen readers will announce content once it mounts */}
       {!mapReady && (
