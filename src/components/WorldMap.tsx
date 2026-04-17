@@ -82,13 +82,13 @@ export default function WorldMap({
     <div className="relative h-screen w-screen">
       <div
         ref={containerRef}
-        className="h-full w-full"
+        className="h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-teal dark:focus-visible:outline-teal-light"
         data-map-loaded={loaded || undefined}
         data-map-error={mapError ?? undefined}
         tabIndex={0}
         role="application"
         aria-label="Interactive world map"
-        aria-description="Use search to select countries by keyboard"
+        aria-description="Pan with arrow keys, zoom with plus/minus, reset view with Home, deselect with Escape"
       />
       {basemapDegraded && mapError === null && <BasemapBanner />}
       {mapError !== null && (
