@@ -88,6 +88,27 @@ export function useMapInstance({
       setMapErrorState((prev) => prev ?? 'timeout')
     }, BASEMAP_LOAD_TIMEOUT_MS)
 
+    // Home key — reset to world view when the map container has focus.
+    const homeHandler = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      if (target && target.matches('input, textarea, [contenteditable]')) return
+      const mapContainer = containerRef.current
+      if (!mapContainer || !mapContainer.contains(document.activeElement)) return
+
+      if (e.key === 'Home') {
+        e.preventDefault()
+        map.flyTo({
+          center: DEFAULT_CENTER,
+          zoom: DEFAULT_ZOOM,
+          pitch: prefersReducedMotion() ? 0 : DEFAULT_PITCH,
+          bearing: 0,
+          duration: prefersReducedMotion() ? 0 : 1400,
+        })
+        window.dispatchEvent(new CustomEvent('funworldmap:announce', { detail: 'View reset' }))
+      }
+    }
+    window.addEventListener('keydown', homeHandler)
+
     map.on('load', () => {
       window.clearTimeout(watchdog)
       map.setProjection({ type: 'globe' })
@@ -112,6 +133,7 @@ export function useMapInstance({
     return () => {
       cancelled = true
       window.clearTimeout(watchdog)
+      window.removeEventListener('keydown', homeHandler)
       tooltipRef.current?.remove()
       tooltipRef.current = null
       map.remove()

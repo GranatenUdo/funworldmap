@@ -59,6 +59,17 @@ export default function App() {
   }, [selected])
 
   useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<string>).detail
+      if (liveRegionRef.current && detail) {
+        liveRegionRef.current.textContent = detail
+      }
+    }
+    window.addEventListener('funworldmap:announce', handler)
+    return () => window.removeEventListener('funworldmap:announce', handler)
+  }, [])
+
+  useEffect(() => {
     // Dismiss the splash when the map either loads or surfaces an error —
     // otherwise a failed map leaves the splash over the error overlay.
     const check = () => document.querySelector('[data-map-loaded], [data-map-error]')
