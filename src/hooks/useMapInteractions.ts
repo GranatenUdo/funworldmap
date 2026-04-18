@@ -23,7 +23,8 @@ export function useMapInteractions({
   onDeselect,
   comparePickingMode,
 }: Options): void {
-  const { mapRef, hoveredRef, tooltipRef } = useMap()
+  const { mapRef, tooltipRef } = useMap()
+  const hoveredRef = useRef<string | null>(null)
 
   const onSelectRef = useRef(onSelect)
   onSelectRef.current = onSelect
