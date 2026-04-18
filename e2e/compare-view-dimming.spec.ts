@@ -27,12 +27,14 @@ test.describe('compare-view dimming survives theme toggle', () => {
         return map?.getPaintProperty('country-borders', 'line-opacity') ?? null
       })
 
-    // Wait for the dimming effect to settle (camera flyTo + paint commits are async).
-    await expect.poll(readBorderOpacity).toBe(0.15)
+    // Wait for the dimming effect to settle (camera flyTo + paint commits are
+    // async and slow on CI's ANGLE GPU). 15s accommodates worst-case worker
+    // contention; the default 5s poll was insufficient.
+    await expect.poll(readBorderOpacity, { timeout: 15_000 }).toBe(0.15)
 
     // Toggle theme — this re-runs useMapTheme (writes 0.5/0.35) and then
     // useCompareViewDimming (writes 0.15). Last writer wins; assert 0.15.
     await page.locator('[data-testid="theme-toggle"]').click()
-    await expect.poll(readBorderOpacity).toBe(0.15)
+    await expect.poll(readBorderOpacity, { timeout: 15_000 }).toBe(0.15)
   })
 })
