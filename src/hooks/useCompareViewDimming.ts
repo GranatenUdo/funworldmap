@@ -18,9 +18,14 @@ interface Options {
  *  compare view. When compare ends (and not in satellite mode), restore the
  *  theme-default fill opacity and border paint.
  *
- *  CALL ORDER: must run AFTER useMapTheme. Both hooks write
- *  country-borders line-opacity on resolvedTheme change; this hook needs
- *  to win when compareWith !== null. */
+ *  CALL ORDER: must run AFTER useMapTheme and useSatelliteMode. All three
+ *  hooks write country-borders line-opacity on resolvedTheme or satellite
+ *  change; this hook needs to win when compareWith !== null.
+ *
+ *  Logic is unit-tested in __tests__/useCompareViewDimming.test.tsx. The
+ *  call-order coupling is enforced by WorldMap.tsx's hook call sequence
+ *  and by code review — the regression would be immediately visible to
+ *  users toggling dark mode while comparing two countries. */
 export function useCompareViewDimming({
   loaded,
   compareWith,
