@@ -45,7 +45,7 @@ export function addCountrySource(map: maplibregl.Map, geojson: GeoJSON.FeatureCo
 /** Add the base fill and border layers. */
 export function addBaseCountryLayers(map: maplibregl.Map): void {
   map.addLayer({
-    id: 'country-fill',
+    id: LAYER.fill,
     type: 'fill',
     source: 'countries',
     paint: {
@@ -55,7 +55,7 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
   })
 
   map.addLayer({
-    id: 'country-borders',
+    id: LAYER.borders,
     type: 'line',
     source: 'countries',
     paint: { 'line-color': '#334155', 'line-width': 0.5, 'line-opacity': 0.4 },
@@ -65,7 +65,7 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
 /** Add hover / extrusion overlays for the currently hovered country. */
 export function addHoverLayers(map: maplibregl.Map): void {
   map.addLayer({
-    id: 'country-hover-border',
+    id: LAYER.hoverBorder,
     type: 'line',
     source: 'countries',
     paint: { 'line-color': TEAL, 'line-width': 2, 'line-opacity': 0.6 },
@@ -73,7 +73,7 @@ export function addHoverLayers(map: maplibregl.Map): void {
   })
 
   map.addLayer({
-    id: 'country-extrusion',
+    id: LAYER.extrusion,
     type: 'fill-extrusion',
     source: 'countries',
     paint: {
@@ -165,6 +165,25 @@ export const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
 
 /** Apply the theme-appropriate paint to `country-borders` (color + opacity). */
 export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): void {
-  map.setPaintProperty('country-borders', 'line-color', isDark ? '#1e293b' : '#94a3b8')
-  map.setPaintProperty('country-borders', 'line-opacity', isDark ? 0.5 : 0.35)
+  map.setPaintProperty(LAYER.borders, 'line-color', isDark ? '#1e293b' : '#94a3b8')
+  map.setPaintProperty(LAYER.borders, 'line-opacity', isDark ? 0.5 : 0.35)
 }
+
+/** Typed layer ID registry. Use these constants when calling `setFilter`,
+ *  `setPaintProperty`, `setLayoutProperty`, etc. so renames stay consistent
+ *  and typos fail at compile time. */
+export const LAYER = {
+  fill: 'country-fill',
+  borders: 'country-borders',
+  hoverBorder: 'country-hover-border',
+  extrusion: 'country-extrusion',
+  selected: 'country-selected',
+  selectedBorder: 'country-selected-border',
+  selectedGlow: 'country-selected-glow',
+  selectedExtrusion: 'country-selected-extrusion',
+  compareFill: 'country-compare-fill',
+  compareBorder: 'country-compare-border',
+  compareGlow: 'country-compare-glow',
+  compareExtrusion: 'country-compare-extrusion',
+  satellite: 'satellite-layer',
+} as const

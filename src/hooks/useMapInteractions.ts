@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
+import { LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -36,8 +37,8 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
         }
         hoveredRef.current = id
         map.setFeatureState({ source: 'countries', id }, { hover: true })
-        map.setFilter('country-extrusion', ['==', ['get', 'id'], id])
-        map.setFilter('country-hover-border', ['==', ['get', 'id'], id])
+        map.setFilter(LAYER.extrusion, ['==', ['get', 'id'], id])
+        map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], id])
         const canvas = map.getCanvas()
         if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'pointer'
 
@@ -86,8 +87,8 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
         map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
         hoveredRef.current = null
       }
-      map.setFilter('country-extrusion', ['==', ['get', 'id'], ''])
-      map.setFilter('country-hover-border', ['==', ['get', 'id'], ''])
+      map.setFilter(LAYER.extrusion, ['==', ['get', 'id'], ''])
+      map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
       const canvas = map.getCanvas()
       if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'grab'
 
@@ -104,7 +105,7 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
     }
 
     const clickMap = (e: maplibregl.MapMouseEvent) => {
-      const features = map.queryRenderedFeatures(e.point, { layers: ['country-fill'] })
+      const features = map.queryRenderedFeatures(e.point, { layers: [LAYER.fill] })
       if (features.length === 0) onDeselectRef.current()
     }
 
@@ -118,10 +119,10 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
       }
     }
 
-    map.on('mousemove', 'country-fill', mousemoveHover)
+    map.on('mousemove', LAYER.fill, mousemoveHover)
     map.on('mousemove', mousemovePosition)
-    map.on('mouseleave', 'country-fill', mouseleaveHover)
-    map.on('click', 'country-fill', clickCountry)
+    map.on('mouseleave', LAYER.fill, mouseleaveHover)
+    map.on('click', LAYER.fill, clickCountry)
     map.on('click', clickMap)
     map.on('dragstart', dragStart)
     map.on('dragend', dragEnd)
@@ -130,10 +131,10 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
     map.doubleClickZoom.disable()
 
     return () => {
-      map.off('mousemove', 'country-fill', mousemoveHover)
+      map.off('mousemove', LAYER.fill, mousemoveHover)
       map.off('mousemove', mousemovePosition)
-      map.off('mouseleave', 'country-fill', mouseleaveHover)
-      map.off('click', 'country-fill', clickCountry)
+      map.off('mouseleave', LAYER.fill, mouseleaveHover)
+      map.off('click', LAYER.fill, clickCountry)
       map.off('click', clickMap)
       map.off('dragstart', dragStart)
       map.off('dragend', dragEnd)

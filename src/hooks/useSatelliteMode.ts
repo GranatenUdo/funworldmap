@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { DEFAULT_FILL_OPACITY, applyDefaultBorderPaint } from '../lib/mapLayers'
+import { DEFAULT_FILL_OPACITY, applyDefaultBorderPaint, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -35,7 +35,7 @@ export function useSatelliteMode({
 
     try {
       map.setLayoutProperty(
-        'satellite-layer',
+        LAYER.satellite,
         'visibility',
         satellite ? 'visible' : 'none',
       )
@@ -66,9 +66,9 @@ export function useSatelliteMode({
       }
 
       if (satellite) {
-        map.setPaintProperty('country-borders', 'line-color', 'rgba(255,255,255,0.35)')
-        map.setPaintProperty('country-borders', 'line-opacity', 0.6)
-        map.setPaintProperty('country-fill', 'fill-opacity', [
+        map.setPaintProperty(LAYER.borders, 'line-color', 'rgba(255,255,255,0.35)')
+        map.setPaintProperty(LAYER.borders, 'line-opacity', 0.6)
+        map.setPaintProperty(LAYER.fill, 'fill-opacity', [
           'case',
           ['boolean', ['feature-state', 'hover'], false],
           0.32,
@@ -76,7 +76,7 @@ export function useSatelliteMode({
         ])
       } else {
         applyDefaultBorderPaint(map, resolvedTheme === 'dark')
-        map.setPaintProperty('country-fill', 'fill-opacity', DEFAULT_FILL_OPACITY)
+        map.setPaintProperty(LAYER.fill, 'fill-opacity', DEFAULT_FILL_OPACITY)
       }
     } catch {
       // Layers may not exist yet.

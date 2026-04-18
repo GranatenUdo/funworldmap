@@ -6,6 +6,7 @@ import {
   EMPTY_FILTER as EMPTY,
   DEFAULT_FILL_OPACITY,
   applyDefaultBorderPaint,
+  LAYER,
 } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
@@ -34,16 +35,16 @@ export function useSelectionHighlight({
 
     if (selected) {
       const filter: maplibregl.FilterSpecification = ['==', ['get', 'id'], selected.ccn3]
-      map.setFilter('country-selected', filter)
-      map.setFilter('country-selected-border', filter)
-      map.setFilter('country-selected-glow', filter)
-      map.setFilter('country-selected-extrusion', filter)
+      map.setFilter(LAYER.selected, filter)
+      map.setFilter(LAYER.selectedBorder, filter)
+      map.setFilter(LAYER.selectedGlow, filter)
+      map.setFilter(LAYER.selectedExtrusion, filter)
       flyToCountry(map, selected)
     } else {
-      map.setFilter('country-selected', EMPTY)
-      map.setFilter('country-selected-border', EMPTY)
-      map.setFilter('country-selected-glow', EMPTY)
-      map.setFilter('country-selected-extrusion', EMPTY)
+      map.setFilter(LAYER.selected, EMPTY)
+      map.setFilter(LAYER.selectedBorder, EMPTY)
+      map.setFilter(LAYER.selectedGlow, EMPTY)
+      map.setFilter(LAYER.selectedExtrusion, EMPTY)
     }
   }, [selected, loaded, mapRef])
 
@@ -53,15 +54,15 @@ export function useSelectionHighlight({
 
     if (compareWith) {
       const filter: maplibregl.FilterSpecification = ['==', ['get', 'id'], compareWith.ccn3]
-      map.setFilter('country-compare-fill', filter)
-      map.setFilter('country-compare-border', filter)
-      map.setFilter('country-compare-glow', filter)
-      map.setFilter('country-compare-extrusion', filter)
+      map.setFilter(LAYER.compareFill, filter)
+      map.setFilter(LAYER.compareBorder, filter)
+      map.setFilter(LAYER.compareGlow, filter)
+      map.setFilter(LAYER.compareExtrusion, filter)
     } else {
-      map.setFilter('country-compare-fill', EMPTY)
-      map.setFilter('country-compare-border', EMPTY)
-      map.setFilter('country-compare-glow', EMPTY)
-      map.setFilter('country-compare-extrusion', EMPTY)
+      map.setFilter(LAYER.compareFill, EMPTY)
+      map.setFilter(LAYER.compareBorder, EMPTY)
+      map.setFilter(LAYER.compareGlow, EMPTY)
+      map.setFilter(LAYER.compareExtrusion, EMPTY)
     }
   }, [compareWith, loaded, mapRef])
 
@@ -72,12 +73,12 @@ export function useSelectionHighlight({
     const inCompareView = compareWith !== null
     try {
       if (inCompareView) {
-        map.setPaintProperty('country-fill', 'fill-opacity', 0.05)
-        map.setFilter('country-hover-border', EMPTY)
-        map.setFilter('country-extrusion', EMPTY)
-        map.setPaintProperty('country-borders', 'line-opacity', 0.15)
+        map.setPaintProperty(LAYER.fill, 'fill-opacity', 0.05)
+        map.setFilter(LAYER.hoverBorder, EMPTY)
+        map.setFilter(LAYER.extrusion, EMPTY)
+        map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
       } else if (!satellite) {
-        map.setPaintProperty('country-fill', 'fill-opacity', DEFAULT_FILL_OPACITY)
+        map.setPaintProperty(LAYER.fill, 'fill-opacity', DEFAULT_FILL_OPACITY)
         applyDefaultBorderPaint(map, resolvedTheme === 'dark')
       }
     } catch {

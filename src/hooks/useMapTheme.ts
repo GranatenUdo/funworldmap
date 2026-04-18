@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { applyMapTheme } from '../lib/mapColors'
 import { TEAL, TEAL_LIGHT, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
-import { applyDefaultBorderPaint } from '../lib/mapLayers'
+import { applyDefaultBorderPaint, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -22,14 +22,14 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
     const coral = isDark ? CORAL_LIGHT : CORAL
 
     try {
-      map.setPaintProperty('country-fill', 'fill-color', teal)
-      map.setPaintProperty('country-extrusion', 'fill-extrusion-color', teal)
-      map.setPaintProperty('country-hover-border', 'line-color', teal)
+      map.setPaintProperty(LAYER.fill, 'fill-color', teal)
+      map.setPaintProperty(LAYER.extrusion, 'fill-extrusion-color', teal)
+      map.setPaintProperty(LAYER.hoverBorder, 'line-color', teal)
 
-      map.setPaintProperty('country-selected', 'fill-color', coral)
-      map.setPaintProperty('country-selected-border', 'line-color', coral)
-      map.setPaintProperty('country-selected-glow', 'line-color', coral)
-      map.setPaintProperty('country-selected-extrusion', 'fill-extrusion-color', coral)
+      map.setPaintProperty(LAYER.selected, 'fill-color', coral)
+      map.setPaintProperty(LAYER.selectedBorder, 'line-color', coral)
+      map.setPaintProperty(LAYER.selectedGlow, 'line-color', coral)
+      map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', coral)
 
       applyDefaultBorderPaint(map, isDark)
 
