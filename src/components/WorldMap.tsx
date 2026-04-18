@@ -64,8 +64,6 @@ export default function WorldMap({
   useSelectionHighlight({ loaded, selected, compareWith })
   useMapTheme({ loaded, resolvedTheme })
   useSatelliteMode({ loaded, satellite, resolvedTheme })
-  // Must be after useMapTheme: both write country-borders line-opacity on
-  // resolvedTheme change; this hook wins when compareWith !== null.
   useCompareViewDimming({ loaded, compareWith, satellite, resolvedTheme })
 
   if (!supported) {

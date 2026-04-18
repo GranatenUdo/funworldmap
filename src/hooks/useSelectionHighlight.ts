@@ -11,6 +11,31 @@ interface Options {
   compareWith: CountryData | null
 }
 
+const SELECTION_LAYERS = [
+  LAYER.selected,
+  LAYER.selectedBorder,
+  LAYER.selectedGlow,
+  LAYER.selectedExtrusion,
+] as const
+
+const COMPARE_LAYERS = [
+  LAYER.compareFill,
+  LAYER.compareBorder,
+  LAYER.compareGlow,
+  LAYER.compareExtrusion,
+] as const
+
+function applyOrClearFilter(
+  map: maplibregl.Map,
+  layerIds: readonly string[],
+  ccn3: string | null,
+): void {
+  const filter: maplibregl.FilterSpecification = ccn3
+    ? ['==', ['get', 'id'], ccn3]
+    : EMPTY
+  for (const id of layerIds) map.setFilter(id, filter)
+}
+
 /** Apply selection + compare filters. Flies camera to the selected country.
  *  Compare-view dimming lives in useCompareViewDimming (separate hook
  *  because it has different deps and must run after useMapTheme). */
@@ -24,37 +49,13 @@ export function useSelectionHighlight({
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
-
-    if (selected) {
-      const filter: maplibregl.FilterSpecification = ['==', ['get', 'id'], selected.ccn3]
-      map.setFilter(LAYER.selected, filter)
-      map.setFilter(LAYER.selectedBorder, filter)
-      map.setFilter(LAYER.selectedGlow, filter)
-      map.setFilter(LAYER.selectedExtrusion, filter)
-      flyToCountry(map, selected)
-    } else {
-      map.setFilter(LAYER.selected, EMPTY)
-      map.setFilter(LAYER.selectedBorder, EMPTY)
-      map.setFilter(LAYER.selectedGlow, EMPTY)
-      map.setFilter(LAYER.selectedExtrusion, EMPTY)
-    }
+    applyOrClearFilter(map, SELECTION_LAYERS, selected?.ccn3 ?? null)
+    if (selected) flyToCountry(map, selected)
   }, [selected, loaded, mapRef])
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
-
-    if (compareWith) {
-      const filter: maplibregl.FilterSpecification = ['==', ['get', 'id'], compareWith.ccn3]
-      map.setFilter(LAYER.compareFill, filter)
-      map.setFilter(LAYER.compareBorder, filter)
-      map.setFilter(LAYER.compareGlow, filter)
-      map.setFilter(LAYER.compareExtrusion, filter)
-    } else {
-      map.setFilter(LAYER.compareFill, EMPTY)
-      map.setFilter(LAYER.compareBorder, EMPTY)
-      map.setFilter(LAYER.compareGlow, EMPTY)
-      map.setFilter(LAYER.compareExtrusion, EMPTY)
-    }
+    applyOrClearFilter(map, COMPARE_LAYERS, compareWith?.ccn3 ?? null)
   }, [compareWith, loaded, mapRef])
 }

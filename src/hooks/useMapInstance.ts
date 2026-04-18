@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type RefObject } from 'react'
+import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {
@@ -38,10 +38,13 @@ export function useMapInstance({
   const { mapRef, tooltipRef } = useMap()
   const [supported, setSupported] = useState(true)
   const [loaded, setLoaded] = useState(false)
-  // INVARIANT: loadedRef and the `loaded` state must be set together.
-  // Closures captured inside the init effect (e.g. the 'error' handler)
-  // read loadedRef; React rendering reads the state.
+  // loadedRef shadows the `loaded` state so closures captured inside the init
+  // effect (e.g. the 'error' handler) can observe the current value.
   const loadedRef = useRef(false)
+  const setLoadedBoth = useCallback((v: boolean) => {
+    loadedRef.current = v
+    setLoaded(v)
+  }, [])
   const [mapError, setMapErrorState] = useState<MapErrorReason | null>(null)
   const [basemapDegraded, setBasemapDegraded] = useState(false)
 
@@ -113,11 +116,7 @@ export function useMapInstance({
       map.setProjection({ type: 'globe' })
       map.scrollZoom.setZoomRate(1 / 150)
       Promise.resolve(onLoad(map))
-        .then(() => {
-          // Invariant: keep loadedRef and `loaded` state in sync (see useRef).
-          loadedRef.current = true
-          setLoaded(true)
-        })
+        .then(() => setLoadedBoth(true))
         .catch((err: unknown) => {
           console.error(err)
           setMapErrorState((prev) => prev ?? 'country-data')
@@ -139,12 +138,15 @@ export function useMapInstance({
       window.removeEventListener('keydown', homeHandler)
       tooltipRef.current?.remove()
       tooltipRef.current = null
-      loadedRef.current = false
+      // Reset loadedRef in cleanup — matters for React StrictMode dev-only
+      // double-invocation, where this effect tears down then re-runs.
+      setLoadedBoth(false)
       map.remove()
       mapRef.current = null
       delete (window as unknown as Record<string, unknown>).__funworldmap_map
     }
-    // onLoad intentionally not in deps — it must be stable from caller
+    // onLoad intentionally not in deps — it must be stable from caller.
+    // setLoadedBoth is stable (useCallback with empty deps).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef])
 
