@@ -66,8 +66,6 @@ describe('useSelectionHighlight', () => {
           loaded: true,
           selected: makeCountry('250'),
           compareWith: null,
-          satellite: false,
-          resolvedTheme: 'light',
         }),
       { wrapper: makeWrapper(fake) },
     )
@@ -83,32 +81,11 @@ describe('useSelectionHighlight', () => {
           loaded: true,
           selected: null,
           compareWith: null,
-          satellite: false,
-          resolvedTheme: 'light',
         }),
       { wrapper: makeWrapper(fake) },
     )
     const call = fake.calls.setFilter.find((c) => c[0] === 'country-selected')
     expect(call?.[1]).toEqual(['==', ['get', 'id'], ''])
-  })
-
-  it('dims base fill when compareWith is present', () => {
-    const fake = makeFakeMap()
-    renderHook(
-      () =>
-        useSelectionHighlight({
-          loaded: true,
-          selected: makeCountry('250'),
-          compareWith: makeCountry('276'),
-          satellite: false,
-          resolvedTheme: 'light',
-        }),
-      { wrapper: makeWrapper(fake) },
-    )
-    const call = fake.calls.setPaintProperty.find(
-      (c) => c[0] === 'country-fill' && c[1] === 'fill-opacity',
-    )
-    expect(call?.[2]).toBe(0.05)
   })
 
   it('does nothing when loaded is false', () => {
@@ -119,8 +96,6 @@ describe('useSelectionHighlight', () => {
           loaded: false,
           selected: makeCountry('250'),
           compareWith: null,
-          satellite: false,
-          resolvedTheme: 'light',
         }),
       { wrapper: makeWrapper(fake) },
     )

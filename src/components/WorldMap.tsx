@@ -18,6 +18,7 @@ import { useMapInteractions } from '../hooks/useMapInteractions'
 import { useSelectionHighlight } from '../hooks/useSelectionHighlight'
 import { useMapTheme } from '../hooks/useMapTheme'
 import { useSatelliteMode } from '../hooks/useSatelliteMode'
+import { useCompareViewDimming } from '../hooks/useCompareViewDimming'
 import type { CountryData } from '../lib/types'
 
 interface Props {
@@ -60,9 +61,12 @@ export default function WorldMap({
   })
 
   useMapInteractions({ loaded, byNumeric, onSelect, onDeselect, comparePickingMode })
-  useSelectionHighlight({ loaded, selected, compareWith, satellite, resolvedTheme })
+  useSelectionHighlight({ loaded, selected, compareWith })
   useMapTheme({ loaded, resolvedTheme })
   useSatelliteMode({ loaded, satellite, resolvedTheme })
+  // Must be after useMapTheme: both write country-borders line-opacity on
+  // resolvedTheme change; this hook wins when compareWith !== null.
+  useCompareViewDimming({ loaded, compareWith, satellite, resolvedTheme })
 
   if (!supported) {
     return (

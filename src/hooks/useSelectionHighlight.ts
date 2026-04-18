@@ -2,30 +2,22 @@ import { useEffect } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { flyToCountry } from '../lib/flyToCountry'
-import {
-  EMPTY_FILTER as EMPTY,
-  DEFAULT_FILL_OPACITY,
-  applyDefaultBorderPaint,
-  LAYER,
-} from '../lib/mapLayers'
+import { EMPTY_FILTER as EMPTY, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
   loaded: boolean
   selected: CountryData | null
   compareWith: CountryData | null
-  satellite: boolean
-  resolvedTheme: 'light' | 'dark'
 }
 
-/** Apply selection + compare filters and adjust base-layer dimming when in
- *  compare view. Flies camera to the selected country. */
+/** Apply selection + compare filters. Flies camera to the selected country.
+ *  Compare-view dimming lives in useCompareViewDimming (separate hook
+ *  because it has different deps and must run after useMapTheme). */
 export function useSelectionHighlight({
   loaded,
   selected,
   compareWith,
-  satellite,
-  resolvedTheme,
 }: Options): void {
   const { mapRef } = useMap()
 
@@ -65,24 +57,4 @@ export function useSelectionHighlight({
       map.setFilter(LAYER.compareExtrusion, EMPTY)
     }
   }, [compareWith, loaded, mapRef])
-
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !loaded) return
-
-    const inCompareView = compareWith !== null
-    try {
-      if (inCompareView) {
-        map.setPaintProperty(LAYER.fill, 'fill-opacity', 0.05)
-        map.setFilter(LAYER.hoverBorder, EMPTY)
-        map.setFilter(LAYER.extrusion, EMPTY)
-        map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
-      } else if (!satellite) {
-        map.setPaintProperty(LAYER.fill, 'fill-opacity', DEFAULT_FILL_OPACITY)
-        applyDefaultBorderPaint(map, resolvedTheme === 'dark')
-      }
-    } catch {
-      // Layers may not exist yet.
-    }
-  }, [compareWith, loaded, satellite, resolvedTheme, mapRef])
 }
