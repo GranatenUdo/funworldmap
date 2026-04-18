@@ -9,13 +9,20 @@ interface Options {
   byNumeric: Map<string, CountryData>
   onSelect: (cca3: string) => void
   onDeselect: () => void
+  comparePickingMode: boolean
 }
 
 /** Attach hover, click, tooltip, and cursor behaviors to the map.
  *  Must run after country layers are added (i.e. `loaded === true`).
  *  Callbacks are read via refs so the listener stack attaches once and survives
  *  caller-side re-creations (e.g. when `comparePickingMode` toggles). */
-export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: Options): void {
+export function useMapInteractions({
+  loaded,
+  byNumeric,
+  onSelect,
+  onDeselect,
+  comparePickingMode,
+}: Options): void {
   const { mapRef, hoveredRef, tooltipRef } = useMap()
 
   const onSelectRef = useRef(onSelect)
@@ -140,4 +147,17 @@ export function useMapInteractions({ loaded, byNumeric, onSelect, onDeselect }: 
       map.off('dragend', dragEnd)
     }
   }, [loaded, mapRef, hoveredRef, tooltipRef])
+
+  // Crosshair cursor while picking a compare target. When picking ends, restore
+  // either pointer (if hovering a country) or grab (if not).
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded) return
+    const canvas = map.getCanvas()
+    if (comparePickingMode) {
+      canvas.style.cursor = 'crosshair'
+    } else {
+      canvas.style.cursor = hoveredRef.current ? 'pointer' : 'grab'
+    }
+  }, [comparePickingMode, loaded, mapRef, hoveredRef])
 }

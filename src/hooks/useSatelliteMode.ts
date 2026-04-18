@@ -6,27 +6,14 @@ interface Options {
   loaded: boolean
   satellite: boolean
   resolvedTheme: 'light' | 'dark'
-  comparePickingMode: boolean
 }
 
 export function useSatelliteMode({
   loaded,
   satellite,
   resolvedTheme,
-  comparePickingMode,
 }: Options): void {
-  const { mapRef, hoveredRef } = useMap()
-
-  // Crosshair cursor during compare-picking.
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !loaded) return
-    if (comparePickingMode) {
-      map.getCanvas().style.cursor = 'crosshair'
-    } else {
-      map.getCanvas().style.cursor = hoveredRef.current ? 'pointer' : 'grab'
-    }
-  }, [comparePickingMode, loaded, mapRef, hoveredRef])
+  const { mapRef } = useMap()
 
   // Satellite layer + terrain + base-layer hide/show + border tint.
   useEffect(() => {

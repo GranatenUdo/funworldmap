@@ -59,10 +59,10 @@ export default function WorldMap({
     onLoad,
   })
 
-  useMapInteractions({ loaded, byNumeric, onSelect, onDeselect })
+  useMapInteractions({ loaded, byNumeric, onSelect, onDeselect, comparePickingMode })
   useSelectionHighlight({ loaded, selected, compareWith, satellite, resolvedTheme })
   useMapTheme({ loaded, resolvedTheme })
-  useSatelliteMode({ loaded, satellite, resolvedTheme, comparePickingMode })
+  useSatelliteMode({ loaded, satellite, resolvedTheme })
 
   if (!supported) {
     return (
