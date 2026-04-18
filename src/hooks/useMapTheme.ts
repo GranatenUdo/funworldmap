@@ -33,14 +33,7 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
 
       applyDefaultBorderPaint(map, isDark)
 
-      ;(map as never as { setFog: (fog: Record<string, unknown>) => void }).setFog({
-        range: [1.5, 10],
-        color: isDark ? 'rgba(16, 20, 26, 0.7)' : 'rgba(232, 227, 218, 0.5)',
-        'high-color': isDark ? '#10141a' : '#c4d8e6',
-        'horizon-blend': 0.1,
-      })
-
-      ;(map as never as { setSky: (sky: Record<string, unknown>) => void }).setSky({
+      map.setSky({
         'sky-color': isDark ? '#0a1a2e' : '#88c6fc',
         'horizon-color': isDark ? '#1a2030' : '#f0ede6',
         'fog-color': isDark ? '#10141a' : '#e8e3da',
@@ -50,7 +43,8 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
         'atmosphere-blend': ['interpolate', ['linear'], ['zoom'], 0, 1, 5, 1, 7, 0],
       })
     } catch {
-      // Layers may not exist yet.
+      // setPaintProperty / setSky throw if the basemap style hasn't
+      // committed its layers yet (e.g. fast theme toggle on a slow load).
     }
   }, [resolvedTheme, loaded, mapRef])
 }
