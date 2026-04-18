@@ -79,16 +79,18 @@ export default function App() {
       focusReturnRef.current = active && active !== document.body ? active : null
       requestAnimationFrame(() => {
         const close = document.querySelector<HTMLButtonElement>('[data-testid="panel-close"]')
-        close?.focus()
+        // preventScroll avoids destabilizing the panel-card-in overshoot animation
+        // under Playwright's click-stability check (panel-and-deeplink:79 CI flake).
+        close?.focus({ preventScroll: true })
       })
     } else if (!selected && panelWasOpenRef.current) {
       panelWasOpenRef.current = false
       const target = focusReturnRef.current
       focusReturnRef.current = null
       if (target && document.body.contains(target) && typeof target.focus === 'function') {
-        target.focus()
+        target.focus({ preventScroll: true })
       } else {
-        document.getElementById('search-input')?.focus()
+        document.getElementById('search-input')?.focus({ preventScroll: true })
       }
     }
   }, [selected])
