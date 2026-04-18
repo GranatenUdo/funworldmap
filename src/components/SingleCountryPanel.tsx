@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
-import SourceTooltip from './SourceTooltip'
+import { CloseButton } from './CloseButton'
+import { FieldLabel } from './FieldLabel'
 
 interface Props {
   country: CountryData
@@ -28,10 +29,7 @@ function DataCell({
 }) {
   return (
     <div className="py-1.5">
-      <div className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-0.5 flex items-center gap-1">
-        {label}
-        <SourceTooltip field={field} fieldSources={country._fieldSources} sources={sources} />
-      </div>
+      <FieldLabel label={label} field={field} country={country} sources={sources} />
       <div className="text-[15px] text-sand-800 dark:text-dark-50">{children}</div>
     </div>
   )
@@ -178,16 +176,7 @@ export function SingleCountryPanel({
                 </svg>
               </button>
             )}
-            <button
-              onClick={onClose}
-              className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-500 dark:text-dark-100 transition-colors"
-              aria-label="Close panel"
-              data-testid="panel-close"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <CloseButton onClick={onClose} ariaLabel="Close panel" testId="panel-close" />
           </div>
         </div>
       </div>
@@ -274,14 +263,13 @@ export function SingleCountryPanel({
               <>
                 <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
                 <div style={{ animation: 'panel-field-in 200ms ease-out 200ms both' }}>
-                  <div className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-2 flex items-center gap-1">
-                    Borders
-                    <SourceTooltip
-                      field="borders"
-                      fieldSources={country._fieldSources}
-                      sources={sources}
-                    />
-                  </div>
+                  <FieldLabel
+                    label="Borders"
+                    field="borders"
+                    country={country}
+                    sources={sources}
+                    className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-2 flex items-center gap-1"
+                  />
                   <div className="flex flex-wrap gap-1.5">
                     {country.borders.map((code) => {
                       const neighbor = byCca3.get(code)
