@@ -19,7 +19,7 @@ export default function App() {
   const [mapReady, setMapReady] = useState(false)
   const [showHint, setShowHint] = useState(false)
   const [hintDismissed, setHintDismissed] = useState(false)
-  const [satellite, setSatellite] = useState(false)
+  const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
   const [comparePickingMode, setComparePickingMode] = useState(false)
   const enterComparePicking = useCallback(() => {

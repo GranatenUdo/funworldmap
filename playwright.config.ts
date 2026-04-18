@@ -29,6 +29,7 @@ export default defineConfig({
         'panel-and-deeplink.spec.ts',
         'meta-and-static.spec.ts',
         'panel-focus.spec.ts',
+        'satellite-default.spec.ts',
       ],
     },
     {
