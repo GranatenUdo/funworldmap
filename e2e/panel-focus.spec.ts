@@ -12,11 +12,14 @@ test.describe('panel focus management', () => {
     await page.getByTestId('search-results').getByRole('option').first().click()
     await page.waitForSelector('[data-testid="country-panel"]')
 
-    // requestAnimationFrame defers focus by one frame
-    await page.waitForTimeout(50)
-
-    const active = await page.evaluate(() => document.activeElement?.getAttribute('data-testid'))
-    expect(active).toBe('panel-close')
+    // Focus is deferred until after the panel's open animation (~300ms);
+    // poll rather than fixed-wait to survive CI timing variance.
+    await expect
+      .poll(
+        () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
+        { timeout: 2_000 },
+      )
+      .toBe('panel-close')
   })
 
   test('Esc closes panel and returns focus to search', async ({ page }) => {

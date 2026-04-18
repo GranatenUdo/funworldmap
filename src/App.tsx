@@ -77,12 +77,14 @@ export default function App() {
       const active = document.activeElement as HTMLElement | null
       // Body is not a useful focus return target — fall back to search instead.
       focusReturnRef.current = active && active !== document.body ? active : null
-      requestAnimationFrame(() => {
+      // Delay past the panel-card-in animation (250ms cubic-bezier with
+      // overshoot). Focusing mid-animation races with Playwright's click
+      // stability check and caused CI flake on panel-and-deeplink:79.
+      const timer = window.setTimeout(() => {
         const close = document.querySelector<HTMLButtonElement>('[data-testid="panel-close"]')
-        // preventScroll avoids destabilizing the panel-card-in overshoot animation
-        // under Playwright's click-stability check (panel-and-deeplink:79 CI flake).
         close?.focus({ preventScroll: true })
-      })
+      }, 300)
+      return () => window.clearTimeout(timer)
     } else if (!selected && panelWasOpenRef.current) {
       panelWasOpenRef.current = false
       const target = focusReturnRef.current
