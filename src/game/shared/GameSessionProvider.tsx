@@ -8,6 +8,7 @@ export type GameSessionApi = {
   start: (modeId: ModeId, firstRound: RoundSpec) => void
   submitGuess: (outcome: GuessOutcome) => void
   advance: (nextRound: RoundSpec) => void
+  overrideRound: (round: RoundSpec) => void
   endGame: () => void
 }
 
@@ -19,13 +20,15 @@ export function GameSessionProvider({ children }: { children: ReactNode }) {
   apiRef.current = api
 
   useEffect(() => {
-    const hook = {
-      getSession: () => apiRef.current.session,
-      endGame: () => apiRef.current.endGame(),
-    }
-    ;(window as unknown as { __funworldmap_game?: typeof hook }).__funworldmap_game = hook
+    const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
+    if (!w.__funworldmap_game) w.__funworldmap_game = {}
+    w.__funworldmap_game.getSession = () => apiRef.current.session
+    w.__funworldmap_game.endGame = () => apiRef.current.endGame()
     return () => {
-      delete (window as unknown as { __funworldmap_game?: typeof hook }).__funworldmap_game
+      if (w.__funworldmap_game) {
+        delete w.__funworldmap_game.getSession
+        delete w.__funworldmap_game.endGame
+      }
     }
   }, [])
 

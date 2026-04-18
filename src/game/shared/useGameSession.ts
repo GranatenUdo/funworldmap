@@ -5,6 +5,7 @@ type Action =
   | { type: 'start'; modeId: ModeId; firstRound: RoundSpec }
   | { type: 'guess'; outcome: GuessOutcome }
   | { type: 'advance'; nextRound: RoundSpec }
+  | { type: 'overrideRound'; round: RoundSpec }
   | { type: 'endGame' }
 
 const EMPTY: GameSession = {
@@ -56,6 +57,19 @@ function reducer(state: GameSession, action: Action): GameSession {
         lastOutcome: null,
       }
     }
+    case 'overrideRound': {
+      // Swap the current round without resetting lives/score/streak.
+      // Used by the test hook so multi-round test flows can force a
+      // deterministic target on each round without restarting the game.
+      if (state.status === 'idle') return state
+      return {
+        ...state,
+        status: 'playing',
+        currentRound: action.round,
+        used: new Set([...state.used, action.round.targetCca3]),
+        lastOutcome: null,
+      }
+    }
     case 'endGame': {
       return { ...EMPTY, used: new Set() }
     }
@@ -67,6 +81,7 @@ export function useGameSession(): {
   start: (modeId: ModeId, firstRound: RoundSpec) => void
   submitGuess: (outcome: GuessOutcome) => void
   advance: (nextRound: RoundSpec) => void
+  overrideRound: (round: RoundSpec) => void
   endGame: () => void
 } {
   const [session, dispatch] = useReducer(reducer, EMPTY)
@@ -76,6 +91,8 @@ export function useGameSession(): {
     dispatch({ type: 'guess', outcome }), [])
   const advance = useCallback((nextRound: RoundSpec) =>
     dispatch({ type: 'advance', nextRound }), [])
+  const overrideRound = useCallback((round: RoundSpec) =>
+    dispatch({ type: 'overrideRound', round }), [])
   const endGame = useCallback(() => dispatch({ type: 'endGame' }), [])
-  return { session, start, submitGuess, advance, endGame }
+  return { session, start, submitGuess, advance, overrideRound, endGame }
 }

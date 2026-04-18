@@ -16,7 +16,7 @@ export function FirstSessionTutorial() {
   return (
     <div
       role="status"
-      className="fixed top-40 sm:top-44 left-1/2 -translate-x-1/2 z-[45] max-w-xs px-4 py-3 rounded-2xl bg-dark-400/95 dark:bg-dark-300/95 backdrop-blur-md border border-teal/30 dark:border-teal-light/30 text-teal-light text-sm shadow-2xl pointer-events-auto"
+      className="fixed top-40 sm:top-44 left-1/2 -translate-x-1/2 z-[45] max-w-xs px-4 py-3 rounded-2xl bg-dark-400/95 dark:bg-dark-300/95 backdrop-blur-md border border-teal/30 dark:border-teal-light/30 text-teal-light text-sm shadow-2xl pointer-events-none"
       style={{ animation: 'fade-up 300ms ease-out' }}
       data-testid="game-tutorial"
     >
@@ -28,7 +28,7 @@ export function FirstSessionTutorial() {
       <button
         type="button"
         onClick={() => setOpen(false)}
-        className="mt-2 text-xs underline-offset-2 underline hover:no-underline"
+        className="mt-2 text-xs underline-offset-2 underline hover:no-underline pointer-events-auto"
       >
         Got it
       </button>

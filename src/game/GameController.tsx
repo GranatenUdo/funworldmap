@@ -24,7 +24,7 @@ interface Props {
 }
 
 export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) {
-  const { session, start, submitGuess, advance, endGame } = useGameSessionContext()
+  const { session, start, submitGuess, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests('country-pinning')
   const recordedRef = useRef(false)
   const onGameStartRef = useRef(onGameStart)
@@ -34,15 +34,18 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
 
   const mode = getMode('country-pinning', pool)
 
-  // Hash → session bootstrap.
+  // Hash → session bootstrap. Read status via ref so hashchange handlers
+  // always see the current status, not the stale one captured at mount.
+  const statusRef = useRef(session.status)
+  statusRef.current = session.status
   useEffect(() => {
     const check = () => {
       const state = parseHash(window.location.hash)
-      if (state.kind === 'game' && session.status === 'idle') {
+      if (state.kind === 'game' && statusRef.current === 'idle') {
         const firstRound = mode.nextRound(new Set(), pool)
         start('country-pinning', firstRound)
       }
-      if (state.kind !== 'game' && session.status !== 'idle') {
+      if (state.kind !== 'game' && statusRef.current !== 'idle') {
         endGame()
       }
     }
@@ -86,11 +89,14 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
     }
   }, [session.status, session.roundIndex, session.lastOutcome, session.score, session.bestStreak, session.lives, session.used, session.currentRound, advance, mode, pool, record])
 
-  // Expose setRound for e2e determinism (attached alongside the provider's hook).
+  // Expose setRound for e2e determinism. We create-or-augment the window
+  // hook because child effects (this one) run before parent effects
+  // (GameSessionProvider). If we waited for the parent to attach the
+  // object first, setRound would never land on initial mount.
   useEffect(() => {
-    const existing = (window as unknown as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
-    if (!existing) return
-    existing.setRound = (cca3: string) => {
+    const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
+    if (!w.__funworldmap_game) w.__funworldmap_game = {}
+    w.__funworldmap_game.setRound = (cca3: string) => {
       const country = byCca3.get(cca3.toUpperCase())
       if (!country) return false
       const round = {
@@ -99,14 +105,20 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
         targetFlag: country.flag,
         targetCentroid: [country.latlng[1], country.latlng[0]] as [number, number],
       }
-      if (session.status === 'idle') {
+      // Test hook: if no game is running, start one. Otherwise swap the
+      // round without touching lives/score/streak — lets tests drive
+      // deterministic multi-round flows.
+      if (statusRef.current === 'idle') {
         start('country-pinning', round)
-      } else if (session.status === 'playing' || session.status === 'round-ended') {
-        advance(round)
+      } else {
+        overrideRound(round)
       }
       return true
     }
-  }, [byCca3, start, advance, session.status])
+    return () => {
+      if (w.__funworldmap_game) delete w.__funworldmap_game.setRound
+    }
+  }, [byCca3, start, overrideRound])
 
   const handleGuessByCca3 = useCallback((clickedCca3: string) => {
     if (session.status !== 'playing' || !session.currentRound) return
@@ -201,7 +213,6 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
         {session.status === 'playing' && (
           <GuessByNameButton
             pool={pool}
-            used={session.used}
             onGuess={handleGuessByCca3}
           />
         )}
