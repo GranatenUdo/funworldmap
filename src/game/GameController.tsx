@@ -7,6 +7,7 @@ import { getMode } from './modes'
 import { HudShell } from './shared/hud/HudShell'
 import { GameOverOverlay } from './shared/hud/GameOverOverlay'
 import { GuessByNameButton } from './shared/hud/GuessByNameButton'
+import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
 import { parseHash } from '../lib/hashState'
 
 const REVEAL_MS = 1200
@@ -192,6 +193,9 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
 
   return (
     <>
+      {(session.status === 'playing' || session.status === 'round-ended') && (
+        <FirstSessionTutorial />
+      )}
       <HudShell session={session} onEndGame={onEndGame}>
         <Hud session={session} />
         {session.status === 'playing' && (
