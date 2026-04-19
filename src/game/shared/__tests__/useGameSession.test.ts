@@ -99,6 +99,28 @@ describe('useGameSession', () => {
     expect(result.current.session.roundIndex).toBe(1)
   })
 
+  it('overrideRound from round-ended advances roundIndex', () => {
+    // Ensures test-hook setRound flows simulate round progression correctly
+    // for fixed-round modes (city-guessing) where endsGame is round-count-based.
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('city-guessing', round('FRA'), 10) })
+    act(() => { result.current.submitGuess(miss('FRA', 'DEU', 0, false)) })
+    expect(result.current.session.status).toBe('round-ended')
+    expect(result.current.session.roundIndex).toBe(0)
+    act(() => { result.current.overrideRound(round('DEU')) })
+    expect(result.current.session.status).toBe('playing')
+    expect(result.current.session.roundIndex).toBe(1)
+  })
+
+  it('overrideRound from playing does not advance roundIndex', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', round('FRA'), null) })
+    expect(result.current.session.roundIndex).toBe(0)
+    act(() => { result.current.overrideRound(round('DEU')) })
+    expect(result.current.session.status).toBe('playing')
+    expect(result.current.session.roundIndex).toBe(0)
+  })
+
   it('endGame() returns to idle with empty state', () => {
     const { result } = renderHook(() => useGameSession())
     act(() => { result.current.start('country-pinning', round('FRA'), null) })

@@ -214,35 +214,42 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       }
     }
 
-    // City Guessing: marker + line + fitBounds.
-    ensureRevealSources(map)
-    const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
-    const lineSrc = map.getSource(REVEAL_LINE_SOURCE) as maplibregl.GeoJSONSource
-    const target = reveal.targetCentroid
-    markerSrc.setData({
-      type: 'FeatureCollection',
-      features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: target }, properties: {} }],
-    })
-    if (reveal.clickedPoint) {
-      lineSrc.setData({
+    // City Guessing: marker + line + fitBounds. Wrapped in try/catch because
+    // map style may still be resolving on slow CI when the first reveal
+    // fires — a throw here shouldn't stall the React tree.
+    try {
+      ensureRevealSources(map)
+      const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
+      const lineSrc = map.getSource(REVEAL_LINE_SOURCE) as maplibregl.GeoJSONSource
+      const target = reveal.targetCentroid
+      markerSrc.setData({
         type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: [reveal.clickedPoint, target] },
-            properties: {},
-          },
-        ],
+        features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: target }, properties: {} }],
       })
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      const lngs = [reveal.clickedPoint[0], target[0]]
-      const lats = [reveal.clickedPoint[1], target[1]]
-      map.fitBounds(
-        [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
-        { duration: reduced ? 0 : 1000, padding: fitPadding(), maxZoom: 6 },
-      )
-    } else {
-      lineSrc.setData({ type: 'FeatureCollection', features: [] })
+      if (reveal.clickedPoint) {
+        lineSrc.setData({
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'LineString', coordinates: [reveal.clickedPoint, target] },
+              properties: {},
+            },
+          ],
+        })
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        const lngs = [reveal.clickedPoint[0], target[0]]
+        const lats = [reveal.clickedPoint[1], target[1]]
+        map.fitBounds(
+          [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+          { duration: reduced ? 0 : 1000, padding: fitPadding(), maxZoom: 6 },
+        )
+      } else {
+        lineSrc.setData({ type: 'FeatureCollection', features: [] })
+      }
+    } catch (err) {
+      /* Map not fully ready; reveal text in HUD is still the authoritative feedback */
+      console.warn('reveal geometry skipped:', err)
     }
   }, [session.status, session.lastOutcome])
 

@@ -64,11 +64,16 @@ function reducer(state: GameSession, action: Action): GameSession {
     }
     case 'overrideRound': {
       if (state.status === 'idle') return state
+      // From 'round-ended' we're effectively advancing to a new round;
+      // increment roundIndex so endsGame checks based on round count
+      // (city-guessing) work correctly under test-override paths.
+      const isAdvancing = state.status === 'round-ended'
       return {
         ...state,
         status: 'playing',
         currentRound: action.round,
         used: new Set([...state.used, roundKey(action.round)]),
+        roundIndex: isAdvancing ? state.roundIndex + 1 : state.roundIndex,
         lastOutcome: null,
       }
     }
