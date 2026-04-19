@@ -30,35 +30,22 @@ test.describe('keyboard map navigation', () => {
 
     await page.keyboard.press('Home')
 
-    // Resolve on idle, but also on a 5 s wall-clock cap — under headless
-    // Chrome without a real GPU, `idle` can be delayed indefinitely if
-    // tile fetches stall. The test cares about center coords, not tiles.
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          const map = (window as unknown as {
-            __funworldmap_map?: { once: (event: string, fn: () => void) => void }
-          }).__funworldmap_map
-          const done = (): void => resolve()
-          if (!map) return done()
-          map.once('idle', done)
-          setTimeout(done, 5000)
-        }),
-    )
-
-    const center = await page.evaluate(() => {
-      const map = (
-        window as unknown as {
-          __funworldmap_map?: { getCenter: () => { lng: number; lat: number } }
-        }
-      ).__funworldmap_map
-      return map ? map.getCenter() : null
-    })
-    expect(center).not.toBeNull()
-    if (center) {
-      // Default center is roughly [0, 0..30]; certainly not at lng=50 anymore.
-      expect(Math.abs(center.lng)).toBeLessThan(20)
-    }
+    // Poll the map's current center directly. Avoids relying on MapLibre's
+    // `idle` event, which on headless Chrome can stall indefinitely on
+    // tile fetches. Default center is roughly [0, 20]; anything < |20| on
+    // the longitude axis proves the flyTo reset took effect.
+    await expect
+      .poll(
+        async () =>
+          page.evaluate(() => {
+            const map = (
+              window as unknown as { __funworldmap_map?: { getCenter: () => { lng: number } } }
+            ).__funworldmap_map
+            return map ? Math.abs(map.getCenter().lng) : null
+          }),
+        { timeout: 10_000 },
+      )
+      .toBeLessThan(20)
   })
 
   test('focus ring is visible on the map container when tabbed to', async ({ page }) => {

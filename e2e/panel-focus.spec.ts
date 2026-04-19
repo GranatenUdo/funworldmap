@@ -46,11 +46,11 @@ test.describe('panel focus management', () => {
       )
       .toBe('panel-close')
 
-    await page.keyboard.press('Escape')
-    await page.waitForSelector('[data-testid="country-panel"]', {
-      state: 'detached',
-      timeout: 10_000,
-    })
+    // Press Escape on the focused element directly. `page.keyboard.press`
+    // can behave inconsistently under CI's headless Chrome; `locator.press`
+    // is scoped and reliably dispatches a real keydown on the target.
+    await page.getByTestId('panel-close').press('Escape')
+    await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 10_000 })
 
     const activeId = await page.evaluate(() => document.activeElement?.id)
     expect(activeId).toBe('search-input')
