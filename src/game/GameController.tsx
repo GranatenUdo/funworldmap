@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryLike } from './shared/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
@@ -9,6 +9,8 @@ import { GameOverOverlay } from './shared/hud/GameOverOverlay'
 import { GuessByNameButton } from './shared/hud/GuessByNameButton'
 import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
 import { parseHash } from '../lib/hashState'
+import { LAYER } from '../lib/mapLayers'
+import { centroidFromLatLng } from './shared/distance'
 
 const REVEAL_MS = 1200
 
@@ -16,23 +18,26 @@ function dispatchAnnouncement(text: string): void {
   window.dispatchEvent(new CustomEvent('funworldmap:announce', { detail: text }))
 }
 
+function writeIdleHash(): void {
+  if (window.location.hash.startsWith('#game')) {
+    history.replaceState(null, '', window.location.pathname)
+  }
+}
+
 interface Props {
   pool: CountryLike[]
   byCca3: Map<string, CountryLike>
-  onGameStart: () => void
-  onGameEnd: () => void
 }
 
-export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) {
+export function GameController({ pool, byCca3 }: Props) {
   const { session, start, submitGuess, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests('country-pinning')
   const recordedRef = useRef(false)
-  const onGameStartRef = useRef(onGameStart)
-  onGameStartRef.current = onGameStart
-  const onGameEndRef = useRef(onGameEnd)
-  onGameEndRef.current = onGameEnd
 
-  const mode = getMode('country-pinning', pool)
+  // Rebuild only when the pool identity changes — the mode registry returns
+  // a fresh GameMode object each call, and churning it on every render would
+  // bust HudComponent prop identity and re-mount the HUD.
+  const mode = useMemo(() => getMode('country-pinning', pool), [pool])
 
   // Hash → session bootstrap. Read status via ref so hashchange handlers
   // always see the current status, not the stale one captured at mount.
@@ -55,14 +60,9 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Side effects on status change.
   useEffect(() => {
-    if (session.status === 'playing' && session.roundIndex === 0 && session.currentRound) {
-      recordedRef.current = false
-      onGameStartRef.current()
-      dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
-    }
-    if (session.status === 'playing' && session.roundIndex > 0 && session.currentRound) {
+    if (session.status === 'playing' && session.currentRound) {
+      if (session.roundIndex === 0) recordedRef.current = false
       dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
     }
     if (session.status === 'round-ended' && session.lastOutcome) {
@@ -84,9 +84,6 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
       record(session.score, session.bestStreak)
       dispatchAnnouncement(`Game over. Final score ${session.score}.`)
     }
-    if (session.status === 'idle') {
-      onGameEndRef.current()
-    }
   }, [session.status, session.roundIndex, session.lastOutcome, session.score, session.bestStreak, session.lives, session.used, session.currentRound, advance, mode, pool, record])
 
   // Expose setRound for e2e determinism. We create-or-augment the window
@@ -103,7 +100,7 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
         targetCca3: country.cca3,
         targetName: country.name.common,
         targetFlag: country.flag,
-        targetCentroid: [country.latlng[1], country.latlng[0]] as [number, number],
+        targetCentroid: centroidFromLatLng(country.latlng),
       }
       // Test hook: if no game is running, start one. Otherwise swap the
       // round without touching lives/score/streak — lets tests drive
@@ -123,9 +120,7 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
   const handleGuessByCca3 = useCallback((clickedCca3: string) => {
     if (session.status !== 'playing' || !session.currentRound) return
     const clickedCountry = byCca3.get(clickedCca3.toUpperCase())
-    const clickedCentroid = clickedCountry
-      ? ([clickedCountry.latlng[1], clickedCountry.latlng[0]] as [number, number])
-      : null
+    const clickedCentroid = clickedCountry ? centroidFromLatLng(clickedCountry.latlng) : null
     const outcome = mode.onGuess(clickedCca3.toUpperCase(), clickedCentroid, session.currentRound)
     submitGuess(outcome)
   }, [session.status, session.currentRound, byCca3, mode, submitGuess])
@@ -147,41 +142,31 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
       if (tgt && tgt.matches('input, textarea, [contenteditable]')) return
       e.preventDefault()
       endGame()
-      if (window.location.hash.startsWith('#game')) {
-        history.replaceState(null, '', window.location.pathname)
-      }
+      writeIdleHash()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [session.status, endGame])
 
-  // Target-polygon reveal pulse on round-ended.
   useEffect(() => {
     if (session.status !== 'round-ended' || !session.lastOutcome) return
     const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
     if (!map) return
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const layer = 'country-hover-border'  // LAYER.hoverBorder
     try {
-      map.setFilter(layer, ['==', ['get', 'id'], session.lastOutcome.reveal.targetCca3])
+      map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], session.lastOutcome.reveal.targetCca3])
       const colour = session.lastOutcome.correct ? '#22c55e' : '#f59e0b'
-      map.setPaintProperty(layer, 'line-color', colour)
-      map.setPaintProperty(layer, 'line-width', reduced ? 3 : 4)
+      map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
+      map.setPaintProperty(LAYER.hoverBorder, 'line-width', reduced ? 3 : 4)
     } catch {
-      /* layer may be named differently on older builds */
+      /* layer may not exist yet on a fresh style */
     }
     return () => {
       try {
-        map.setFilter(layer, ['==', ['get', 'id'], ''])
+        map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
       } catch { /* no-op */ }
     }
   }, [session.status, session.lastOutcome])
-
-  const writeIdleHash = () => {
-    if (window.location.hash.startsWith('#game')) {
-      history.replaceState(null, '', window.location.pathname)
-    }
-  }
 
   const onEndGame = () => {
     endGame()
@@ -191,10 +176,7 @@ export function GameController({ pool, byCca3, onGameStart, onGameEnd }: Props) 
     const firstRound = mode.nextRound(new Set(), pool)
     start('country-pinning', firstRound)
   }
-  const onBackToMap = () => {
-    endGame()
-    writeIdleHash()
-  }
+  const onBackToMap = onEndGame
 
   if (session.status === 'idle') return null
 

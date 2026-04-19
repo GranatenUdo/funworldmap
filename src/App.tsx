@@ -71,15 +71,14 @@ function AppInner() {
     [gameActive, comparePickingMode, selected, select, compareSelect],
   )
 
-  const prevStatusRef = useRef(session.status)
   useEffect(() => {
-    if (prevStatusRef.current === 'idle' && session.status === 'playing') {
-      if (selected) deselect()
-      setComparePickingMode(false)
-      mapRef.current?.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 700 })
-    }
-    prevStatusRef.current = session.status
-  }, [session.status, selected, deselect, mapRef])
+    if (session.status !== 'playing' || session.roundIndex !== 0) return
+    if (selected) deselect()
+    setComparePickingMode(false)
+    mapRef.current?.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 700 })
+    // Fires on the very first round of each new game — covers idle→playing
+    // and game-over→Play-again transitions without needing a prev-status ref.
+  }, [session.status, session.roundIndex, selected, deselect, mapRef])
 
   const onPlay = useCallback(() => {
     window.location.hash = writeHash({ kind: 'game', modeId: 'country-pinning', playing: true })
@@ -260,12 +259,7 @@ function AppInner() {
         onPlay={onPlay}
       />
 
-      <GameController
-        pool={pool}
-        byCca3={poolByCca3}
-        onGameStart={() => { /* side-effect handled in the status-watcher useEffect above */ }}
-        onGameEnd={() => { /* same */ }}
-      />
+      <GameController pool={pool} byCca3={poolByCca3} />
 
       {showHint && !selected && !gameActive && (
         <div role="status"
