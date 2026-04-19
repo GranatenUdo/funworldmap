@@ -26,7 +26,9 @@ test.describe('panel focus management', () => {
     await expect
       .poll(
         () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
-        { timeout: 5_000 },
+        // 300 ms focus-deferring setTimeout in App.tsx + CI render latency
+        // can comfortably exceed the 5 s default; 10 s gives slack.
+        { timeout: 10_000 },
       )
       .toBe('panel-close')
   })
@@ -38,7 +40,9 @@ test.describe('panel focus management', () => {
     await expect
       .poll(
         () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
-        { timeout: 5_000 },
+        // 300 ms focus-deferring setTimeout in App.tsx + CI render latency
+        // can comfortably exceed the 5 s default; 10 s gives slack.
+        { timeout: 10_000 },
       )
       .toBe('panel-close')
 
