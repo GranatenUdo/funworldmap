@@ -6,6 +6,13 @@ async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }
 
+// Open Country Pinning via the Play menu. The header button now opens a
+// popover (instead of directly starting Country Pinning).
+async function openCountryPinning(page: Page) {
+  await page.getByTestId('header-play').click()
+  await page.getByTestId('play-menu-country-pinning').click()
+}
+
 // We dispatch the guess via the controller's exposed hook instead of
 // synthesising a canvas pixel click. This keeps the test deterministic
 // (no polygon-vertex math) while still exercising the full guess pipeline
@@ -39,7 +46,7 @@ test.describe('Country Pinning game', () => {
     await page.goto('/')
     await waitForMap(page)
 
-    await page.getByTestId('header-play').click()
+    await openCountryPinning(page)
     await expect(page.getByTestId('game-hud')).toBeVisible()
     await expect(page.getByTestId('search-input')).toHaveCount(0)
     await expect(page.getByTestId('hud-lives')).toBeVisible()
@@ -55,7 +62,7 @@ test.describe('Country Pinning game', () => {
   test('correct guess scores 100, streak 1, no life lost', async ({ page }) => {
     await page.goto('/')
     await waitForMap(page)
-    await page.getByTestId('header-play').click()
+    await openCountryPinning(page)
 
     await setRoundAndWait(page, 'FRA', 'France')
 
@@ -70,7 +77,7 @@ test.describe('Country Pinning game', () => {
   test('wrong guess costs a life, resets streak, still scores proximity', async ({ page }) => {
     await page.goto('/')
     await waitForMap(page)
-    await page.getByTestId('header-play').click()
+    await openCountryPinning(page)
 
     await setRoundAndWait(page, 'FRA', 'France')
 
@@ -85,7 +92,7 @@ test.describe('Country Pinning game', () => {
   test('three wrong guesses end the game', async ({ page }) => {
     await page.goto('/')
     await waitForMap(page)
-    await page.getByTestId('header-play').click()
+    await openCountryPinning(page)
 
     // Between guesses, setRoundAndWait() calls setRound() → overrideRound
     // which forces status back to 'playing' directly. This bypasses the

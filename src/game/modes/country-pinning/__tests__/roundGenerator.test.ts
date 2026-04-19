@@ -12,11 +12,13 @@ describe('nextRound', () => {
   it('picks a country not in the used set', () => {
     const used = new Set(['FRA', 'DEU'])
     const r = nextRound(used, pool, () => 0)
+    expect(r.kind).toBe('country-pinning')
     expect(r.targetCca3).toBe('JPN')
   })
 
-  it('returns a RoundSpec with swapped centroid [lng, lat]', () => {
+  it('returns a CountryRoundSpec with swapped centroid [lng, lat]', () => {
     const r = nextRound(new Set(), pool, () => 0)
+    expect(r.kind).toBe('country-pinning')
     expect(r.targetCca3).toBe('FRA')
     expect(r.targetName).toBe('France')
     expect(r.targetCentroid).toEqual([2, 46])

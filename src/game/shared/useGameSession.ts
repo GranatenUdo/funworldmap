@@ -2,7 +2,7 @@ import { useCallback, useReducer } from 'react'
 import type { GameSession, GuessOutcome, ModeId, RoundSpec } from './types'
 
 type Action =
-  | { type: 'start'; modeId: ModeId; firstRound: RoundSpec }
+  | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null }
   | { type: 'guess'; outcome: GuessOutcome }
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
@@ -16,9 +16,14 @@ const EMPTY: GameSession = {
   streak: 0,
   bestStreak: 0,
   roundIndex: 0,
+  maxRounds: null,
   currentRound: null,
   lastOutcome: null,
   used: new Set(),
+}
+
+function roundKey(round: RoundSpec): string {
+  return round.kind === 'country-pinning' ? round.targetCca3 : round.targetId
 }
 
 function reducer(state: GameSession, action: Action): GameSession {
@@ -28,18 +33,18 @@ function reducer(state: GameSession, action: Action): GameSession {
         ...EMPTY,
         modeId: action.modeId,
         status: 'playing',
+        maxRounds: action.maxRounds,
         currentRound: action.firstRound,
-        used: new Set([action.firstRound.targetCca3]),
+        used: new Set([roundKey(action.firstRound)]),
       }
     }
     case 'guess': {
-      const nextLives = (state.lives + action.outcome.livesDelta) as GameSession['lives']
-      const nextStreak = action.outcome.correct ? state.streak + 1 : 0
-      const livesSpent = nextLives <= 0
+      const nextLives = Math.max(0, state.lives + action.outcome.livesDelta) as GameSession['lives']
+      const nextStreak = action.outcome.pointsEarned >= 100 ? state.streak + 1 : 0
       return {
         ...state,
-        status: livesSpent ? 'game-over' : 'round-ended',
-        lives: livesSpent ? 0 : nextLives,
+        status: action.outcome.endsGame ? 'game-over' : 'round-ended',
+        lives: nextLives,
         score: state.score + action.outcome.pointsEarned,
         streak: nextStreak,
         bestStreak: Math.max(state.bestStreak, nextStreak),
@@ -52,21 +57,23 @@ function reducer(state: GameSession, action: Action): GameSession {
         ...state,
         status: 'playing',
         currentRound: action.nextRound,
-        used: new Set([...state.used, action.nextRound.targetCca3]),
+        used: new Set([...state.used, roundKey(action.nextRound)]),
         roundIndex: state.roundIndex + 1,
         lastOutcome: null,
       }
     }
     case 'overrideRound': {
-      // Swap the current round without resetting lives/score/streak.
-      // Used by the test hook so multi-round test flows can force a
-      // deterministic target on each round without restarting the game.
       if (state.status === 'idle') return state
+      // From 'round-ended' we're effectively advancing to a new round;
+      // increment roundIndex so endsGame checks based on round count
+      // (city-guessing) work correctly under test-override paths.
+      const isAdvancing = state.status === 'round-ended'
       return {
         ...state,
         status: 'playing',
         currentRound: action.round,
-        used: new Set([...state.used, action.round.targetCca3]),
+        used: new Set([...state.used, roundKey(action.round)]),
+        roundIndex: isAdvancing ? state.roundIndex + 1 : state.roundIndex,
         lastOutcome: null,
       }
     }
@@ -78,15 +85,18 @@ function reducer(state: GameSession, action: Action): GameSession {
 
 export function useGameSession(): {
   session: GameSession
-  start: (modeId: ModeId, firstRound: RoundSpec) => void
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) => void
   submitGuess: (outcome: GuessOutcome) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
 } {
   const [session, dispatch] = useReducer(reducer, EMPTY)
-  const start = useCallback((modeId: ModeId, firstRound: RoundSpec) =>
-    dispatch({ type: 'start', modeId, firstRound }), [])
+  const start = useCallback(
+    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) =>
+      dispatch({ type: 'start', modeId, firstRound, maxRounds }),
+    [],
+  )
   const submitGuess = useCallback((outcome: GuessOutcome) =>
     dispatch({ type: 'guess', outcome }), [])
   const advance = useCallback((nextRound: RoundSpec) =>

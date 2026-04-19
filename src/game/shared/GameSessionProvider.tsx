@@ -5,7 +5,7 @@ import type { GameSession, GuessOutcome, ModeId, RoundSpec } from './types'
 
 export type GameSessionApi = {
   session: GameSession
-  start: (modeId: ModeId, firstRound: RoundSpec) => void
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) => void
   submitGuess: (outcome: GuessOutcome) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
