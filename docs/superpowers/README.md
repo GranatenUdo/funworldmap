@@ -16,6 +16,12 @@ Files under `plans/` describe work that has not yet landed or is in active progr
 
 A document that starts with "We shipped X" does not belong in `plans/`.
 
+## Archive
+
+Completed plans live under `plans/archive/`. Moving a plan to `archive/` is the signal that its work has shipped. Keep the filename (`YYYY-MM-DD-<slug>.md`) — any back-links from other docs update to the new path.
+
+Forward plans (active or not-yet-started) live directly under `plans/`. At most one forward plan per concurrent work stream; archive it when it lands.
+
 ## Checklist for a Well-Formed Plan
 
 - Header names the required sub-skill (`superpowers:subagent-driven-development` or `superpowers:executing-plans`)

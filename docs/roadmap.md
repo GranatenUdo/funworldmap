@@ -53,7 +53,7 @@ Source: [`2026-04-18-satellite-default-and-game-modes-design.md`](superpowers/sp
 
 ## Build / CI
 
-Source: [`2026-04-16-fix-ci-bugs-and-perf.md`](superpowers/plans/2026-04-16-fix-ci-bugs-and-perf.md) (plan) and the 2026-04-18 PR.
+Source: [`2026-04-16-fix-ci-bugs-and-perf.md`](superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md) (plan) and the 2026-04-18 PR.
 
 - **Network-stubbed tile mocks for e2e** — removes external-network variance. Worth doing after CI stabilises if residual flake appears.
 - **Bundle-size budgets in CI** — `size-limit` or similar to catch silent regressions.
