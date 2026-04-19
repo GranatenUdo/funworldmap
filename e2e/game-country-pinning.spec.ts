@@ -13,16 +13,18 @@ async function openCountryPinning(page: Page) {
   await page.getByTestId('play-menu-country-pinning').click()
 }
 
-// We dispatch the guess via the controller's exposed hook instead of
-// synthesising a canvas pixel click. This keeps the test deterministic
-// (no polygon-vertex math) while still exercising the full guess pipeline
-// through App.tsx's onMapSelect branch.
+// Dispatch the guess via the controller's submitCountryGuess test hook
+// instead of synthesising a canvas pixel click. Keeps the test
+// deterministic (no polygon-vertex math) while exercising the full guess
+// pipeline through the GameSessionProvider's submitGuessInput.
 async function clickCountryPolygon(page: Page, cca3: string) {
-  await page.evaluate((code) => {
-    const guess = (window as unknown as { __funworldmap_guess?: (c: string) => void }).__funworldmap_guess
-    if (!guess) throw new Error('__funworldmap_guess not exposed; is the game active?')
-    guess(code)
+  const ok = await page.evaluate((code) => {
+    type H = { submitCountryGuess?: (cca3: string) => boolean }
+    const g = (window as unknown as { __funworldmap_game?: H }).__funworldmap_game
+    if (!g || typeof g.submitCountryGuess !== 'function') return false
+    return g.submitCountryGuess(code)
   }, cca3)
+  if (!ok) throw new Error(`submitCountryGuess('${cca3}') returned false — not in pool or hook missing`)
 }
 
 // Wait until the HUD shows a round (any country), then force a specific target
