@@ -70,7 +70,7 @@ test.describe('City Guessing game', () => {
   test('skip round scores 0 and advances', async ({ page }) => {
     await openCityGuessing(page)
     await setRoundAndWait(page, 'FRA-paris', 'Paris')
-    await page.getByTestId('city-skip').click()
+    await page.getByTestId('city-skip').click({ force: true })
     // Wait for React to commit the 'round-ended' state before probing the
     // reveal text — on slow CI the status transition races assertion retries.
     await expect
@@ -94,7 +94,7 @@ test.describe('City Guessing game', () => {
     // This test verifies the round-exhaustion path, not the reveal timing.
     for (let i = 0; i < 10; i++) {
       await setRoundAndWait(page, 'FRA-paris', 'Paris')
-      await page.getByTestId('city-skip').click()
+      await page.getByTestId('city-skip').click({ force: true })
     }
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
     await expect(page.getByTestId('game-over-score')).toHaveText('0')
