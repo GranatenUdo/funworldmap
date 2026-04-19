@@ -11,7 +11,8 @@
     "format": "prettier --write src/",
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
-    "update-data": "tsx scripts/fetch-countries.ts"
+    "update-data": "tsx scripts/fetch-countries.ts",
+    "fetch-cities": "tsx scripts/fetch-cities.ts"
   },
   "dependencies": {
     "@sentry/react": "^10.49.0",
