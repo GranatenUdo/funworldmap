@@ -28,3 +28,4 @@ Start with the purpose, then read the system overview for architecture context, 
 
 ### Process
 - [Superpowers Workspace](superpowers/README.md) — planning convention for `plans/` and `specs/`
+- [Roadmap](roadmap.md) — deferred work from shipped specs, organised by area
