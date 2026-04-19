@@ -1,17 +1,35 @@
 import { useState, useEffect } from 'react'
+import type { ModeId } from '../types'
 
-const KEY = 'funworldmap-game-tutorial-shown'
+const KEY_PREFIX = 'funworldmap-game-tutorial-shown-'
 
-export function FirstSessionTutorial() {
+const COPY: Record<ModeId, { title: string; body: string }> = {
+  'country-pinning': {
+    title: 'How to play',
+    body: 'Click the country that matches the flag and name above. Three wrong countries end the game. Ocean clicks don\u2019t count.',
+  },
+  'city-guessing': {
+    title: 'How to play',
+    body: 'Click anywhere on the map \u2014 including ocean \u2014 to guess the city\u2019s location. Ten rounds per game.',
+  },
+}
+
+interface Props {
+  modeId: ModeId
+}
+
+export function FirstSessionTutorial({ modeId }: Props) {
   const [open, setOpen] = useState(false)
+  const key = KEY_PREFIX + modeId
 
   useEffect(() => {
-    if (sessionStorage.getItem(KEY)) return
+    if (sessionStorage.getItem(key)) return
     setOpen(true)
-    sessionStorage.setItem(KEY, '1')
-  }, [])
+    sessionStorage.setItem(key, '1')
+  }, [key])
 
   if (!open) return null
+  const copy = COPY[modeId]
 
   return (
     <div
@@ -20,11 +38,8 @@ export function FirstSessionTutorial() {
       style={{ animation: 'fade-up 300ms ease-out' }}
       data-testid="game-tutorial"
     >
-      <p className="font-medium mb-1">How to play</p>
-      <p className="text-xs opacity-90">
-        Click the country that matches the flag and name above. Three wrong countries end the game.
-        Ocean clicks don't count.
-      </p>
+      <p className="font-medium mb-1">{copy.title}</p>
+      <p className="text-xs opacity-90">{copy.body}</p>
       <button
         type="button"
         onClick={() => setOpen(false)}

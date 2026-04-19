@@ -69,12 +69,16 @@ export function SingleCountryPanel({
     const base = `${window.location.origin}${window.location.pathname}`
     const hash = `#${country.cca3}`
     const url = base + hash
+    const dispatchToast = () =>
+      window.dispatchEvent(new CustomEvent('funworldmap:toast', { detail: 'Link copied' }))
     if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(url).catch(() => window.prompt('Copy this link:', url))
+      navigator.clipboard
+        .writeText(url)
+        .then(dispatchToast)
+        .catch(() => window.prompt('Copy this link:', url))
     } else {
       window.prompt('Copy this link:', url)
     }
-    window.dispatchEvent(new CustomEvent('funworldmap:toast', { detail: 'Link copied' }))
   }
 
   const panelClasses = isDesktop

@@ -389,7 +389,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   return (
     <CityGuessingHudActionsContext.Provider value={{ onSkip }}>
       {(session.status === 'playing' || session.status === 'round-ended') && (
-        <FirstSessionTutorial />
+        <FirstSessionTutorial modeId={session.modeId} />
       )}
       <HudShell session={session} onEndGame={onEndGame}>
         <Hud session={session} />

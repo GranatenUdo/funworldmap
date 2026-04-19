@@ -62,20 +62,6 @@ Production builds can report runtime errors to Sentry. To enable:
 
 Without a DSN, the app works normally — Sentry is a no-op.
 
-## Pre-launch checklist
-
-Before the site goes public, replace the placeholder host `https://funworldmap.example/` with the real URL in these files:
-
-- `index.html` (canonical, og:url, og:image, twitter:image)
-- `public/robots.txt` (sitemap line)
-- `public/sitemap.xml` (loc)
-
-Grep:
-
-```bash
-grep -rn "funworldmap.example" index.html public/
-```
-
 ## Follow-up work not yet in this branch
 
 - **Basemap failover to a second provider.** Today we detect failure and show a degraded banner; the bundled country polygons remain interactive. To add a real second provider (Stadia Maps / MapTiler), sign up for an API key and wire a `FALLBACK_BASEMAP_STYLE` in `src/lib/mapStyles.ts` and a fall-through path in `WorldMap.tsx`.

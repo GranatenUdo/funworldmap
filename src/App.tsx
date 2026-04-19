@@ -53,9 +53,32 @@ function AppInner() {
 
   const gameActive = session.status !== 'idle'
 
+  const pool = useMemo<CountryLike[]>(
+    () => countries
+      .filter((c: CountryData) => c.independent === true)
+      .map((c: CountryData) => ({
+        cca3: c.cca3,
+        name: { common: c.name.common },
+        flag: c.flag,
+        latlng: c.latlng,
+        independent: true,
+      })),
+    [countries],
+  )
+  const poolByCca3 = useMemo(
+    () => new Map(pool.map((c) => [c.cca3, c])),
+    [pool],
+  )
+
   const onMapSelect = useCallback(
     (cca3: string) => {
       if (gameActive) {
+        if (session.modeId === 'country-pinning' && !poolByCca3.has(cca3.toUpperCase())) {
+          window.dispatchEvent(new CustomEvent('funworldmap:toast', {
+            detail: "That territory isn't in the country pool.",
+          }))
+          return
+        }
         const guess = (window as unknown as { __funworldmap_guess?: (c: string) => void }).__funworldmap_guess
         guess?.(cca3)
         return
@@ -69,7 +92,7 @@ function AppInner() {
         select(cca3)
       }
     },
-    [gameActive, comparePickingMode, selected, select, compareSelect],
+    [gameActive, session.modeId, poolByCca3, comparePickingMode, selected, select, compareSelect],
   )
 
   useEffect(() => {
@@ -178,27 +201,10 @@ function AppInner() {
     return () => window.removeEventListener('keydown', handler)
   }, [selected, compareWith, comparePickingMode, exitCompare, deselect, gameActive])
 
-  const pool = useMemo<CountryLike[]>(
-    () => countries
-      .filter((c: CountryData) => c.independent === true)
-      .map((c: CountryData) => ({
-        cca3: c.cca3,
-        name: { common: c.name.common },
-        flag: c.flag,
-        latlng: c.latlng,
-        independent: true,
-      })),
-    [countries],
-  )
-  const poolByCca3 = useMemo(
-    () => new Map(pool.map((c) => [c.cca3, c])),
-    [pool],
-  )
-
   return (
     <div
       data-selected-country={selected?.ccn3 || undefined}
-      data-game-mode={gameActive ? 'country-pinning' : undefined}
+      data-game-mode={gameActive ? session.modeId : undefined}
       className="grain"
     >
       <button
