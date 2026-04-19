@@ -1,0 +1,5990 @@
+[
+  {
+    "id": "JPN-tokyo",
+    "name": "Tokyo",
+    "countryCca3": "JPN",
+    "countryName": "Japan",
+    "countryFlag": "flags/JP.svg",
+    "latlng": [
+      35.686963,
+      139.749462
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "USA-new-york",
+    "name": "New York",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      40.721562,
+      -73.995718
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "MEX-mexico-city",
+    "name": "Mexico City",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      19.444388,
+      -99.132934
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "IND-mumbai",
+    "name": "Mumbai",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      19.068408,
+      72.875839
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "BRA-sao-paulo",
+    "name": "São Paulo",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -23.556734,
+      -46.626966
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "CHN-shanghai",
+    "name": "Shanghai",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      31.218398,
+      121.434559
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "IND-kolkata",
+    "name": "Kolkata",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      22.569579,
+      88.369126
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "USA-los-angeles",
+    "name": "Los Angeles",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      34.049219,
+      -118.231986
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "EGY-cairo",
+    "name": "Cairo",
+    "countryCca3": "EGY",
+    "countryName": "Egypt",
+    "countryFlag": "flags/EG.svg",
+    "latlng": [
+      30.051906,
+      31.248022
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "BRA-rio-de-janeiro",
+    "name": "Rio de Janeiro",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -22.907308,
+      -43.212117
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "CHN-beijing",
+    "name": "Beijing",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      39.90172,
+      116.394201
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "RUS-moscow",
+    "name": "Moscow",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      55.75411,
+      37.613577
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "TUR-istanbul",
+    "name": "Istanbul",
+    "countryCca3": "TUR",
+    "countryName": "Turkey",
+    "countryFlag": "flags/TR.svg",
+    "latlng": [
+      41.017602,
+      28.974277
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "FRA-paris",
+    "name": "Paris",
+    "countryCca3": "FRA",
+    "countryName": "France",
+    "countryFlag": "flags/FR.svg",
+    "latlng": [
+      48.858092,
+      2.352992
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "NGA-lagos",
+    "name": "Lagos",
+    "countryCca3": "NGA",
+    "countryName": "Nigeria",
+    "countryFlag": "flags/NG.svg",
+    "latlng": [
+      6.445208,
+      3.389585
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "IDN-jakarta",
+    "name": "Jakarta",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -6.172472,
+      106.827492
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "GBR-london",
+    "name": "London",
+    "countryCca3": "GBR",
+    "countryName": "United Kingdom",
+    "countryFlag": "flags/GB.svg",
+    "latlng": [
+      51.501941,
+      -0.118668
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "COL-bogota",
+    "name": "Bogota",
+    "countryCca3": "COL",
+    "countryName": "Colombia",
+    "countryFlag": "flags/CO.svg",
+    "latlng": [
+      4.598369,
+      -74.08529
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "HKG-hong-kong",
+    "name": "Hong Kong",
+    "countryCca3": "HKG",
+    "countryName": "Hong Kong",
+    "countryFlag": "flags/HK.svg",
+    "latlng": [
+      22.306927,
+      114.183064
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "CHL-santiago",
+    "name": "Santiago",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -33.440205,
+      -70.650504
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "SGP-singapore",
+    "name": "Singapore",
+    "countryCca3": "SGP",
+    "countryName": "Singapore",
+    "countryFlag": "flags/SG.svg",
+    "latlng": [
+      1.294979,
+      103.853875
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "AUS-sydney",
+    "name": "Sydney",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -33.871373,
+      151.212548
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "SAU-riyadh",
+    "name": "Riyadh",
+    "countryCca3": "SAU",
+    "countryName": "Saudi Arabia",
+    "countryFlag": "flags/SA.svg",
+    "latlng": [
+      24.634497,
+      46.720487
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "USA-washington-d-c",
+    "name": "Washington,  D.C.",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      38.901495,
+      -77.011364
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "ITA-rome",
+    "name": "Rome",
+    "countryCca3": "ITA",
+    "countryName": "Italy",
+    "countryFlag": "flags/IT.svg",
+    "latlng": [
+      41.897902,
+      12.481313
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "ZAF-cape-town",
+    "name": "Cape Town",
+    "countryCca3": "ZAF",
+    "countryName": "South Africa",
+    "countryFlag": "flags/ZA.svg",
+    "latlng": [
+      -33.918065,
+      18.433042
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "KEN-nairobi",
+    "name": "Nairobi",
+    "countryCca3": "KEN",
+    "countryName": "Kenya",
+    "countryFlag": "flags/KE.svg",
+    "latlng": [
+      -1.281401,
+      36.814711
+    ],
+    "scalerank": 0
+  },
+  {
+    "id": "ARG-buenos-aires",
+    "name": "Buenos Aires",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -34.610715,
+      -58.432513
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "JPN-osaka",
+    "name": "Ōsaka",
+    "countryCca3": "JPN",
+    "countryName": "Japan",
+    "countryFlag": "flags/JP.svg",
+    "latlng": [
+      34.691095,
+      135.503754
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "PHL-manila",
+    "name": "Manila",
+    "countryCca3": "PHL",
+    "countryName": "Philippines",
+    "countryFlag": "flags/PH.svg",
+    "latlng": [
+      14.606105,
+      120.980271
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "KOR-seoul",
+    "name": "Seoul",
+    "countryCca3": "KOR",
+    "countryName": "South Korea",
+    "countryFlag": "flags/KR.svg",
+    "latlng": [
+      37.568295,
+      126.997785
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "USA-chicago",
+    "name": "Chicago",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      41.847961,
+      -87.635237
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "PER-lima",
+    "name": "Lima",
+    "countryCca3": "PER",
+    "countryName": "Peru",
+    "countryFlag": "flags/PE.svg",
+    "latlng": [
+      -12.046067,
+      -77.052008
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "IRN-tehran",
+    "name": "Tehran",
+    "countryCca3": "IRN",
+    "countryName": "Iran",
+    "countryFlag": "flags/IR.svg",
+    "latlng": [
+      35.673889,
+      51.422398
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "COD-kinshasa",
+    "name": "Kinshasa",
+    "countryCca3": "COD",
+    "countryName": "DR Congo",
+    "countryFlag": "flags/CD.svg",
+    "latlng": [
+      -4.327778,
+      15.313026
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "TWN-taipei",
+    "name": "Taipei",
+    "countryCca3": "TWN",
+    "countryName": "Taiwan",
+    "countryFlag": "flags/TW.svg",
+    "latlng": [
+      25.035833,
+      121.568333
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "IND-bengaluru",
+    "name": "Bengaluru",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      12.971941,
+      77.558064
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "THA-bangkok",
+    "name": "Bangkok",
+    "countryCca3": "THA",
+    "countryName": "Thailand",
+    "countryFlag": "flags/TH.svg",
+    "latlng": [
+      13.751945,
+      100.514699
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "USA-miami",
+    "name": "Miami",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      25.789557,
+      -80.226052
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "ESP-madrid",
+    "name": "Madrid",
+    "countryCca3": "ESP",
+    "countryName": "Spain",
+    "countryFlag": "flags/ES.svg",
+    "latlng": [
+      40.401972,
+      -3.685297
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "CAN-toronto",
+    "name": "Toronto",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      43.664645,
+      -79.389459
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "IRQ-baghdad",
+    "name": "Baghdad",
+    "countryCca3": "IRQ",
+    "countryName": "Iraq",
+    "countryFlag": "flags/IQ.svg",
+    "latlng": [
+      33.340594,
+      44.391923
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "USA-atlanta",
+    "name": "Atlanta",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      33.739457,
+      -84.367642
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "USA-houston",
+    "name": "Houston",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      29.741273,
+      -95.348436
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "AUS-melbourne",
+    "name": "Melbourne",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -37.818086,
+      144.97307
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "CHN-chengdu",
+    "name": "Chengdu",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      30.671946,
+      104.068074
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "MEX-monterrey",
+    "name": "Monterrey",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      25.671941,
+      -100.331931
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "CHN-urumqi",
+    "name": "Ürümqi",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      43.806958,
+      87.57306
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "USA-san-francisco",
+    "name": "San Francisco",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      37.784263,
+      -122.3996
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "ZAF-johannesburg",
+    "name": "Johannesburg",
+    "countryCca3": "ZAF",
+    "countryName": "South Africa",
+    "countryFlag": "flags/ZA.svg",
+    "latlng": [
+      -26.168099,
+      28.028064
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "DEU-berlin",
+    "name": "Berlin",
+    "countryCca3": "DEU",
+    "countryName": "Germany",
+    "countryFlag": "flags/DE.svg",
+    "latlng": [
+      52.523764,
+      13.399603
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "AFG-kabul",
+    "name": "Kabul",
+    "countryCca3": "AFG",
+    "countryName": "Afghanistan",
+    "countryFlag": "flags/AF.svg",
+    "latlng": [
+      34.518636,
+      69.181314
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "GRC-athens",
+    "name": "Athens",
+    "countryCca3": "GRC",
+    "countryName": "Greece",
+    "countryFlag": "flags/GR.svg",
+    "latlng": [
+      37.985272,
+      23.731375
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "MAR-casablanca",
+    "name": "Casablanca",
+    "countryCca3": "MAR",
+    "countryName": "Morocco",
+    "countryFlag": "flags/MA.svg",
+    "latlng": [
+      33.601922,
+      -7.618313
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "ETH-addis-ababa",
+    "name": "Addis Ababa",
+    "countryCca3": "ETH",
+    "countryName": "Ethiopia",
+    "countryFlag": "flags/ET.svg",
+    "latlng": [
+      9.035256,
+      38.698059
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "VEN-caracas",
+    "name": "Caracas",
+    "countryCca3": "VEN",
+    "countryName": "Venezuela",
+    "countryFlag": "flags/VE.svg",
+    "latlng": [
+      10.502944,
+      -66.918983
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "UKR-kyiv",
+    "name": "Kyiv",
+    "countryCca3": "UKR",
+    "countryName": "Ukraine",
+    "countryFlag": "flags/UA.svg",
+    "latlng": [
+      50.435313,
+      30.514682
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "SEN-dakar",
+    "name": "Dakar",
+    "countryCca3": "SEN",
+    "countryName": "Senegal",
+    "countryFlag": "flags/SN.svg",
+    "latlng": [
+      14.717778,
+      -17.475076
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "AUT-vienna",
+    "name": "Vienna",
+    "countryCca3": "AUT",
+    "countryName": "Austria",
+    "countryFlag": "flags/AT.svg",
+    "latlng": [
+      48.201961,
+      16.364693
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "CAN-vancouver",
+    "name": "Vancouver",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      49.275362,
+      -123.12359
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "USA-denver",
+    "name": "Denver",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      39.741134,
+      -104.985962
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "UZB-tashkent",
+    "name": "Tashkent",
+    "countryCca3": "UZB",
+    "countryName": "Uzbekistan",
+    "countryFlag": "flags/UZ.svg",
+    "latlng": [
+      41.303828,
+      69.268823
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "ARE-dubai",
+    "name": "Dubai",
+    "countryCca3": "ARE",
+    "countryName": "United Arab Emirates",
+    "countryFlag": "flags/AE.svg",
+    "latlng": [
+      25.214912,
+      55.286946
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "NZL-auckland",
+    "name": "Auckland",
+    "countryCca3": "NZL",
+    "countryName": "New Zealand",
+    "countryFlag": "flags/NZ.svg",
+    "latlng": [
+      -36.848055,
+      174.763027
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "SWE-stockholm",
+    "name": "Stockholm",
+    "countryCca3": "SWE",
+    "countryName": "Sweden",
+    "countryFlag": "flags/SE.svg",
+    "latlng": [
+      59.324127,
+      18.0663
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "CHE-geneva",
+    "name": "Geneva",
+    "countryCca3": "CHE",
+    "countryName": "Switzerland",
+    "countryFlag": "flags/CH.svg",
+    "latlng": [
+      46.210008,
+      6.140028
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "NLD-amsterdam",
+    "name": "Amsterdam",
+    "countryCca3": "NLD",
+    "countryName": "Netherlands",
+    "countryFlag": "flags/NL.svg",
+    "latlng": [
+      52.351914,
+      4.914694
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "IND-new-delhi",
+    "name": "New Delhi",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      28.600023,
+      77.19998
+    ],
+    "scalerank": 1
+  },
+  {
+    "id": "IND-delhi",
+    "name": "Delhi",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      28.671939,
+      77.228058
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BGD-dhaka",
+    "name": "Dhaka",
+    "countryCca3": "BGD",
+    "countryName": "Bangladesh",
+    "countryFlag": "flags/BD.svg",
+    "latlng": [
+      23.725006,
+      90.406634
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "PAK-karachi",
+    "name": "Karachi",
+    "countryCca3": "PAK",
+    "countryName": "Pakistan",
+    "countryFlag": "flags/PK.svg",
+    "latlng": [
+      24.871938,
+      66.988063
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-guangzhou",
+    "name": "Guangzhou",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      23.124723,
+      113.261785
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-shenzhen",
+    "name": "Shenzhen",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      22.548097,
+      114.061154
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-wuhan",
+    "name": "Wuhan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      30.581977,
+      114.268071
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-tianjin",
+    "name": "Tianjin",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      39.082772,
+      117.196607
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-chennai",
+    "name": "Chennai",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      13.091934,
+      80.278053
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "PAK-lahore",
+    "name": "Lahore",
+    "countryCca3": "PAK",
+    "countryName": "Pakistan",
+    "countryFlag": "flags/PK.svg",
+    "latlng": [
+      31.561917,
+      74.348079
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-chongqing",
+    "name": "Chongqing",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      29.566923,
+      106.593036
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-hyderabad",
+    "name": "Hyderabad",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      17.401929,
+      78.478008
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-philadelphia",
+    "name": "Philadelphia",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      39.945942,
+      -75.179841
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-ahmedabad",
+    "name": "Ahmedabad",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      23.031999,
+      72.578058
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "VNM-ho-chi-minh-city",
+    "name": "Ho Chi Minh City",
+    "countryCca3": "VNM",
+    "countryName": "Vietnam",
+    "countryFlag": "flags/VN.svg",
+    "latlng": [
+      10.762125,
+      106.702985
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "AGO-luanda",
+    "name": "Luanda",
+    "countryCca3": "AGO",
+    "countryName": "Angola",
+    "countryFlag": "flags/AO.svg",
+    "latlng": [
+      -8.83634,
+      13.232481
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "ESP-barcelona",
+    "name": "Barcelona",
+    "countryCca3": "ESP",
+    "countryName": "Spain",
+    "countryFlag": "flags/ES.svg",
+    "latlng": [
+      41.385245,
+      2.181424
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-dallas",
+    "name": "Dallas",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      32.771958,
+      -96.794687
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-shenyeng",
+    "name": "Shenyeng",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      41.806925,
+      123.448028
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "SDN-khartoum",
+    "name": "Khartoum",
+    "countryCca3": "SDN",
+    "countryName": "Sudan",
+    "countryFlag": "flags/SD.svg",
+    "latlng": [
+      15.590024,
+      32.532233
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-pune",
+    "name": "Pune",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      18.516394,
+      73.851892
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "RUS-st-petersburg",
+    "name": "St.  Petersburg",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      59.94096,
+      30.314074
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BGD-chattogram",
+    "name": "Chattogram",
+    "countryCca3": "BGD",
+    "countryName": "Bangladesh",
+    "countryFlag": "flags/BD.svg",
+    "latlng": [
+      22.331938,
+      91.798022
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-dongguan",
+    "name": "Dongguan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      23.021537,
+      113.750474
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-boston",
+    "name": "Boston",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      42.331906,
+      -71.07196
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "VNM-hanoi",
+    "name": "Hanoi",
+    "countryCca3": "VNM",
+    "countryName": "Vietnam",
+    "countryFlag": "flags/VN.svg",
+    "latlng": [
+      21.035273,
+      105.848068
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "MEX-guadalajara",
+    "name": "Guadalajara",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      20.671962,
+      -103.33198
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "EGY-alexandria",
+    "name": "Alexandria",
+    "countryCca3": "EGY",
+    "countryName": "Egypt",
+    "countryFlag": "flags/EG.svg",
+    "latlng": [
+      31.201965,
+      29.94805
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-detroit",
+    "name": "Detroit",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      42.333558,
+      -83.051334
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "MMR-yangon",
+    "name": "Yangon",
+    "countryCca3": "MMR",
+    "countryName": "Myanmar",
+    "countryFlag": "flags/MM.svg",
+    "latlng": [
+      16.7853,
+      96.164732
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-xian",
+    "name": "Xian",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      34.276971,
+      108.89305
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-porto-alegre",
+    "name": "Porto Alegre",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -30.048069,
+      -51.201958
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-surat",
+    "name": "Surat",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      21.20193,
+      72.838094
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CIV-abidjan",
+    "name": "Abidjan",
+    "countryCca3": "CIV",
+    "countryName": "Ivory Coast",
+    "countryFlag": "flags/CI.svg",
+    "latlng": [
+      5.323126,
+      -4.020207
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-brasilia",
+    "name": "Brasília",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -15.781394,
+      -47.917998
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "TUR-ankara",
+    "name": "Ankara",
+    "countryCca3": "TUR",
+    "countryName": "Turkey",
+    "countryFlag": "flags/TR.svg",
+    "latlng": [
+      39.929184,
+      32.862446
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-nanjing",
+    "name": "Nanjing",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      32.051965,
+      118.778029
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CAN-montreal",
+    "name": "Montréal",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      45.501945,
+      -73.585243
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-guiyang",
+    "name": "Guiyang",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      26.581989,
+      106.718093
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-recife",
+    "name": "Recife",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -8.060532,
+      -34.908766
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-harbin",
+    "name": "Harbin",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      45.75193,
+      126.648039
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-fortaleza",
+    "name": "Fortaleza",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -3.748072,
+      -38.581927
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-phoenix",
+    "name": "Phoenix",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      33.448322,
+      -112.067365
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-salvador",
+    "name": "Salvador",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -12.968026,
+      -38.481933
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "DZA-algiers",
+    "name": "Algiers",
+    "countryCca3": "DZA",
+    "countryName": "Algeria",
+    "countryFlag": "flags/DZ.svg",
+    "latlng": [
+      36.765011,
+      3.048607
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "PRK-pyongyang",
+    "name": "Pyongyang",
+    "countryCca3": "PRK",
+    "countryName": "North Korea",
+    "countryFlag": "flags/KP.svg",
+    "latlng": [
+      39.021385,
+      125.752745
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "COL-medellin",
+    "name": "Medellín",
+    "countryCca3": "COL",
+    "countryName": "Colombia",
+    "countryFlag": "flags/CO.svg",
+    "latlng": [
+      6.276949,
+      -75.576956
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-changchun",
+    "name": "Changchun",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      43.866954,
+      125.338042
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-kanpur",
+    "name": "Kanpur",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      26.461945,
+      80.31805
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "NGA-kano",
+    "name": "Kano",
+    "countryCca3": "NGA",
+    "countryName": "Nigeria",
+    "countryFlag": "flags/NG.svg",
+    "latlng": [
+      12.001923,
+      8.518092
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "ISR-tel-aviv",
+    "name": "Tel Aviv",
+    "countryCca3": "ISR",
+    "countryName": "Israel",
+    "countryFlag": "flags/IL.svg",
+    "latlng": [
+      32.081937,
+      34.768066
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-curitiba",
+    "name": "Curitiba",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -25.418067,
+      -49.321944
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-seattle",
+    "name": "Seattle",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      47.600423,
+      -122.315322
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-zibo",
+    "name": "Zibo",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      36.821365,
+      117.99646
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "SAU-jeddah",
+    "name": "Jeddah",
+    "countryCca3": "SAU",
+    "countryName": "Saudi Arabia",
+    "countryFlag": "flags/SA.svg",
+    "latlng": [
+      21.518835,
+      39.217252
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-hangzhou",
+    "name": "Hangzhou",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      30.25192,
+      120.168073
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "ITA-milan",
+    "name": "Milan",
+    "countryCca3": "ITA",
+    "countryName": "Italy",
+    "countryFlag": "flags/IT.svg",
+    "latlng": [
+      45.471921,
+      9.203063
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-kunming",
+    "name": "Kunming",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      25.042859,
+      102.69744
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "TZA-dar-es-salaam",
+    "name": "Dar es Salaam",
+    "countryCca3": "TZA",
+    "countryName": "Tanzania",
+    "countryFlag": "flags/TZ.svg",
+    "latlng": [
+      -6.798067,
+      39.266396
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-jaipur",
+    "name": "Jaipur",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      26.923079,
+      75.808042
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-san-diego",
+    "name": "San Diego",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      32.718914,
+      -117.150881
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-taiyuan",
+    "name": "Taiyuan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      37.876958,
+      112.543112
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "DEU-frankfurt",
+    "name": "Frankfurt",
+    "countryCca3": "DEU",
+    "countryName": "Germany",
+    "countryFlag": "flags/DE.svg",
+    "latlng": [
+      50.099977,
+      8.675015
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IDN-surabaya",
+    "name": "Surabaya",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -7.24729,
+      112.748887
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "PRT-lisbon",
+    "name": "Lisbon",
+    "countryCca3": "PRT",
+    "countryName": "Portugal",
+    "countryFlag": "flags/PT.svg",
+    "latlng": [
+      38.724669,
+      -9.146812
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-jinan",
+    "name": "Jinan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      36.676928,
+      116.993073
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "SYR-aleppo",
+    "name": "Aleppo",
+    "countryCca3": "SYR",
+    "countryName": "Syria",
+    "countryFlag": "flags/SY.svg",
+    "latlng": [
+      36.231917,
+      37.168074
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "ZAF-durban",
+    "name": "Durban",
+    "countryCca3": "ZAF",
+    "countryName": "South Africa",
+    "countryFlag": "flags/ZA.svg",
+    "latlng": [
+      -29.860662,
+      31.010944
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-zhengzhou",
+    "name": "Zhengzhou",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      34.756942,
+      113.663147
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-minneapolis",
+    "name": "Minneapolis",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      44.981925,
+      -93.253732
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-fuzhou",
+    "name": "Fuzhou",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      26.081942,
+      119.2981
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-changsha",
+    "name": "Changsha",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      28.201916,
+      112.968047
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-lanzhou",
+    "name": "Lanzhou",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      36.057974,
+      103.790054
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "JPN-sapporo",
+    "name": "Sapporo",
+    "countryCca3": "JPN",
+    "countryName": "Japan",
+    "countryFlag": "flags/JP.svg",
+    "latlng": [
+      43.076925,
+      141.338099
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "ECU-guayaquil",
+    "name": "Guayaquil",
+    "countryCca3": "ECU",
+    "countryName": "Ecuador",
+    "countryFlag": "flags/EC.svg",
+    "latlng": [
+      -2.218088,
+      -79.921988
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IRN-mashhad",
+    "name": "Mashhad",
+    "countryCca3": "IRN",
+    "countryName": "Iran",
+    "countryFlag": "flags/IR.svg",
+    "latlng": [
+      36.271966,
+      59.568051
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "SYR-damascus",
+    "name": "Damascus",
+    "countryCca3": "SYR",
+    "countryName": "Syria",
+    "countryFlag": "flags/SY.svg",
+    "latlng": [
+      33.50198,
+      36.29805
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-nagpur",
+    "name": "Nagpur",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      21.171906,
+      79.088048
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IDN-bandung",
+    "name": "Bandung",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -6.948083,
+      107.568067
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-nanchang",
+    "name": "Nanchang",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      28.681938,
+      115.87805
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-tampa",
+    "name": "Tampa",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      27.948934,
+      -82.460567
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "COL-cali",
+    "name": "Cali",
+    "countryCca3": "COL",
+    "countryName": "Colombia",
+    "countryFlag": "flags/CO.svg",
+    "latlng": [
+      3.401905,
+      -76.501912
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "ITA-naples",
+    "name": "Naples",
+    "countryCca3": "ITA",
+    "countryName": "Italy",
+    "countryFlag": "flags/IT.svg",
+    "latlng": [
+      40.841971,
+      14.243066
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-st-louis",
+    "name": "St. Louis",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      38.636964,
+      -90.241926
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "MEX-puebla",
+    "name": "Puebla",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      19.032594,
+      -98.203737
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "LBY-tripoli",
+    "name": "Tripoli",
+    "countryCca3": "LBY",
+    "countryName": "Libya",
+    "countryFlag": "flags/LY.svg",
+    "latlng": [
+      32.8925,
+      13.180012
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CUB-havana",
+    "name": "Havana",
+    "countryCca3": "CUB",
+    "countryName": "Cuba",
+    "countryFlag": "flags/CU.svg",
+    "latlng": [
+      23.133905,
+      -82.366128
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-nanning",
+    "name": "Nanning",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      22.821934,
+      108.318099
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-belem",
+    "name": "Belém",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -1.448057,
+      -48.481969
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IND-patna",
+    "name": "Patna",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      25.626905,
+      85.128093
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "DOM-santo-domingo",
+    "name": "Santo Domingo",
+    "countryCca3": "DOM",
+    "countryName": "Dominican Republic",
+    "countryFlag": "flags/DO.svg",
+    "latlng": [
+      18.470745,
+      -69.929742
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "GHA-accra",
+    "name": "Accra",
+    "countryCca3": "GHA",
+    "countryName": "Ghana",
+    "countryFlag": "flags/GH.svg",
+    "latlng": [
+      5.55198,
+      -0.218662
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IDN-medan",
+    "name": "Medan",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      3.58192,
+      98.648094
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "VEN-maracaibo",
+    "name": "Maracaibo",
+    "countryCca3": "VEN",
+    "countryName": "Venezuela",
+    "countryFlag": "flags/VE.svg",
+    "latlng": [
+      10.731923,
+      -71.661924
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "KWT-kuwait-city",
+    "name": "Kuwait City",
+    "countryCca3": "KWT",
+    "countryName": "Kuwait",
+    "countryFlag": "flags/KW.svg",
+    "latlng": [
+      29.371664,
+      47.976355
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "JPN-hiroshima",
+    "name": "Hiroshima",
+    "countryCca3": "JPN",
+    "countryName": "Japan",
+    "countryFlag": "flags/JP.svg",
+    "latlng": [
+      34.389781,
+      132.440967
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHN-baotou",
+    "name": "Baotou",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      40.654153,
+      109.820074
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BRA-goiania",
+    "name": "Goiânia",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -16.718081,
+      -49.301971
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "YEM-sanaa",
+    "name": "Sanaa",
+    "countryCca3": "YEM",
+    "countryName": "Yemen",
+    "countryFlag": "flags/YE.svg",
+    "latlng": [
+      15.356679,
+      44.204648
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "ROU-bucharest",
+    "name": "Bucharest",
+    "countryCca3": "ROU",
+    "countryName": "Romania",
+    "countryFlag": "flags/RO.svg",
+    "latlng": [
+      44.435318,
+      26.098001
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "DEU-hamburg",
+    "name": "Hamburg",
+    "countryCca3": "DEU",
+    "countryName": "Germany",
+    "countryFlag": "flags/DE.svg",
+    "latlng": [
+      53.551971,
+      9.998053
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "BEL-brussels",
+    "name": "Brussels",
+    "countryCca3": "BEL",
+    "countryName": "Belgium",
+    "countryFlag": "flags/BE.svg",
+    "latlng": [
+      50.835263,
+      4.331371
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "POL-warsaw",
+    "name": "Warsaw",
+    "countryCca3": "POL",
+    "countryName": "Poland",
+    "countryFlag": "flags/PL.svg",
+    "latlng": [
+      52.230872,
+      21.005347
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "HUN-budapest",
+    "name": "Budapest",
+    "countryCca3": "HUN",
+    "countryName": "Hungary",
+    "countryFlag": "flags/HU.svg",
+    "latlng": [
+      47.501952,
+      19.081375
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "AUS-perth",
+    "name": "Perth",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -31.953069,
+      115.838053
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "MYS-kuala-lumpur",
+    "name": "Kuala Lumpur",
+    "countryCca3": "MYS",
+    "countryName": "Malaysia",
+    "countryFlag": "flags/MY.svg",
+    "latlng": [
+      3.139797,
+      101.688699
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "SAU-makkah",
+    "name": "Makkah",
+    "countryCca3": "SAU",
+    "countryName": "Saudi Arabia",
+    "countryFlag": "flags/SA.svg",
+    "latlng": [
+      21.431967,
+      39.818094
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "DEU-munich",
+    "name": "Munich",
+    "countryCca3": "DEU",
+    "countryName": "Germany",
+    "countryFlag": "flags/DE.svg",
+    "latlng": [
+      48.131888,
+      11.573048
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CZE-prague",
+    "name": "Prague",
+    "countryCca3": "CZE",
+    "countryName": "Czechia",
+    "countryFlag": "flags/CZ.svg",
+    "latlng": [
+      50.086967,
+      14.422939
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "FIN-helsinki",
+    "name": "Helsinki",
+    "countryCca3": "FIN",
+    "countryName": "Finland",
+    "countryFlag": "flags/FI.svg",
+    "latlng": [
+      60.163804,
+      24.932457
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CHE-zurich",
+    "name": "Zürich",
+    "countryCca3": "CHE",
+    "countryName": "Switzerland",
+    "countryFlag": "flags/CH.svg",
+    "latlng": [
+      47.381934,
+      8.548064
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "DNK-k-benhavn",
+    "name": "København",
+    "countryCca3": "DNK",
+    "countryName": "Denmark",
+    "countryFlag": "flags/DK.svg",
+    "latlng": [
+      55.68051,
+      12.56154
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "IRL-dublin",
+    "name": "Dublin",
+    "countryCca3": "IRL",
+    "countryName": "Ireland",
+    "countryFlag": "flags/IE.svg",
+    "latlng": [
+      53.346731,
+      -6.25698
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "CAN-edmonton",
+    "name": "Edmonton",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      53.551971,
+      -113.501928
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "LBR-monrovia",
+    "name": "Monrovia",
+    "countryCca3": "LBR",
+    "countryName": "Liberia",
+    "countryFlag": "flags/LR.svg",
+    "latlng": [
+      6.314582,
+      -10.79966
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "NOR-oslo",
+    "name": "Oslo",
+    "countryCca3": "NOR",
+    "countryName": "Norway",
+    "countryFlag": "flags/NO.svg",
+    "latlng": [
+      59.918636,
+      10.748033
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-honolulu",
+    "name": "Honolulu",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      21.303429,
+      -157.858301
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-new-orleans",
+    "name": "New Orleans",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      29.968908,
+      -90.088368
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "USA-anchorage",
+    "name": "Anchorage",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      61.214004,
+      -149.887446
+    ],
+    "scalerank": 2
+  },
+  {
+    "id": "TWN-kaohsiung",
+    "name": "Kaohsiung",
+    "countryCca3": "TWN",
+    "countryName": "Taiwan",
+    "countryFlag": "flags/TW.svg",
+    "latlng": [
+      22.633307,
+      120.266602
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PRI-san-juan",
+    "name": "San Juan",
+    "countryCca3": "PRI",
+    "countryName": "Puerto Rico",
+    "countryFlag": "flags/PR.svg",
+    "latlng": [
+      18.440023,
+      -66.129979
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TUN-tunis",
+    "name": "Tunis",
+    "countryCca3": "TUN",
+    "countryName": "Tunisia",
+    "countryFlag": "flags/TN.svg",
+    "latlng": [
+      36.802778,
+      10.179678
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AZE-baku",
+    "name": "Baku",
+    "countryCca3": "AZE",
+    "countryName": "Azerbaijan",
+    "countryFlag": "flags/AZ.svg",
+    "latlng": [
+      40.397218,
+      49.860271
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BOL-santa-cruz",
+    "name": "Santa Cruz",
+    "countryCca3": "BOL",
+    "countryName": "Bolivia",
+    "countryFlag": "flags/BO.svg",
+    "latlng": [
+      -17.751972,
+      -63.227942
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "HTI-port-au-prince",
+    "name": "Port-au-Prince",
+    "countryCca3": "HTI",
+    "countryName": "Haiti",
+    "countryFlag": "flags/HT.svg",
+    "latlng": [
+      18.54297,
+      -72.33798
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-cleveland",
+    "name": "Cleveland",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      41.471933,
+      -81.696944
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-portland",
+    "name": "Portland",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      45.52197,
+      -122.681936
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PRY-asuncion",
+    "name": "Asunción",
+    "countryCca3": "PRY",
+    "countryName": "Paraguay",
+    "countryFlag": "flags/PY.svg",
+    "latlng": [
+      -25.290671,
+      -57.625834
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-brisbane",
+    "name": "Brisbane",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -27.453085,
+      153.033147
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LBN-beirut",
+    "name": "Beirut",
+    "countryCca3": "LBN",
+    "countryName": "Lebanon",
+    "countryFlag": "flags/LB.svg",
+    "latlng": [
+      33.873921,
+      35.507762
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-pittsburgh",
+    "name": "Pittsburgh",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      40.431945,
+      -80.001931
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-las-vegas",
+    "name": "Las Vegas",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      36.164763,
+      -115.151362
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BLR-minsk",
+    "name": "Minsk",
+    "countryCca3": "BLR",
+    "countryName": "Belarus",
+    "countryFlag": "flags/BY.svg",
+    "latlng": [
+      53.901923,
+      27.564681
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "VEN-valencia",
+    "name": "Valencia",
+    "countryCca3": "VEN",
+    "countryName": "Venezuela",
+    "countryFlag": "flags/VE.svg",
+    "latlng": [
+      10.231927,
+      -67.981967
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-manaus",
+    "name": "Manaus",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -3.098086,
+      -60.001963
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IDN-palembang",
+    "name": "Palembang",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -2.978093,
+      104.748084
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-bhopal",
+    "name": "Bhopal",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      23.251934,
+      77.408047
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MAR-rabat",
+    "name": "Rabat",
+    "countryCca3": "MAR",
+    "countryName": "Morocco",
+    "countryFlag": "flags/MA.svg",
+    "latlng": [
+      34.025307,
+      -6.836408
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ECU-quito",
+    "name": "Quito",
+    "countryCca3": "ECU",
+    "countryName": "Ecuador",
+    "countryFlag": "flags/EC.svg",
+    "latlng": [
+      -0.213042,
+      -78.501997
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MDG-antananarivo",
+    "name": "Antananarivo",
+    "countryCca3": "MDG",
+    "countryName": "Madagascar",
+    "countryFlag": "flags/MG.svg",
+    "latlng": [
+      -18.914691,
+      47.514678
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-coimbatore",
+    "name": "Coimbatore",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      11.001906,
+      76.948075
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-san-jose",
+    "name": "San Jose",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      37.330943,
+      -121.888179
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-qiqihar",
+    "name": "Qiqihar",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      47.346923,
+      123.988046
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-cincinnati",
+    "name": "Cincinnati",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      39.163831,
+      -84.458868
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IRN-isfahan",
+    "name": "Isfahan",
+    "countryCca3": "IRN",
+    "countryName": "Iran",
+    "countryFlag": "flags/IR.svg",
+    "latlng": [
+      32.701951,
+      51.698092
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CMR-yaounde",
+    "name": "Yaoundé",
+    "countryCca3": "CMR",
+    "countryName": "Cameroon",
+    "countryFlag": "flags/CM.svg",
+    "latlng": [
+      3.868647,
+      11.514705
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-sacramento",
+    "name": "Sacramento",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      38.576967,
+      -121.471984
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-shantou",
+    "name": "Shantou",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      23.371952,
+      116.66808
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BOL-la-paz",
+    "name": "La Paz",
+    "countryCca3": "BOL",
+    "countryName": "Bolivia",
+    "countryFlag": "flags/BO.svg",
+    "latlng": [
+      -16.496028,
+      -68.151931
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NGA-abuja",
+    "name": "Abuja",
+    "countryCca3": "NGA",
+    "countryName": "Nigeria",
+    "countryFlag": "flags/NG.svg",
+    "latlng": [
+      9.05462,
+      7.489505
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ZWE-harare",
+    "name": "Harare",
+    "countryCca3": "ZWE",
+    "countryName": "Zimbabwe",
+    "countryFlag": "flags/ZW.svg",
+    "latlng": [
+      -17.815844,
+      31.042764
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-tijuana",
+    "name": "Tijuana",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      32.501963,
+      -117.081942
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-vishakhapatnam",
+    "name": "Vishakhapatnam",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      17.682903,
+      83.219848
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PAK-multan",
+    "name": "Multan",
+    "countryCca3": "PAK",
+    "countryName": "Pakistan",
+    "countryFlag": "flags/PK.svg",
+    "latlng": [
+      30.201923,
+      71.453062
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "URY-montevideo",
+    "name": "Montevideo",
+    "countryCca3": "URY",
+    "countryName": "Uruguay",
+    "countryFlag": "flags/UY.svg",
+    "latlng": [
+      -34.905376,
+      -56.186823
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MLI-bamako",
+    "name": "Bamako",
+    "countryCca3": "MLI",
+    "countryName": "Mali",
+    "countryFlag": "flags/ML.svg",
+    "latlng": [
+      12.65196,
+      -8.001985
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GIN-conakry",
+    "name": "Conakry",
+    "countryCca3": "GIN",
+    "countryName": "Guinea",
+    "countryFlag": "flags/GN.svg",
+    "latlng": [
+      9.533469,
+      -13.682181
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-san-antonio",
+    "name": "San Antonio",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      29.419848,
+      -98.492693
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "KHM-phnom-penh",
+    "name": "Phnom Penh",
+    "countryCca3": "KHM",
+    "countryName": "Cambodia",
+    "countryFlag": "flags/KH.svg",
+    "latlng": [
+      11.551976,
+      104.914689
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PAK-hyderabad",
+    "name": "Hyderabad",
+    "countryCca3": "PAK",
+    "countryName": "Pakistan",
+    "countryFlag": "flags/PK.svg",
+    "latlng": [
+      25.381933,
+      68.373043
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TGO-lome",
+    "name": "Lomé",
+    "countryCca3": "TGO",
+    "countryName": "Togo",
+    "countryFlag": "flags/TG.svg",
+    "latlng": [
+      6.133883,
+      1.220811
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARG-cordoba",
+    "name": "Córdoba",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -31.398012,
+      -64.18424
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-huainan",
+    "name": "Huainan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      32.63193,
+      116.978035
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MOZ-maputo",
+    "name": "Maputo",
+    "countryCca3": "MOZ",
+    "countryName": "Mozambique",
+    "countryFlag": "flags/MZ.svg",
+    "latlng": [
+      -25.953332,
+      32.587217
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SLV-san-salvador",
+    "name": "San Salvador",
+    "countryCca3": "SLV",
+    "countryName": "El Salvador",
+    "countryFlag": "flags/SV.svg",
+    "latlng": [
+      13.70328,
+      -89.215576
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "FRA-lyon",
+    "name": "Lyon",
+    "countryCca3": "FRA",
+    "countryName": "France",
+    "countryFlag": "flags/FR.svg",
+    "latlng": [
+      45.771954,
+      4.828085
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "UGA-kampala",
+    "name": "Kampala",
+    "countryCca3": "UGA",
+    "countryName": "Uganda",
+    "countryFlag": "flags/UG.svg",
+    "latlng": [
+      0.318605,
+      32.581378
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PHL-davao",
+    "name": "Davao",
+    "countryCca3": "PHL",
+    "countryName": "Philippines",
+    "countryFlag": "flags/PH.svg",
+    "latlng": [
+      7.111963,
+      125.62805
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IDN-semarang",
+    "name": "Semarang",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -6.964672,
+      110.418074
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-novosibirsk",
+    "name": "Novosibirsk",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      55.031906,
+      82.958096
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-milwaukee",
+    "name": "Milwaukee",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      43.029608,
+      -87.916673
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COG-brazzaville",
+    "name": "Brazzaville",
+    "countryCca3": "COG",
+    "countryName": "Republic of the Congo",
+    "countryFlag": "flags/CG.svg",
+    "latlng": [
+      -4.25724,
+      15.282744
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COD-lubumbashi",
+    "name": "Lubumbashi",
+    "countryCca3": "COD",
+    "countryName": "DR Congo",
+    "countryFlag": "flags/CD.svg",
+    "latlng": [
+      -11.678079,
+      27.478072
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-varanasi",
+    "name": "Varanasi",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      25.331936,
+      82.998094
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ZAF-pretoria",
+    "name": "Pretoria",
+    "countryCca3": "ZAF",
+    "countryName": "South Africa",
+    "countryFlag": "flags/ZA.svg",
+    "latlng": [
+      -25.704975,
+      28.227483
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ZMB-lusaka",
+    "name": "Lusaka",
+    "countryCca3": "ZMB",
+    "countryName": "Zambia",
+    "countryFlag": "flags/ZM.svg",
+    "latlng": [
+      -15.414698,
+      28.281382
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-asansol",
+    "name": "Asansol",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      23.685279,
+      86.981387
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-yekaterinburg",
+    "name": "Yekaterinburg",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      56.851976,
+      60.598014
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PAK-peshawar",
+    "name": "Peshawar",
+    "countryCca3": "PAK",
+    "countryName": "Pakistan",
+    "countryFlag": "flags/PK.svg",
+    "latlng": [
+      34.006962,
+      71.533057
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-jamshedpur",
+    "name": "Jamshedpur",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      22.789481,
+      86.195573
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-madurai",
+    "name": "Madurai",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      9.921972,
+      78.118081
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CRI-san-jose",
+    "name": "San José",
+    "countryCca3": "CRI",
+    "countryName": "Costa Rica",
+    "countryFlag": "flags/CR.svg",
+    "latlng": [
+      9.930371,
+      -84.078814
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PAN-panama-city",
+    "name": "Panama City",
+    "countryCca3": "PAN",
+    "countryName": "Panama",
+    "countryFlag": "flags/PA.svg",
+    "latlng": [
+      8.969963,
+      -79.534983
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-nizhny-novgorod",
+    "name": "Nizhny Novgorod",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      56.334953,
+      43.998148
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IDN-makassar",
+    "name": "Makassar",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -5.138013,
+      119.430082
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IRN-shiraz",
+    "name": "Shiraz",
+    "countryCca3": "IRN",
+    "countryName": "Iran",
+    "countryFlag": "flags/IR.svg",
+    "latlng": [
+      29.631906,
+      52.568065
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ESP-seville",
+    "name": "Seville",
+    "countryCca3": "ESP",
+    "countryName": "Spain",
+    "countryFlag": "flags/ES.svg",
+    "latlng": [
+      37.405015,
+      -5.980007
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-amritsar",
+    "name": "Amritsar",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      31.641938,
+      74.868047
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "KAZ-almaty",
+    "name": "Almaty",
+    "countryCca3": "KAZ",
+    "countryName": "Kazakhstan",
+    "countryFlag": "flags/KZ.svg",
+    "latlng": [
+      43.326936,
+      76.91309
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BGR-sofia",
+    "name": "Sofia",
+    "countryCca3": "BGR",
+    "countryName": "Bulgaria",
+    "countryFlag": "flags/BG.svg",
+    "latlng": [
+      42.685295,
+      23.314708
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LBY-banghazi",
+    "name": "Banghazi",
+    "countryCca3": "LBY",
+    "countryName": "Libya",
+    "countryFlag": "flags/LY.svg",
+    "latlng": [
+      32.118679,
+      20.064777
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-raleigh",
+    "name": "Raleigh",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      35.772696,
+      -78.647035
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GBR-glasgow",
+    "name": "Glasgow",
+    "countryCca3": "GBR",
+    "countryName": "United Kingdom",
+    "countryFlag": "flags/GB.svg",
+    "latlng": [
+      55.86227,
+      -4.239101
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BFA-ouagadougou",
+    "name": "Ouagadougou",
+    "countryCca3": "BFA",
+    "countryName": "Burkina Faso",
+    "countryFlag": "flags/BF.svg",
+    "latlng": [
+      12.372262,
+      -1.52667
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-ottawa",
+    "name": "Ottawa",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      45.418643,
+      -75.701961
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-adelaide",
+    "name": "Adelaide",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -34.933042,
+      138.598059
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-samara",
+    "name": "Samara",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      53.196953,
+      50.149349
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-kazan",
+    "name": "Kazan",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      55.751888,
+      49.124399
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-calgary",
+    "name": "Calgary",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      51.084938,
+      -114.081944
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARM-yerevan",
+    "name": "Yerevan",
+    "countryCca3": "ARM",
+    "countryName": "Armenia",
+    "countryFlag": "flags/AM.svg",
+    "latlng": [
+      40.183097,
+      44.511606
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SOM-mogadishu",
+    "name": "Mogadishu",
+    "countryCca3": "SOM",
+    "countryName": "Somalia",
+    "countryFlag": "flags/SO.svg",
+    "latlng": [
+      2.068627,
+      45.364732
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GEO-tbilisi",
+    "name": "Tbilisi",
+    "countryCca3": "GEO",
+    "countryName": "Georgia",
+    "countryFlag": "flags/GE.svg",
+    "latlng": [
+      41.726956,
+      44.78885
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AGO-huambo",
+    "name": "Huambo",
+    "countryCca3": "AGO",
+    "countryName": "Angola",
+    "countryFlag": "flags/AO.svg",
+    "latlng": [
+      -12.74804,
+      15.758064
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SRB-belgrade",
+    "name": "Belgrade",
+    "countryCca3": "SRB",
+    "countryName": "Serbia",
+    "countryFlag": "flags/RS.svg",
+    "latlng": [
+      44.820591,
+      20.466045
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-bhilai",
+    "name": "Bhilai",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      21.211262,
+      81.372213
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TJK-dushanbe",
+    "name": "Dushanbe",
+    "countryCca3": "TJK",
+    "countryName": "Tajikistan",
+    "countryFlag": "flags/TJ.svg",
+    "latlng": [
+      38.560035,
+      68.773879
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-memphis",
+    "name": "Memphis",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      35.144701,
+      -90.028777
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "JOR-amman",
+    "name": "Amman",
+    "countryCca3": "JOR",
+    "countryName": "Jordan",
+    "countryFlag": "flags/JO.svg",
+    "latlng": [
+      31.951971,
+      35.931354
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-xining",
+    "name": "Xining",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      36.621944,
+      101.768059
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-norfolk",
+    "name": "Norfolk",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      36.849959,
+      -76.280006
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ISR-jerusalem",
+    "name": "Jerusalem",
+    "countryCca3": "ISR",
+    "countryName": "Israel",
+    "countryFlag": "flags/IL.svg",
+    "latlng": [
+      31.778408,
+      35.206626
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GTM-guatemala-city",
+    "name": "Guatemala City",
+    "countryCca3": "GTM",
+    "countryName": "Guatemala",
+    "countryFlag": "flags/GT.svg",
+    "latlng": [
+      14.623081,
+      -90.528911
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-florianopolis",
+    "name": "Florianópolis",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -27.578039,
+      -48.521966
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ZAF-port-elizabeth",
+    "name": "Port Elizabeth",
+    "countryCca3": "ZAF",
+    "countryName": "South Africa",
+    "countryFlag": "flags/ZA.svg",
+    "latlng": [
+      -33.968088,
+      25.598083
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-ufa",
+    "name": "Ufa",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      54.791921,
+      56.038085
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-buffalo",
+    "name": "Buffalo",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      42.881924,
+      -78.881948
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MAR-fez",
+    "name": "Fez",
+    "countryCca3": "MAR",
+    "countryName": "Morocco",
+    "countryFlag": "flags/MA.svg",
+    "latlng": [
+      34.056545,
+      -5.002323
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "YEM-aden",
+    "name": "Aden",
+    "countryCca3": "YEM",
+    "countryName": "Yemen",
+    "countryFlag": "flags/YE.svg",
+    "latlng": [
+      12.779723,
+      45.00949
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-perm",
+    "name": "Perm",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      58.001906,
+      56.248047
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-yinchuan",
+    "name": "Yinchuan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      38.46992,
+      106.271092
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TCD-n-djamena",
+    "name": "N'Djamena",
+    "countryCca3": "TCD",
+    "countryName": "Chad",
+    "countryFlag": "flags/TD.svg",
+    "latlng": [
+      12.115042,
+      15.047202
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-guilin",
+    "name": "Guilin",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      25.281939,
+      110.278082
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-volgograd",
+    "name": "Volgograd",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      48.711956,
+      44.498015
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-salt-lake-city",
+    "name": "Salt Lake City",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      40.776962,
+      -111.931998
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-merida",
+    "name": "Mérida",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      20.968585,
+      -89.618579
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-pingxiang",
+    "name": "Pingxiang",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      27.621951,
+      113.848097
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-kozhikode",
+    "name": "Kozhikode",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      11.252382,
+      75.768044
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "HND-tegucigalpa",
+    "name": "Tegucigalpa",
+    "countryCca3": "HND",
+    "countryName": "Honduras",
+    "countryFlag": "flags/HN.svg",
+    "latlng": [
+      14.103991,
+      -87.219475
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "JAM-kingston",
+    "name": "Kingston",
+    "countryCca3": "JAM",
+    "countryName": "Jamaica",
+    "countryFlag": "flags/JM.svg",
+    "latlng": [
+      17.977077,
+      -76.767434
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MMR-naypyidaw",
+    "name": "Naypyidaw",
+    "countryCca3": "MMR",
+    "countryName": "Myanmar",
+    "countryFlag": "flags/MM.svg",
+    "latlng": [
+      19.768503,
+      96.116673
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-krasnoyarsk",
+    "name": "Krasnoyarsk",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      56.015929,
+      92.864055
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NIC-managua",
+    "name": "Managua",
+    "countryCca3": "NIC",
+    "countryName": "Nicaragua",
+    "countryFlag": "flags/NI.svg",
+    "latlng": [
+      12.154962,
+      -86.270437
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NER-niamey",
+    "name": "Niamey",
+    "countryCca3": "NER",
+    "countryName": "Niger",
+    "countryFlag": "flags/NE.svg",
+    "latlng": [
+      13.518652,
+      2.11471
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ALB-tirana",
+    "name": "Tirana",
+    "countryCca3": "ALB",
+    "countryName": "Albania",
+    "countryFlag": "flags/AL.svg",
+    "latlng": [
+      41.327541,
+      19.818883
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NPL-kathmandu",
+    "name": "Kathmandu",
+    "countryCca3": "NPL",
+    "countryName": "Nepal",
+    "countryFlag": "flags/NP.svg",
+    "latlng": [
+      27.718638,
+      85.314696
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARG-mendoza",
+    "name": "Mendoza",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -32.881384,
+      -68.818557
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHL-concepcion",
+    "name": "Concepción",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -36.830014,
+      -73.050022
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COL-cartagena",
+    "name": "Cartagena",
+    "countryCca3": "COL",
+    "countryName": "Colombia",
+    "countryFlag": "flags/CO.svg",
+    "latlng": [
+      10.401684,
+      -75.516339
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MNG-ulaanbaatar",
+    "name": "Ulaanbaatar",
+    "countryCca3": "MNG",
+    "countryName": "Mongolia",
+    "countryFlag": "flags/MN.svg",
+    "latlng": [
+      47.918619,
+      106.91467
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "KEN-mombasa",
+    "name": "Mombasa",
+    "countryCca3": "KEN",
+    "countryName": "Kenya",
+    "countryFlag": "flags/KE.svg",
+    "latlng": [
+      -4.03808,
+      39.687972
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-omaha",
+    "name": "Omaha",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      41.240001,
+      -96.00999
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-nashville",
+    "name": "Nashville",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      36.17192,
+      -86.781931
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MAR-marrakesh",
+    "name": "Marrakesh",
+    "countryCca3": "MAR",
+    "countryName": "Morocco",
+    "countryFlag": "flags/MA.svg",
+    "latlng": [
+      31.631939,
+      -8.001933
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ITA-palermo",
+    "name": "Palermo",
+    "countryCca3": "ITA",
+    "countryName": "Italy",
+    "countryFlag": "flags/IT.svg",
+    "latlng": [
+      38.126969,
+      13.348081
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-tampico",
+    "name": "Tampico",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      22.30002,
+      -97.870006
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IDN-padang",
+    "name": "Padang",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -0.958061,
+      100.358068
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHL-valparaiso",
+    "name": "Valparaíso",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -33.047739,
+      -71.617026
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IND-bhubaneswar",
+    "name": "Bhubaneswar",
+    "countryCca3": "IND",
+    "countryName": "India",
+    "countryFlag": "flags/IN.svg",
+    "latlng": [
+      20.272374,
+      85.825414
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "KGZ-bishkek",
+    "name": "Bishkek",
+    "countryCca3": "KGZ",
+    "countryName": "Kyrgyzstan",
+    "countryFlag": "flags/KG.svg",
+    "latlng": [
+      42.875025,
+      74.583258
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAF-bangui",
+    "name": "Bangui",
+    "countryCca3": "CAF",
+    "countryName": "Central African Republic",
+    "countryFlag": "flags/CF.svg",
+    "latlng": [
+      4.366644,
+      18.558288
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GRC-thessaloniki",
+    "name": "Thessaloniki",
+    "countryCca3": "GRC",
+    "countryName": "Greece",
+    "countryFlag": "flags/GR.svg",
+    "latlng": [
+      40.698052,
+      22.883055
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SLE-freetown",
+    "name": "Freetown",
+    "countryCca3": "SLE",
+    "countryName": "Sierra Leone",
+    "countryFlag": "flags/SL.svg",
+    "latlng": [
+      8.471957,
+      -13.236162
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PHL-cebu",
+    "name": "Cebu",
+    "countryCca3": "PHL",
+    "countryName": "Philippines",
+    "countryFlag": "flags/PH.svg",
+    "latlng": [
+      10.321922,
+      123.898129
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ESP-valencia",
+    "name": "Valencia",
+    "countryCca3": "ESP",
+    "countryName": "Spain",
+    "countryFlag": "flags/ES.svg",
+    "latlng": [
+      39.486963,
+      -0.401958
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "DZA-oran",
+    "name": "Oran",
+    "countryCca3": "DZA",
+    "countryName": "Algeria",
+    "countryFlag": "flags/DZ.svg",
+    "latlng": [
+      35.711948,
+      -0.621919
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-chihuahua",
+    "name": "Chihuahua",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      28.646927,
+      -106.086928
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-oklahoma-city",
+    "name": "Oklahoma City",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      35.471989,
+      -97.520629
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PAK-islamabad",
+    "name": "Islamabad",
+    "countryCca3": "PAK",
+    "countryName": "Pakistan",
+    "countryFlag": "flags/PK.svg",
+    "latlng": [
+      33.689368,
+      73.08063
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-campo-grande",
+    "name": "Campo Grande",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -20.448086,
+      -54.618571
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PER-trujillo",
+    "name": "Trujillo",
+    "countryCca3": "PER",
+    "countryName": "Peru",
+    "countryFlag": "flags/PE.svg",
+    "latlng": [
+      -8.120035,
+      -79.019968
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BEN-cotonou",
+    "name": "Cotonou",
+    "countryCca3": "BEN",
+    "countryName": "Benin",
+    "countryFlag": "flags/BJ.svg",
+    "latlng": [
+      6.36298,
+      2.404355
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LAO-vientiane",
+    "name": "Vientiane",
+    "countryCca3": "LAO",
+    "countryName": "Laos",
+    "countryFlag": "flags/LA.svg",
+    "latlng": [
+      17.966693,
+      102.59998
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "VEN-ciudad-guayana",
+    "name": "Ciudad Guayana",
+    "countryCca3": "VEN",
+    "countryName": "Venezuela",
+    "countryFlag": "flags/VE.svg",
+    "latlng": [
+      8.370017,
+      -62.619987
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LVA-riga",
+    "name": "Riga",
+    "countryCca3": "LVA",
+    "countryName": "Latvia",
+    "countryFlag": "flags/LV.svg",
+    "latlng": [
+      56.950024,
+      24.099965
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MRT-nouakchott",
+    "name": "Nouakchott",
+    "countryCca3": "MRT",
+    "countryName": "Mauritania",
+    "countryFlag": "flags/MR.svg",
+    "latlng": [
+      18.086427,
+      -15.97534
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "OMN-muscat",
+    "name": "Muscat",
+    "countryCca3": "OMN",
+    "countryName": "Oman",
+    "countryFlag": "flags/OM.svg",
+    "latlng": [
+      23.585179,
+      58.378311
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NGA-sokoto",
+    "name": "Sokoto",
+    "countryCca3": "NGA",
+    "countryName": "Nigeria",
+    "countryFlag": "flags/NG.svg",
+    "latlng": [
+      13.060016,
+      5.240031
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TKM-ashgabat",
+    "name": "Ashgabat",
+    "countryCca3": "TKM",
+    "countryName": "Turkmenistan",
+    "countryFlag": "flags/TM.svg",
+    "latlng": [
+      37.949995,
+      58.383299
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "HRV-zagreb",
+    "name": "Zagreb",
+    "countryCca3": "HRV",
+    "countryName": "Croatia",
+    "countryFlag": "flags/HR.svg",
+    "latlng": [
+      45.800007,
+      15.999995
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-acapulco",
+    "name": "Acapulco",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      16.849991,
+      -99.915979
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AFG-kandahar",
+    "name": "Kandahar",
+    "countryCca3": "AFG",
+    "countryName": "Afghanistan",
+    "countryFlag": "flags/AF.svg",
+    "latlng": [
+      31.61002,
+      65.694946
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "UZB-samarkand",
+    "name": "Samarkand",
+    "countryCca3": "UZB",
+    "countryName": "Uzbekistan",
+    "countryFlag": "flags/UZ.svg",
+    "latlng": [
+      39.670019,
+      66.944999
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ZWE-bulawayo",
+    "name": "Bulawayo",
+    "countryCca3": "ZWE",
+    "countryName": "Zimbabwe",
+    "countryFlag": "flags/ZW.svg",
+    "latlng": [
+      -20.169998,
+      28.580002
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BIH-sarajevo",
+    "name": "Sarajevo",
+    "countryCca3": "BIH",
+    "countryName": "Bosnia and Herzegovina",
+    "countryFlag": "flags/BA.svg",
+    "latlng": [
+      43.850022,
+      18.383002
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NGA-enugu",
+    "name": "Enugu",
+    "countryCca3": "NGA",
+    "countryName": "Nigeria",
+    "countryFlag": "flags/NG.svg",
+    "latlng": [
+      6.450031,
+      7.499997
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MDA-chisinau",
+    "name": "Chișinău",
+    "countryCca3": "MDA",
+    "countryName": "Moldova",
+    "countryFlag": "flags/MD.svg",
+    "latlng": [
+      47.005024,
+      28.857711
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MWI-lilongwe",
+    "name": "Lilongwe",
+    "countryCca3": "MWI",
+    "countryName": "Malawi",
+    "countryFlag": "flags/MW.svg",
+    "latlng": [
+      -13.983295,
+      33.783302
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COD-kikwit",
+    "name": "Kikwit",
+    "countryCca3": "COD",
+    "countryName": "DR Congo",
+    "countryFlag": "flags/CD.svg",
+    "latlng": [
+      -5.030043,
+      18.850002
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-winnipeg",
+    "name": "Winnipeg",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      49.882987,
+      -97.165992
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-quebec",
+    "name": "Québec",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      46.839969,
+      -71.24561
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ERI-asmara",
+    "name": "Asmara",
+    "countryCca3": "ERI",
+    "countryName": "Eritrea",
+    "countryFlag": "flags/ER.svg",
+    "latlng": [
+      15.333339,
+      38.933324
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "EGY-luxor",
+    "name": "Luxor",
+    "countryCca3": "EGY",
+    "countryName": "Egypt",
+    "countryFlag": "flags/EG.svg",
+    "latlng": [
+      25.700019,
+      32.650038
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IDN-bandjarmasin",
+    "name": "Bandjarmasin",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      -3.329992,
+      114.580076
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARE-abu-dhabi",
+    "name": "Abu Dhabi",
+    "countryCca3": "ARE",
+    "countryName": "United Arab Emirates",
+    "countryFlag": "flags/AE.svg",
+    "latlng": [
+      24.466684,
+      54.366593
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-barnaul",
+    "name": "Barnaul",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      53.354998,
+      83.745007
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-vladivostok",
+    "name": "Vladivostok",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      43.130015,
+      131.910026
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-irkutsk",
+    "name": "Irkutsk",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      52.284604,
+      104.283869
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-hami",
+    "name": "Hami",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      42.826984,
+      93.515005
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-veracruz",
+    "name": "Veracruz",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      19.177342,
+      -96.159981
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GAB-libreville",
+    "name": "Libreville",
+    "countryCca3": "GAB",
+    "countryName": "Gabon",
+    "countryFlag": "flags/GA.svg",
+    "latlng": [
+      0.385389,
+      9.457965
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARG-mar-del-plata",
+    "name": "Mar del Plata",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -38.00002,
+      -57.579984
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LTU-vilnius",
+    "name": "Vilnius",
+    "countryCca3": "LTU",
+    "countryName": "Lithuania",
+    "countryFlag": "flags/LT.svg",
+    "latlng": [
+      54.683366,
+      25.316635
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-cancun",
+    "name": "Cancún",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      21.16996,
+      -86.830008
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-newcastle",
+    "name": "Newcastle",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -32.929508,
+      151.770249
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-tomsk",
+    "name": "Tomsk",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      56.494987,
+      84.975009
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MOZ-beira",
+    "name": "Beira",
+    "countryCca3": "MOZ",
+    "countryName": "Mozambique",
+    "countryFlag": "flags/MZ.svg",
+    "latlng": [
+      -19.820045,
+      34.870006
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-kashgar",
+    "name": "Kashgar",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      39.476336,
+      75.969926
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-macapa",
+    "name": "Macapá",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      0.033007,
+      -51.050021
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SDN-port-sudan",
+    "name": "Port Sudan",
+    "countryCca3": "SDN",
+    "countryName": "Sudan",
+    "countryFlag": "flags/SD.svg",
+    "latlng": [
+      19.615791,
+      37.216426
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-feira-de-santana",
+    "name": "Feira de Santana",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -12.250016,
+      -38.970009
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-tuxtla-gutierrez",
+    "name": "Tuxtla Gutiérrez",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      16.749997,
+      -93.15001
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ZAF-bloemfontein",
+    "name": "Bloemfontein",
+    "countryCca3": "ZAF",
+    "countryName": "South Africa",
+    "countryFlag": "flags/ZA.svg",
+    "latlng": [
+      -29.119994,
+      26.229913
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "KAZ-qaraghandy",
+    "name": "Qaraghandy",
+    "countryCca3": "KAZ",
+    "countryName": "Kazakhstan",
+    "countryFlag": "flags/KZ.svg",
+    "latlng": [
+      49.884977,
+      73.11501
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "VEN-san-cristobal",
+    "name": "San Cristóbal",
+    "countryCca3": "VEN",
+    "countryName": "Venezuela",
+    "countryFlag": "flags/VE.svg",
+    "latlng": [
+      7.770003,
+      -72.249967
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "JPN-nagasaki",
+    "name": "Nagasaki",
+    "countryCca3": "JPN",
+    "countryName": "Japan",
+    "countryFlag": "flags/JP.svg",
+    "latlng": [
+      32.764988,
+      129.885033
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COD-kolwezi",
+    "name": "Kolwezi",
+    "countryCca3": "COD",
+    "countryName": "DR Congo",
+    "countryFlag": "flags/CD.svg",
+    "latlng": [
+      -10.716724,
+      25.47244
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-hotan",
+    "name": "Hotan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      37.099711,
+      79.926945
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TZA-zanzibar",
+    "name": "Zanzibar",
+    "countryCca3": "TZA",
+    "countryName": "Tanzania",
+    "countryFlag": "flags/TZ.svg",
+    "latlng": [
+      -6.16,
+      39.200026
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GNB-bissau",
+    "name": "Bissau",
+    "countryCca3": "GNB",
+    "countryName": "Guinea-Bissau",
+    "countryFlag": "flags/GW.svg",
+    "latlng": [
+      11.865024,
+      -15.598361
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SDN-kassala",
+    "name": "Kassala",
+    "countryCca3": "SDN",
+    "countryName": "Sudan",
+    "countryFlag": "flags/SD.svg",
+    "latlng": [
+      15.459972,
+      36.390016
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-surgut",
+    "name": "Surgut",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      61.259942,
+      73.425017
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "EST-tallinn",
+    "name": "Tallinn",
+    "countryCca3": "EST",
+    "countryName": "Estonia",
+    "countryFlag": "flags/EE.svg",
+    "latlng": [
+      59.433877,
+      24.728041
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NZL-wellington",
+    "name": "Wellington",
+    "countryCca3": "NZL",
+    "countryName": "New Zealand",
+    "countryFlag": "flags/NZ.svg",
+    "latlng": [
+      -41.292068,
+      174.777201
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SDN-nyala",
+    "name": "Nyala",
+    "countryCca3": "SDN",
+    "countryName": "Sudan",
+    "countryFlag": "flags/SD.svg",
+    "latlng": [
+      12.059973,
+      24.889995
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PHL-iloilo",
+    "name": "Iloilo",
+    "countryCca3": "PHL",
+    "countryName": "Philippines",
+    "countryFlag": "flags/PH.svg",
+    "latlng": [
+      10.705043,
+      122.545016
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-des-moines",
+    "name": "Des Moines",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      41.57998,
+      -93.619981
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-sevastopol",
+    "name": "Sevastopol",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      44.603925,
+      33.524395
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MLT-valletta",
+    "name": "Valletta",
+    "countryCca3": "MLT",
+    "countryName": "Malta",
+    "countryFlag": "flags/MT.svg",
+    "latlng": [
+      35.899732,
+      14.514711
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MEX-mazatlan",
+    "name": "Mazatlán",
+    "countryCca3": "MEX",
+    "countryName": "Mexico",
+    "countryFlag": "flags/MX.svg",
+    "latlng": [
+      23.221101,
+      -106.420001
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NZL-christchurch",
+    "name": "Christchurch",
+    "countryCca3": "NZL",
+    "countryName": "New Zealand",
+    "countryFlag": "flags/NZ.svg",
+    "latlng": [
+      -43.535022,
+      172.630023
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LSO-maseru",
+    "name": "Maseru",
+    "countryCca3": "LSO",
+    "countryName": "Lesotho",
+    "countryFlag": "flags/LS.svg",
+    "latlng": [
+      -29.316674,
+      27.483273
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PER-cusco",
+    "name": "Cusco",
+    "countryCca3": "PER",
+    "countryName": "Peru",
+    "countryFlag": "flags/PE.svg",
+    "latlng": [
+      -13.525028,
+      -71.972155
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-halifax",
+    "name": "Halifax",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      44.650025,
+      -63.600004
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARG-posadas",
+    "name": "Posadas",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -27.357832,
+      -55.885107
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-archangel",
+    "name": "Archangel",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      64.574959,
+      40.545008
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "KAZ-nur-sultan",
+    "name": "Nur-Sultan",
+    "countryCca3": "KAZ",
+    "countryName": "Kazakhstan",
+    "countryFlag": "flags/KZ.svg",
+    "latlng": [
+      51.181125,
+      71.427774
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-boise",
+    "name": "Boise",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      43.60859,
+      -116.22749
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-canberra",
+    "name": "Canberra",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -35.283029,
+      149.129026
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CMR-maroua",
+    "name": "Maroua",
+    "countryCca3": "CMR",
+    "countryName": "Cameroon",
+    "countryFlag": "flags/CM.svg",
+    "latlng": [
+      10.595566,
+      14.324696
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-murmansk",
+    "name": "Murmansk",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      68.969988,
+      33.100036
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHL-antofagasta",
+    "name": "Antofagasta",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -23.649992,
+      -70.400003
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-chita",
+    "name": "Chita",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      52.055025,
+      113.465002
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRN-bandar-seri-begawan",
+    "name": "Bandar Seri Begawan",
+    "countryCca3": "BRN",
+    "countryName": "Brunei",
+    "countryFlag": "flags/BN.svg",
+    "latlng": [
+      4.883331,
+      114.933284
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TZA-mbeya",
+    "name": "Mbeya",
+    "countryCca3": "TZA",
+    "countryName": "Tanzania",
+    "countryFlag": "flags/TZ.svg",
+    "latlng": [
+      -8.890014,
+      33.430042
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-victoria",
+    "name": "Victoria",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      48.433283,
+      -123.350001
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PNG-port-moresby",
+    "name": "Port Moresby",
+    "countryCca3": "PNG",
+    "countryName": "Papua New Guinea",
+    "countryFlag": "flags/PG.svg",
+    "latlng": [
+      -9.464708,
+      147.192504
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARG-bahia-blanca",
+    "name": "Bahía Blanca",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -38.740027,
+      -62.265021
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PER-tacna",
+    "name": "Tacna",
+    "countryCca3": "PER",
+    "countryName": "Peru",
+    "countryFlag": "flags/PE.svg",
+    "latlng": [
+      -18.000001,
+      -70.250012
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "PER-ica",
+    "name": "Ica",
+    "countryCca3": "PER",
+    "countryName": "Peru",
+    "countryFlag": "flags/PE.svg",
+    "latlng": [
+      -14.067993,
+      -75.725492
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NAM-windhoek",
+    "name": "Windhoek",
+    "countryCca3": "NAM",
+    "countryName": "Namibia",
+    "countryFlag": "flags/NA.svg",
+    "latlng": [
+      -22.570006,
+      17.083546
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GUY-georgetown",
+    "name": "Georgetown",
+    "countryCca3": "GUY",
+    "countryName": "Guyana",
+    "countryFlag": "flags/GY.svg",
+    "latlng": [
+      6.801974,
+      -58.167029
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SUR-paramaribo",
+    "name": "Paramaribo",
+    "countryCca3": "SUR",
+    "countryName": "Suriname",
+    "countryFlag": "flags/SR.svg",
+    "latlng": [
+      5.83503,
+      -55.167031
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-jackson",
+    "name": "Jackson",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      32.298815,
+      -90.184997
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-bratsk",
+    "name": "Bratsk",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      56.156997,
+      101.615027
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COD-matadi",
+    "name": "Matadi",
+    "countryCca3": "COD",
+    "countryName": "DR Congo",
+    "countryFlag": "flags/CD.svg",
+    "latlng": [
+      -5.81661,
+      13.450021
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-yakutsk",
+    "name": "Yakutsk",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      62.034959,
+      129.735016
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-boa-vista",
+    "name": "Boa Vista",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      2.816093,
+      -60.665998
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TLS-dili",
+    "name": "Dili",
+    "countryCca3": "TLS",
+    "countryName": "Timor-Leste",
+    "countryFlag": "flags/TL.svg",
+    "latlng": [
+      -8.559388,
+      125.579456
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-santarem",
+    "name": "Santarém",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -2.433251,
+      -54.699979
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NER-zinder",
+    "name": "Zinder",
+    "countryCca3": "NER",
+    "countryName": "Niger",
+    "countryFlag": "flags/NE.svg",
+    "latlng": [
+      13.799996,
+      8.983317
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BHS-nassau",
+    "name": "Nassau",
+    "countryCca3": "BHS",
+    "countryName": "Bahamas",
+    "countryFlag": "flags/BS.svg",
+    "latlng": [
+      25.08339,
+      -77.350044
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHL-iquique",
+    "name": "Iquique",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -20.249993,
+      -70.129968
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BOL-sucre",
+    "name": "Sucre",
+    "countryCca3": "BOL",
+    "countryName": "Bolivia",
+    "countryFlag": "flags/BO.svg",
+    "latlng": [
+      -19.040971,
+      -65.259516
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MOZ-nacala",
+    "name": "Nacala",
+    "countryCca3": "MOZ",
+    "countryName": "Mozambique",
+    "countryFlag": "flags/MZ.svg",
+    "latlng": [
+      -14.518611,
+      40.715024
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CYP-nicosia",
+    "name": "Nicosia",
+    "countryCca3": "CYP",
+    "countryName": "Cyprus",
+    "countryFlag": "flags/CY.svg",
+    "latlng": [
+      35.166677,
+      33.366635
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-lhasa",
+    "name": "Lhasa",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      29.645024,
+      91.10001
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LKA-colombo",
+    "name": "Colombo",
+    "countryCca3": "LKA",
+    "countryName": "Sri Lanka",
+    "countryFlag": "flags/LK.svg",
+    "latlng": [
+      6.931966,
+      79.857751
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NOR-bergen",
+    "name": "Bergen",
+    "countryCca3": "NOR",
+    "countryName": "Norway",
+    "countryFlag": "flags/NO.svg",
+    "latlng": [
+      60.391002,
+      5.324522
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BWA-gaborone",
+    "name": "Gaborone",
+    "countryCca3": "BWA",
+    "countryName": "Botswana",
+    "countryFlag": "flags/BW.svg",
+    "latlng": [
+      -24.646314,
+      25.911948
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CIV-yamoussoukro",
+    "name": "Yamoussoukro",
+    "countryCca3": "CIV",
+    "countryName": "Ivory Coast",
+    "countryFlag": "flags/CI.svg",
+    "latlng": [
+      6.818381,
+      -5.275503
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-saskatoon",
+    "name": "Saskatoon",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      52.170031,
+      -106.669985
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "IDN-tarakan",
+    "name": "Tarakan",
+    "countryCca3": "IDN",
+    "countryName": "Indonesia",
+    "countryFlag": "flags/ID.svg",
+    "latlng": [
+      3.300017,
+      117.633016
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-petropavlovsk-kamchatsky",
+    "name": "Petropavlovsk-Kamchatsky",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      53.061992,
+      158.62302
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-regina",
+    "name": "Regina",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      50.450033,
+      -104.61701
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "FJI-suva",
+    "name": "Suva",
+    "countryCca3": "FJI",
+    "countryName": "Fiji",
+    "countryFlag": "flags/FJ.svg",
+    "latlng": [
+      -18.133016,
+      178.441707
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHL-puerto-montt",
+    "name": "Puerto Montt",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -41.469989,
+      -72.929978
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ISL-reykjavik",
+    "name": "Reykjavík",
+    "countryCca3": "ISL",
+    "countryName": "Iceland",
+    "countryFlag": "flags/IS.svg",
+    "latlng": [
+      64.143459,
+      -21.936546
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-maraba",
+    "name": "Marabá",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -5.349972,
+      -49.115979
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COD-bumba",
+    "name": "Bumba",
+    "countryCca3": "COD",
+    "countryName": "DR Congo",
+    "countryFlag": "flags/CD.svg",
+    "latlng": [
+      2.189981,
+      22.459962
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHL-valdivia",
+    "name": "Valdivia",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -39.821651,
+      -73.233111
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TCD-abeche",
+    "name": "Abéché",
+    "countryCca3": "TCD",
+    "countryName": "Chad",
+    "countryFlag": "flags/TD.svg",
+    "latlng": [
+      13.839994,
+      20.829984
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ETH-gondar",
+    "name": "Gondar",
+    "countryCca3": "ETH",
+    "countryName": "Ethiopia",
+    "countryFlag": "flags/ET.svg",
+    "latlng": [
+      12.610043,
+      37.460028
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GNQ-malabo",
+    "name": "Malabo",
+    "countryCca3": "GNQ",
+    "countryName": "Equatorial Guinea",
+    "countryFlag": "flags/GQ.svg",
+    "latlng": [
+      3.750015,
+      8.783278
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHN-jiayuguan",
+    "name": "Jiayuguan",
+    "countryCca3": "CHN",
+    "countryName": "China",
+    "countryFlag": "flags/CN.svg",
+    "latlng": [
+      39.82001,
+      98.299984
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NOR-trondheim",
+    "name": "Trondheim",
+    "countryCca3": "NOR",
+    "countryName": "Norway",
+    "countryFlag": "flags/NO.svg",
+    "latlng": [
+      63.416657,
+      10.416666
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARG-comodoro-rivadavia",
+    "name": "Comodoro Rivadavia",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -45.870031,
+      -67.499999
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-townsville",
+    "name": "Townsville",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -19.24995,
+      146.769997
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-caxias",
+    "name": "Caxias",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -4.833001,
+      -43.350026
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-st-john-s",
+    "name": "St. John's",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      47.584988,
+      -52.681007
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SSD-wau",
+    "name": "Wau",
+    "countryCca3": "SSD",
+    "countryName": "South Sudan",
+    "countryFlag": "flags/SS.svg",
+    "latlng": [
+      7.699981,
+      27.98996
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "DZA-ghardaia",
+    "name": "Ghardaia",
+    "countryCca3": "DZA",
+    "countryName": "Algeria",
+    "countryFlag": "flags/DZ.svg",
+    "latlng": [
+      32.489992,
+      3.669998
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NER-agadez",
+    "name": "Agadez",
+    "countryCca3": "NER",
+    "countryName": "Niger",
+    "countryFlag": "flags/NE.svg",
+    "latlng": [
+      16.995873,
+      7.98281
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CHL-punta-arenas",
+    "name": "Punta Arenas",
+    "countryCca3": "CHL",
+    "countryName": "Chile",
+    "countryFlag": "flags/CL.svg",
+    "latlng": [
+      -53.164986,
+      -70.939996
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GAB-port-gentil",
+    "name": "Port-Gentil",
+    "countryCca3": "GAB",
+    "countryName": "Gabon",
+    "countryFlag": "flags/GA.svg",
+    "latlng": [
+      -0.720022,
+      8.780022
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CPV-praia",
+    "name": "Praia",
+    "countryCca3": "CPV",
+    "countryName": "Cape Verde",
+    "countryFlag": "flags/CV.svg",
+    "latlng": [
+      14.916698,
+      -23.516689
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MDV-male",
+    "name": "Malé",
+    "countryCca3": "MDV",
+    "countryName": "Maldives",
+    "countryFlag": "flags/MV.svg",
+    "latlng": [
+      4.172037,
+      73.508901
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "LBY-sabha",
+    "name": "Sabha",
+    "countryCca3": "LBY",
+    "countryName": "Libya",
+    "countryFlag": "flags/LY.svg",
+    "latlng": [
+      27.033271,
+      14.43332
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-thunder-bay",
+    "name": "Thunder Bay",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      48.44615,
+      -89.274975
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BTN-thimphu",
+    "name": "Thimphu",
+    "countryCca3": "BTN",
+    "countryName": "Bhutan",
+    "countryFlag": "flags/BT.svg",
+    "latlng": [
+      27.472986,
+      89.639014
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-magadan",
+    "name": "Magadan",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      59.57498,
+      150.810009
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-darwin",
+    "name": "Darwin",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -12.425354,
+      130.850039
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-santa-fe",
+    "name": "Santa Fe",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      35.686929,
+      -105.937239
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "STP-sao-tome",
+    "name": "São Tomé",
+    "countryCca3": "STP",
+    "countryName": "São Tomé and Príncipe",
+    "countryFlag": "flags/ST.svg",
+    "latlng": [
+      0.337466,
+      6.72965
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "ARG-rio-gallegos",
+    "name": "Río Gallegos",
+    "countryCca3": "ARG",
+    "countryName": "Argentina",
+    "countryFlag": "flags/AR.svg",
+    "latlng": [
+      -51.633297,
+      -69.216587
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-hobart",
+    "name": "Hobart",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -42.850009,
+      147.29503
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MNG-erdenet",
+    "name": "Erdenet",
+    "countryCca3": "MNG",
+    "countryName": "Mongolia",
+    "countryFlag": "flags/MN.svg",
+    "latlng": [
+      49.053297,
+      104.118337
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SLB-honiara",
+    "name": "Honiara",
+    "countryCca3": "SLB",
+    "countryName": "Solomon Islands",
+    "countryFlag": "flags/SB.svg",
+    "latlng": [
+      -9.437994,
+      159.949766
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "DZA-tamanrasset",
+    "name": "Tamanrasset",
+    "countryCca3": "DZA",
+    "countryName": "Algeria",
+    "countryFlag": "flags/DZ.svg",
+    "latlng": [
+      22.785003,
+      5.522805
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BOL-riberalta",
+    "name": "Riberalta",
+    "countryCca3": "BOL",
+    "countryName": "Bolivia",
+    "countryFlag": "flags/BO.svg",
+    "latlng": [
+      -10.983013,
+      -66.100007
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-cheyenne",
+    "name": "Cheyenne",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      41.140007,
+      -104.819711
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MLI-timbuktu",
+    "name": "Timbuktu",
+    "countryCca3": "MLI",
+    "countryName": "Mali",
+    "countryFlag": "flags/ML.svg",
+    "latlng": [
+      16.766585,
+      -3.016596
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-ji-parana",
+    "name": "Ji-Paraná",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -10.833307,
+      -61.967003
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-bismarck",
+    "name": "Bismarck",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      46.808317,
+      -100.783316
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-vilhena",
+    "name": "Vilhena",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -12.716602,
+      -60.1166
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "WSM-apia",
+    "name": "Apia",
+    "countryCca3": "WSM",
+    "countryName": "Samoa",
+    "countryFlag": "flags/WS.svg",
+    "latlng": [
+      -13.835715,
+      -171.768599
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "FRA-cayenne",
+    "name": "Cayenne",
+    "countryCca3": "FRA",
+    "countryName": "France",
+    "countryFlag": "flags/FR.svg",
+    "latlng": [
+      4.932992,
+      -52.330021
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "COL-leticia",
+    "name": "Leticia",
+    "countryCca3": "COL",
+    "countryName": "Colombia",
+    "countryFlag": "flags/CO.svg",
+    "latlng": [
+      -4.201207,
+      -69.955261
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-fairbanks",
+    "name": "Fairbanks",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      64.836984,
+      -147.710659
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BRA-cruzeiro-do-sul",
+    "name": "Cruzeiro do Sul",
+    "countryCca3": "BRA",
+    "countryName": "Brazil",
+    "countryFlag": "flags/BR.svg",
+    "latlng": [
+      -7.629988,
+      -72.669968
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NOR-troms",
+    "name": "Tromsø",
+    "countryCca3": "NOR",
+    "countryName": "Norway",
+    "countryFlag": "flags/NO.svg",
+    "latlng": [
+      69.635076,
+      18.992025
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BMU-hamilton",
+    "name": "Hamilton",
+    "countryCca3": "BMU",
+    "countryName": "Bermuda",
+    "countryFlag": "flags/BM.svg",
+    "latlng": [
+      32.29419,
+      -64.783937
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MRT-atar",
+    "name": "Atar",
+    "countryCca3": "MRT",
+    "countryName": "Mauritania",
+    "countryFlag": "flags/MR.svg",
+    "latlng": [
+      20.51664,
+      -13.049989
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "VUT-port-vila",
+    "name": "Port Vila",
+    "countryCca3": "VUT",
+    "countryName": "Vanuatu",
+    "countryFlag": "flags/VU.svg",
+    "latlng": [
+      -17.73335,
+      168.316641
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "TON-nuku-alofa",
+    "name": "Nuku'alofa",
+    "countryCca3": "TON",
+    "countryName": "Tonga",
+    "countryFlag": "flags/TO.svg",
+    "latlng": [
+      -21.138512,
+      -175.220564
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-charlottetown",
+    "name": "Charlottetown",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      46.249282,
+      -63.131325
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-helena",
+    "name": "Helena",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      46.592749,
+      -112.035291
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SYC-victoria",
+    "name": "Victoria",
+    "countryCca3": "SYC",
+    "countryName": "Seychelles",
+    "countryFlag": "flags/SC.svg",
+    "latlng": [
+      -4.616632,
+      55.44999
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "MLI-djenne",
+    "name": "Djenné",
+    "countryCca3": "MLI",
+    "countryName": "Mali",
+    "countryFlag": "flags/ML.svg",
+    "latlng": [
+      13.89999,
+      -4.549991
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-juneau",
+    "name": "Juneau",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      58.303386,
+      -134.400712
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AUS-alice-springs",
+    "name": "Alice Springs",
+    "countryCca3": "AUS",
+    "countryName": "Australia",
+    "countryFlag": "flags/AU.svg",
+    "latlng": [
+      -23.700996,
+      133.880034
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "SDN-dongola",
+    "name": "Dongola",
+    "countryCca3": "SDN",
+    "countryName": "Sudan",
+    "countryFlag": "flags/SD.svg",
+    "latlng": [
+      19.166594,
+      30.483297
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "NAM-grootfontein",
+    "name": "Grootfontein",
+    "countryCca3": "NAM",
+    "countryName": "Namibia",
+    "countryFlag": "flags/NA.svg",
+    "latlng": [
+      -19.566623,
+      18.116558
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-whitehorse",
+    "name": "Whitehorse",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      60.716719,
+      -135.049984
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-yellowknife",
+    "name": "Yellowknife",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      62.442014,
+      -114.396981
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "BLZ-belmopan",
+    "name": "Belmopan",
+    "countryCca3": "BLZ",
+    "countryName": "Belize",
+    "countryFlag": "flags/BZ.svg",
+    "latlng": [
+      17.252033,
+      -88.767073
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "GRL-nuuk",
+    "name": "Nuuk",
+    "countryCca3": "GRL",
+    "countryName": "Greenland",
+    "countryFlag": "flags/GL.svg",
+    "latlng": [
+      64.198281,
+      -51.732659
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAN-prince-rupert",
+    "name": "Prince Rupert",
+    "countryCca3": "CAN",
+    "countryName": "Canada",
+    "countryFlag": "flags/CA.svg",
+    "latlng": [
+      54.31667,
+      -130.329988
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "USA-pierre",
+    "name": "Pierre",
+    "countryCca3": "USA",
+    "countryName": "United States",
+    "countryFlag": "flags/US.svg",
+    "latlng": [
+      44.368337,
+      -100.350552
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "AGO-menongue",
+    "name": "Menongue",
+    "countryCca3": "AGO",
+    "countryName": "Angola",
+    "countryFlag": "flags/AO.svg",
+    "latlng": [
+      -14.666612,
+      17.699994
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAF-obo",
+    "name": "Obo",
+    "countryCca3": "CAF",
+    "countryName": "Central African Republic",
+    "countryFlag": "flags/CF.svg",
+    "latlng": [
+      5.399992,
+      26.500026
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "CAF-n-dele",
+    "name": "N'Délé",
+    "countryCca3": "CAF",
+    "countryName": "Central African Republic",
+    "countryFlag": "flags/CF.svg",
+    "latlng": [
+      8.409137,
+      20.653044
+    ],
+    "scalerank": 3
+  },
+  {
+    "id": "RUS-anadyr",
+    "name": "Anadyr",
+    "countryCca3": "RUS",
+    "countryName": "Russia",
+    "countryFlag": "flags/RU.svg",
+    "latlng": [
+      64.73699,
+      177.474996
+    ],
+    "scalerank": 3
+  }
+]
