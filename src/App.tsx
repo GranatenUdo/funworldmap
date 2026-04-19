@@ -4,6 +4,7 @@ import Header from './components/Header'
 import CountryPanel from './components/CountryPanel'
 import Toast from './components/Toast'
 import { useCountryData } from './hooks/useCountryData'
+import { useCityData } from './hooks/useCityData'
 import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
@@ -11,7 +12,6 @@ import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { GameController } from './game/GameController'
 import './game/modes/country-pinning/CountryPinningHud'
-import { writeHash } from './lib/hashState'
 import type { CountryLike } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
 import type { CountryData } from './lib/types'
@@ -28,6 +28,7 @@ export default function App() {
 
 function AppInner() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
+  const { cities } = useCityData()
   const { selected, compareWith, select, compareSelect, clearCompare, deselect } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
@@ -79,10 +80,6 @@ function AppInner() {
     // Fires on the very first round of each new game — covers idle→playing
     // and game-over→Play-again transitions without needing a prev-status ref.
   }, [session.status, session.roundIndex, selected, deselect, mapRef])
-
-  const onPlay = useCallback(() => {
-    window.location.hash = writeHash({ kind: 'game', modeId: 'country-pinning', playing: true })
-  }, [])
 
   useEffect(() => {
     const name = selected?.name.common ?? null
@@ -256,10 +253,9 @@ function AppInner() {
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
-        onPlay={onPlay}
       />
 
-      <GameController pool={pool} byCca3={poolByCca3} />
+      <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
       {showHint && !selected && !gameActive && (
         <div role="status"

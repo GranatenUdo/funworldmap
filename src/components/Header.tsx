@@ -1,5 +1,7 @@
+import { useRef, useState } from 'react'
 import SearchBar from './SearchBar'
 import ThemeToggle from './ThemeToggle'
+import { PlayMenu } from './PlayMenu'
 import type { CountryData } from '../lib/types'
 import type { Theme } from '../hooks/useTheme'
 
@@ -12,13 +14,15 @@ interface Props {
   onSelect: (cca3: string) => void
   onThemeCycle: () => void
   onSatelliteToggle: () => void
-  onPlay: () => void
 }
 
 export default function Header({
   countries, theme, satellite, comparePickingMode, gameActive,
-  onSelect, onThemeCycle, onSatelliteToggle, onPlay,
+  onSelect, onThemeCycle, onSatelliteToggle,
 }: Props) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const triggerRef = useRef<HTMLButtonElement>(null)
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
       <div className="flex items-center justify-between px-4 py-3">
@@ -34,18 +38,25 @@ export default function Header({
           </div>
         )}
 
-        <div className="pointer-events-auto ml-3 flex items-center gap-2">
+        <div className="pointer-events-auto ml-3 flex items-center gap-2 relative">
           {!gameActive && (
-            <button
-              onClick={onPlay}
-              aria-label="Play a game"
-              className="w-10 h-10 rounded-xl backdrop-blur-sm border bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-teal dark:text-teal-light hover:bg-sand-200/90 dark:hover:bg-dark-300/80 flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50"
-              data-testid="header-play"
-            >
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </button>
+            <>
+              <button
+                ref={triggerRef}
+                onClick={() => setMenuOpen((o) => !o)}
+                aria-label="Play a game"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                aria-controls="play-menu"
+                className="w-10 h-10 rounded-xl backdrop-blur-sm border bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-teal dark:text-teal-light hover:bg-sand-200/90 dark:hover:bg-dark-300/80 flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50"
+                data-testid="header-play"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+              <PlayMenu open={menuOpen} onClose={() => setMenuOpen(false)} triggerRef={triggerRef} />
+            </>
           )}
 
           <button
