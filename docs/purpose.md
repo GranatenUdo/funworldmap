@@ -56,7 +56,7 @@ funworldmap is for everyone, but these users inform design decisions:
 
 The first version focuses on countries:
 
-- ~195 sovereign states and territories
+- 249 countries and territories (194 independent)
 - Per country: name, flag, capital, region, population, area, government type, languages, currencies, timezones, UN membership, neighboring countries
 - Data sourced from multiple authorities (REST Countries, CIA World Factbook archive). Every data point shows its source via tooltip — transparency about where information comes from
 - English-only interface (data supports future internationalization)

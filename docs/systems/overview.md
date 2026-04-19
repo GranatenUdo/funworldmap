@@ -116,20 +116,24 @@ When the hash is cleared (clicking ocean, closing the panel, or reset view), `us
 
 ## Bundle Size Budget
 
-MapLibre GL JS is NOT tree-shakeable — it ships as a single pre-bundled file.
+MapLibre GL JS is NOT tree-shakeable — it ships as a single pre-bundled file. `@sentry/react` is statically imported and bundled regardless of whether a DSN is configured at runtime.
+
+Measured against the 2026-04-19 build:
 
 | Component | Gzipped Size |
 |-----------|-------------|
 | maplibre-gl (entire library) | ~275 KB |
 | React 19 + ReactDOM | ~45 KB |
+| @sentry/react | ~60 KB |
 | @vis.gl/react-maplibre | ~15 KB |
-| Tailwind CSS (used utilities) | ~8 KB |
+| Tailwind CSS output (CSS bundle) | ~20 KB |
 | fuse.js | ~8 KB |
 | topojson-client | ~5 KB |
 | Application code | ~15 KB |
 | countries.json (metadata + _fieldSources) | ~65 KB |
-| **Total initial JS+CSS** | **~435 KB** |
-| world-atlas countries-50m (async chunk) | ~245 KB |
-| **Total with async data** | **~680 KB** |
+| cities.json (Natural Earth top-500) | ~25 KB |
+| **Total initial JS+CSS (measured)** | **~477 KB** |
+| world-atlas countries-50m (async chunk) | ~233 KB |
+| **Total with async data (measured)** | **~710 KB** |
 
-The map library dominates the budget at ~275KB. The geo data loads asynchronously after the map initializes, so the user sees the basemap first. Target: <700KB total gzipped.
+The per-component figures are estimates summing to the measured totals. MapLibre dominates. The geo data loads asynchronously after the map initializes, so the user sees the basemap first. The original <700 KB target predates Sentry and `cities.json`; re-baselining against a measured CI build is tracked as a roadmap item (bundle-size budgets in CI).

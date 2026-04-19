@@ -53,21 +53,21 @@ Test map state by reaching into the MapLibre API through the browser's JavaScrip
 
 ### Exposing the Map Instance
 
-For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. The `WorldMap` component stores the map reference on `window` in development:
+For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. `useMapInstance` exposes it unconditionally on `window.__funworldmap_map`:
 
 ```ts
-// In WorldMap.tsx onLoad handler:
-if (import.meta.env.DEV) {
-  (window as any).__funworldmap_map = mapRef.current;
-}
+// In useMapInstance.ts, inside the init effect:
+;(window as unknown as Record<string, unknown>).__funworldmap_map = map
 ```
 
 Tests access it via:
 ```ts
-const zoom = await page.evaluate(() => (window as any).__funworldmap_map.getZoom());
+const zoom = await page.evaluate(() => (window as unknown as {
+  __funworldmap_map: { getZoom: () => number }
+}).__funworldmap_map.getZoom())
 ```
 
-This is only available in development builds — production builds do not expose the map.
+The instance is exposed in production builds as well as development. This is a deliberate test seam: Playwright runs against the built bundle (`npm run build && npm run preview`), and the funworldmap site has no backend, no auth, and no sensitive runtime state — exposing a map reference is acceptable for this project. A future change to a sensitive context would need to gate this behind `import.meta.env.DEV`.
 
 ## WebGL2 in Headless Browsers
 

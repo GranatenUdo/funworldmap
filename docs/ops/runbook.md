@@ -24,7 +24,7 @@ GitHub Pages soft-caps free bandwidth at ~100 GB/month. Custom domains route thr
 | world-atlas (Natural Earth 50m) | On npm upstream release | Stable |
 | flagcdn.com | Hotlinked at runtime | No-op |
 
-> **Action:** `OWNER_TBD` for quarterly review. First review due 2026-07-17. Replace this line once an owner is assigned.
+> **Action:** Quarterly review is currently unowned. When a review is due, file an issue against the repo with label `data-freshness` and assign to a maintainer.
 
 **Refresh procedure.**
 ```bash
