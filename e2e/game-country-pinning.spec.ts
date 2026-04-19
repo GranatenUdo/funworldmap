@@ -149,4 +149,25 @@ test.describe('Country Pinning game', () => {
     await expect(page.getByTestId('game-guess-results')).toBeVisible({ timeout: 10_000 })
     await expect(page.getByTestId('game-guess-results')).toContainText('France')
   })
+
+  test('game-over overlay moves focus to Play again', async ({ page }) => {
+    await page.goto('/#game/country-pinning/play')
+    await waitForMap(page)
+
+    await setRoundAndWait(page, 'FRA', 'France')
+    await clickCountryPolygon(page, 'AUS')
+    await setRoundAndWait(page, 'FRA', 'France')
+    await clickCountryPolygon(page, 'AUS')
+    await setRoundAndWait(page, 'FRA', 'France')
+    await clickCountryPolygon(page, 'AUS')
+
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
+    // Effect focuses the Play again button on mount.
+    await expect
+      .poll(
+        () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
+        { timeout: 5_000 },
+      )
+      .toBe('game-over-play-again')
+  })
 })
