@@ -1,12 +1,15 @@
-import { createContext, useContext, useEffect, useMemo, useRef } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { useGameSession } from './useGameSession'
-import type { GameSession, GuessOutcome, ModeId, RoundSpec } from './types'
+import type { CityLike, CountryLike, GameMode, GameSession, GuessInput, GuessOutcome, ModeId, RoundSpec } from './types'
+import { getMode } from '../modes'
 
 export type GameSessionApi = {
   session: GameSession
+  mode: GameMode | null
   start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) => void
   submitGuess: (outcome: GuessOutcome) => void
+  submitGuessInput: (input: GuessInput) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
@@ -14,8 +17,43 @@ export type GameSessionApi = {
 
 const GameSessionContext = createContext<GameSessionApi | null>(null)
 
-export function GameSessionProvider({ children }: { children: ReactNode }) {
-  const api = useGameSession()
+interface Props {
+  pools: { countries: CountryLike[]; cities: CityLike[] }
+  children: ReactNode
+}
+
+export function GameSessionProvider({ pools, children }: Props) {
+  const { session, start, submitGuess, advance, overrideRound, endGame } = useGameSession()
+
+  const mode = useMemo<GameMode | null>(() => {
+    if (session.modeId === 'country-pinning' && pools.countries.length === 0) return null
+    if (session.modeId === 'city-guessing' && pools.cities.length === 0) return null
+    try {
+      return getMode(session.modeId, pools)
+    } catch {
+      return null
+    }
+  }, [session.modeId, pools])
+
+  const submitGuessInput = useCallback(
+    (input: GuessInput) => {
+      if (!mode || session.status !== 'playing' || !session.currentRound) return
+      const result = mode.onGuess(input, session.currentRound)
+      const endsGame =
+        session.maxRounds !== null
+          ? session.roundIndex + 1 >= session.maxRounds
+          : session.lives + result.livesDelta <= 0
+      const outcome: GuessOutcome = { ...result, endsGame }
+      submitGuess(outcome)
+    },
+    [mode, session.status, session.currentRound, session.maxRounds, session.roundIndex, session.lives, submitGuess],
+  )
+
+  const api = useMemo<GameSessionApi>(
+    () => ({ session, mode, start, submitGuess, submitGuessInput, advance, overrideRound, endGame }),
+    [session, mode, start, submitGuess, submitGuessInput, advance, overrideRound, endGame],
+  )
+
   const apiRef = useRef(api)
   apiRef.current = api
 
@@ -32,10 +70,10 @@ export function GameSessionProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const value = useMemo(() => api, [api])
-  return <GameSessionContext.Provider value={value}>{children}</GameSessionContext.Provider>
+  return <GameSessionContext.Provider value={api}>{children}</GameSessionContext.Provider>
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useGameSessionContext(): GameSessionApi {
   const ctx = useContext(GameSessionContext)
   if (!ctx) throw new Error('useGameSessionContext must be used within <GameSessionProvider>')
