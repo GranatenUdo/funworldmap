@@ -13,17 +13,13 @@ function CountryPinningHud({ session }: Props) {
 
   const revealLine = useMemo(() => {
     if (session.status !== 'round-ended' || !reveal) return null
-    if (reveal.correct) {
-      return MESSAGES.correct(reveal.pointsEarned, reveal.reveal.targetCca3)
-    }
-    return MESSAGES.wrong(
-      reveal.pointsEarned,
-      reveal.reveal.targetCca3,
-      reveal.reveal.clickedCca3,
-    )
+    if (reveal.reveal.kind !== 'country') return null
+    const r = reveal.reveal
+    if (r.correct) return MESSAGES.correct(reveal.pointsEarned, r.targetCca3)
+    return MESSAGES.wrong(reveal.pointsEarned, r.targetCca3, r.clickedCca3)
   }, [session.status, reveal])
 
-  if (!round) return null
+  if (!round || round.kind !== 'country-pinning') return null
 
   return (
     <div className="flex flex-col items-center gap-2 min-w-[220px]">

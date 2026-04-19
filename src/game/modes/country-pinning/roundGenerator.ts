@@ -1,4 +1,4 @@
-import type { CountryLike, RoundSpec } from '../../shared/types'
+import type { CountryLike, CountryRoundSpec } from '../../shared/types'
 import { centroidFromLatLng } from '../../shared/distance'
 
 type Picker = (max: number) => number
@@ -8,11 +8,12 @@ export function nextRound(
   used: Set<string>,
   pool: CountryLike[],
   pick: Picker = defaultPicker,
-): RoundSpec {
+): CountryRoundSpec {
   let available = pool.filter((c) => !used.has(c.cca3))
   if (available.length === 0) available = pool.slice()
   const picked = available[pick(available.length)]
   return {
+    kind: 'country-pinning',
     targetCca3: picked.cca3,
     targetName: picked.name.common,
     targetFlag: picked.flag,

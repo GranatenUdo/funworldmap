@@ -1,4 +1,4 @@
-import type { GameMode, CountryLike } from '../../shared/types'
+import type { CountryLike, GameMode } from '../../shared/types'
 import { scoreGuess } from './scoring'
 import { nextRound as pickNextRound } from './roundGenerator'
 import { centroidFromLatLng } from '../../shared/distance'
@@ -6,9 +6,6 @@ import { MESSAGES } from './messages'
 
 type HudComponent = GameMode['HudComponent']
 
-// HudComponent is attached in Task 12 via registerCountryPinningHud.
-// Keeping the definition in one place avoids a circular import between
-// the mode file and the HUD file.
 let attachedHud: HudComponent | null = null
 
 export function registerCountryPinningHud(c: HudComponent): void {
@@ -24,10 +21,21 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
     title: MESSAGES.title,
     description: MESSAGES.description,
     hashSegment: 'country-pinning',
+    maxRounds: null,
+    initialCameraView: 'preserve',
     HudComponent: attachedHud,
     nextRound: (used) => pickNextRound(used, pool),
-    onGuess: (clickedCca3, clickedCentroidRaw, round) => {
-      return scoreGuess(round, clickedCca3, clickedCentroidRaw)
+    onGuess: (input, round) => {
+      if (round.kind !== 'country-pinning') {
+        // Defensive: controller won't dispatch city rounds here.
+        return {
+          pointsEarned: 0,
+          livesDelta: 0,
+          reveal: { kind: 'country', correct: false, targetCca3: '', clickedCca3: null, distanceKm: null },
+        }
+      }
+      const clickedCentroid = input.kind === 'country' ? input.centroid : null
+      return scoreGuess(round, input, clickedCentroid)
     },
   }
 }
