@@ -2,46 +2,68 @@ import { describe, it, expect } from 'vitest'
 import { parseHash, writeHash } from '../hashState'
 
 describe('parseHash', () => {
-  it('returns empty state for empty hash', () => {
-    expect(parseHash('')).toEqual({ selected: null, compareWith: null })
-    expect(parseHash('#')).toEqual({ selected: null, compareWith: null })
+  it('empty hash → empty', () => {
+    expect(parseHash('')).toEqual({ kind: 'empty' })
+    expect(parseHash('#')).toEqual({ kind: 'empty' })
   })
 
-  it('parses single country', () => {
-    expect(parseHash('#FRA')).toEqual({ selected: 'FRA', compareWith: null })
+  it('single country code', () => {
+    expect(parseHash('#FRA')).toEqual({ kind: 'country', cca3: 'FRA', compareWith: null })
   })
 
-  it('parses compare pair', () => {
-    expect(parseHash('#FRA,DEU')).toEqual({ selected: 'FRA', compareWith: 'DEU' })
+  it('country compare pair', () => {
+    expect(parseHash('#FRA,DEU')).toEqual({ kind: 'country', cca3: 'FRA', compareWith: 'DEU' })
   })
 
-  it('uppercases codes', () => {
-    expect(parseHash('#fra,deu')).toEqual({ selected: 'FRA', compareWith: 'DEU' })
+  it('upper-cases lower-case codes', () => {
+    expect(parseHash('#fra,deu')).toEqual({ kind: 'country', cca3: 'FRA', compareWith: 'DEU' })
   })
 
-  it('ignores empty second segment', () => {
-    expect(parseHash('#FRA,')).toEqual({ selected: 'FRA', compareWith: null })
+  it('trailing comma with missing second code', () => {
+    expect(parseHash('#FRA,')).toEqual({ kind: 'country', cca3: 'FRA', compareWith: null })
   })
 
-  it('ignores trailing extra segments', () => {
-    expect(parseHash('#FRA,DEU,JPN')).toEqual({ selected: 'FRA', compareWith: 'DEU' })
+  it('ignores extra compare codes beyond the first two', () => {
+    expect(parseHash('#FRA,DEU,JPN')).toEqual({ kind: 'country', cca3: 'FRA', compareWith: 'DEU' })
+  })
+
+  it('game hash without /play', () => {
+    expect(parseHash('#game/country-pinning')).toEqual({
+      kind: 'game', modeId: 'country-pinning', playing: false,
+    })
+  })
+
+  it('game hash with /play', () => {
+    expect(parseHash('#game/country-pinning/play')).toEqual({
+      kind: 'game', modeId: 'country-pinning', playing: true,
+    })
+  })
+
+  it('unknown game modeId preserves the segment', () => {
+    expect(parseHash('#game/mystery-mode')).toEqual({
+      kind: 'game', modeId: 'mystery-mode', playing: false,
+    })
   })
 })
 
 describe('writeHash', () => {
-  it('empty state returns empty string', () => {
-    expect(writeHash(null, null)).toBe('')
+  it('empty state → empty string', () => {
+    expect(writeHash({ kind: 'empty' })).toBe('')
   })
 
-  it('single country', () => {
-    expect(writeHash('FRA', null)).toBe('FRA')
+  it('country', () => {
+    expect(writeHash({ kind: 'country', cca3: 'FRA', compareWith: null })).toBe('FRA')
   })
 
   it('compare pair', () => {
-    expect(writeHash('FRA', 'DEU')).toBe('FRA,DEU')
+    expect(writeHash({ kind: 'country', cca3: 'FRA', compareWith: 'DEU' })).toBe('FRA,DEU')
   })
 
-  it('ignores compareWith when selected is null', () => {
-    expect(writeHash(null, 'DEU')).toBe('')
+  it('game not playing', () => {
+    expect(writeHash({ kind: 'game', modeId: 'country-pinning', playing: false })).toBe('game/country-pinning')
+  })
+
+  it('game playing', () => {
+    expect(writeHash({ kind: 'game', modeId: 'country-pinning', playing: true })).toBe('game/country-pinning/play')
   })
 })

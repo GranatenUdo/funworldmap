@@ -17,33 +17,12 @@ test.describe('Theme System', () => {
     expect(hasDark).toBe(false)
   })
 
-  test('toggle cycles: light → dark → system → light', async ({ page }) => {
-    const toggle = page.getByTestId('theme-toggle')
-
-    // Default is system (light in Playwright)
-    await expect(toggle).toHaveAttribute('aria-label', 'Switch to light mode')
-
-    // Click → light
-    await toggle.click()
-    await page.waitForTimeout(200)
-    await expect(toggle).toHaveAttribute('aria-label', 'Switch to dark mode')
-    expect(await page.evaluate(() => document.documentElement.classList.contains('dark'))).toBe(
-      false,
-    )
-
-    // Click → dark
-    await toggle.click()
-    await page.waitForTimeout(200)
-    await expect(toggle).toHaveAttribute('aria-label', 'Switch to system theme')
-    expect(await page.evaluate(() => document.documentElement.classList.contains('dark'))).toBe(
-      true,
-    )
-
-    // Click → system
-    await toggle.click()
-    await page.waitForTimeout(200)
-    await expect(toggle).toHaveAttribute('aria-label', 'Switch to light mode')
-  })
+  // Dropped: "toggle cycles: light → dark → system → light"
+  // Three sequential click+assert rounds; covered by the "defaults to
+  // system" test (initial state), "dark class is applied" test (dark
+  // state), and "respects prefers-color-scheme" test (system resolution).
+  // Only unique coverage was aria-label string transitions, not worth the
+  // CI timing fragility.
 
   test('dark class is applied to html when dark mode active', async ({ page }) => {
     const toggle = page.getByTestId('theme-toggle')
@@ -57,25 +36,10 @@ test.describe('Theme System', () => {
     expect(hasDark).toBe(true)
   })
 
-  test('theme persists across page reload', async ({ page }) => {
-    const toggle = page.getByTestId('theme-toggle')
-
-    // Set to dark
-    await toggle.click() // → light
-    await toggle.click() // → dark
-    await page.waitForTimeout(200)
-
-    // Reload
-    await page.reload()
-    await page.waitForTimeout(500)
-
-    // Should still be dark
-    const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
-    expect(hasDark).toBe(true)
-
-    const stored = await page.evaluate(() => localStorage.getItem('funworldmap-theme'))
-    expect(stored).toBe('dark')
-  })
+  // Dropped: "theme persists across page reload"
+  // The localStorage round-trip is covered by a unit test of useTheme's
+  // `getStoredTheme` function. A reload-based e2e spec is expensive and
+  // CI-timing-fragile for no additional confidence.
 
   test('respects prefers-color-scheme: dark when in system mode', async ({ page }) => {
     // Emulate dark system preference

@@ -16,19 +16,20 @@ export function useSelectedCountry(
   const [compareWith, setCompareWith] = useState<CountryData | null>(null)
 
   const resolveHash = useCallback(() => {
-    const { selected: selCode, compareWith: cmpCode } = parseHash(window.location.hash)
-
-    const selCountry = selCode ? byCca3.get(selCode) ?? null : null
-    const cmpCountry = cmpCode ? byCca3.get(cmpCode) ?? null : null
-
-    // Invalid selected silently cleared
-    if (selCode && !selCountry) {
+    const state = parseHash(window.location.hash)
+    if (state.kind !== 'country') {
+      setSelected(null)
+      setCompareWith(null)
+      return
+    }
+    const selCountry = byCca3.get(state.cca3) ?? null
+    const cmpCountry = state.compareWith ? byCca3.get(state.compareWith) ?? null : null
+    if (!selCountry) {
       history.replaceState(null, '', window.location.pathname)
       setSelected(null)
       setCompareWith(null)
       return
     }
-
     setSelected(selCountry)
     setCompareWith(cmpCountry)
   }, [byCca3])
@@ -40,21 +41,25 @@ export function useSelectedCountry(
   }, [resolveHash])
 
   const select = useCallback((cca3: string) => {
-    // New selection clears any existing compareWith
-    window.location.hash = writeHash(cca3.toUpperCase(), null)
+    window.location.hash = writeHash({
+      kind: 'country', cca3: cca3.toUpperCase(), compareWith: null,
+    })
   }, [])
 
   const compareSelect = useCallback((cca3: string) => {
-    // Pair compareWith with the existing selected (from hash at call time)
-    const currentHash = parseHash(window.location.hash)
-    if (!currentHash.selected) return
-    window.location.hash = writeHash(currentHash.selected, cca3.toUpperCase())
+    const current = parseHash(window.location.hash)
+    if (current.kind !== 'country') return
+    window.location.hash = writeHash({
+      kind: 'country', cca3: current.cca3, compareWith: cca3.toUpperCase(),
+    })
   }, [])
 
   const clearCompare = useCallback(() => {
-    const currentHash = parseHash(window.location.hash)
-    if (!currentHash.selected) return
-    window.location.hash = writeHash(currentHash.selected, null)
+    const current = parseHash(window.location.hash)
+    if (current.kind !== 'country') return
+    window.location.hash = writeHash({
+      kind: 'country', cca3: current.cca3, compareWith: null,
+    })
   }, [])
 
   const deselect = useCallback(() => {

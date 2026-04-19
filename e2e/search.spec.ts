@@ -22,15 +22,17 @@ test.describe('Search', () => {
 
   test('selecting a result opens the country panel', async ({ page }) => {
     await page.getByTestId('search-input').fill('France')
-    await page.waitForTimeout(300)
+    const firstOption = page.getByTestId('search-results').getByRole('option').first()
+    await expect(firstOption).toBeVisible({ timeout: 10_000 })
+    // `force: true` skips Playwright's bounding-box stability check —
+    // the dropdown's enter animation can keep the option visually
+    // unstable on slow CI long enough to starve the test budget.
+    await firstOption.click({ force: true })
 
-    await page.getByTestId('search-results').getByRole('option').first().click()
-    await page.waitForTimeout(500)
-
-    await expect(page.getByTestId('country-panel')).toBeVisible()
-    await expect(page.getByTestId('country-panel')).toContainText('France')
-    const hash = await page.evaluate(() => window.location.hash)
-    expect(hash).toBe('#FRA')
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toBeVisible({ timeout: 10_000 })
+    await expect(panel).toContainText('France')
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
   })
 
   test('fuzzy matching works for typos', async ({ page }) => {

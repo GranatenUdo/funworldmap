@@ -164,15 +164,20 @@ test.describe('Country click interaction', () => {
     expect(hashAfterSelect).toMatch(/^#[A-Z]{3}$/)
     await expect(page.getByTestId('country-panel')).toBeVisible()
 
-    // Jump camera to mid-Pacific (guaranteed ocean) without changing hash
+    // Jump camera to mid-Pacific (guaranteed ocean) without changing hash.
+    // Resolve on `idle` but also on a 5 s timeout — under headless Chrome
+    // without a GPU, `idle` can be delayed indefinitely if tile fetches
+    // stall, and the subsequent click is what matters (not bytes arriving).
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
         const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
           jumpTo: (opts: { center: [number, number]; zoom: number }) => void
           once: (event: string, fn: () => void) => void
         }
-        map.jumpTo({ center: [-170, 0], zoom: 4 }) // Mid-Pacific
-        map.once('idle', () => resolve())
+        const done = (): void => resolve()
+        map.jumpTo({ center: [-170, 0], zoom: 4 })
+        map.once('idle', done)
+        setTimeout(done, 5000)
       })
     })
     await page.waitForTimeout(500)

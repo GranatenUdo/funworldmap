@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useMemo, useState, useCallback } from 'react'
 import WorldMap from './components/WorldMap'
 import Header from './components/Header'
 import CountryPanel from './components/CountryPanel'
@@ -7,13 +7,32 @@ import { useCountryData } from './hooks/useCountryData'
 import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
-import { MapProvider } from './hooks/useMap'
+import { MapProvider, useMap } from './hooks/useMap'
+import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
+import { GameController } from './game/GameController'
+import './game/modes/country-pinning/CountryPinningHud'
+import { writeHash } from './lib/hashState'
+import type { CountryLike } from './game/shared/types'
+import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
+import type { CountryData } from './lib/types'
 
 export default function App() {
+  return (
+    <GameSessionProvider>
+      <MapProvider>
+        <AppInner />
+      </MapProvider>
+    </GameSessionProvider>
+  )
+}
+
+function AppInner() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
   const { selected, compareWith, select, compareSelect, clearCompare, deselect } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
+  const { mapRef } = useMap()
+  const { session } = useGameSessionContext()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const [mapReady, setMapReady] = useState(false)
@@ -22,6 +41,7 @@ export default function App() {
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
   const [comparePickingMode, setComparePickingMode] = useState(false)
+
   const enterComparePicking = useCallback(() => {
     if (selected) setComparePickingMode(true)
   }, [selected])
@@ -29,8 +49,16 @@ export default function App() {
     setComparePickingMode(false)
     clearCompare()
   }, [clearCompare])
+
+  const gameActive = session.status !== 'idle'
+
   const onMapSelect = useCallback(
     (cca3: string) => {
+      if (gameActive) {
+        const guess = (window as unknown as { __funworldmap_guess?: (c: string) => void }).__funworldmap_guess
+        guess?.(cca3)
+        return
+      }
       if (comparePickingMode) {
         if (selected && cca3.toUpperCase() !== selected.cca3) {
           compareSelect(cca3)
@@ -40,30 +68,36 @@ export default function App() {
         select(cca3)
       }
     },
-    [comparePickingMode, selected, select, compareSelect],
+    [gameActive, comparePickingMode, selected, select, compareSelect],
   )
+
+  useEffect(() => {
+    if (session.status !== 'playing' || session.roundIndex !== 0) return
+    if (selected) deselect()
+    setComparePickingMode(false)
+    mapRef.current?.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 700 })
+    // Fires on the very first round of each new game — covers idle→playing
+    // and game-over→Play-again transitions without needing a prev-status ref.
+  }, [session.status, session.roundIndex, selected, deselect, mapRef])
+
+  const onPlay = useCallback(() => {
+    window.location.hash = writeHash({ kind: 'game', modeId: 'country-pinning', playing: true })
+  }, [])
 
   useEffect(() => {
     const name = selected?.name.common ?? null
     const prevName = prevSelectedRef.current
-
     if (liveRegionRef.current) {
-      if (name && name !== prevName) {
-        liveRegionRef.current.textContent = `${name} selected`
-      } else if (!name && prevName) {
-        liveRegionRef.current.textContent = 'Country panel closed'
-      }
+      if (name && name !== prevName) liveRegionRef.current.textContent = `${name} selected`
+      else if (!name && prevName) liveRegionRef.current.textContent = 'Country panel closed'
     }
-
     prevSelectedRef.current = name
   }, [selected])
 
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<string>).detail
-      if (liveRegionRef.current && detail) {
-        liveRegionRef.current.textContent = detail
-      }
+      if (liveRegionRef.current && detail) liveRegionRef.current.textContent = detail
     }
     window.addEventListener('funworldmap:announce', handler)
     return () => window.removeEventListener('funworldmap:announce', handler)
@@ -75,11 +109,7 @@ export default function App() {
     if (selected && !panelWasOpenRef.current) {
       panelWasOpenRef.current = true
       const active = document.activeElement as HTMLElement | null
-      // Body is not a useful focus return target — fall back to search instead.
       focusReturnRef.current = active && active !== document.body ? active : null
-      // Delay past the panel-card-in animation (250ms cubic-bezier with
-      // overshoot). Focusing mid-animation races with Playwright's click
-      // stability check and caused CI flake on panel-and-deeplink:79.
       const timer = window.setTimeout(() => {
         const close = document.querySelector<HTMLButtonElement>('[data-testid="panel-close"]')
         close?.focus({ preventScroll: true })
@@ -98,57 +128,40 @@ export default function App() {
   }, [selected])
 
   useEffect(() => {
-    // Dismiss the splash when the map either loads or surfaces an error —
-    // otherwise a failed map leaves the splash over the error overlay.
     const check = () => document.querySelector('[data-map-loaded], [data-map-error]')
     const observer = new MutationObserver(() => {
-      if (check()) {
-        setMapReady(true)
-        observer.disconnect()
-      }
+      if (check()) { setMapReady(true); observer.disconnect() }
     })
     observer.observe(document.body, {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['data-map-loaded', 'data-map-error'],
+      subtree: true, attributes: true, attributeFilter: ['data-map-loaded', 'data-map-error'],
     })
-    if (check()) {
-      setMapReady(true)
-      observer.disconnect()
-    }
+    if (check()) { setMapReady(true); observer.disconnect() }
     return () => observer.disconnect()
   }, [])
 
   useEffect(() => {
-    if (!mapReady || selected || hintDismissed) return
+    if (!mapReady || selected || hintDismissed || gameActive) return
     if (sessionStorage.getItem('funworldmap-hint-shown')) return
-
     const timer = setTimeout(() => {
       setShowHint(true)
       sessionStorage.setItem('funworldmap-hint-shown', '1')
     }, 1500)
     return () => clearTimeout(timer)
-  }, [mapReady, selected, hintDismissed])
+  }, [mapReady, selected, hintDismissed, gameActive])
 
   useEffect(() => {
-    if (selected && showHint) {
+    if ((selected || gameActive) && showHint) {
       setShowHint(false)
       setHintDismissed(true)
     }
-  }, [selected, showHint])
+  }, [selected, gameActive, showHint])
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        if (compareWith || comparePickingMode) {
-          exitCompare()
-          return
-        }
-        if (selected) {
-          deselect()
-          return
-        }
+        if (gameActive) return
+        if (compareWith || comparePickingMode) { exitCompare(); return }
+        if (selected) { deselect(); return }
         const searchInput = document.getElementById('search-input') as HTMLInputElement | null
         if (searchInput && searchInput.value) {
           searchInput.value = ''
@@ -157,55 +170,60 @@ export default function App() {
         }
         return
       }
-
       const target = e.target as HTMLElement | null
       if (target && target.matches('input, textarea, [contenteditable]')) return
-
       if (e.key === '/') {
         e.preventDefault()
-        document.getElementById('search-input')?.focus()
+        if (!gameActive) document.getElementById('search-input')?.focus()
       }
     }
-
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [selected, compareWith, comparePickingMode, exitCompare, deselect])
+  }, [selected, compareWith, comparePickingMode, exitCompare, deselect, gameActive])
+
+  const pool = useMemo<CountryLike[]>(
+    () => countries
+      .filter((c: CountryData) => c.independent === true)
+      .map((c: CountryData) => ({
+        cca3: c.cca3,
+        name: { common: c.name.common },
+        flag: c.flag,
+        latlng: c.latlng,
+        independent: true,
+      })),
+    [countries],
+  )
+  const poolByCca3 = useMemo(
+    () => new Map(pool.map((c) => [c.cca3, c])),
+    [pool],
+  )
 
   return (
-    <div data-selected-country={selected?.ccn3 || undefined} className="grain">
-      {/* Skip links */}
+    <div
+      data-selected-country={selected?.ccn3 || undefined}
+      data-game-mode={gameActive ? 'country-pinning' : undefined}
+      className="grain"
+    >
       <button
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg"
         onClick={() => document.getElementById('search-input')?.focus()}
-      >
-        Skip to search
-      </button>
+      >Skip to search</button>
       <button
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-40 focus:z-[100] focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg"
         onClick={() => document.querySelector<HTMLDivElement>('[role="application"]')?.focus()}
-      >
-        Skip to map
-      </button>
+      >Skip to map</button>
 
       <div ref={liveRegionRef} data-testid="announce-region" aria-live="polite" aria-atomic="true" className="sr-only" />
 
-      {/* Loading screen — decorative; screen readers will announce content once it mounts */}
       {!mapReady && (
-        <div
-          aria-hidden="true"
-          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300"
-        >
-          <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">
-            funworldmap
-          </span>
+        <div aria-hidden="true" className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300">
+          <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">funworldmap</span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
                 className="w-2 h-2 rounded-full bg-teal dark:bg-teal-light"
-                style={{
-                  animation: `loading-dots 1.2s ease-in-out ${i * 0.15}s infinite`,
-                }}
+                style={{ animation: `loading-dots 1.2s ease-in-out ${i * 0.15}s infinite` }}
               />
             ))}
           </div>
@@ -214,51 +232,43 @@ export default function App() {
 
       <Toast />
 
-      {/* Vignette — decorative */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none z-10"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.10) 100%)',
-        }}
-      />
+      <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-10"
+        style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.10) 100%)' }} />
 
       <main>
-        <MapProvider>
-          <WorldMap
-            byNumeric={byNumeric}
-            selected={selected}
-            compareWith={compareWith}
-            comparePickingMode={comparePickingMode}
-            resolvedTheme={resolved}
-            satellite={satellite}
-            onSelect={onMapSelect}
-            onDeselect={deselect}
-          />
-        </MapProvider>
+        <WorldMap
+          byNumeric={byNumeric}
+          selected={selected}
+          compareWith={compareWith}
+          comparePickingMode={comparePickingMode}
+          resolvedTheme={resolved}
+          satellite={satellite}
+          onSelect={onMapSelect}
+          onDeselect={deselect}
+        />
       </main>
       <Header
         countries={countries}
         theme={theme}
         satellite={satellite}
         comparePickingMode={comparePickingMode}
+        gameActive={gameActive}
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
+        onPlay={onPlay}
       />
 
-      {/* Empty state hint */}
-      {showHint && !selected && (
-        <div
-          role="status"
+      <GameController pool={pool} byCca3={poolByCca3} />
+
+      {showHint && !selected && !gameActive && (
+        <div role="status"
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg"
           style={{ animation: 'fade-up 300ms ease-out' }}
-        >
-          Explore the world
-        </div>
+        >Explore the world</div>
       )}
 
-      {selected && (
+      {selected && !gameActive && (
         <CountryPanel
           country={selected}
           compareWith={compareWith}

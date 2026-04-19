@@ -1,0 +1,213 @@
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+import type maplibregl from 'maplibre-gl'
+import type { CountryLike } from './shared/types'
+import { useGameSessionContext } from './shared/GameSessionProvider'
+import { usePersonalBests } from './shared/usePersonalBests'
+import { getMode } from './modes'
+import { HudShell } from './shared/hud/HudShell'
+import { GameOverOverlay } from './shared/hud/GameOverOverlay'
+import { GuessByNameButton } from './shared/hud/GuessByNameButton'
+import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
+import { parseHash } from '../lib/hashState'
+import { LAYER } from '../lib/mapLayers'
+import { centroidFromLatLng } from './shared/distance'
+
+const REVEAL_MS = 1200
+
+function dispatchAnnouncement(text: string): void {
+  window.dispatchEvent(new CustomEvent('funworldmap:announce', { detail: text }))
+}
+
+function writeIdleHash(): void {
+  if (window.location.hash.startsWith('#game')) {
+    history.replaceState(null, '', window.location.pathname)
+  }
+}
+
+interface Props {
+  pool: CountryLike[]
+  byCca3: Map<string, CountryLike>
+}
+
+export function GameController({ pool, byCca3 }: Props) {
+  const { session, start, submitGuess, advance, overrideRound, endGame } = useGameSessionContext()
+  const { best, record } = usePersonalBests('country-pinning')
+  const recordedRef = useRef(false)
+
+  // Rebuild only when the pool identity changes — the mode registry returns
+  // a fresh GameMode object each call, and churning it on every render would
+  // bust HudComponent prop identity and re-mount the HUD.
+  const mode = useMemo(() => getMode('country-pinning', pool), [pool])
+
+  // Hash → session bootstrap. Read status via ref so hashchange handlers
+  // always see the current status, not the stale one captured at mount.
+  const statusRef = useRef(session.status)
+  statusRef.current = session.status
+  useEffect(() => {
+    const check = () => {
+      const state = parseHash(window.location.hash)
+      if (state.kind === 'game' && statusRef.current === 'idle') {
+        const firstRound = mode.nextRound(new Set(), pool)
+        start('country-pinning', firstRound)
+      }
+      if (state.kind !== 'game' && statusRef.current !== 'idle') {
+        endGame()
+      }
+    }
+    check()
+    window.addEventListener('hashchange', check)
+    return () => window.removeEventListener('hashchange', check)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    if (session.status === 'playing' && session.currentRound) {
+      if (session.roundIndex === 0) recordedRef.current = false
+      dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
+    }
+    if (session.status === 'round-ended' && session.lastOutcome) {
+      const o = session.lastOutcome
+      const remain = session.lives
+      dispatchAnnouncement(
+        o.correct
+          ? `Correct. Plus ${o.pointsEarned} points.`
+          : `Wrong. Plus ${o.pointsEarned} points. ${remain === 1 ? 'One life remaining.' : `${remain} lives remaining.`}`,
+      )
+      const t = window.setTimeout(() => {
+        const next = mode.nextRound(session.used, pool)
+        advance(next)
+      }, REVEAL_MS)
+      return () => window.clearTimeout(t)
+    }
+    if (session.status === 'game-over' && !recordedRef.current) {
+      recordedRef.current = true
+      record(session.score, session.bestStreak)
+      dispatchAnnouncement(`Game over. Final score ${session.score}.`)
+    }
+  }, [session.status, session.roundIndex, session.lastOutcome, session.score, session.bestStreak, session.lives, session.used, session.currentRound, advance, mode, pool, record])
+
+  // Expose setRound for e2e determinism. We create-or-augment the window
+  // hook because child effects (this one) run before parent effects
+  // (GameSessionProvider). If we waited for the parent to attach the
+  // object first, setRound would never land on initial mount.
+  useEffect(() => {
+    const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
+    if (!w.__funworldmap_game) w.__funworldmap_game = {}
+    w.__funworldmap_game.setRound = (cca3: string) => {
+      const country = byCca3.get(cca3.toUpperCase())
+      if (!country) return false
+      const round = {
+        targetCca3: country.cca3,
+        targetName: country.name.common,
+        targetFlag: country.flag,
+        targetCentroid: centroidFromLatLng(country.latlng),
+      }
+      // Test hook: if no game is running, start one. Otherwise swap the
+      // round without touching lives/score/streak — lets tests drive
+      // deterministic multi-round flows.
+      if (statusRef.current === 'idle') {
+        start('country-pinning', round)
+      } else {
+        overrideRound(round)
+      }
+      return true
+    }
+    return () => {
+      if (w.__funworldmap_game) delete w.__funworldmap_game.setRound
+    }
+  }, [byCca3, start, overrideRound])
+
+  const handleGuessByCca3 = useCallback((clickedCca3: string) => {
+    if (session.status !== 'playing' || !session.currentRound) return
+    const clickedCountry = byCca3.get(clickedCca3.toUpperCase())
+    const clickedCentroid = clickedCountry ? centroidFromLatLng(clickedCountry.latlng) : null
+    const outcome = mode.onGuess(clickedCca3.toUpperCase(), clickedCentroid, session.currentRound)
+    submitGuess(outcome)
+  }, [session.status, session.currentRound, byCca3, mode, submitGuess])
+
+  // Expose guess dispatcher on window so App.tsx can call it from onMapSelect.
+  useEffect(() => {
+    ;(window as unknown as { __funworldmap_guess?: (cca3: string) => void }).__funworldmap_guess = handleGuessByCca3
+    return () => {
+      delete (window as unknown as { __funworldmap_guess?: (cca3: string) => void }).__funworldmap_guess
+    }
+  }, [handleGuessByCca3])
+
+  // Escape exits the game.
+  useEffect(() => {
+    if (session.status === 'idle') return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return
+      const tgt = e.target as HTMLElement | null
+      if (tgt && tgt.matches('input, textarea, [contenteditable]')) return
+      e.preventDefault()
+      endGame()
+      writeIdleHash()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [session.status, endGame])
+
+  useEffect(() => {
+    if (session.status !== 'round-ended' || !session.lastOutcome) return
+    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    if (!map) return
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    try {
+      map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], session.lastOutcome.reveal.targetCca3])
+      const colour = session.lastOutcome.correct ? '#22c55e' : '#f59e0b'
+      map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
+      map.setPaintProperty(LAYER.hoverBorder, 'line-width', reduced ? 3 : 4)
+    } catch {
+      /* layer may not exist yet on a fresh style */
+    }
+    return () => {
+      try {
+        map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
+      } catch { /* no-op */ }
+    }
+  }, [session.status, session.lastOutcome])
+
+  const onEndGame = () => {
+    endGame()
+    writeIdleHash()
+  }
+  const onPlayAgain = () => {
+    const firstRound = mode.nextRound(new Set(), pool)
+    start('country-pinning', firstRound)
+  }
+  const onBackToMap = onEndGame
+
+  if (session.status === 'idle') return null
+
+  const Hud = mode.HudComponent
+
+  const beatPB =
+    session.score > best.bestScore || session.bestStreak > best.bestStreak
+
+  return (
+    <>
+      {(session.status === 'playing' || session.status === 'round-ended') && (
+        <FirstSessionTutorial />
+      )}
+      <HudShell session={session} onEndGame={onEndGame}>
+        <Hud session={session} />
+        {session.status === 'playing' && (
+          <GuessByNameButton
+            pool={pool}
+            onGuess={handleGuessByCca3}
+          />
+        )}
+      </HudShell>
+      {session.status === 'game-over' && (
+        <GameOverOverlay
+          session={session}
+          personalBest={best}
+          beatPersonalBest={beatPB}
+          onPlayAgain={onPlayAgain}
+          onBackToMap={onBackToMap}
+        />
+      )}
+    </>
+  )
+}
