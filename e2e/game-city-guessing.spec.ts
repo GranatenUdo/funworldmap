@@ -110,6 +110,9 @@ test.describe('City Guessing game', () => {
   })
 
   test('ten rounds end the game', async ({ page }) => {
+    // Ten iterations of setRoundAndWait + hook-skip take longer on CI
+    // (~6 s each under headless Chrome without GPU); double the budget.
+    test.setTimeout(120_000)
     await openCityGuessing(page)
     // Between iterations, setRoundAndWait() + overrideRound forces status
     // back to 'playing' and increments roundIndex. Skip via the hook bypasses
