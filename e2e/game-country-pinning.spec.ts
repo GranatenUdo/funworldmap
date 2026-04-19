@@ -96,7 +96,10 @@ test.describe('Country Pinning game', () => {
             type H = { getSession?: () => { status?: string } }
             return (window as unknown as { __funworldmap_game?: H }).__funworldmap_game?.getSession?.()?.status
           }),
-          { timeout: 5000 },
+          // CI's Ubuntu runners are notably slower than local dev machines;
+          // 10 s comfortably covers the REVEAL_MS (1200 ms) round-trip plus
+          // any dispatch/render latency under load.
+          { timeout: 10_000 },
         ).toBe('playing')
       }
     }
@@ -121,8 +124,9 @@ test.describe('Country Pinning game', () => {
     await page.getByTestId('game-guess-by-name').click()
     await page.getByTestId('game-guess-input').fill('France')
     // Fuse.js debounces search results by ~150 ms; wait for them to appear
-    // before pressing Enter (otherwise results[0] is still undefined).
-    await expect(page.getByTestId('game-guess-results')).toBeVisible()
+    // before pressing Enter (otherwise results[0] is still undefined). CI
+    // latency can stretch this well past 5 s, so use a 10 s ceiling.
+    await expect(page.getByTestId('game-guess-results')).toBeVisible({ timeout: 10_000 })
     await page.getByTestId('game-guess-input').press('Enter')
 
     await expect(page.getByTestId('hud-score')).toHaveText('100', { timeout: 10_000 })
