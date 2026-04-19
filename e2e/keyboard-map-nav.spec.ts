@@ -30,18 +30,19 @@ test.describe('keyboard map navigation', () => {
 
     await page.keyboard.press('Home')
 
-    // Wait for MapLibre's idle event instead of a fixed wall-clock wait.
-    // On CI's headless Chrome without a real GPU the rAF-driven flyTo
-    // easing runs behind wall clock; a 1600 ms sleep may land mid-flight
-    // and `getCenter()` still reports the pre-Home position.
+    // Resolve on idle, but also on a 5 s wall-clock cap — under headless
+    // Chrome without a real GPU, `idle` can be delayed indefinitely if
+    // tile fetches stall. The test cares about center coords, not tiles.
     await page.evaluate(
       () =>
         new Promise<void>((resolve) => {
           const map = (window as unknown as {
             __funworldmap_map?: { once: (event: string, fn: () => void) => void }
           }).__funworldmap_map
-          if (!map) return resolve()
-          map.once('idle', () => resolve())
+          const done = (): void => resolve()
+          if (!map) return done()
+          map.once('idle', done)
+          setTimeout(done, 5000)
         }),
     )
 
