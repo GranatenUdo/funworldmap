@@ -348,6 +348,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       submitGuessWithInput({
         kind: 'country',
         cca3: cca3.toUpperCase(),
+        name: country.name.common,
         centroid: centroidFromLatLng(country.latlng),
       })
     }
@@ -401,6 +402,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
               submitGuessWithInput({
                 kind: 'country',
                 cca3: cca3.toUpperCase(),
+                name: c.name.common,
                 centroid: centroidFromLatLng(c.latlng),
               })
             }}

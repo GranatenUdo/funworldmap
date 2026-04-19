@@ -31,7 +31,7 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
         return {
           pointsEarned: 0,
           livesDelta: 0,
-          reveal: { kind: 'country', correct: false, targetCca3: '', clickedCca3: null, distanceKm: null },
+          reveal: { kind: 'country', correct: false, targetCca3: '', clickedCca3: null, clickedName: null, distanceKm: null },
         }
       }
       const clickedCentroid = input.kind === 'country' ? input.centroid : null

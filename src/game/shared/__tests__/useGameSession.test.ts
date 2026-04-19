@@ -19,6 +19,7 @@ const exact = (cca3: string, endsGame = false): GuessOutcome => ({
     correct: true,
     targetCca3: cca3,
     clickedCca3: cca3,
+    clickedName: cca3,
     distanceKm: 0,
   },
 })
@@ -31,6 +32,7 @@ const miss = (target: string, clicked: string, pts = 20, endsGame = false): Gues
     correct: false,
     targetCca3: target,
     clickedCca3: clicked,
+    clickedName: clicked,
     distanceKm: 1000,
   },
 })

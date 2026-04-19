@@ -17,18 +17,20 @@ export function scoreGuess(
       correct: false,
       targetCca3: round.targetCca3,
       clickedCca3: null,
+      clickedName: null,
       distanceKm: null,
     }
     return { pointsEarned: 0, livesDelta: 0, reveal }
   }
   // input.kind === 'country'
-  const clickedCca3 = input.cca3
+  const { cca3: clickedCca3, name: clickedName } = input
   if (clickedCca3 === round.targetCca3) {
     const reveal: CountryReveal = {
       kind: 'country',
       correct: true,
       targetCca3: round.targetCca3,
       clickedCca3,
+      clickedName,
       distanceKm: 0,
     }
     return { pointsEarned: EXACT_POINTS, livesDelta: 0, reveal }
@@ -39,6 +41,7 @@ export function scoreGuess(
       correct: false,
       targetCca3: round.targetCca3,
       clickedCca3,
+      clickedName,
       distanceKm: null,
     }
     return { pointsEarned: 0, livesDelta: -1, reveal }
@@ -50,6 +53,7 @@ export function scoreGuess(
     correct: false,
     targetCca3: round.targetCca3,
     clickedCca3,
+    clickedName,
     distanceKm,
   }
   return { pointsEarned, livesDelta: -1, reveal }

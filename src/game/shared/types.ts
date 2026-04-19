@@ -46,7 +46,7 @@ export type RoundSpec = CountryRoundSpec | CityRoundSpec
 
 // ---- Guess input (discriminated union) ----
 export type GuessInput =
-  | { kind: 'country'; cca3: string; centroid: [number, number] }
+  | { kind: 'country'; cca3: string; name: string; centroid: [number, number] }
   | { kind: 'point'; lngLat: [number, number] }
   | { kind: 'skip' }
 
@@ -56,6 +56,7 @@ export type CountryReveal = {
   correct: boolean
   targetCca3: string
   clickedCca3: string | null
+  clickedName: string | null
   distanceKm: number | null
 }
 
