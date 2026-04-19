@@ -119,4 +119,32 @@ test.describe('Accessibility', () => {
 
     expect(results.violations).toEqual([])
   })
+
+  test('axe-core audit passes on game-over overlay', async ({ page }) => {
+    await page.goto('/#game/country-pinning/play')
+    await page.waitForSelector('[data-map-loaded]', { timeout: 30_000 })
+
+    // Force game-over via the test hook: set a round, submit three wrong guesses.
+    for (let i = 0; i < 3; i++) {
+      await page.evaluate(() => {
+        type H = {
+          setRound?: (cca3: string) => boolean
+          submitCountryGuess?: (cca3: string) => boolean
+        }
+        const g = (window as unknown as { __funworldmap_game?: H }).__funworldmap_game
+        g?.setRound?.('FRA')
+        g?.submitCountryGuess?.('AUS')
+      })
+      await page.waitForTimeout(100)
+    }
+
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
+
+    const results = await new AxeBuilder({ page })
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+
+    expect(results.violations).toEqual([])
+  })
 })
