@@ -133,4 +133,18 @@ test.describe('Country Pinning game', () => {
 
     await expect(page.getByTestId('hud-score')).toHaveText('100', { timeout: 10_000 })
   })
+
+  test('guess-by-name search matches capital cities', async ({ page }) => {
+    // Verifies that GuessByNameButton receives the full CountryData shape
+    // so Fuse indexes name.official, capital, region, subregion, cca2, cca3
+    // — not only name.common and cca3 as the prior CountryLike cast forced.
+    await page.goto('/#game/country-pinning/play')
+    await waitForMap(page)
+    await setRoundAndWait(page, 'FRA', 'France')
+
+    await page.getByTestId('game-guess-by-name').click()
+    await page.getByTestId('game-guess-input').fill('Paris')
+    await expect(page.getByTestId('game-guess-results')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('game-guess-results')).toContainText('France')
+  })
 })

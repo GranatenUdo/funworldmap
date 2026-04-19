@@ -65,6 +65,10 @@ function AppInner() {
       })),
     [countries],
   )
+  const poolFull = useMemo<CountryData[]>(
+    () => countries.filter((c: CountryData) => c.independent === true),
+    [countries],
+  )
   const poolByCca3 = useMemo(
     () => new Map(pool.map((c) => [c.cca3, c])),
     [pool],
@@ -261,7 +265,7 @@ function AppInner() {
         onSatelliteToggle={toggleSatellite}
       />
 
-      <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
+      <GameController countries={pool} countriesFull={poolFull} cities={cities} byCca3={poolByCca3} />
 
       {showHint && !selected && !gameActive && (
         <div role="status"

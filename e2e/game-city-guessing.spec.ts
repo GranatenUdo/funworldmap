@@ -109,6 +109,20 @@ test.describe('City Guessing game', () => {
     expect(score).toBe(0)
   })
 
+  test('skip button click submits a skip guess', async ({ page }) => {
+    // Exercises the onClick handler on city-skip — the other skip tests
+    // bypass the DOM via the submitGuess hook. This one goes through the
+    // button element. Wait for HUD stability (prompt visible) before click.
+    await openCityGuessing(page)
+    await setRoundAndWait(page, 'FRA-paris', 'Paris')
+    await expect(page.getByTestId('city-skip')).toBeVisible()
+    await page.getByTestId('city-skip').click()
+    await expect(page.getByTestId('game-reveal')).toContainText('Skipped', {
+      timeout: 10_000,
+    })
+    await expect(page.getByTestId('hud-score')).toHaveText('0')
+  })
+
   test('ten rounds end the game', async ({ page }) => {
     // Ten iterations of setRoundAndWait + hook-skip take longer on CI
     // (~6 s each under headless Chrome without GPU); double the budget.

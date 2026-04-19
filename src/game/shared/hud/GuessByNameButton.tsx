@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-import type { CountryLike } from '../types'
 import { useCountrySearch } from '../../../hooks/useCountrySearch'
 import type { CountryData } from '../../../lib/types'
 
 interface Props {
-  pool: CountryLike[]
+  pool: CountryData[]
   onGuess: (cca3: string) => void
 }
 
@@ -17,7 +16,7 @@ export function GuessByNameButton({ pool, onGuess }: Props) {
   // target. Filtering by `used` would incorrectly exclude the target, since
   // the round generator adds each round's target to `used` when the round
   // starts.
-  const results = useCountrySearch(pool as unknown as CountryData[], query)
+  const results = useCountrySearch(pool, query)
 
   useEffect(() => {
     if (open) inputRef.current?.focus()
