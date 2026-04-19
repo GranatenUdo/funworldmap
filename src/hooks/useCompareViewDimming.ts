@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import {
   EMPTY_FILTER as EMPTY,
   DEFAULT_FILL_OPACITY,
-  applyDefaultBorderPaint,
+  applyBorderPaintForMode,
   LAYER,
 } from '../lib/mapLayers'
 import { useMap } from './useMap'
@@ -45,9 +45,9 @@ export function useCompareViewDimming({
         map.setFilter(LAYER.hoverBorder, EMPTY)
         map.setFilter(LAYER.extrusion, EMPTY)
         map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
-      } else if (!satellite) {
+      } else {
         map.setPaintProperty(LAYER.fill, 'fill-opacity', DEFAULT_FILL_OPACITY)
-        applyDefaultBorderPaint(map, resolvedTheme === 'dark')
+        applyBorderPaintForMode(map, { isDark: resolvedTheme === 'dark', satellite })
       }
     } catch {
       // Layers may not exist yet (e.g. fast theme toggle before load completes).

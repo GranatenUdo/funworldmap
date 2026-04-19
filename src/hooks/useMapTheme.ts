@@ -1,15 +1,16 @@
 import { useEffect } from 'react'
 import { applyMapTheme } from '../lib/mapColors'
 import { TEAL, TEAL_LIGHT, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
-import { applyDefaultBorderPaint, LAYER } from '../lib/mapLayers'
+import { applyBorderPaintForMode, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
   loaded: boolean
   resolvedTheme: 'light' | 'dark'
+  satellite: boolean
 }
 
-export function useMapTheme({ loaded, resolvedTheme }: Options): void {
+export function useMapTheme({ loaded, resolvedTheme, satellite }: Options): void {
   const { mapRef } = useMap()
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
       map.setPaintProperty(LAYER.selectedGlow, 'line-color', coral)
       map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', coral)
 
-      applyDefaultBorderPaint(map, isDark)
+      applyBorderPaintForMode(map, { isDark, satellite })
 
       map.setSky({
         'sky-color': isDark ? '#0a1a2e' : '#88c6fc',
@@ -46,5 +47,5 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
       // setPaintProperty / setSky throw if the basemap style hasn't
       // committed its layers yet (e.g. fast theme toggle on a slow load).
     }
-  }, [resolvedTheme, loaded, mapRef])
+  }, [resolvedTheme, loaded, mapRef, satellite])
 }

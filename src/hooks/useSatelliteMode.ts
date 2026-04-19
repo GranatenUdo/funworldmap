@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { DEFAULT_FILL_OPACITY, applyDefaultBorderPaint, LAYER } from '../lib/mapLayers'
+import { DEFAULT_FILL_OPACITY, applyBorderPaintForMode, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -52,9 +52,8 @@ export function useSatelliteMode({
         }
       }
 
+      applyBorderPaintForMode(map, { isDark: resolvedTheme === 'dark', satellite })
       if (satellite) {
-        map.setPaintProperty(LAYER.borders, 'line-color', 'rgba(255,255,255,0.35)')
-        map.setPaintProperty(LAYER.borders, 'line-opacity', 0.6)
         map.setPaintProperty(LAYER.fill, 'fill-opacity', [
           'case',
           ['boolean', ['feature-state', 'hover'], false],
@@ -62,7 +61,6 @@ export function useSatelliteMode({
           0.03,
         ])
       } else {
-        applyDefaultBorderPaint(map, resolvedTheme === 'dark')
         map.setPaintProperty(LAYER.fill, 'fill-opacity', DEFAULT_FILL_OPACITY)
       }
     } catch {
