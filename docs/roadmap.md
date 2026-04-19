@@ -40,6 +40,8 @@ Source: [`2026-04-19-city-guessing-mode-design.md`](superpowers/specs/2026-04-19
 - **Per-round timer** — e.g. "You have 15 seconds to guess."
 - **Difficulty tiers** — beginner pool of ~50 capitals, hard pool of lesser-known cities.
 - **Camera animation knob** — user-facing slider beyond the `prefers-reduced-motion` branch.
+- **Reveal marker animation** (pulse / breathing effect) — v1 uses a static warm-accent circle. Can land later without framework changes.
+- **Runtime country-data join for `cities.json`** — v1 inlines country name + flag path per city (~25 KB overhead) for simplicity. If `cities.json` grows, switch to joining against `countries.json`'s `byCca3` at load time.
 
 ## Satellite basemap
 

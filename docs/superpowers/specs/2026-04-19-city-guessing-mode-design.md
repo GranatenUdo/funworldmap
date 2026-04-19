@@ -17,8 +17,8 @@ Second game mode for funworldmap. A round presents a city (flag + country + name
 - **Prompt:** city name + country name + country flag (all three, stacked in the HUD).
 - **Click semantics during play:** any map click is a guess, including ocean — unlike Country Pinning where ocean was a no-op.
 - **Skip round:** a visible `Skip round` button submits a zero-score guess and advances. Keyboard-accessible.
-- **Reveal:** on each guess, drop a pulsing marker at the correct city, draw a line from the click to the marker, and `flyTo` a bounding box containing both with ~15 % padding. Reveal lasts `REVEAL_MS = 2000 ms`, then the camera flies back to the world view and the next prompt shows.
-- **Data source:** Natural Earth Populated Places (public domain). Top 500 by `scalerank`. Bundled at build time as `src/data/cities.json`. Join with existing `countries.json` for flag + country name (no duplication).
+- **Reveal:** on each guess, drop a static warm-accent marker at the correct city, draw a dashed line from the click to the marker, and `fitBounds` around both points with viewport-relative padding (`clamp(40, viewport min / 10, 120)` pixels). Reveal lasts `REVEAL_MS = 2000 ms`, then the camera flies back to the world view and the next prompt shows. A pulsing / animated marker is deferred to a future polish PR — see `docs/roadmap.md`.
+- **Data source:** Natural Earth Populated Places (public domain). Top 500 sorted by `(scalerank ASC, pop_max DESC)` — deterministic. Bundled at build time as `src/data/cities.json` with country name and flag path included per record (no runtime join).
 - **Pool:** all 500 cities globally. No region filter.
 - **Persistence:** `localStorage` stores `bestTotalScore` (out of 1 000) per mode. Reuses `usePersonalBests`.
 - **Post-game summary:** overlay shows total score / 1 000, total distance, round-by-round breakdown (distance + score), `Play again`, `Back to map`.
@@ -156,6 +156,10 @@ submitGuess({ ...result, endsGame })
 - Country Pinning: `country-fill`-layer click handler in `useMapInteractions` dispatches via `App.tsx`'s `onMapSelect` as today.
 - City Guessing: GameController adds a `map.on('click', …)` that fires `submitGuess({ kind: 'point', lngLat })`. Bound only while `session.modeId === 'city-guessing' && session.status === 'playing'`. The country-layer handler still fires but its path (`onMapSelect` → `__funworldmap_guess`) early-returns for city mode, so clicks count exactly once.
 
+### Deep-link vs pool-load race
+
+A user landing on `#game/city-guessing/play` before `cities.json` finishes loading would crash `getMode` (empty pool). Guard: `GameController` treats the hash as pending until `cityPool.length > 0`, then calls `start()`. Country Pinning inherits the same guard via `countryPool.length > 0`. Small extra check in the bootstrap effect; no user-visible delay beyond network latency.
+
 ---
 
 ## City Guessing mode specifics
@@ -176,21 +180,24 @@ src/game/modes/city-guessing/
 Build-time script, run manually like `scripts/fetch-countries.ts`:
 
 1. Downloads (or reads vendored copy of) `ne_50m_populated_places_simple.geojson` from Natural Earth.
-2. Parses features, sorts ascending by `scalerank` (lower = more important), takes top 500.
-3. Maps each feature to a compact record:
+2. Parses features, sorts ascending by `(scalerank ASC, pop_max DESC)`, takes top 500. Deterministic tie-break.
+3. For each feature, joins `adm0_a3` against `countries.json`'s `byCca3` map **once at build time** to inline the country's common name and flag path into the city record — no runtime join, one fewer cross-dataset dependency.
+4. Maps each feature to a compact record:
 
     ```ts
     type CityRecord = {
       id: string                // `${countryCca3}-${slug(name)}` — unique key for `used` set
       name: string              // "Paris"
       countryCca3: string       // "FRA" (from adm0_a3)
+      countryName: string       // "France" (joined at build from countries.json)
+      countryFlag: string       // "flags/FR.svg" (joined at build)
       latlng: [number, number]  // [lat, lng]
       scalerank: number
     }
     ```
 
-4. Writes `src/data/cities.json`. Expected size: ~50 KB unminified.
-5. Resolves `countryName` and `flag` at app load by joining against `countries.json`'s `byCca3` map — no duplicated country strings in `cities.json`.
+5. Verifies that all 500 `id` values are unique; fails the build with a clear error listing any collisions so the fetch script can pick a disambiguating strategy (e.g., append ADM1/state). Natural Earth top-500 is expected to be collision-free, but verification is cheap insurance.
+6. Writes `src/data/cities.json`. Expected size: ~75 KB unminified (~25 KB gzip). Country-data inlining adds ~25 KB over the join-at-runtime approach; saves a runtime dependency and simplifies the mode factory.
 
 ### `scoring.ts`
 
@@ -252,12 +259,16 @@ On each round start (when `mode.initialCameraView === 'world'`): `mapRef.current
 On `round-ended`, the reveal effect:
 
 1. Updates two GeoJSON sources added at game start:
-   - `game-reveal-marker`: FeatureCollection with a single Point at `round.targetCentroid`. Paint: pulsing circle (radius 8 → 14 → 8 over 1 s), warm accent colour.
+   - `game-reveal-marker`: FeatureCollection with a single Point at `round.targetCentroid`. Paint: static circle, 10 px radius, warm-accent fill, white stroke.
    - `game-reveal-line`: FeatureCollection with a single LineString from `clickedPoint` to `targetCentroid`. Paint: dashed warm-accent line, 2 px wide.
-2. Computes a bounding box covering both points with ~15 % padding and calls `map.fitBounds(bbox, { duration: 1000, padding: 60 })`.
+2. Computes a bounding box covering both points and calls `map.fitBounds(bbox, { duration: 1000, padding })` where `padding = Math.max(40, Math.min(120, Math.min(viewportWidth, viewportHeight) * 0.1))` pixels — viewport-relative, clamped.
 3. After `REVEAL_MS = 2000`, dispatches `advance(nextRound)`. On the next render, the mode's round-start effect flies back to the world view.
 
-Reduced motion: pulse disabled; line appears without dash-animation; `fitBounds` keeps `duration: 0`.
+Reduced motion: `fitBounds` uses `duration: 0`; line appears statically.
+
+### Reveal geometry cleanup
+
+`game-reveal-marker` and `game-reveal-line` sources are added on game start and removed on **any** transition into `idle` (`endGame()`, Escape, hash navigate-away). A dedicated `useEffect` in `GameController` handles teardown. Prevents a stale line/marker from a prior game appearing on the map after "Back to map".
 
 ### Skip button
 
@@ -275,12 +286,21 @@ No confirmation, no penalty beyond the zero score. Keyboard accessible via Tab.
 
 `src/components/PlayMenu.tsx` — controlled popover anchored to the header Play button.
 
-- Trigger: the existing Play button in the header. Click opens the menu. Click outside / Escape / selection closes it.
+- Trigger: the existing Play button. Click opens the menu. Click outside / Escape / selection closes it.
 - Items: `listModes()` output in order — most-recently-played first (from `funworldmap-game-last-mode`).
 - Selection writes the hash via `writeHash({ kind: 'game', modeId, playing: true })`. The existing GameController hash listener starts the session.
-- Keyboard: Tab moves into menu; Arrow keys navigate items; Enter starts; Escape closes.
+- Unknown / corrupt `funworldmap-game-last-mode` value falls back to `'country-pinning'`.
 - Mobile: same popover, full-width from the header.
-- No routing via state — all transitions go through the hash so deep links stay consistent.
+- No routing via component state — all transitions go through the hash so deep links stay consistent.
+
+### A11y contract
+
+- Trigger button: `aria-haspopup="menu"`, `aria-expanded={open}`, `aria-controls="play-menu"`.
+- Popover: `role="menu"`, `aria-orientation="vertical"`, `id="play-menu"`.
+- Items: `role="menuitem"`, each focusable via Arrow keys.
+- Open: first menu item is auto-focused.
+- Close: Escape, outside click, or selection. Focus returns to the trigger button.
+- Arrow Up/Down cycles items; Home/End jumps to first/last; Enter activates.
 
 ### Header changes
 
@@ -336,7 +356,8 @@ Unknown mode ids resolve to `{ kind: 'game', modeId, playing }` but `getMode(id)
 
 ### Test hook additions
 
-`window.__funworldmap_game.setRound(id: string)` gains city-mode support. For city mode, `id` is `${countryCca3}-${citySlug}`. For country mode, `id` remains the cca3. Implementation branches on the current mode.
+- `window.__funworldmap_game.setRound(id: string)` gains city-mode support. For city mode, `id` is `${countryCca3}-${citySlug}`. For country mode, `id` remains the cca3. Implementation branches on the current mode.
+- **New:** `window.__funworldmap_game.submitGuess(input: GuessInput)` — passes the input straight through to the controller's submit path. Lets a single e2e surface simulate any mode's interaction (country click, point click, skip). Existing `window.__funworldmap_guess(cca3)` stays as an alias for Country Pinning compat — delegates to `submitGuess({ kind: 'country', cca3, centroid })`.
 
 ---
 
@@ -398,6 +419,8 @@ All deferred items go to `docs/roadmap.md`. In this spec for reference only:
 - Per-round timer
 - Difficulty tiers (beginner pool of ~50 capitals, hard pool of lesser-known cities)
 - Camera animation smoothness knob beyond `prefers-reduced-motion`
+- **Reveal marker animation** (pulse / breathing effect) — dropped from v1 in favour of the simpler static marker; can land later without framework changes
+- **Runtime country-data join** — if `cities.json` grows enough that the ~25 KB of inlined country names/flags starts to matter, we can switch to a runtime join against `countries.json`'s `byCca3` map
 
 ---
 
