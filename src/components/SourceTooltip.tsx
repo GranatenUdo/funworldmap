@@ -13,6 +13,8 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
 
   const sourceKey = fieldSources[field]
   const source = sourceKey ? sources[sourceKey] : null
+  const supportsHover =
+    typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches
 
   useEffect(() => {
     if (!open) return
@@ -31,9 +33,9 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
     <div ref={ref} className="relative inline-block ml-1">
       <button
         className="text-sand-400 dark:text-dark-100 hover:text-teal dark:hover:text-teal-light text-xs w-4 h-4 rounded-full border border-sand-300 dark:border-dark-200 inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 transition-colors"
-        onClick={() => setOpen(!open)}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
+        onClick={() => setOpen((prev) => !prev)}
+        onMouseEnter={supportsHover ? () => setOpen(true) : undefined}
+        onMouseLeave={supportsHover ? () => setOpen(false) : undefined}
         onFocus={() => setOpen(true)}
         onBlur={() => setOpen(false)}
         aria-label={`Source: ${source.name}`}
