@@ -29,7 +29,21 @@ test.describe('keyboard map navigation', () => {
     })
 
     await page.keyboard.press('Home')
-    await page.waitForTimeout(1600) // flyTo duration
+
+    // Wait for MapLibre's idle event instead of a fixed wall-clock wait.
+    // On CI's headless Chrome without a real GPU the rAF-driven flyTo
+    // easing runs behind wall clock; a 1600 ms sleep may land mid-flight
+    // and `getCenter()` still reports the pre-Home position.
+    await page.evaluate(
+      () =>
+        new Promise<void>((resolve) => {
+          const map = (window as unknown as {
+            __funworldmap_map?: { once: (event: string, fn: () => void) => void }
+          }).__funworldmap_map
+          if (!map) return resolve()
+          map.once('idle', () => resolve())
+        }),
+    )
 
     const center = await page.evaluate(() => {
       const map = (
