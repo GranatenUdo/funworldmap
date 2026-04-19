@@ -62,7 +62,7 @@ export default function WorldMap({
 
   useMapInteractions({ loaded, byNumeric, onSelect, onDeselect, comparePickingMode })
   useSelectionHighlight({ loaded, selected, compareWith })
-  useMapTheme({ loaded, resolvedTheme })
+  useMapTheme({ loaded, resolvedTheme, satellite })
   useSatelliteMode({ loaded, satellite, resolvedTheme })
   useCompareViewDimming({ loaded, compareWith, satellite, resolvedTheme })
 

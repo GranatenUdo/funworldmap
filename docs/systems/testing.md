@@ -101,6 +101,7 @@ e2e/
   search.spec.ts                # Phase 3: autocomplete, fuzzy matching, keyboard nav
   theme-and-responsive.spec.ts  # Phase 4: dark mode, responsive breakpoints
   accessibility.spec.ts         # Phase 5: keyboard nav, ARIA, axe-core audit
+  compare-view-dimming.spec.ts  # Compare + satellite: dimmed borders must restore on exit
 ```
 
 ## Shared Fixtures
