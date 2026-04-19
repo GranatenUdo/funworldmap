@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import type { GameSession } from '../../shared/types'
 import { MESSAGES } from './messages'
-import { registerCountryPinningHud } from './index'
 
 interface Props {
   session: GameSession
@@ -51,5 +50,4 @@ function CountryPinningHud({ session }: Props) {
   )
 }
 
-registerCountryPinningHud(CountryPinningHud)
 export default CountryPinningHud
