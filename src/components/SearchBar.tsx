@@ -6,6 +6,7 @@ interface Props {
   countries: CountryData[]
   comparePickingMode?: boolean
   onSelect: (cca3: string) => void
+  onNonEmptyChange?: () => void
 }
 
 const LISTBOX_ID = 'search-results'
@@ -19,7 +20,7 @@ const REGION_COLORS: Record<string, string> = {
   Antarctic: 'bg-slate-100 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
 
-export default function SearchBar({ countries, comparePickingMode, onSelect }: Props) {
+export default function SearchBar({ countries, comparePickingMode, onSelect, onNonEmptyChange }: Props) {
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(-1)
   const [isOpen, setIsOpen] = useState(false)
@@ -104,7 +105,11 @@ export default function SearchBar({ countries, comparePickingMode, onSelect }: P
         aria-autocomplete="list"
         placeholder={comparePickingMode ? 'Choose country to compare...' : 'Search countries...'}
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          const next = e.target.value
+          setQuery(next)
+          if (next.length > 0) onNonEmptyChange?.()
+        }}
         onKeyDown={onKeyDown}
         onFocus={() => {
           if (query.trim()) setIsOpen(true)

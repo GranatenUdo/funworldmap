@@ -2,16 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { listModes } from '../game/modes'
 import type { ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
-
-const LAST_MODE_KEY = 'funworldmap-game-last-mode'
-
-function readLastMode(): ModeId {
-  try {
-    const v = localStorage.getItem(LAST_MODE_KEY)
-    if (v === 'country-pinning' || v === 'city-guessing') return v
-  } catch { /* ignore */ }
-  return 'country-pinning'
-}
+import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 
 export function PlayMenu({ open, onClose, triggerRef }: {
   open: boolean
@@ -60,7 +51,7 @@ export function PlayMenu({ open, onClose, triggerRef }: {
   if (!open) return null
 
   const selectMode = (id: ModeId) => {
-    try { localStorage.setItem(LAST_MODE_KEY, id) } catch { /* ignore */ }
+    writeLastMode(id)
     window.location.hash = writeHash({ kind: 'game', modeId: id, playing: true })
     onClose()
   }
