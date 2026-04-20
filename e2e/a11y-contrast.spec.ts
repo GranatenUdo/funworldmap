@@ -88,4 +88,17 @@ test.describe('A11y + Contrast Pass', () => {
       expect(color).toContain(SAND_600_RGB)
     })
   })
+
+  test.describe('Tabular figures on DataCell', () => {
+    test('DataCell values have font-variant-numeric: tabular-nums', async ({ page }) => {
+      const panel = await openPanel(page, 'FRA', 'France')
+      const valueCells = panel.locator('[data-testid="data-cell-value"]')
+      const count = await valueCells.count()
+      expect(count).toBeGreaterThan(0)
+      const variant = await valueCells
+        .first()
+        .evaluate((el) => window.getComputedStyle(el).fontVariantNumeric)
+      expect(variant).toContain('tabular-nums')
+    })
+  })
 })

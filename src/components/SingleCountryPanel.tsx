@@ -30,7 +30,12 @@ function DataCell({
   return (
     <div className="py-1.5">
       <FieldLabel label={label} field={field} country={country} sources={sources} />
-      <div className="text-[15px] text-sand-800 dark:text-dark-50">{children}</div>
+      <div
+        data-testid="data-cell-value"
+        className="text-[15px] text-sand-800 dark:text-dark-50 tabular-nums"
+      >
+        {children}
+      </div>
     </div>
   )
 }
