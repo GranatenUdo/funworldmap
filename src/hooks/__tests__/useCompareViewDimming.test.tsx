@@ -78,10 +78,6 @@ describe('useCompareViewDimming', () => {
   })
 
   it('restores satellite border paint when compareWith clears in satellite mode', () => {
-    // Regression fix (2026-04-19): the prior behavior bailed out in the
-    // else branch for satellite mode, leaving borders stuck at the
-    // dim 0.15 opacity. The fix routes through applyBorderPaintForMode
-    // so satellite's 0.6 opacity is restored on compare-exit.
     const fake = makeFakeMap()
     renderHook(
       () =>

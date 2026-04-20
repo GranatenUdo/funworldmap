@@ -1,7 +1,6 @@
 import type { CountryLike, GameMode } from '../../shared/types'
 import { scoreGuess } from './scoring'
 import { nextRound as pickNextRound } from './roundGenerator'
-import { centroidFromLatLng } from '../../shared/distance'
 import { MESSAGES } from './messages'
 import CountryPinningHud from './CountryPinningHud'
 
@@ -30,4 +29,3 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
   }
 }
 
-export { centroidFromLatLng }

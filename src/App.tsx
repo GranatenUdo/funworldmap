@@ -13,6 +13,7 @@ import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSe
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
+import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 
 export default function App() {
@@ -117,7 +118,7 @@ function AppInner({
             kind: 'country',
             cca3: cca3.toUpperCase(),
             name: country.name.common,
-            centroid: [country.latlng[1], country.latlng[0]],
+            centroid: centroidFromLatLng(country.latlng),
           })
         }
         // City mode: GameController handles clicks via its own map.on('click'); no-op here.
