@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CityLike, CountryLike, GameMode, GuessInput, GuessOutcome, ModeId, RoundSpec } from './shared/types'
+import type { CountryData } from '../lib/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { getMode } from './modes'
@@ -85,11 +86,12 @@ function clearRevealSources(map: maplibregl.Map): void {
 
 interface Props {
   countries: CountryLike[]
+  countriesFull: CountryData[]
   cities: CityLike[]
   byCca3: Map<string, CountryLike>
 }
 
-export function GameController({ countries, cities, byCca3 }: Props) {
+export function GameController({ countries, countriesFull, cities, byCca3 }: Props) {
   const { session, start, submitGuess, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const recordedRef = useRef(false)
@@ -348,6 +350,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       submitGuessWithInput({
         kind: 'country',
         cca3: cca3.toUpperCase(),
+        name: country.name.common,
         centroid: centroidFromLatLng(country.latlng),
       })
     }
@@ -388,19 +391,20 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   return (
     <CityGuessingHudActionsContext.Provider value={{ onSkip }}>
       {(session.status === 'playing' || session.status === 'round-ended') && (
-        <FirstSessionTutorial />
+        <FirstSessionTutorial modeId={session.modeId} />
       )}
       <HudShell session={session} onEndGame={onEndGame}>
         <Hud session={session} />
         {session.status === 'playing' && session.modeId === 'country-pinning' && (
           <GuessByNameButton
-            pool={countries}
+            pool={countriesFull}
             onGuess={(cca3) => {
               const c = byCca3.get(cca3.toUpperCase())
               if (!c) return
               submitGuessWithInput({
                 kind: 'country',
                 cca3: cca3.toUpperCase(),
+                name: c.name.common,
                 centroid: centroidFromLatLng(c.latlng),
               })
             }}

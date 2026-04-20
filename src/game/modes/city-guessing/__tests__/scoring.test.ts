@@ -49,7 +49,7 @@ describe('scoreCityGuess', () => {
   })
 
   it('country input (defensive leakage) returns zero', () => {
-    const out = scoreCityGuess({ kind: 'country', cca3: 'FRA', centroid: paris }, round)
+    const out = scoreCityGuess({ kind: 'country', cca3: 'FRA', name: 'France', centroid: paris }, round)
     expect(out.pointsEarned).toBe(0)
     expect(out.livesDelta).toBe(0)
   })

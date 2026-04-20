@@ -109,6 +109,29 @@ test.describe('City Guessing game', () => {
     expect(score).toBe(0)
   })
 
+  test('skip button click submits a skip guess', async ({ page }) => {
+    // Exercises the onClick handler on city-skip. The reveal HUD text
+    // lives only during status='round-ended' (REVEAL_MS = 2000ms) and
+    // races the state transition on slow CI. Assert via the session:
+    // roundIndex advancing proves the click submitted a guess and the
+    // reducer completed the round. Score stays 0 (skip earns nothing).
+    await openCityGuessing(page)
+    await setRoundAndWait(page, 'FRA-paris', 'Paris')
+    await expect(page.getByTestId('city-skip')).toBeVisible()
+    await page.getByTestId('city-skip').click()
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(() => {
+            type H = { getSession?: () => { roundIndex: number; score: number } }
+            const g = (window as unknown as { __funworldmap_game?: H }).__funworldmap_game
+            return g?.getSession?.() ?? null
+          }),
+        { timeout: 10_000 },
+      )
+      .toMatchObject({ roundIndex: 1, score: 0 })
+  })
+
   test('ten rounds end the game', async ({ page }) => {
     // Ten iterations of setRoundAndWait + hook-skip take longer on CI
     // (~6 s each under headless Chrome without GPU); double the budget.

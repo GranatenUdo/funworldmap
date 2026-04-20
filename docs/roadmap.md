@@ -53,11 +53,19 @@ Source: [`2026-04-18-satellite-default-and-game-modes-design.md`](superpowers/sp
 
 ## Build / CI
 
-Source: [`2026-04-16-fix-ci-bugs-and-perf.md`](superpowers/plans/2026-04-16-fix-ci-bugs-and-perf.md) (plan) and the 2026-04-18 PR.
+Sources: [`2026-04-16-fix-ci-bugs-and-perf.md`](superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md) (plan) and the 2026-04-18 PR; [`2026-04-19-assessment-remediation-design.md`](superpowers/specs/2026-04-19-assessment-remediation-design.md) for the three 2026-04-19 entries.
 
 - **Network-stubbed tile mocks for e2e** — removes external-network variance. Worth doing after CI stabilises if residual flake appears.
-- **Bundle-size budgets in CI** — `size-limit` or similar to catch silent regressions.
+- **Bundle-size budgets in CI** — `size-limit` or similar to catch silent regressions. The 2026-04-19 assessment noted the `<700 KB` target drifted with Sentry + `cities.json`; enforcing a re-baselined target in CI would have caught it.
 - **Chromium-gpu project on self-hosted runner** — the current GPU project runs under `--use-gl=angle` on shared Ubuntu runners without a real GPU; several tests are effectively SwiftShader-only. A self-hosted runner with a GPU would unlock the full suite.
+- **Firefox and Safari e2e projects.** `playwright.config.ts` gains `firefox` and `webkit` projects alongside `chromium` / `chromium-gpu`. Cross-browser coverage was in the original Phase 7 exit criteria but never wired.
+- **Lazy Sentry.** The current static `import * as Sentry from '@sentry/react'` in `main.tsx` bundles Sentry regardless of whether a DSN is set. Move to dynamic `import()` inside `initSentry` so a DSN-less build drops the library entirely.
+
+## Rendering
+
+Source: [`2026-04-19-assessment-remediation-design.md`](superpowers/specs/2026-04-19-assessment-remediation-design.md).
+
+- **Revisit atmospheric fog.** `useMapTheme`'s sky call covers atmosphere; a previously-documented `setFog` call was a Mapbox-only API and never ran under MapLibre. A real fog effect would need a deliberate spec.
 
 ---
 

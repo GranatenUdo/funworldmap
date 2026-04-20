@@ -27,10 +27,16 @@ export function GameOverOverlay({
           Game over
         </h2>
         <p className="text-sm text-sand-500 dark:text-dark-100 mb-4">
-          Three wrong guesses.
+          {session.maxRounds === null
+            ? 'Three wrong guesses.'
+            : `${session.maxRounds} rounds complete.`}
         </p>
 
-        <dl className="grid grid-cols-2 gap-3 mb-6">
+        <dl
+          className={`grid ${
+            session.maxRounds === null ? 'grid-cols-2' : 'grid-cols-1'
+          } gap-3 mb-6`}
+        >
           <div>
             <dt className="text-xs uppercase text-sand-500 dark:text-dark-100">Score</dt>
             <dd
@@ -40,15 +46,17 @@ export function GameOverOverlay({
               {session.score}
             </dd>
           </div>
-          <div>
-            <dt className="text-xs uppercase text-sand-500 dark:text-dark-100">Longest streak</dt>
-            <dd
-              className="text-2xl font-bold text-sand-900 dark:text-dark-50 tabular-nums"
-              data-testid="game-over-best-streak"
-            >
-              {session.bestStreak}
-            </dd>
-          </div>
+          {session.maxRounds === null && (
+            <div>
+              <dt className="text-xs uppercase text-sand-500 dark:text-dark-100">Longest streak</dt>
+              <dd
+                className="text-2xl font-bold text-sand-900 dark:text-dark-50 tabular-nums"
+                data-testid="game-over-best-streak"
+              >
+                {session.bestStreak}
+              </dd>
+            </div>
+          )}
         </dl>
 
         <div className="text-xs text-sand-500 dark:text-dark-100 mb-5" data-testid="game-over-pb">

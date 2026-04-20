@@ -15,9 +15,10 @@ function CountryPinningHud({ session }: Props) {
     if (session.status !== 'round-ended' || !reveal) return null
     if (reveal.reveal.kind !== 'country') return null
     const r = reveal.reveal
-    if (r.correct) return MESSAGES.correct(reveal.pointsEarned, r.targetCca3)
-    return MESSAGES.wrong(reveal.pointsEarned, r.targetCca3, r.clickedCca3)
-  }, [session.status, reveal])
+    const targetName = round && round.kind === 'country-pinning' ? round.targetName : r.targetCca3
+    if (r.correct) return MESSAGES.correct(reveal.pointsEarned, targetName)
+    return MESSAGES.wrong(reveal.pointsEarned, targetName, r.clickedName)
+  }, [session.status, reveal, round])
 
   if (!round || round.kind !== 'country-pinning') return null
 

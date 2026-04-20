@@ -24,6 +24,21 @@
     <meta name="twitter:description" content="Explore 195 countries on a fast, free, interactive world map." />
     <meta name="twitter:image" content="https://funworldmap.com/og-image.png" />
 
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('funworldmap-theme')
+          var resolved =
+            t === 'dark' || t === 'light'
+              ? t
+              : window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light'
+          if (resolved === 'dark') document.documentElement.classList.add('dark')
+        } catch (_) {}
+      })()
+    </script>
+
     <link rel="preload" as="font" type="font/woff2" href="/fonts/outfit-latin.woff2" crossorigin />
   </head>
   <body>
