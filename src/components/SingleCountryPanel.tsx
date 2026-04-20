@@ -117,7 +117,7 @@ export function SingleCountryPanel({
                 {country.name.common}
               </h2>
               {country.name.official !== country.name.common && (
-                <p className="text-xs text-sand-500 dark:text-dark-100 truncate mt-0.5">
+                <p className="text-xs text-sand-600 dark:text-dark-100 truncate mt-0.5">
                   {country.name.official}
                 </p>
               )}
@@ -156,7 +156,7 @@ export function SingleCountryPanel({
 
             <button
               onClick={onShareLink}
-              className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-500 dark:text-dark-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
               aria-label="Copy link to this country"
               title="Copy link"
             >
@@ -168,7 +168,7 @@ export function SingleCountryPanel({
             {!isDesktop && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-500 dark:text-dark-100 transition-colors"
+                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
                 aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
               >
                 <svg
@@ -297,7 +297,7 @@ export function SingleCountryPanel({
                       return (
                         <span
                           key={code}
-                          className="px-2.5 py-1.5 text-xs rounded-full bg-sand-200 dark:bg-dark-300 text-sand-500 dark:text-dark-100"
+                          className="px-2.5 py-1.5 text-xs rounded-full bg-sand-200 dark:bg-dark-300 text-sand-600 dark:text-dark-100"
                         >
                           {code}
                         </span>

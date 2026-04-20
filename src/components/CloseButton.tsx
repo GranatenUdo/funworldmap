@@ -6,7 +6,7 @@ interface Props {
 }
 
 const DEFAULT_CLASSNAME =
-  'p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-500 dark:text-dark-100 transition-colors'
+  'p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors'
 
 export function CloseButton({ onClick, ariaLabel, testId, className }: Props) {
   return (

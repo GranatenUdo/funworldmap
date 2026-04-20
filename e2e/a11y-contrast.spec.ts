@@ -52,4 +52,40 @@ test.describe('A11y + Contrast Pass', () => {
       expect(px).toBeGreaterThanOrEqual(11)
     })
   })
+
+  test.describe('Meta-color contrast', () => {
+    // Use substring matching — Chromium normalises to `rgb(...)`, but older
+    // WebKit/Firefox builds can emit `rgba(R, G, B, 1)` for the same color
+    // declaration. `toContain` is format-agnostic.
+    const SAND_600_RGB = '107, 100, 89' // #6b6459
+    const DARK_100_RGB = '148, 163, 184' // #94a3b8
+
+    async function computedColor(locator: Locator): Promise<string> {
+      return locator.evaluate((el) => window.getComputedStyle(el).color)
+    }
+
+    test('official-name line uses sand-600 in light mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
+      const panel = await openPanel(page, 'FRA', 'France')
+      const official = panel.getByText('French Republic').first()
+      const color = await computedColor(official)
+      expect(color).toContain(SAND_600_RGB)
+    })
+
+    test('official-name line is unchanged in dark mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
+      const panel = await openPanel(page, 'FRA', 'France')
+      const official = panel.getByText('French Republic').first()
+      const color = await computedColor(official)
+      expect(color).toContain(DARK_100_RGB)
+    })
+
+    test('close-button icon uses sand-600 in light mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
+      const panel = await openPanel(page, 'FRA', 'France')
+      const closeBtn = panel.getByTestId('panel-close')
+      const color = await computedColor(closeBtn)
+      expect(color).toContain(SAND_600_RGB)
+    })
+  })
 })
