@@ -260,7 +260,7 @@ function AppInner({
       <div ref={liveRegionRef} data-testid="announce-region" aria-live="polite" aria-atomic="true" className="sr-only" />
 
       {!mapReady && (
-        <div aria-hidden="true" className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300">
+        <div aria-hidden="true" className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300 pointer-events-none">
           <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">funworldmap</span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
