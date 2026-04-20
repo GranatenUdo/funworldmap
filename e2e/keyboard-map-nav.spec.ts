@@ -24,8 +24,18 @@ test.describe('keyboard map navigation', () => {
   // hardening still saw timeouts on CI.
 
   test('focus ring is visible on the map container when tabbed to', async ({ page }) => {
-    await page.locator('[role="application"]').focus()
-    const hasOutline = await page.locator('[role="application"]').evaluate((el) => {
+    // Reach [role="application"] via keyboard Tab (not .focus()) so that
+    // :focus-visible evaluates. Programmatic focus does not reliably
+    // trigger :focus-visible — the ring relies on keyboard-initiated focus.
+    const app = page.locator('[role="application"]')
+    let attempts = 0
+    while (attempts < 15) {
+      await page.keyboard.press('Tab')
+      if (await app.evaluate((el) => el === document.activeElement).catch(() => false)) break
+      attempts++
+    }
+    await expect(app).toBeFocused()
+    const hasOutline = await app.evaluate((el) => {
       const style = getComputedStyle(el)
       return style.outlineStyle !== 'none' && style.outlineWidth !== '0px'
     })

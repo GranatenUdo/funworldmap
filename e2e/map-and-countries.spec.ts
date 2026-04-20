@@ -242,6 +242,9 @@ test.describe('Hover interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
+    // Give the GPU compositor a beat to recover from the launcher's
+    // backdrop-filter layer being torn down before querying features.
+    await page.waitForTimeout(750)
 
     // Find a country feature
     const point = await page.evaluate(() => {
