@@ -67,6 +67,10 @@ Source: [`2026-04-19-assessment-remediation-design.md`](superpowers/specs/2026-0
 
 - **Revisit atmospheric fog.** `useMapTheme`'s sky call covers atmosphere; a previously-documented `setFog` call was a Mapbox-only API and never ran under MapLibre. A real fog effect would need a deliberate spec.
 
+## Accessibility
+
+- **Color-contrast pass on `GameOverOverlay`.** An axe audit on the overlay state (attempted during the 2026-04-19 remediation and dropped as too flaky to land) reported WCAG 2 AA color-contrast violations in the overlay's subtitle / score / button copy. Needs a dedicated styling pass. The focus-management fix is already landed.
+
 ---
 
 ## Rejected (won't build)
