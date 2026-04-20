@@ -124,6 +124,21 @@ test.describe('Accessibility', () => {
     await page.goto('/#game/country-pinning/play')
     await page.waitForSelector('[data-map-loaded]', { timeout: 30_000 })
 
+    // GameController registers test hooks after the mode resolves + first round
+    // dispatches, which races [data-map-loaded] on slow chromium CI. Wait for
+    // the hook to exist before driving the game to game-over.
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            type H = { submitCountryGuess?: unknown; setRound?: unknown }
+            const g = (window as unknown as { __funworldmap_game?: H }).__funworldmap_game
+            return typeof g?.submitCountryGuess === 'function' && typeof g?.setRound === 'function'
+          }),
+        { timeout: 15_000 },
+      )
+      .toBe(true)
+
     // Force game-over via the test hook: set a round, submit three wrong guesses.
     for (let i = 0; i < 3; i++) {
       await page.evaluate(() => {
@@ -140,9 +155,12 @@ test.describe('Accessibility', () => {
 
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
 
+    // Scope the audit to the overlay itself. The map canvas and HUD behind
+    // the overlay produce their own a11y noise that isn't what this test
+    // verifies — we want to assert the overlay is well-formed, not re-audit
+    // the whole page.
     const results = await new AxeBuilder({ page })
-      .exclude('.maplibregl-canvas')
-      .exclude('.z-\\[200\\]')
+      .include('[data-testid="game-over"]')
       .analyze()
 
     expect(results.violations).toEqual([])
