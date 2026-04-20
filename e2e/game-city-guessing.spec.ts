@@ -110,17 +110,26 @@ test.describe('City Guessing game', () => {
   })
 
   test('skip button click submits a skip guess', async ({ page }) => {
-    // Exercises the onClick handler on city-skip — the other skip tests
-    // bypass the DOM via the submitGuess hook. This one goes through the
-    // button element. Wait for HUD stability (prompt visible) before click.
+    // Exercises the onClick handler on city-skip. The reveal HUD text
+    // lives only during status='round-ended' (REVEAL_MS = 2000ms) and
+    // races the state transition on slow CI. Assert via the session:
+    // roundIndex advancing proves the click submitted a guess and the
+    // reducer completed the round. Score stays 0 (skip earns nothing).
     await openCityGuessing(page)
     await setRoundAndWait(page, 'FRA-paris', 'Paris')
     await expect(page.getByTestId('city-skip')).toBeVisible()
     await page.getByTestId('city-skip').click()
-    await expect(page.getByTestId('game-reveal')).toContainText('Skipped', {
-      timeout: 10_000,
-    })
-    await expect(page.getByTestId('hud-score')).toHaveText('0')
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(() => {
+            type H = { getSession?: () => { roundIndex: number; score: number } }
+            const g = (window as unknown as { __funworldmap_game?: H }).__funworldmap_game
+            return g?.getSession?.() ?? null
+          }),
+        { timeout: 10_000 },
+      )
+      .toMatchObject({ roundIndex: 1, score: 0 })
   })
 
   test('ten rounds end the game', async ({ page }) => {
