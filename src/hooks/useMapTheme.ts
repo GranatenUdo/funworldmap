@@ -1,16 +1,18 @@
 import { useEffect } from 'react'
 import { applyMapTheme } from '../lib/mapColors'
 import { TEAL, TEAL_LIGHT, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
-import { applyBorderPaintForMode, LAYER } from '../lib/mapLayers'
+import { LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
   loaded: boolean
   resolvedTheme: 'light' | 'dark'
-  satellite: boolean
 }
 
-export function useMapTheme({ loaded, resolvedTheme, satellite }: Options): void {
+// Border paint lives in useSatelliteMode (which also reacts to
+// resolvedTheme) so that the two concerns — overlay colors+sky and
+// baseline border paint — each have one owner.
+export function useMapTheme({ loaded, resolvedTheme }: Options): void {
   const { mapRef } = useMap()
 
   useEffect(() => {
@@ -32,8 +34,6 @@ export function useMapTheme({ loaded, resolvedTheme, satellite }: Options): void
       map.setPaintProperty(LAYER.selectedGlow, 'line-color', coral)
       map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', coral)
 
-      applyBorderPaintForMode(map, { isDark, satellite })
-
       map.setSky({
         'sky-color': isDark ? '#0a1a2e' : '#88c6fc',
         'horizon-color': isDark ? '#1a2030' : '#f0ede6',
@@ -47,5 +47,5 @@ export function useMapTheme({ loaded, resolvedTheme, satellite }: Options): void
       // setPaintProperty / setSky throw if the basemap style hasn't
       // committed its layers yet (e.g. fast theme toggle on a slow load).
     }
-  }, [resolvedTheme, loaded, mapRef, satellite])
+  }, [resolvedTheme, loaded, mapRef])
 }

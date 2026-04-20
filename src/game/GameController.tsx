@@ -283,10 +283,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
     if (!w.__funworldmap_game) w.__funworldmap_game = {}
     w.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
-    // Test shorthand: submit a country-mode guess by cca3 alone (looks up
-    // name + centroid in the pool). Replaces the legacy __funworldmap_guess
-    // global — keeps the single source-of-truth submit path through the
-    // provider's submitGuessInput.
+    // Test shorthand: takes cca3 alone and looks up name + centroid.
     w.__funworldmap_game.submitCountryGuess = (cca3: string): boolean => {
       if (session.modeId !== 'country-pinning') return false
       const country = byCca3.get(cca3.toUpperCase())
@@ -321,7 +318,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
           targetName: city.name,
           targetCountryName: city.countryName,
           targetCountryFlag: city.countryFlag,
-          targetCentroid: [city.latlng[1], city.latlng[0]],
+          targetCentroid: centroidFromLatLng(city.latlng),
         }
       }
       if (statusRef.current === 'idle') {
