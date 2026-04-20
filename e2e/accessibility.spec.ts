@@ -140,14 +140,20 @@ test.describe('Accessibility', () => {
       .toBe(true)
 
     // Force game-over via the test hook: set a round, submit three wrong guesses.
+    // Split setRound and submitCountryGuess into separate evaluates with an
+    // await between them — within a single evaluate React doesn't re-render,
+    // so submitCountryGuess captures a stale submitGuessInput closure that
+    // sees status='round-ended' and early-returns without submitting.
     for (let i = 0; i < 3; i++) {
       await page.evaluate(() => {
-        type H = {
-          setRound?: (cca3: string) => boolean
-          submitCountryGuess?: (cca3: string) => boolean
-        }
+        type H = { setRound?: (cca3: string) => boolean }
         const g = (window as unknown as { __funworldmap_game?: H }).__funworldmap_game
         g?.setRound?.('FRA')
+      })
+      await page.waitForTimeout(50)
+      await page.evaluate(() => {
+        type H = { submitCountryGuess?: (cca3: string) => boolean }
+        const g = (window as unknown as { __funworldmap_game?: H }).__funworldmap_game
         g?.submitCountryGuess?.('AUS')
       })
       await page.waitForTimeout(100)
