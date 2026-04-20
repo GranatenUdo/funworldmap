@@ -170,7 +170,8 @@ export default function SearchBar({ countries, comparePickingMode, onSelect }: P
                         </span>
                       )}
                       <span
-                        className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                        data-testid="region-badge"
+                        className={`text-[11px] font-medium px-1.5 py-0.5 rounded-full ${
                           REGION_COLORS[result.country.region] || 'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
                         }`}
                       >

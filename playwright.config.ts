@@ -30,6 +30,7 @@ export default defineConfig({
         'meta-and-static.spec.ts',
         'panel-focus.spec.ts',
         'satellite-default.spec.ts',
+        'a11y-contrast.spec.ts',
       ],
     },
     {
