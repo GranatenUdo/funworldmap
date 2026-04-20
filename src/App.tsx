@@ -11,29 +11,79 @@ import { useTheme } from './hooks/useTheme'
 import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { GameController } from './game/GameController'
-import './game/modes/country-pinning/CountryPinningHud'
-import type { CountryLike } from './game/shared/types'
+import type { CityLike, CountryLike } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
-import type { CountryData } from './lib/types'
+import { centroidFromLatLng } from './game/shared/distance'
+import type { CountryData, CountriesFile } from './lib/types'
 
 export default function App() {
+  const { countries, byNumeric, byCca3, sources } = useCountryData()
+  const { cities } = useCityData()
+
+  const pool = useMemo<CountryLike[]>(
+    () =>
+      countries
+        .filter((c: CountryData) => c.independent === true)
+        .map((c: CountryData) => ({
+          cca3: c.cca3,
+          name: { common: c.name.common },
+          flag: c.flag,
+          latlng: c.latlng,
+          independent: true,
+        })),
+    [countries],
+  )
+  const poolFull = useMemo<CountryData[]>(
+    () => countries.filter((c: CountryData) => c.independent === true),
+    [countries],
+  )
+  const poolByCca3 = useMemo(() => new Map(pool.map((c) => [c.cca3, c])), [pool])
+  const pools = useMemo(() => ({ countries: pool, cities }), [pool, cities])
+
   return (
-    <GameSessionProvider>
-      <MapProvider>
-        <AppInner />
-      </MapProvider>
-    </GameSessionProvider>
+    <MapProvider>
+      <GameSessionProvider pools={pools}>
+        <AppInner
+          countries={countries}
+          countriesFull={poolFull}
+          pool={pool}
+          byNumeric={byNumeric}
+          byCca3={byCca3}
+          poolByCca3={poolByCca3}
+          sources={sources}
+          cities={cities}
+        />
+      </GameSessionProvider>
+    </MapProvider>
   )
 }
 
-function AppInner() {
-  const { countries, byNumeric, byCca3, sources } = useCountryData()
-  const { cities } = useCityData()
+interface AppInnerProps {
+  countries: CountryData[]
+  countriesFull: CountryData[]
+  pool: CountryLike[]
+  byNumeric: Map<string, CountryData>
+  byCca3: Map<string, CountryData>
+  poolByCca3: Map<string, CountryLike>
+  sources: CountriesFile['_sources']
+  cities: CityLike[]
+}
+
+function AppInner({
+  countries,
+  countriesFull,
+  pool,
+  byNumeric,
+  byCca3,
+  poolByCca3,
+  sources,
+  cities,
+}: AppInnerProps) {
   const { selected, compareWith, select, compareSelect, clearCompare, deselect } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
-  const { session } = useGameSessionContext()
+  const { session, submitGuessInput } = useGameSessionContext()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const [mapReady, setMapReady] = useState(false)
@@ -53,38 +103,25 @@ function AppInner() {
 
   const gameActive = session.status !== 'idle'
 
-  const pool = useMemo<CountryLike[]>(
-    () => countries
-      .filter((c: CountryData) => c.independent === true)
-      .map((c: CountryData) => ({
-        cca3: c.cca3,
-        name: { common: c.name.common },
-        flag: c.flag,
-        latlng: c.latlng,
-        independent: true,
-      })),
-    [countries],
-  )
-  const poolFull = useMemo<CountryData[]>(
-    () => countries.filter((c: CountryData) => c.independent === true),
-    [countries],
-  )
-  const poolByCca3 = useMemo(
-    () => new Map(pool.map((c) => [c.cca3, c])),
-    [pool],
-  )
-
   const onMapSelect = useCallback(
     (cca3: string) => {
       if (gameActive) {
-        if (session.modeId === 'country-pinning' && !poolByCca3.has(cca3.toUpperCase())) {
-          window.dispatchEvent(new CustomEvent('funworldmap:toast', {
-            detail: "That territory isn't in the country pool.",
-          }))
-          return
+        if (session.modeId === 'country-pinning') {
+          const country = poolByCca3.get(cca3.toUpperCase())
+          if (!country) {
+            window.dispatchEvent(new CustomEvent('funworldmap:toast', {
+              detail: "That territory isn't in the country pool.",
+            }))
+            return
+          }
+          submitGuessInput({
+            kind: 'country',
+            cca3: cca3.toUpperCase(),
+            name: country.name.common,
+            centroid: centroidFromLatLng(country.latlng),
+          })
         }
-        const guess = (window as unknown as { __funworldmap_guess?: (c: string) => void }).__funworldmap_guess
-        guess?.(cca3)
+        // City mode: GameController handles clicks via its own map.on('click'); no-op here.
         return
       }
       if (comparePickingMode) {
@@ -96,7 +133,7 @@ function AppInner() {
         select(cca3)
       }
     },
-    [gameActive, session.modeId, poolByCca3, comparePickingMode, selected, select, compareSelect],
+    [gameActive, session.modeId, poolByCca3, submitGuessInput, comparePickingMode, selected, select, compareSelect],
   )
 
   useEffect(() => {
@@ -265,7 +302,7 @@ function AppInner() {
         onSatelliteToggle={toggleSatellite}
       />
 
-      <GameController countries={pool} countriesFull={poolFull} cities={cities} byCca3={poolByCca3} />
+      <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
 
       {showHint && !selected && !gameActive && (
         <div role="status"

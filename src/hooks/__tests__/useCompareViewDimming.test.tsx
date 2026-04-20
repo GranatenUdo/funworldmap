@@ -77,8 +77,7 @@ describe('useCompareViewDimming', () => {
     expect(borderOpacity?.[2]).toBe(0.5)
   })
 
-  it('skips paint restore when compareWith clears in satellite mode', () => {
-    // useSatelliteMode owns the satellite paint — we must not interfere.
+  it('restores satellite border paint when compareWith clears in satellite mode', () => {
     const fake = makeFakeMap()
     renderHook(
       () =>
@@ -90,8 +89,14 @@ describe('useCompareViewDimming', () => {
         }),
       { wrapper: makeWrapper(fake) },
     )
-    expect(fake.setFilter).not.toHaveBeenCalled()
-    expect(fake.setPaintProperty).not.toHaveBeenCalled()
+    const borderOpacity = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-borders' && c[1] === 'line-opacity',
+    )
+    expect(borderOpacity?.[2]).toBe(0.6)
+    const borderColor = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-borders' && c[1] === 'line-color',
+    )
+    expect(borderColor?.[2]).toBe('rgba(255,255,255,0.35)')
   })
 
   it('does nothing when loaded is false', () => {

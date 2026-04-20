@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import type { GameSession, PersonalBest } from '../types'
 
 interface Props {
@@ -11,6 +12,31 @@ interface Props {
 export function GameOverOverlay({
   session, personalBest, beatPersonalBest, onPlayAgain, onBackToMap,
 }: Props) {
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    previousFocusRef.current = document.activeElement as HTMLElement | null
+    const playAgain = document.querySelector<HTMLButtonElement>(
+      '[data-testid="game-over-play-again"]',
+    )
+    playAgain?.focus({ preventScroll: true })
+    return () => {
+      const target = previousFocusRef.current
+      const canRestore =
+        target &&
+        target !== document.body &&
+        document.body.contains(target) &&
+        typeof target.focus === 'function'
+      if (canRestore) {
+        target.focus({ preventScroll: true })
+      } else {
+        document
+          .querySelector<HTMLElement>('[role="application"]')
+          ?.focus({ preventScroll: true })
+      }
+    }
+  }, [])
+
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center sm:items-center items-end justify-center p-4 bg-black/30 backdrop-blur-sm"

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
-import type { CityLike, CountryLike, GameMode, GuessInput, GuessOutcome, ModeId, RoundSpec } from './shared/types'
+import type { CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
 import type { CountryData } from '../lib/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
@@ -92,21 +92,14 @@ interface Props {
 }
 
 export function GameController({ countries, countriesFull, cities, byCca3 }: Props) {
-  const { session, start, submitGuess, advance, overrideRound, endGame } = useGameSessionContext()
+  const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const recordedRef = useRef(false)
   const pendingStartRef = useRef<ModeId | null>(null)
 
+  // Pool derivation for the hash-bootstrap path (which needs `getMode` for
+  // the first round ahead of the reducer running).
   const pools = useMemo(() => ({ countries, cities }), [countries, cities])
-  const mode = useMemo<GameMode | null>(() => {
-    if (session.modeId === 'country-pinning' && countries.length === 0) return null
-    if (session.modeId === 'city-guessing' && cities.length === 0) return null
-    try {
-      return getMode(session.modeId, pools)
-    } catch {
-      return null
-    }
-  }, [session.modeId, countries.length, cities.length, pools])
 
   // Hash → session bootstrap. Read status via ref (hashchange closure-staleness fix).
   const statusRef = useRef(session.status)
@@ -265,17 +258,6 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: reduced ? 0 : 700 })
   }, [session.status, session.roundIndex, mode])
 
-  // Submit-guess wrapper that computes endsGame.
-  const submitGuessWithInput = useCallback((input: GuessInput) => {
-    if (!mode || session.status !== 'playing' || !session.currentRound) return
-    const result = mode.onGuess(input, session.currentRound)
-    const endsGame = session.maxRounds !== null
-      ? session.roundIndex + 1 >= session.maxRounds
-      : session.lives + result.livesDelta <= 0
-    const outcome: GuessOutcome = { ...result, endsGame }
-    submitGuess(outcome)
-  }, [mode, session.status, session.currentRound, session.maxRounds, session.roundIndex, session.lives, submitGuess])
-
   // City-mode any-click handler.
   useEffect(() => {
     if (session.status !== 'playing') return
@@ -283,11 +265,11 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
     if (!map) return
     const onClick = (e: maplibregl.MapMouseEvent) => {
-      submitGuessWithInput({ kind: 'point', lngLat: [e.lngLat.lng, e.lngLat.lat] })
+      submitGuessInput({ kind: 'point', lngLat: [e.lngLat.lng, e.lngLat.lat] })
     }
     map.on('click', onClick)
     return () => { map.off('click', onClick) }
-  }, [session.status, session.modeId, submitGuessWithInput])
+  }, [session.status, session.modeId, submitGuessInput])
 
   // Clear reveal geometry on every transition into idle.
   useEffect(() => {
@@ -300,7 +282,20 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
   useEffect(() => {
     const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
     if (!w.__funworldmap_game) w.__funworldmap_game = {}
-    w.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessWithInput(input)
+    w.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
+    // Test shorthand: takes cca3 alone and looks up name + centroid.
+    w.__funworldmap_game.submitCountryGuess = (cca3: string): boolean => {
+      if (session.modeId !== 'country-pinning') return false
+      const country = byCca3.get(cca3.toUpperCase())
+      if (!country) return false
+      submitGuessInput({
+        kind: 'country',
+        cca3: cca3.toUpperCase(),
+        name: country.name.common,
+        centroid: centroidFromLatLng(country.latlng),
+      })
+      return true
+    }
     w.__funworldmap_game.setRound = (id: string): boolean => {
       if (!mode) return false
       let round: RoundSpec | null = null
@@ -323,7 +318,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
           targetName: city.name,
           targetCountryName: city.countryName,
           targetCountryFlag: city.countryFlag,
-          targetCentroid: [city.latlng[1], city.latlng[0]],
+          targetCentroid: centroidFromLatLng(city.latlng),
         }
       }
       if (statusRef.current === 'idle') {
@@ -336,28 +331,11 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     return () => {
       if (w.__funworldmap_game) {
         delete w.__funworldmap_game.submitGuess
+        delete w.__funworldmap_game.submitCountryGuess
         delete w.__funworldmap_game.setRound
       }
     }
-  }, [mode, session.modeId, byCca3, cities, start, overrideRound, submitGuessWithInput])
-
-  // Legacy alias for Country Pinning e2e tests.
-  useEffect(() => {
-    ;(window as unknown as { __funworldmap_guess?: (cca3: string) => void }).__funworldmap_guess = (cca3) => {
-      if (session.modeId !== 'country-pinning') return
-      const country = byCca3.get(cca3.toUpperCase())
-      if (!country) return
-      submitGuessWithInput({
-        kind: 'country',
-        cca3: cca3.toUpperCase(),
-        name: country.name.common,
-        centroid: centroidFromLatLng(country.latlng),
-      })
-    }
-    return () => {
-      delete (window as unknown as { __funworldmap_guess?: (cca3: string) => void }).__funworldmap_guess
-    }
-  }, [session.modeId, byCca3, submitGuessWithInput])
+  }, [mode, session.modeId, byCca3, cities, start, overrideRound, submitGuessInput])
 
   // Escape exits.
   useEffect(() => {
@@ -381,7 +359,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     start(session.modeId, firstRound, mode.maxRounds)
   }
   const onBackToMap = onEndGame
-  const onSkip = () => submitGuessWithInput({ kind: 'skip' })
+  const onSkip = () => submitGuessInput({ kind: 'skip' })
 
   if (session.status === 'idle' || !mode) return null
 
@@ -401,7 +379,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
             onGuess={(cca3) => {
               const c = byCca3.get(cca3.toUpperCase())
               if (!c) return
-              submitGuessWithInput({
+              submitGuessInput({
                 kind: 'country',
                 cca3: cca3.toUpperCase(),
                 name: c.name.common,

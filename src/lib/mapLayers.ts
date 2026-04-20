@@ -169,6 +169,22 @@ export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): v
   map.setPaintProperty(LAYER.borders, 'line-opacity', isDark ? 0.5 : 0.35)
 }
 
+/** Apply border paint for the current visual mode. Satellite mode uses a
+ *  white-ish translucent border over imagery; vector mode uses the theme's
+ *  default border color and opacity. One edit-point so the three hooks
+ *  that care (theme, satellite, compare-dimming) agree on the baseline. */
+export function applyBorderPaintForMode(
+  map: maplibregl.Map,
+  opts: { isDark: boolean; satellite: boolean },
+): void {
+  if (opts.satellite) {
+    map.setPaintProperty(LAYER.borders, 'line-color', 'rgba(255,255,255,0.35)')
+    map.setPaintProperty(LAYER.borders, 'line-opacity', 0.6)
+  } else {
+    applyDefaultBorderPaint(map, opts.isDark)
+  }
+}
+
 /** Typed layer ID registry. Use these constants when calling `setFilter`,
  *  `setPaintProperty`, `setLayoutProperty`, etc. so renames stay consistent
  *  and typos fail at compile time. */

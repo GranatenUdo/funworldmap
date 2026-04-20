@@ -1,21 +1,10 @@
 import type { CountryLike, GameMode } from '../../shared/types'
 import { scoreGuess } from './scoring'
 import { nextRound as pickNextRound } from './roundGenerator'
-import { centroidFromLatLng } from '../../shared/distance'
 import { MESSAGES } from './messages'
-
-type HudComponent = GameMode['HudComponent']
-
-let attachedHud: HudComponent | null = null
-
-export function registerCountryPinningHud(c: HudComponent): void {
-  attachedHud = c
-}
+import CountryPinningHud from './CountryPinningHud'
 
 export function getCountryPinningMode(pool: CountryLike[]): GameMode {
-  if (!attachedHud) {
-    throw new Error('country-pinning HUD not registered — import the HUD module before using the mode')
-  }
   return {
     id: 'country-pinning',
     title: MESSAGES.title,
@@ -23,7 +12,7 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
     hashSegment: 'country-pinning',
     maxRounds: null,
     initialCameraView: 'preserve',
-    HudComponent: attachedHud,
+    HudComponent: CountryPinningHud,
     nextRound: (used) => pickNextRound(used, pool),
     onGuess: (input, round) => {
       if (round.kind !== 'country-pinning') {
@@ -40,4 +29,3 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
   }
 }
 
-export { centroidFromLatLng }
