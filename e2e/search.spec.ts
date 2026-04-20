@@ -1,10 +1,12 @@
 import { test, expect } from '@playwright/test'
+import { dismissLauncher } from './helpers'
 
 test.setTimeout(30000)
 
 test.describe('Search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForTimeout(1000)
   })
 

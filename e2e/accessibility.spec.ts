@@ -1,11 +1,13 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
+import { dismissLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
 test.describe('Accessibility', () => {
   test('skip to search link works', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForTimeout(500)
 
     // Tab to the first skip link
@@ -23,6 +25,7 @@ test.describe('Accessibility', () => {
 
   test('skip to map link works', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForTimeout(500)
 
     // Tab to first skip link, then tab to second
@@ -41,6 +44,7 @@ test.describe('Accessibility', () => {
 
   test('ARIA live region announces country selection', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForTimeout(500)
 
     // Navigate to a country via hash
@@ -67,6 +71,7 @@ test.describe('Accessibility', () => {
 
   test('search combobox has correct ARIA attributes', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForTimeout(500)
 
     const input = page.getByTestId('search-input')
@@ -87,6 +92,7 @@ test.describe('Accessibility', () => {
 
   test('theme toggle has descriptive aria-label', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForTimeout(500)
 
     const toggle = page.getByTestId('theme-toggle')

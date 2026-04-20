@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { dismissLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -18,6 +19,7 @@ async function searchAndOpenPanel(page: Page, query: string) {
 test.describe('panel focus management', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForSelector('[data-map-loaded], [data-map-error]', { timeout: 30_000 })
   })
 

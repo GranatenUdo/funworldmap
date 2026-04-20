@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { dismissLauncher } from './helpers'
 
 // Map interaction tests need the map to FULLY load.
 // If these fail, that's a real bug — not silently skipped.
@@ -12,6 +13,7 @@ async function waitForMapReady(page: import('@playwright/test').Page) {
 test.describe('Map rendering', () => {
   test('map loads with country boundary layers', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await waitForMapReady(page)
 
     const hasLayers = await page.evaluate(() => {
@@ -35,6 +37,7 @@ test.describe('Map rendering', () => {
 
   test('GeoJSON features have valid IDs in properties', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await waitForMapReady(page)
 
     // Wait for tiles to render
@@ -83,6 +86,7 @@ test.describe('Map rendering', () => {
 test.describe('Country click interaction', () => {
   test('clicking a country sets URL hash and opens panel', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await waitForMapReady(page)
 
     // Find a country feature at the center of the viewport and click it
@@ -129,6 +133,7 @@ test.describe('Country click interaction', () => {
   test('clicking ocean deselects country and closes panel', async ({ page }) => {
     // Start with default view (no hash)
     await page.goto('/')
+    await dismissLauncher(page)
     await waitForMapReady(page)
 
     // First, click a country to select it
@@ -235,6 +240,7 @@ test.describe('Country selection via hash', () => {
 test.describe('Hover interaction', () => {
   test('hovering over a country changes cursor to pointer', async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await waitForMapReady(page)
 
     // Find a country feature
