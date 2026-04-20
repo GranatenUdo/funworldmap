@@ -127,7 +127,8 @@ export function SingleCountryPanel({
                 </p>
               )}
               <span
-                className={`inline-block text-[10px] font-medium px-2 py-0.5 rounded-full mt-1.5 ${
+                data-testid="region-badge"
+                className={`inline-block text-[11px] font-medium px-2 py-0.5 rounded-full mt-1.5 ${
                   REGION_BADGE[country.region] ||
                   'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
                 }`}
