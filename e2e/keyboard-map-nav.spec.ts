@@ -28,8 +28,12 @@ test.describe('keyboard map navigation', () => {
     // :focus-visible evaluates. Programmatic focus does not reliably
     // trigger :focus-visible — the ring relies on keyboard-initiated focus.
     const app = page.locator('[role="application"]')
+    // Tab through ALL focusable elements until the map application receives
+    // focus. CI has 5+ more focusables in the path than local (MapLibre nav
+    // controls, skip links, theme toggle, play+satellite buttons post-
+    // dismiss); 30 tabs is plenty of budget with margin.
     let attempts = 0
-    while (attempts < 15) {
+    while (attempts < 30) {
       await page.keyboard.press('Tab')
       if (await app.evaluate((el) => el === document.activeElement).catch(() => false)) break
       attempts++

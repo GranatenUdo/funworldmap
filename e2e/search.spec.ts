@@ -35,10 +35,14 @@ test.describe('Search', () => {
     await expect(franceOption).toBeVisible({ timeout: 10_000 })
     await franceOption.click({ force: true })
 
+    // Hash update is the synchronous signal that selectResult fired; wait
+    // for it first so we know React can have committed the selected state
+    // by the time we assert on panel visibility. Ordering matters on slow
+    // CI where React renders can lag behind the click event.
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 10_000 })
     await expect(panel).toContainText('France')
-    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
   })
 
   test('fuzzy matching works for typos', async ({ page }) => {
