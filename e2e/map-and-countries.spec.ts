@@ -88,6 +88,10 @@ test.describe('Country click interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
+    // GPU compositor settle after launcher's backdrop-filter teardown
+    // before queryRenderedFeatures runs. Matches the sibling Hover test's
+    // handling; without this, features occasionally don't query cleanly.
+    await page.waitForTimeout(750)
 
     // Find a country feature at the center of the viewport and click it
     const clicked = await page.evaluate(() => {
@@ -135,6 +139,8 @@ test.describe('Country click interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
+    // GPU compositor settle after launcher teardown.
+    await page.waitForTimeout(750)
 
     // First, click a country to select it
     const countryPoint = await page.evaluate(() => {
