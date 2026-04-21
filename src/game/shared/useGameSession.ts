@@ -86,6 +86,13 @@ function reducer(state: GameSession, action: Action): GameSession {
       }
     }
     case 'revealEarly': {
+      // Daily-only semantics (v1): the user initiates reveal to end the current
+      // puzzle early. We keep streak/bestStreak unchanged (the streak is tracked
+      // by useDailyHistory against local-date completion, not by round-end points
+      // here), and transition directly to 'game-over' because daily sessions are
+      // single-round. If a future mode uses attemptsPerRound > 1 AND maxRounds > 1,
+      // this branch must compute endsGame from state.maxRounds / state.roundIndex
+      // the way the 'guess' case does, not hard-code 'game-over'.
       if (state.status !== 'playing') return state
       if (state.currentAttempts.length === 0) return state
       const points = bestPoints(state.currentAttempts)

@@ -294,4 +294,22 @@ describe('useGameSession — attempts per round', () => {
     expect(result.current.session.attemptsRemaining).toBe(3)
     expect(result.current.session.currentAttempts).toEqual([])
   })
+
+  it('overrideRound also resets attemptsRemaining + currentAttempts', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, null, 3) })
+    act(() => {
+      result.current.recordAttempt({
+        pointsEarned: 50,
+        input: { kind: 'country', cca3: 'DEU', name: 'Germany', centroid: [10, 51] },
+        reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'DEU', clickedName: 'Germany', distanceKm: 500 },
+      })
+    })
+    expect(result.current.session.attemptsRemaining).toBe(2)
+    expect(result.current.session.currentAttempts).toHaveLength(1)
+    const next: CountryRoundSpec = { ...CPR, targetCca3: 'DEU', targetName: 'Germany', targetFlag: 'flags/DE.svg' }
+    act(() => { result.current.overrideRound(next) })
+    expect(result.current.session.attemptsRemaining).toBe(3)
+    expect(result.current.session.currentAttempts).toEqual([])
+  })
 })
