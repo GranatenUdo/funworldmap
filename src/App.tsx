@@ -12,6 +12,7 @@ import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
+import { DailyPuzzlesProvider } from './game/daily/DailyPuzzlesProvider'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
@@ -48,16 +49,18 @@ export default function App() {
   return (
     <MapProvider>
       <GameSessionProvider pools={pools}>
-        <AppInner
-          countries={countries}
-          countriesFull={poolFull}
-          pool={pool}
-          byNumeric={byNumeric}
-          byCca3={byCca3}
-          poolByCca3={poolByCca3}
-          sources={sources}
-          cities={cities}
-        />
+        <DailyPuzzlesProvider>
+          <AppInner
+            countries={countries}
+            countriesFull={poolFull}
+            pool={pool}
+            byNumeric={byNumeric}
+            byCca3={byCca3}
+            poolByCca3={poolByCca3}
+            sources={sources}
+            cities={cities}
+          />
+        </DailyPuzzlesProvider>
       </GameSessionProvider>
     </MapProvider>
   )
@@ -89,7 +92,7 @@ function AppInner({
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
   const { session, submitGuessInput } = useGameSessionContext()
-  const { visible: launcherVisible, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
+  const { visible: launcherVisible, anchorDate, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const [mapReady, setMapReady] = useState(false)
@@ -224,7 +227,7 @@ function AppInner({
   }, [mapReady, selected, hintDismissed, gameActive])
 
   useEffect(() => {
-    const resolveDaily = () => {
+    const fireIfDaily = () => {
       const state = parseHash(window.location.hash)
       if (state.kind !== 'daily') return
       const todayStr = toLocalDateString(new Date())
@@ -232,13 +235,11 @@ function AppInner({
       if (state.date === todayStr) dateKind = 'today'
       else if (state.date < todayStr) dateKind = 'past'
       else if (state.date > todayStr) dateKind = 'future'
-      track('deep_link_opened', { dateKind, outcome: 'redirect' })
-      history.replaceState(null, '', window.location.pathname)
-      window.dispatchEvent(new HashChangeEvent('hashchange'))
+      track('deep_link_opened', { dateKind, outcome: 'played' })
     }
-    resolveDaily()
-    window.addEventListener('hashchange', resolveDaily)
-    return () => window.removeEventListener('hashchange', resolveDaily)
+    fireIfDaily()
+    window.addEventListener('hashchange', fireIfDaily)
+    return () => window.removeEventListener('hashchange', fireIfDaily)
   }, [])
 
   useEffect(() => {
@@ -343,7 +344,7 @@ function AppInner({
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
-      {launcherVisible && <Launcher onDismiss={dismissLauncher} />}
+      {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} />}
 
       <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
 

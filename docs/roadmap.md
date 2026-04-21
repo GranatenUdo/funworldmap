@@ -77,6 +77,8 @@ Source: [`2026-04-19-assessment-remediation-design.md`](superpowers/specs/2026-0
 
 Source: [`2026-04-21-retention-program-v1-design.md`](superpowers/specs/2026-04-21-retention-program-v1-design.md).
 
+> Phase 2 (daily play end-to-end) has landed. Streak display, calendar, share, and milestone celebrations remain for Phases 3–5.
+
 - **Push notifications** — would require a push service; deferred past v1.
 - **Yesterday's-global-average score overlay** — requires scheduled aggregation from the Analytics Engine into a static JSON; add after v1 data proves the retention lift.
 - **Canvas-rendered PNG share image** — richer Twitter/iMessage unfurl than plain text + URL.

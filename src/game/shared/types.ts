@@ -76,6 +76,13 @@ export type ModeGuessResult = {
 
 export type GuessOutcome = ModeGuessResult & { endsGame: boolean }
 
+// ---- Attempt record (for multi-attempt rounds — daily) ----
+export type AttemptRecord = {
+  pointsEarned: number
+  input: GuessInput
+  reveal: CountryReveal | PointReveal
+}
+
 // ---- Session state ----
 export type GameSession = {
   modeId: ModeId
@@ -86,6 +93,9 @@ export type GameSession = {
   bestStreak: number
   roundIndex: number
   maxRounds: number | null           // null = endless (Country Pinning); 10 = City Guessing
+  attemptsPerRound: number
+  attemptsRemaining: number
+  currentAttempts: AttemptRecord[]
   currentRound: RoundSpec | null
   lastOutcome: GuessOutcome | null
   used: Set<string>

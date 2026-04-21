@@ -1,0 +1,121 @@
+import { test, expect, type Page } from '@playwright/test'
+
+test.setTimeout(120_000)
+
+const TODAY = new Date().toISOString().slice(0, 10)
+
+async function withDailyStub(page: Page): Promise<void> {
+  await page.route('**/daily/index.json', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        generatedAt: new Date().toISOString(),
+        window: { start: TODAY, end: TODAY },
+        days: {
+          [TODAY]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } },
+        },
+      }),
+    })
+  })
+}
+
+/**
+ * Submit a country guess and wait for the reducer to reflect it.
+ * Rapid back-to-back page.evaluate calls race React's re-render —
+ * successive calls read stale `session.attemptsRemaining` from
+ * submitGuessInput's useCallback closure, causing all 3 submits to
+ * go through `recordAttempt` and never reach the final `submitGuess`.
+ * Poll currentAttempts.length to ensure the reducer has processed.
+ */
+async function submitAndWait(page: Page, cca3: string, expectAfter: number): Promise<void> {
+  await page.evaluate((id) => {
+    ;(window as unknown as { __funworldmap_game: { submitCountryGuess(s: string): boolean } })
+      .__funworldmap_game.submitCountryGuess(id)
+  }, cca3)
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            (
+              window as unknown as {
+                __funworldmap_game: { getSession(): { currentAttempts: unknown[] } }
+              }
+            ).__funworldmap_game.getSession().currentAttempts.length,
+        ),
+      { timeout: 5_000 },
+    )
+    .toBeGreaterThanOrEqual(expectAfter)
+}
+
+test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
+  test('clicking Play starts the daily and three guesses finalize with best-of-3', async ({ page }) => {
+    await withDailyStub(page)
+    await page.goto('/')
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
+      .toContain(`daily/${TODAY}/country-pinning`)
+
+    await page.waitForFunction(() => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game))
+    await submitAndWait(page, 'DEU', 1)
+    await submitAndWait(page, 'ESP', 2)
+    await submitAndWait(page, 'FRA', 3)
+
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('game-over-score')).toContainText('100')
+  })
+
+  test('deep-linking to #daily/<today>/country-pinning bypasses launcher and starts', async ({ page }) => {
+    await withDailyStub(page)
+    await page.goto(`/#daily/${TODAY}/country-pinning`)
+    await expect(page.getByTestId('launcher')).not.toBeVisible()
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 })
+      .toContain(`daily/${TODAY}/country-pinning`)
+  })
+
+  test('daily history persists: playing + reloading shows played state', async ({ page }) => {
+    await withDailyStub(page)
+    await page.goto('/')
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+    await page.waitForFunction(() => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game))
+    await submitAndWait(page, 'FRA', 1)
+    await submitAndWait(page, 'FRA', 2)
+    await submitAndWait(page, 'FRA', 3)
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
+    // recordDailyResult runs inside the status-change useEffect, AFTER the
+    // game-over overlay is rendered. Wait for the localStorage write to
+    // complete before navigating away — otherwise the reload could beat
+    // the effect, losing the persistence signal.
+    await expect
+      .poll(
+        () =>
+          page.evaluate((today) => {
+            const raw = localStorage.getItem('funworldmap-daily-history')
+            if (!raw) return null
+            const parsed = JSON.parse(raw) as {
+              days?: Record<string, Record<string, unknown>>
+            }
+            return parsed.days?.[today]?.['country-pinning'] ?? null
+          }, TODAY),
+        { timeout: 5_000 },
+      )
+      .not.toBeNull()
+    await page.getByRole('button', { name: /back to map/i }).click()
+    await page.reload()
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'played')
+  })
+})
+
+test.describe('Daily puzzle — launcher-anchored deep link', () => {
+  test('#daily/<today> opens launcher anchored to today', async ({ page }) => {
+    await withDailyStub(page)
+    await page.goto(`/#daily/${TODAY}`)
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  })
+})

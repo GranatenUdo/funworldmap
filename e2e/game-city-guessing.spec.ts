@@ -9,7 +9,7 @@ async function waitForMap(page: Page) {
 async function openCityGuessing(page: Page) {
   await page.goto('/')
   await waitForMap(page)
-  await page.getByTestId('launcher-mode-city-guessing').click()
+  await page.getByTestId('launcher-card-city-guessing-free-link').click()
   await expect(page.getByTestId('game-hud')).toBeVisible()
   await expect(page.getByTestId('hud-round-counter')).toContainText('1')
 }

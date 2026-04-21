@@ -49,16 +49,6 @@ test.describe('Launcher — dismiss paths', () => {
     await expect(page.getByTestId('launcher')).toBeVisible()
   })
 
-  test('clicking a mode card dismisses and starts that game', async ({ page }) => {
-    await freshTab(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('launcher-mode-country-pinning').click()
-    await expect(page.getByTestId('launcher')).not.toBeVisible({ timeout: 3_000 })
-    await expect
-      .poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 })
-      .toContain('game/country-pinning')
-  })
-
   test('pressing Escape dismisses and focuses search', async ({ page }) => {
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
@@ -133,28 +123,69 @@ test.describe('Launcher — header behaviour', () => {
   })
 })
 
-test.describe('Launcher — personal bests', () => {
-  test('first-play state shows em-dash placeholder', async ({ page }) => {
-    await page.addInitScript(() => {
-      localStorage.removeItem('funworldmap-game-country-pinning-bests')
-      localStorage.removeItem('funworldmap-game-city-guessing-bests')
+test.describe('Launcher — daily state', () => {
+  test('unplayed daily state renders the daily CTA', async ({ page }) => {
+    const today = new Date().toISOString().slice(0, 10)
+    await page.route('**/daily/index.json', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          generatedAt: new Date().toISOString(),
+          window: { start: today, end: today },
+          days: { [today]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
+        }),
+      })
     })
     await freshTab(page)
-    const cpBest = page.getByTestId('launcher-best-country-pinning')
-    await expect(cpBest).toContainText('—')
-    await expect(cpBest).toContainText('/ 1000')
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'unplayed')
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible()
   })
 
-  test('numeric best displays when stored', async ({ page }) => {
-    await page.addInitScript(() => {
-      localStorage.setItem(
-        'funworldmap-game-country-pinning-bests',
-        JSON.stringify({ bestScore: 920, bestStreak: 6, gamesPlayed: 3 }),
-      )
+  test('played daily state renders the result line', async ({ page }) => {
+    const today = new Date().toISOString().slice(0, 10)
+    await page.addInitScript(({ today }) => {
+      localStorage.setItem('funworldmap-daily-history', JSON.stringify({
+        version: 1,
+        streak: { current: 1, longest: 1, lastActiveDate: today, lastMilestoneShown: 0 },
+        days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
+      }))
+    }, { today })
+    await page.route('**/daily/index.json', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          generatedAt: new Date().toISOString(),
+          window: { start: today, end: today },
+          days: { [today]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
+        }),
+      })
     })
     await freshTab(page)
-    const cpBest = page.getByTestId('launcher-best-country-pinning')
-    await expect(cpBest).toContainText('920')
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'played')
+    await expect(page.getByTestId('launcher-card-country-pinning-played-result')).toContainText('87')
+  })
+
+  test('unavailable state when daily index fetch fails', async ({ page }) => {
+    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
+    await freshTab(page)
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'unavailable')
+    await expect(page.getByTestId('launcher-card-country-pinning-unavailable')).toBeVisible()
+  })
+
+  test('free-mode link starts endless free mode', async ({ page }) => {
+    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
+    await freshTab(page)
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-card-country-pinning-free-link').click()
+    await expect(page.getByTestId('launcher')).not.toBeVisible({ timeout: 3_000 })
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 })
+      .toContain('game/country-pinning')
   })
 })
 
@@ -173,7 +204,7 @@ test.describe('Launcher — accessibility', () => {
       localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
     })
     await freshTab(page)
-    await expect(page.getByTestId('launcher-mode-city-guessing')).toBeFocused({ timeout: 5_000 })
+    await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused({ timeout: 5_000 })
   })
 
   test('Tab cycles through mode card 1, mode card 2, dismiss link, wraps', async ({ page }) => {
@@ -181,12 +212,12 @@ test.describe('Launcher — accessibility', () => {
       localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
     })
     await freshTab(page)
-    await expect(page.getByTestId('launcher-mode-country-pinning')).toBeFocused({ timeout: 5_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning-free-link')).toBeFocused({ timeout: 5_000 })
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-mode-city-guessing')).toBeFocused()
+    await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused()
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-dismiss')).toBeFocused()
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-mode-country-pinning')).toBeFocused()
+    await expect(page.getByTestId('launcher-card-country-pinning-free-link')).toBeFocused()
   })
 })

@@ -32,6 +32,7 @@ export default defineConfig({
         'satellite-default.spec.ts',
         'a11y-contrast.spec.ts',
         'launcher.spec.ts',
+        'daily-puzzle.spec.ts',
       ],
     },
     {

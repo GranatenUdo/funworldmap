@@ -16,6 +16,9 @@ function makeSession(overrides: Partial<GameSession> = {}): GameSession {
     bestStreak: 0,
     roundIndex: 0,
     maxRounds: null,
+    attemptsPerRound: 1,
+    attemptsRemaining: 1,
+    currentAttempts: [],
     currentRound: null,
     lastOutcome: null,
     used: new Set(),
@@ -30,6 +33,8 @@ function makeApi(session: GameSession): GameSessionApi {
     start: () => {},
     submitGuess: () => {},
     submitGuessInput: () => {},
+    recordAttempt: () => {},
+    revealEarly: () => {},
     advance: () => {},
     overrideRound: () => {},
     endGame: () => {},
@@ -144,5 +149,21 @@ describe('useLauncherVisibility', () => {
     expect(result.current.visible).toBe(false)
     act(() => setHash(''))
     expect(result.current.visible).toBe(true)
+  })
+
+  it('isDailyRoot matches #daily/YYYY-MM-DD', () => {
+    window.location.hash = '#daily/2026-04-21'
+    const api = makeApi(makeSession({ status: 'idle' }))
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    expect(result.current.visible).toBe(true)
+    expect(result.current.anchorDate).toBe('2026-04-21')
+  })
+
+  it('isDailyRoot does NOT match #daily/YYYY-MM-DD/modeId', () => {
+    window.location.hash = '#daily/2026-04-21/country-pinning'
+    const api = makeApi(makeSession({ status: 'idle' }))
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    expect(result.current.visible).toBe(false)
+    expect(result.current.anchorDate).toBeNull()
   })
 })

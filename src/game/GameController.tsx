@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
-import type { CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
+import type { AttemptRecord, CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
 import type { CountryData } from '../lib/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
@@ -14,6 +14,11 @@ import { LAYER } from '../lib/mapLayers'
 import { centroidFromLatLng } from './shared/distance'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
 import { CityGuessingHudActionsContext } from './modes/city-guessing'
+import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
+import { toLocalDateString } from './daily/dates'
+import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
+import { useDailyHistory } from './daily/useDailyHistory'
+import { track } from '../lib/analytics'
 
 const REVEAL_MS_COUNTRY = 1200
 const REVEAL_MS_CITY = 2000
@@ -27,7 +32,8 @@ function dispatchAnnouncement(text: string): void {
 }
 
 function writeIdleHash(): void {
-  if (window.location.hash.startsWith('#game')) {
+  const h = window.location.hash
+  if (h.startsWith('#game') || h.startsWith('#daily')) {
     history.replaceState(null, '', window.location.pathname)
   }
 }
@@ -94,6 +100,8 @@ interface Props {
 export function GameController({ countries, countriesFull, cities, byCca3 }: Props) {
   const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
+  const dailyPuzzles = useDailyPuzzlesContext()
+  const { record: recordDailyResult } = useDailyHistory()
   const recordedRef = useRef(false)
   const pendingStartRef = useRef<ModeId | null>(null)
 
@@ -107,6 +115,33 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
   useEffect(() => {
     const check = () => {
       const state = parseHash(window.location.hash)
+      // Daily routes (Phase 2 handles /#daily/<date>/<modeId> for TODAY only;
+      // /#daily/<date> is launcher-anchored; past/future are Phase 3 reveal territory).
+      if (state.kind === 'daily' && state.modeId && !state.reveal && statusRef.current === 'idle') {
+        const id = state.modeId as ModeId
+        if (id !== 'country-pinning' && id !== 'city-guessing') return
+
+        const todayStr = toLocalDateString(new Date())
+        if (state.date !== todayStr) {
+          history.replaceState(null, '', window.location.pathname)
+          window.dispatchEvent(new HashChangeEvent('hashchange'))
+          return
+        }
+
+        const hasPool = id === 'country-pinning' ? countries.length > 0 : cities.length > 0
+        if (!hasPool) {
+          pendingStartRef.current = id
+          return
+        }
+        const puzzle = dailyPuzzles.byDate(state.date)
+        if (!puzzle) return
+        const firstRound =
+          id === 'country-pinning'
+            ? buildCountryDailyRound(puzzle.country.cca3, countries)
+            : buildCityDailyRound(puzzle.city.id, cities)
+        start(id, firstRound, 1, 3)
+        return
+      }
       if (state.kind === 'game' && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
         if (id !== 'country-pinning' && id !== 'city-guessing') return
@@ -119,7 +154,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
         const firstRound = m.nextRound(new Set())
         start(id, firstRound, m.maxRounds)
       }
-      if (state.kind !== 'game' && statusRef.current !== 'idle') {
+      if (state.kind !== 'game' && state.kind !== 'daily' && statusRef.current !== 'idle') {
         endGame()
       }
     }
@@ -127,7 +162,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     window.addEventListener('hashchange', check)
     return () => window.removeEventListener('hashchange', check)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countries.length, cities.length])
+  }, [countries.length, cities.length, dailyPuzzles.byDate])
 
   // Drain deferred start once the relevant pool arrives.
   useEffect(() => {
@@ -135,11 +170,24 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     if (!pending || session.status !== 'idle') return
     const hasPool = pending === 'country-pinning' ? countries.length > 0 : cities.length > 0
     if (!hasPool) return
+    // Check what kind of start we need based on current hash:
+    const state = parseHash(window.location.hash)
+    if (state.kind === 'daily' && state.modeId && state.date === toLocalDateString(new Date())) {
+      const puzzle = dailyPuzzles.byDate(state.date)
+      if (!puzzle) return
+      pendingStartRef.current = null
+      const firstRound =
+        pending === 'country-pinning'
+          ? buildCountryDailyRound(puzzle.country.cca3, countries)
+          : buildCityDailyRound(puzzle.city.id, cities)
+      start(pending, firstRound, 1, 3)
+      return
+    }
     pendingStartRef.current = null
     const m = getMode(pending, pools)
     const firstRound = m.nextRound(new Set())
     start(pending, firstRound, m.maxRounds)
-  }, [countries.length, cities.length, session.status, pools, start])
+  }, [countries, cities, session.status, pools, start, dailyPuzzles])
 
   // Side effects on status change.
   useEffect(() => {
@@ -179,13 +227,56 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     if (session.status === 'game-over' && !recordedRef.current) {
       recordedRef.current = true
       record(session.score, session.bestStreak)
+      // Daily-specific recording:
+      const hash = parseHash(window.location.hash)
+      if (hash.kind === 'daily' && hash.modeId) {
+        const attempts: AttemptRecord[] = session.currentAttempts
+        recordDailyResult(hash.date, hash.modeId as ModeId, {
+          score: session.score,
+          attempts: attempts.map((a) => ({
+            pointsEarned: a.pointsEarned,
+            guessCca3: a.input.kind === 'country' ? a.input.cca3 : undefined,
+            guessLngLat: a.input.kind === 'point' ? a.input.lngLat : undefined,
+            distanceKm: a.reveal.distanceKm,
+          })),
+          completedAt: Date.now(),
+        })
+        track('daily_completed', {
+          mode: session.modeId,
+          bestScoreBucket: Math.min(4, Math.floor(session.score / 20)),
+          attemptsUsed: attempts.length,
+        })
+      }
       dispatchAnnouncement(`Game over. Final score ${session.score}.`)
     }
   }, [
     session.status, session.roundIndex, session.lastOutcome, session.score,
     session.bestStreak, session.lives, session.used, session.currentRound, session.modeId,
-    advance, mode, record,
+    session.currentAttempts,
+    advance, mode, record, recordDailyResult,
   ])
+
+  // Fire daily_attempted per intermediate attempt (only when attemptsPerRound > 1).
+  const lastAttemptCountRef = useRef(0)
+  useEffect(() => {
+    if (session.status !== 'playing' && session.status !== 'round-ended' && session.status !== 'game-over') {
+      lastAttemptCountRef.current = 0
+      return
+    }
+    const prev = lastAttemptCountRef.current
+    const cur = session.currentAttempts.length
+    if (cur > prev) {
+      const a = session.currentAttempts[cur - 1]
+      if (session.attemptsPerRound > 1) {
+        track('daily_attempted', {
+          mode: session.modeId,
+          attemptIndex: prev,
+          scoreBucket: Math.min(4, Math.floor(a.pointsEarned / 20)),
+        })
+      }
+    }
+    lastAttemptCountRef.current = cur
+  }, [session.status, session.currentAttempts, session.attemptsPerRound, session.modeId])
 
   // Reveal geometry: when round-ended, update marker + line sources and fitBounds.
   useEffect(() => {
@@ -247,6 +338,52 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
       console.warn('reveal geometry skipped:', err)
     }
   }, [session.status, session.lastOutcome])
+
+  // Intermediate reveal between attempts (daily only): brief guess-highlight, no target.
+  useEffect(() => {
+    if (session.status !== 'playing') return
+    if (session.attemptsPerRound <= 1) return
+    if (session.currentAttempts.length === 0) return
+    const last = session.currentAttempts[session.currentAttempts.length - 1]
+    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    if (!map) return
+
+    if (last.reveal.kind === 'country') {
+      try {
+        map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], last.reveal.clickedCca3 ?? ''])
+        map.setPaintProperty(LAYER.hoverBorder, 'line-color', '#f59e0b')
+        map.setPaintProperty(LAYER.hoverBorder, 'line-width', 3)
+      } catch { /* layer may not exist */ }
+      const t = window.setTimeout(() => {
+        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+      }, 600)
+      return () => { window.clearTimeout(t); try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ } }
+    }
+
+    // City mode: render a single grey marker at the guess point; no line, no target.
+    try {
+      ensureRevealSources(map)
+      const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
+      const point = last.reveal.clickedPoint
+      if (point) {
+        markerSrc.setData({
+          type: 'FeatureCollection',
+          features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: point }, properties: { intermediate: true } }],
+        })
+        try { map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#94a3b8') } catch { /* no-op */ }
+      }
+    } catch { /* style may still be resolving */ }
+    const t = window.setTimeout(() => {
+      try { clearRevealSources(map); map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b') } catch { /* no-op */ }
+    }, 600)
+    return () => {
+      window.clearTimeout(t)
+      try {
+        clearRevealSources(map)
+        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b')
+      } catch { /* no-op */ }
+    }
+  }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
 
   // Camera reset on round start when mode requests it.
   useEffect(() => {
