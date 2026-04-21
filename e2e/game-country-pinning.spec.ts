@@ -9,7 +9,7 @@ async function waitForMap(page: Page) {
 // Open Country Pinning via the launcher mode card. The launcher is shown
 // by default on cold load at /.
 async function openCountryPinning(page: Page) {
-  await page.getByTestId('launcher-mode-country-pinning').click()
+  await page.getByTestId('launcher-card-country-pinning-free-link').click()
 }
 
 // Dispatch the guess via the controller's submitCountryGuess test hook
