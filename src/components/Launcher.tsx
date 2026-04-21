@@ -72,7 +72,7 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
       track('daily_started', { mode: id })
       writeLastMode(id)
       onDismiss()
-      window.location.hash = `daily/${date}/${id}`
+      window.location.hash = writeHash({ kind: 'daily', date, modeId: id, reveal: false })
     },
     [onDismiss, date],
   )
