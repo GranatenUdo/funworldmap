@@ -4,7 +4,7 @@ import { track } from '../analytics'
 declare global {
   interface Window {
     __PLAYWRIGHT__?: boolean
-    __testAnalytics?: Array<{ name: string; props?: Record<string, string | number> }>
+    __testAnalytics?: Array<{ name: string; props: Record<string, string | number> }>
   }
 }
 

@@ -1,24 +1,30 @@
-export type EventName =
-  | 'daily_opened'
-  | 'daily_started'
-  | 'daily_attempted'
-  | 'daily_completed'
-  | 'daily_shared'
-  | 'free_started'
-  | 'history_opened'
-  | 'history_cell_clicked'
-  | 'streak_reached_milestone'
-  | 'launcher_dismissed'
-  | 'deep_link_opened'
+import type { ModeId } from '../game/shared/types'
 
-export type EventProps = Record<string, string | number>
+export type EventSchema = {
+  daily_opened: { mode: ModeId; dateAge: number }
+  daily_started: { mode: ModeId }
+  daily_attempted: { mode: ModeId; attemptIndex: number; scoreBucket: number }
+  daily_completed: { mode: ModeId; bestScoreBucket: number; attemptsUsed: number }
+  daily_shared: { mode: ModeId; method: 'share-api' | 'clipboard-text' | 'clipboard-link' }
+  free_started: { mode: ModeId }
+  history_opened: Record<string, never>
+  history_cell_clicked: { cellKind: 'played' | 'unplayed-in-window' | 'rolled-off' }
+  streak_reached_milestone: { days: 3 | 7 | 14 | 30 | 100 }
+  launcher_dismissed: { path: 'link' | 'search' | 'escape' | 'card' }
+  deep_link_opened: {
+    dateKind: 'today' | 'past' | 'future' | 'invalid'
+    outcome: 'played' | 'reveal' | 'redirect'
+  }
+}
+
+export type EventName = keyof EventSchema
 
 interface TestAnalyticsWindow extends Window {
   __PLAYWRIGHT__?: boolean
-  __testAnalytics?: Array<{ name: EventName; props?: EventProps }>
+  __testAnalytics?: Array<{ name: EventName; props: EventSchema[EventName] }>
 }
 
-export function track(name: EventName, props?: EventProps): void {
+export function track<N extends EventName>(name: N, props: EventSchema[N]): void {
   if (typeof window === 'undefined') return
 
   const w = window as TestAnalyticsWindow

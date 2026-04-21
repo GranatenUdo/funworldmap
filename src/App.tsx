@@ -233,7 +233,6 @@ function AppInner({
       else if (state.date < todayStr) dateKind = 'past'
       else if (state.date > todayStr) dateKind = 'future'
       track('deep_link_opened', { dateKind, outcome: 'redirect' })
-      // Phase 1 stub: redirect to bare root. Phase 2+ will handle daily routes.
       history.replaceState(null, '', window.location.pathname)
       window.dispatchEvent(new HashChangeEvent('hashchange'))
     }

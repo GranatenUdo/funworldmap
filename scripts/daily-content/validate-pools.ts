@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { isCliEntryPoint } from './_cli.js'
 
 export interface CountryLike { cca3: string }
 export interface CityLike { id: string }
@@ -54,7 +54,7 @@ export function validatePools(input: ValidationInput): ValidationResult {
 }
 
 // CLI entry point
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isCliEntryPoint(import.meta.url)) {
   const root = process.cwd()
   const countries = JSON.parse(readFileSync(join(root, 'src/data/countries.json'), 'utf-8'))
   const cities = JSON.parse(readFileSync(join(root, 'src/data/cities.json'), 'utf-8'))

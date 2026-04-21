@@ -1,8 +1,8 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { join, dirname } from 'node:path'
-import { pathToFileURL } from 'node:url'
 import { pickDaily } from './picker.js'
 import { toLocalDateString } from '../../src/game/daily/dates.js'
+import { isCliEntryPoint } from './_cli.js'
 
 interface CountryPool { version: number; cca3: string[] }
 interface CityPool { version: number; ids: string[] }
@@ -68,7 +68,7 @@ export function buildIndex(input: BuildInput): DailyIndex {
 }
 
 // CLI entry
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (isCliEntryPoint(import.meta.url)) {
   const root = process.cwd()
   const countryPool = JSON.parse(
     readFileSync(join(root, 'scripts/daily-content/country-pool.json'), 'utf-8'),
