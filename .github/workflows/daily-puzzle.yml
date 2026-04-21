@@ -1,0 +1,47 @@
+name: Daily puzzle index
+
+on:
+  schedule:
+    # 00:15, 06:15, 12:15, 18:15 UTC — caps the worst-case timezone-ahead gap at ~6h.
+    - cron: "15 0,6,12,18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-puzzle
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Validate pools
+        run: npm run daily:validate
+
+      - name: Generate index
+        run: npm run daily:generate
+
+      - name: Commit if changed
+        run: |
+          if [[ -z "$(git status --porcelain public/daily/index.json)" ]]; then
+            echo "No changes — index already current."
+            exit 0
+          fi
+          git config user.name 'funworldmap-bot'
+          git config user.email 'bot@funworldmap.com'
+          git add public/daily/index.json
+          git commit -m "chore(daily): update daily-puzzle window"
+          git push
