@@ -114,6 +114,15 @@ export function useMapInstance({
     map.on('load', () => {
       window.clearTimeout(watchdog)
       map.setProjection({ type: 'globe' })
+      // Make the basemap's background layer transparent so the body CSS
+      // (hex-grid + deep-navy gradient in src/index.css) shows through the
+      // non-globe area of the viewport. Oceans keep their own water layer;
+      // only the "sky" around the globe becomes see-through.
+      try {
+        map.setPaintProperty('background', 'background-color', 'rgba(0,0,0,0)')
+      } catch {
+        /* style without a background layer — silently skip */
+      }
       map.scrollZoom.setZoomRate(1 / 150)
       Promise.resolve(onLoad(map))
         .then(() => setLoadedBoth(true))
