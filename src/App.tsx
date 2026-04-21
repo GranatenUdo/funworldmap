@@ -2,12 +2,14 @@ import { useRef, useEffect, useMemo, useState, useCallback } from 'react'
 import WorldMap from './components/WorldMap'
 import Header from './components/Header'
 import CountryPanel from './components/CountryPanel'
+import { Launcher } from './components/Launcher'
 import Toast from './components/Toast'
 import { useCountryData } from './hooks/useCountryData'
 import { useCityData } from './hooks/useCityData'
 import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
+import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { GameController } from './game/GameController'
@@ -84,6 +86,7 @@ function AppInner({
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
   const { session, submitGuessInput } = useGameSessionContext()
+  const { visible: launcherVisible, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const [mapReady, setMapReady] = useState(false)
@@ -91,6 +94,9 @@ function AppInner({
   const [hintDismissed, setHintDismissed] = useState(false)
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
+  const openLauncher = useCallback(() => {
+    showLauncher()
+  }, [showLauncher])
   const [comparePickingMode, setComparePickingMode] = useState(false)
 
   const enterComparePicking = useCallback(() => {
@@ -221,6 +227,12 @@ function AppInner({
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (gameActive) return
+        if (launcherVisible) {
+          dismissLauncher()
+          const searchInput = document.getElementById('search-input') as HTMLInputElement | null
+          searchInput?.focus()
+          return
+        }
         if (compareWith || comparePickingMode) { exitCompare(); return }
         if (selected) { deselect(); return }
         const searchInput = document.getElementById('search-input') as HTMLInputElement | null
@@ -240,7 +252,7 @@ function AppInner({
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [selected, compareWith, comparePickingMode, exitCompare, deselect, gameActive])
+  }, [selected, compareWith, comparePickingMode, exitCompare, deselect, gameActive, launcherVisible, dismissLauncher])
 
   return (
     <div
@@ -297,10 +309,15 @@ function AppInner({
         satellite={satellite}
         comparePickingMode={comparePickingMode}
         gameActive={gameActive}
+        launcherVisible={launcherVisible}
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
+        onOpenLauncher={openLauncher}
+        onLauncherDismiss={dismissLauncher}
       />
+
+      {launcherVisible && <Launcher onDismiss={dismissLauncher} />}
 
       <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
 

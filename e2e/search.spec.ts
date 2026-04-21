@@ -1,10 +1,12 @@
 import { test, expect } from '@playwright/test'
+import { dismissLauncher } from './helpers'
 
 test.setTimeout(30000)
 
 test.describe('Search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await dismissLauncher(page)
     await page.waitForTimeout(1000)
   })
 
@@ -21,18 +23,29 @@ test.describe('Search', () => {
   })
 
   test('selecting a result opens the country panel', async ({ page }) => {
-    await page.getByTestId('search-input').fill('France')
-    const firstOption = page.getByTestId('search-results').getByRole('option').first()
+    const searchInput = page.getByTestId('search-input')
+    await searchInput.fill('France')
+    // Wait for the dropdown to appear AND React to commit the `isOpen`
+    // state that gates SearchBar's onKeyDown handler. Under CI load, an
+    // immediate ArrowDown can race that commit and the handler early-
+    // returns (if !isOpen return), leaving activeIndex at -1 so Enter
+    // is a no-op.
+    const firstOption = page
+      .getByTestId('search-results')
+      .getByRole('option', { name: /^France\s/ })
+      .first()
     await expect(firstOption).toBeVisible({ timeout: 10_000 })
-    // `force: true` skips Playwright's bounding-box stability check —
-    // the dropdown's enter animation can keep the option visually
-    // unstable on slow CI long enough to starve the test budget.
-    await firstOption.click({ force: true })
+    await page.waitForTimeout(300)
 
+    await searchInput.press('ArrowDown')
+    await searchInput.press('Enter')
+
+    // Hash update is the synchronous signal that selectResult fired; wait
+    // for it first so React has time to commit the selected state.
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 10_000 })
     await expect(panel).toContainText('France')
-    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
   })
 
   test('fuzzy matching works for typos', async ({ page }) => {

@@ -6,11 +6,10 @@ async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }
 
-// Open Country Pinning via the Play menu. The header button now opens a
-// popover (instead of directly starting Country Pinning).
+// Open Country Pinning via the launcher mode card. The launcher is shown
+// by default on cold load at /.
 async function openCountryPinning(page: Page) {
-  await page.getByTestId('header-play').click()
-  await page.getByTestId('play-menu-country-pinning').click()
+  await page.getByTestId('launcher-mode-country-pinning').click()
 }
 
 // Dispatch the guess via the controller's submitCountryGuess test hook
@@ -44,7 +43,7 @@ async function setRoundAndWait(page: Page, cca3: string, expectedName: string) {
 }
 
 test.describe('Country Pinning game', () => {
-  test('enter via header Play button, HUD appears and search hides', async ({ page }) => {
+  test('enter via launcher mode card, HUD appears and search hides', async ({ page }) => {
     await page.goto('/')
     await waitForMap(page)
 

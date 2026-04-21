@@ -15,7 +15,8 @@ export type GameSessionApi = {
   endGame: () => void
 }
 
-const GameSessionContext = createContext<GameSessionApi | null>(null)
+// eslint-disable-next-line react-refresh/only-export-components
+export const GameSessionContext = createContext<GameSessionApi | null>(null)
 
 interface Props {
   pools: { countries: CountryLike[]; cities: CityLike[] }

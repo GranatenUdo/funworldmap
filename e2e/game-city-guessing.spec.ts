@@ -9,8 +9,7 @@ async function waitForMap(page: Page) {
 async function openCityGuessing(page: Page) {
   await page.goto('/')
   await waitForMap(page)
-  await page.getByTestId('header-play').click()
-  await page.getByTestId('play-menu-city-guessing').click()
+  await page.getByTestId('launcher-mode-city-guessing').click()
   await expect(page.getByTestId('game-hud')).toBeVisible()
   await expect(page.getByTestId('hud-round-counter')).toContainText('1')
 }
@@ -149,17 +148,9 @@ test.describe('City Guessing game', () => {
     await expect(page.getByTestId('game-over-score')).toHaveText('0')
   })
 
-  test('Play menu shows last-played mode first', async ({ page, context }) => {
-    await context.addInitScript(() => {
-      localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
-    })
-    await page.goto('/')
-    await waitForMap(page)
-    await page.getByTestId('header-play').click()
-    const menu = page.getByTestId('play-menu')
-    const items = menu.getByRole('menuitem')
-    await expect(items.first()).toContainText('City Guessing')
-  })
+  // Popover-based "Play menu shows last-played mode first" test deleted —
+  // PlayMenu no longer exists. Launcher initial-focus-on-last-played is
+  // covered by e2e/launcher.spec.ts.
 
   test('Back to map exits cleanly and clears hash', async ({ page }) => {
     await page.goto('/#game/city-guessing/play')

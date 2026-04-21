@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test'
+import { dismissLauncher } from './helpers'
 
 test.setTimeout(30000)
 
@@ -9,6 +10,7 @@ test.describe('Theme System', () => {
     await page.evaluate(() => localStorage.removeItem('funworldmap-theme'))
     await page.reload()
     await page.waitForTimeout(500)
+    await dismissLauncher(page)
   })
 
   test('defaults to system theme (no dark class if system is light)', async ({ page }) => {

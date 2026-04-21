@@ -1,4 +1,5 @@
 import { test, expect, type Locator, type Page } from '@playwright/test'
+import { dismissLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -41,6 +42,7 @@ test.describe('A11y + Contrast Pass', () => {
 
     test('search-result region badge is >= 11px', async ({ page }) => {
       await page.goto('/')
+      await dismissLauncher(page)
       await page.getByTestId('search-input').fill('Germany')
       const firstResult = page
         .getByTestId('search-results')
