@@ -3,6 +3,7 @@ import { listModes } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 import type { ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
+import { track } from '../lib/analytics'
 import { usePersonalBests } from '../game/shared/usePersonalBests'
 import { LauncherModeCard } from './LauncherModeCard'
 
@@ -31,12 +32,15 @@ export function Launcher({ onDismiss }: Props) {
     id === 'country-pinning' ? countryPinningBest : cityGuessingBest
 
   const dismissWithFocus = useCallback(() => {
+    track('launcher_dismissed', { path: 'link' })
     onDismiss()
     focusSearchInput()
   }, [onDismiss])
 
   const startMode = useCallback(
     (id: ModeId) => {
+      track('launcher_dismissed', { path: 'card' })
+      track('free_started', { mode: id })
       writeLastMode(id)
       onDismiss()
       window.location.hash = writeHash({ kind: 'game', modeId: id, playing: true })

@@ -100,6 +100,10 @@ function AppInner({
   const openLauncher = useCallback(() => {
     showLauncher()
   }, [showLauncher])
+  const onLauncherDismissFromSearch = useCallback(() => {
+    track('launcher_dismissed', { path: 'search' })
+    dismissLauncher()
+  }, [dismissLauncher])
   const [comparePickingMode, setComparePickingMode] = useState(false)
 
   const enterComparePicking = useCallback(() => {
@@ -250,6 +254,7 @@ function AppInner({
       if (e.key === 'Escape') {
         if (gameActive) return
         if (launcherVisible) {
+          track('launcher_dismissed', { path: 'escape' })
           dismissLauncher()
           const searchInput = document.getElementById('search-input') as HTMLInputElement | null
           searchInput?.focus()
@@ -336,7 +341,7 @@ function AppInner({
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
         onOpenLauncher={openLauncher}
-        onLauncherDismiss={dismissLauncher}
+        onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
       {launcherVisible && <Launcher onDismiss={dismissLauncher} />}
