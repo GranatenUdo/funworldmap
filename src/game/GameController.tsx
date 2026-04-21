@@ -186,7 +186,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     const m = getMode(pending, pools)
     const firstRound = m.nextRound(new Set())
     start(pending, firstRound, m.maxRounds)
-  }, [countries.length, cities.length, session.status, pools, start, dailyPuzzles])
+  }, [countries, cities, session.status, pools, start, dailyPuzzles])
 
   // Side effects on status change.
   useEffect(() => {
