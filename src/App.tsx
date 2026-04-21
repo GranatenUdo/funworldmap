@@ -12,6 +12,7 @@ import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
+import { DailyPuzzlesProvider } from './game/daily/DailyPuzzlesProvider'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
@@ -48,16 +49,18 @@ export default function App() {
   return (
     <MapProvider>
       <GameSessionProvider pools={pools}>
-        <AppInner
-          countries={countries}
-          countriesFull={poolFull}
-          pool={pool}
-          byNumeric={byNumeric}
-          byCca3={byCca3}
-          poolByCca3={poolByCca3}
-          sources={sources}
-          cities={cities}
-        />
+        <DailyPuzzlesProvider>
+          <AppInner
+            countries={countries}
+            countriesFull={poolFull}
+            pool={pool}
+            byNumeric={byNumeric}
+            byCca3={byCca3}
+            poolByCca3={poolByCca3}
+            sources={sources}
+            cities={cities}
+          />
+        </DailyPuzzlesProvider>
       </GameSessionProvider>
     </MapProvider>
   )
