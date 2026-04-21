@@ -29,6 +29,8 @@ jobs:
         run: npm run build
         env:
           VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          VITE_CF_WA_TOKEN: ${{ secrets.VITE_CF_WA_TOKEN }}
+          VITE_ANALYTICS_ENDPOINT: ${{ secrets.VITE_ANALYTICS_ENDPOINT }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

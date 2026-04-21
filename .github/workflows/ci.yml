@@ -30,6 +30,12 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          # Explicit empty — track() becomes a no-op under e2e.
+          # Playwright also sets window.__PLAYWRIGHT__ = true via the test helper,
+          # which is a secondary no-op guard.
+          VITE_ANALYTICS_ENDPOINT: ''
+          VITE_CF_WA_TOKEN: ''
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
