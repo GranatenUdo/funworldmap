@@ -17,6 +17,9 @@ import type { CityLike, CountryLike } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
+import { parseHash } from './lib/hashState'
+import { track } from './lib/analytics'
+import { toLocalDateString } from './game/daily/dates'
 
 export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
@@ -215,6 +218,25 @@ function AppInner({
     }, 1500)
     return () => clearTimeout(timer)
   }, [mapReady, selected, hintDismissed, gameActive])
+
+  useEffect(() => {
+    const resolveDaily = () => {
+      const state = parseHash(window.location.hash)
+      if (state.kind !== 'daily') return
+      const todayStr = toLocalDateString(new Date())
+      let dateKind: 'today' | 'past' | 'future' | 'invalid' = 'invalid'
+      if (state.date === todayStr) dateKind = 'today'
+      else if (state.date < todayStr) dateKind = 'past'
+      else if (state.date > todayStr) dateKind = 'future'
+      track('deep_link_opened', { dateKind, outcome: 'redirect' })
+      // Phase 1 stub: redirect to bare root. Phase 2+ will handle daily routes.
+      history.replaceState(null, '', window.location.pathname)
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+    }
+    resolveDaily()
+    window.addEventListener('hashchange', resolveDaily)
+    return () => window.removeEventListener('hashchange', resolveDaily)
+  }, [])
 
   useEffect(() => {
     if ((selected || gameActive) && showHint) {
