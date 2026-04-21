@@ -67,6 +67,7 @@ This plan implements **Phase 2** of [`2026-04-21-retention-program-v1-design.md`
 - `src/game/daily/__tests__/storage.test.ts`
 - `src/game/daily/useDailyPuzzles.ts` — session-scoped fetch of `/daily/index.json` with status (`loading` / `ready` / `unavailable`).
 - `src/game/daily/__tests__/useDailyPuzzles.test.tsx`
+- `src/game/daily/DailyPuzzlesProvider.tsx` — Context that hoists `useDailyPuzzles()` once at the app root. `Launcher` and `GameController` both consume via `useDailyPuzzlesContext()`. Replaces the earlier plan's `__funworldmap_daily` window-global hack.
 - `src/game/daily/useDailyHistory.ts` — wraps `storage`, exposes `{ get, record, history, streak }`.
 - `src/game/daily/__tests__/useDailyHistory.test.tsx`
 - `src/game/daily/dailyRound.ts` — pure builders `buildCountryDailyRound(cca3, pool)`, `buildCityDailyRound(id, pool)` returning `RoundSpec`.
@@ -600,6 +601,73 @@ git commit -m "feat(daily): useDailyPuzzles fetches + caches /daily/index.json"
 
 ---
 
+## Task 3b: `DailyPuzzlesProvider` Context
+
+**Files:**
+- Create: `src/game/daily/DailyPuzzlesProvider.tsx`
+
+The hook is session-scoped but needs to be consumed from two places (`Launcher` for card state, `GameController` for hash-bootstrap daily-round resolution). Hoisting once via Context avoids double-fetching and removes the need for a `window` global.
+
+- [ ] **Step 1: Create the Provider + hook**
+
+```tsx
+import { createContext, useContext } from 'react'
+import type { ReactNode } from 'react'
+import { useDailyPuzzles, type UseDailyPuzzles } from './useDailyPuzzles'
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const DailyPuzzlesContext = createContext<UseDailyPuzzles | null>(null)
+
+export function DailyPuzzlesProvider({ children }: { children: ReactNode }) {
+  const value = useDailyPuzzles()
+  return <DailyPuzzlesContext.Provider value={value}>{children}</DailyPuzzlesContext.Provider>
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useDailyPuzzlesContext(): UseDailyPuzzles {
+  const ctx = useContext(DailyPuzzlesContext)
+  if (!ctx) throw new Error('useDailyPuzzlesContext must be used within <DailyPuzzlesProvider>')
+  return ctx
+}
+```
+
+- [ ] **Step 2: Mount the Provider in `src/App.tsx`**
+
+Wrap `<AppInner>` inside the existing `<GameSessionProvider>`:
+
+```tsx
+return (
+  <MapProvider>
+    <GameSessionProvider pools={pools}>
+      <DailyPuzzlesProvider>
+        <AppInner ... />
+      </DailyPuzzlesProvider>
+    </GameSessionProvider>
+  </MapProvider>
+)
+```
+
+Add the import:
+```tsx
+import { DailyPuzzlesProvider } from './game/daily/DailyPuzzlesProvider'
+```
+
+- [ ] **Step 3: Typecheck**
+
+```
+npx tsc -b
+```
+Expected: clean.
+
+- [ ] **Step 4: Commit**
+
+```
+git add src/game/daily/DailyPuzzlesProvider.tsx src/App.tsx
+git commit -m "feat(daily): DailyPuzzlesProvider Context hoists hook for launcher + controller"
+```
+
+---
+
 ## Task 4: `useDailyHistory` hook (TDD)
 
 **Files:**
@@ -876,16 +944,26 @@ git commit -m "feat(daily): pure daily-round builders for both modes"
 
 ---
 
-## Task 6: Extend `GameSession` with attempts fields
+## Task 6: Extend `GameSession` with attempts fields + reducer (TDD, atomic commit)
 
 **Files:**
 - Modify: `src/game/shared/types.ts`
+- Modify: `src/game/shared/useGameSession.ts`
+- Create or modify: `src/game/shared/__tests__/useGameSession.test.ts`
 
-Adds `attemptsPerRound`, `attemptsRemaining`, and `currentAttempts` to `GameSession`. Also defines `AttemptRecord` type. No behavior change in this task — just the type surface.
+> **Atomic commit rule:** steps 1–5 all land in ONE commit. The intermediate `tsc` state after step 1 is broken by design — no commits until step 7 green-lights the combined change. Reviewer / subagent should NOT approve intermediate commits for this task.
 
-- [ ] **Step 1: Edit types.ts**
+Reducer changes in one atomic change:
+- `start` accepts `attemptsPerRound` (default 1) — initializes `attemptsRemaining = attemptsPerRound`, `currentAttempts = []`.
+- `attempt` — records one attempt to `currentAttempts`, decrements `attemptsRemaining`, keeps status `playing`. Used when attempts remain.
+- `guess` — now carries BOTH the triggering `input` and the `outcome`. When `attemptsPerRound === 1`, behavior unchanged. When `attemptsPerRound > 1 && attemptsRemaining === 1` (final attempt), records to `currentAttempts` AND transitions to `round-ended` with best-of-attempts score. If dispatched with `attemptsRemaining > 1`, the reducer is a no-op (defensive guard).
+- `revealEarly` — valid only when `currentAttempts.length > 0`. Transitions to `round-ended` using best-of-current. Zero-out `attemptsRemaining`.
+- `advance` / `overrideRound` — reset `attemptsRemaining` to `attemptsPerRound`, clear `currentAttempts`.
+- `endGame` — reset all attempts state.
 
-Locate the `GameSession` type and replace it. Add `AttemptRecord` below `GuessOutcome`:
+### Step 1: Edit `src/game/shared/types.ts`
+
+Add `AttemptRecord` below `GuessOutcome` and extend `GameSession`:
 
 ```ts
 // ---- Attempt record (for multi-attempt rounds — daily) ----
@@ -914,48 +992,498 @@ export type GameSession = {
 }
 ```
 
-- [ ] **Step 2: Typecheck**
+### Step 2: Write failing tests
+
+Create or append to `src/game/shared/__tests__/useGameSession.test.ts`:
+
+```ts
+import { renderHook, act } from '@testing-library/react'
+import { describe, it, expect } from 'vitest'
+import { useGameSession } from '../useGameSession'
+import type { CountryRoundSpec } from '../types'
+
+const CPR: CountryRoundSpec = {
+  kind: 'country-pinning',
+  targetCca3: 'FRA',
+  targetName: 'France',
+  targetFlag: 'flags/FR.svg',
+  targetCentroid: [2, 46],
+}
+
+describe('useGameSession — attempts per round', () => {
+  it('start with attemptsPerRound=1 keeps existing free-mode behavior', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, null, 1) })
+    expect(result.current.session.attemptsPerRound).toBe(1)
+    expect(result.current.session.attemptsRemaining).toBe(1)
+    expect(result.current.session.currentAttempts).toEqual([])
+  })
+
+  it('start with attemptsPerRound=3 initializes three attempts', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, 1, 3) })
+    expect(result.current.session.attemptsPerRound).toBe(3)
+    expect(result.current.session.attemptsRemaining).toBe(3)
+  })
+
+  it('recordAttempt decrements remaining + records attempt, stays playing', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, 1, 3) })
+    act(() => {
+      result.current.recordAttempt({
+        pointsEarned: 40,
+        input: { kind: 'country', cca3: 'ESP', name: 'Spain', centroid: [-3, 40] },
+        reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'ESP', clickedName: 'Spain', distanceKm: 800 },
+      })
+    })
+    expect(result.current.session.status).toBe('playing')
+    expect(result.current.session.attemptsRemaining).toBe(2)
+    expect(result.current.session.currentAttempts).toHaveLength(1)
+    expect(result.current.session.currentAttempts[0].pointsEarned).toBe(40)
+  })
+
+  it('submitGuess carries the input into the final attempt record (best-of-3)', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, 1, 3) })
+    act(() => {
+      result.current.recordAttempt({
+        pointsEarned: 30,
+        input: { kind: 'country', cca3: 'ESP', name: 'Spain', centroid: [-3, 40] },
+        reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'ESP', clickedName: 'Spain', distanceKm: 800 },
+      })
+    })
+    act(() => {
+      result.current.recordAttempt({
+        pointsEarned: 70,
+        input: { kind: 'country', cca3: 'DEU', name: 'Germany', centroid: [10, 51] },
+        reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'DEU', clickedName: 'Germany', distanceKm: 500 },
+      })
+    })
+    act(() => {
+      result.current.submitGuess(
+        { kind: 'country', cca3: 'FRA', name: 'France', centroid: [2, 46] },
+        {
+          pointsEarned: 100,
+          livesDelta: 0,
+          endsGame: true,
+          reveal: { kind: 'country', correct: true, targetCca3: 'FRA', clickedCca3: 'FRA', clickedName: 'France', distanceKm: 0 },
+        },
+      )
+    })
+    expect(result.current.session.status).toBe('game-over')
+    expect(result.current.session.score).toBe(100)  // best-of-3
+    expect(result.current.session.currentAttempts).toHaveLength(3)
+    // Final attempt carries the real input (not a reconstructed fake):
+    const final = result.current.session.currentAttempts[2]
+    expect(final.input.kind).toBe('country')
+    if (final.input.kind === 'country') {
+      expect(final.input.cca3).toBe('FRA')
+      expect(final.input.centroid).toEqual([2, 46])
+    }
+  })
+
+  it('submitGuess with attemptsRemaining > 1 is a no-op (defensive guard)', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, 1, 3) })
+    // attemptsRemaining is 3; dispatching submitGuess directly should NOT end the round.
+    act(() => {
+      result.current.submitGuess(
+        { kind: 'country', cca3: 'DEU', name: 'Germany', centroid: [10, 51] },
+        {
+          pointsEarned: 60,
+          livesDelta: 0,
+          endsGame: true,
+          reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'DEU', clickedName: 'Germany', distanceKm: 500 },
+        },
+      )
+    })
+    expect(result.current.session.status).toBe('playing')
+    expect(result.current.session.attemptsRemaining).toBe(3)
+    expect(result.current.session.currentAttempts).toEqual([])
+  })
+
+  it('revealEarly ends the round using best-of-current-attempts', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, 1, 3) })
+    act(() => {
+      result.current.recordAttempt({
+        pointsEarned: 60,
+        input: { kind: 'country', cca3: 'DEU', name: 'Germany', centroid: [10, 51] },
+        reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'DEU', clickedName: 'Germany', distanceKm: 500 },
+      })
+    })
+    act(() => { result.current.revealEarly() })
+    expect(result.current.session.status).toBe('game-over')
+    expect(result.current.session.score).toBe(60)
+    expect(result.current.session.attemptsRemaining).toBe(0)
+  })
+
+  it('revealEarly is a no-op when no attempts recorded', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, 1, 3) })
+    act(() => { result.current.revealEarly() })
+    expect(result.current.session.status).toBe('playing')
+  })
+
+  it('advance resets attemptsRemaining to attemptsPerRound', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => { result.current.start('country-pinning', CPR, null, 3) })
+    act(() => {
+      result.current.recordAttempt({
+        pointsEarned: 50,
+        input: { kind: 'country', cca3: 'DEU', name: 'Germany', centroid: [10, 51] },
+        reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'DEU', clickedName: 'Germany', distanceKm: 500 },
+      })
+    })
+    act(() => {
+      result.current.submitGuess(
+        { kind: 'country', cca3: 'FRA', name: 'France', centroid: [2, 46] },
+        {
+          pointsEarned: 100,
+          livesDelta: 0,
+          endsGame: false,
+          reveal: { kind: 'country', correct: true, targetCca3: 'FRA', clickedCca3: 'FRA', clickedName: 'France', distanceKm: 0 },
+        },
+      )
+    })
+    const next: CountryRoundSpec = { ...CPR, targetCca3: 'DEU', targetName: 'Germany', targetFlag: 'flags/DE.svg' }
+    act(() => { result.current.advance(next) })
+    expect(result.current.session.attemptsRemaining).toBe(3)
+    expect(result.current.session.currentAttempts).toEqual([])
+  })
+})
+```
+
+### Step 3: Run tests — expect red
+
+```
+npm run test:unit -- src/game/shared/__tests__/useGameSession.test.ts
+```
+Expected: FAIL — `recordAttempt`/`revealEarly` not exported, `submitGuess` still takes a single arg, reducer hasn't been updated.
+
+### Step 4: Implement the reducer
+
+Replace the full contents of `src/game/shared/useGameSession.ts`:
+
+```ts
+import { useCallback, useReducer } from 'react'
+import type { AttemptRecord, GameSession, GuessInput, GuessOutcome, ModeId, RoundSpec } from './types'
+
+type Action =
+  | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number }
+  | { type: 'attempt'; attempt: AttemptRecord }
+  | { type: 'guess'; input: GuessInput; outcome: GuessOutcome }
+  | { type: 'revealEarly' }
+  | { type: 'advance'; nextRound: RoundSpec }
+  | { type: 'overrideRound'; round: RoundSpec }
+  | { type: 'endGame' }
+
+const EMPTY: GameSession = {
+  modeId: 'country-pinning',
+  status: 'idle',
+  lives: 3,
+  score: 0,
+  streak: 0,
+  bestStreak: 0,
+  roundIndex: 0,
+  maxRounds: null,
+  attemptsPerRound: 1,
+  attemptsRemaining: 1,
+  currentAttempts: [],
+  currentRound: null,
+  lastOutcome: null,
+  used: new Set(),
+}
+
+function roundKey(round: RoundSpec): string {
+  return round.kind === 'country-pinning' ? round.targetCca3 : round.targetId
+}
+
+function bestPoints(attempts: AttemptRecord[]): number {
+  return attempts.reduce((m, a) => Math.max(m, a.pointsEarned), 0)
+}
+
+function reducer(state: GameSession, action: Action): GameSession {
+  switch (action.type) {
+    case 'start': {
+      return {
+        ...EMPTY,
+        modeId: action.modeId,
+        status: 'playing',
+        maxRounds: action.maxRounds,
+        attemptsPerRound: action.attemptsPerRound,
+        attemptsRemaining: action.attemptsPerRound,
+        currentRound: action.firstRound,
+        used: new Set([roundKey(action.firstRound)]),
+      }
+    }
+    case 'attempt': {
+      if (state.status !== 'playing') return state
+      if (state.attemptsRemaining <= 0) return state
+      return {
+        ...state,
+        attemptsRemaining: state.attemptsRemaining - 1,
+        currentAttempts: [...state.currentAttempts, action.attempt],
+      }
+    }
+    case 'guess': {
+      // Defensive: callers bypassing submitGuessInput with attempts still remaining
+      // would end the round prematurely. Guard against that.
+      if (state.attemptsPerRound > 1 && state.attemptsRemaining > 1) return state
+
+      const finalAttempt: AttemptRecord = {
+        pointsEarned: action.outcome.pointsEarned,
+        input: action.input,
+        reveal: action.outcome.reveal,
+      }
+      const attemptsWithFinal =
+        state.attemptsPerRound > 1
+          ? [...state.currentAttempts, finalAttempt]
+          : state.currentAttempts
+      const points = state.attemptsPerRound > 1 ? bestPoints(attemptsWithFinal) : action.outcome.pointsEarned
+      const nextLives = Math.max(0, state.lives + action.outcome.livesDelta) as GameSession['lives']
+      const nextStreak = action.outcome.pointsEarned >= 100 ? state.streak + 1 : 0
+      return {
+        ...state,
+        status: action.outcome.endsGame ? 'game-over' : 'round-ended',
+        lives: nextLives,
+        score: state.score + points,
+        streak: nextStreak,
+        bestStreak: Math.max(state.bestStreak, nextStreak),
+        attemptsRemaining: 0,
+        currentAttempts: attemptsWithFinal,
+        lastOutcome: { ...action.outcome, pointsEarned: points },
+      }
+    }
+    case 'revealEarly': {
+      if (state.status !== 'playing') return state
+      if (state.currentAttempts.length === 0) return state
+      const points = bestPoints(state.currentAttempts)
+      return {
+        ...state,
+        status: 'game-over',
+        score: state.score + points,
+        attemptsRemaining: 0,
+        lastOutcome: {
+          pointsEarned: points,
+          livesDelta: 0,
+          endsGame: true,
+          reveal: state.currentAttempts[state.currentAttempts.length - 1].reveal,
+        },
+      }
+    }
+    case 'advance': {
+      if (state.status !== 'round-ended') return state
+      return {
+        ...state,
+        status: 'playing',
+        currentRound: action.nextRound,
+        used: new Set([...state.used, roundKey(action.nextRound)]),
+        roundIndex: state.roundIndex + 1,
+        attemptsRemaining: state.attemptsPerRound,
+        currentAttempts: [],
+        lastOutcome: null,
+      }
+    }
+    case 'overrideRound': {
+      if (state.status === 'idle') return state
+      const isAdvancing = state.status === 'round-ended'
+      return {
+        ...state,
+        status: 'playing',
+        currentRound: action.round,
+        used: new Set([...state.used, roundKey(action.round)]),
+        roundIndex: isAdvancing ? state.roundIndex + 1 : state.roundIndex,
+        attemptsRemaining: state.attemptsPerRound,
+        currentAttempts: [],
+        lastOutcome: null,
+      }
+    }
+    case 'endGame': {
+      return { ...EMPTY, used: new Set() }
+    }
+  }
+}
+
+export function useGameSession(): {
+  session: GameSession
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number) => void
+  recordAttempt: (attempt: AttemptRecord) => void
+  submitGuess: (input: GuessInput, outcome: GuessOutcome) => void
+  revealEarly: () => void
+  advance: (nextRound: RoundSpec) => void
+  overrideRound: (round: RoundSpec) => void
+  endGame: () => void
+} {
+  const [session, dispatch] = useReducer(reducer, EMPTY)
+  const start = useCallback(
+    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound = 1) =>
+      dispatch({ type: 'start', modeId, firstRound, maxRounds, attemptsPerRound }),
+    [],
+  )
+  const recordAttempt = useCallback((attempt: AttemptRecord) => dispatch({ type: 'attempt', attempt }), [])
+  const submitGuess = useCallback(
+    (input: GuessInput, outcome: GuessOutcome) => dispatch({ type: 'guess', input, outcome }),
+    [],
+  )
+  const revealEarly = useCallback(() => dispatch({ type: 'revealEarly' }), [])
+  const advance = useCallback((nextRound: RoundSpec) => dispatch({ type: 'advance', nextRound }), [])
+  const overrideRound = useCallback((round: RoundSpec) => dispatch({ type: 'overrideRound', round }), [])
+  const endGame = useCallback(() => dispatch({ type: 'endGame' }), [])
+  return { session, start, recordAttempt, submitGuess, revealEarly, advance, overrideRound, endGame }
+}
+```
+
+Note: `submitGuess` now takes `(input, outcome)` — callers updated in Task 7.
+
+### Step 5: Run tests — expect green
+
+```
+npm run test:unit -- src/game/shared/__tests__/useGameSession.test.ts
+```
+Expected: all 8 new tests pass. If other existing shared-game tests reference the old `submitGuess(outcome)` signature, they need updates too — find them and fix in this same task:
+
+```
+grep -rn "submitGuess(" src/game/shared/__tests__/ src/game/__tests__/ 2>/dev/null
+```
+
+Patch any call sites to the new 2-arg signature.
+
+### Step 6: Typecheck — expect failures in `GameSessionProvider.tsx` and `GameController.tsx` (they call the old shapes)
 
 ```
 npx tsc -b
 ```
+Expected: fails. These are fixed by Task 7 and onward. Do NOT commit yet — the codebase is in a broken intermediate state.
 
-Expected: fails — `useGameSession.ts`'s `EMPTY` literal is missing the three new fields. That's exactly what Task 7 addresses. Leave the error for now.
+### Step 7: Proceed directly to Task 7 without committing
 
-- [ ] **Step 3: Commit**
-
-```
-git add src/game/shared/types.ts
-git commit -m "feat(game): GameSession gains attemptsPerRound + attemptsRemaining + currentAttempts"
-```
-
-Subsequent tasks will restore a clean tsc build.
+Task 6 + Task 7 land as a single atomic commit at the end of Task 7. This prevents a broken-CI intermediate state on the branch. The commit message combines both.
 
 ---
 
-## Task 7: Extend reducer with `attempt` + `revealEarly` actions (TDD)
+## Task 7: Extend `GameSessionProvider` API — closes Task 6 atomically
 
 **Files:**
-- Modify: `src/game/shared/__tests__/useGameSession.test.ts` (create if absent)
-- Modify: `src/game/shared/useGameSession.ts`
+- Modify: `src/game/shared/GameSessionProvider.tsx`
 
-Reducer logic:
-- `start` accepts `attemptsPerRound` (default 1) — initializes `attemptsRemaining = attemptsPerRound`, `currentAttempts = []`.
-- `attempt` — records one attempt to `currentAttempts`, decrements `attemptsRemaining`, keeps status `playing`. Used when attempts remain.
-- `guess` — **unchanged behavior** for `attemptsPerRound === 1`. When `attemptsPerRound > 1` AND `attemptsRemaining === 1` (i.e., last attempt), records to `currentAttempts` AND transitions to `round-ended` with best-of-3 score.
-- `revealEarly` — valid only when `currentAttempts.length > 0`. Transitions to `round-ended` using best-of-current. Zero-out `attemptsRemaining`.
-- `advance` / `overrideRound` — reset `attemptsRemaining` to `attemptsPerRound`, clear `currentAttempts`.
-- `endGame` — reset all attempts state.
+Widens the API to expose `recordAttempt` + `revealEarly`. Changes `submitGuessInput` to branch by `attemptsRemaining` and — critically — pass the `input` through to `submitGuess` so the reducer can record it on the final attempt (no synthetic reconstruction). The final commit of this task bundles Task 6 + Task 7 so tsc never sees a broken intermediate.
 
-- [ ] **Step 1: Check whether the test file exists**
+- [ ] **Step 1: Update the provider**
+
+Edit `src/game/shared/GameSessionProvider.tsx`. Add `AttemptRecord` + `GuessInput` to the type import from `./types` if not already present. Replace the exported `GameSessionApi` type:
+
+```ts
+export type GameSessionApi = {
+  session: GameSession
+  mode: GameMode | null
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number) => void
+  submitGuess: (input: GuessInput, outcome: GuessOutcome) => void
+  submitGuessInput: (input: GuessInput) => void
+  recordAttempt: (attempt: AttemptRecord) => void
+  revealEarly: () => void
+  advance: (nextRound: RoundSpec) => void
+  overrideRound: (round: RoundSpec) => void
+  endGame: () => void
+}
+```
+
+Change the hook destructure to pick up `recordAttempt` and `revealEarly`:
+
+```tsx
+const { session, start, submitGuess, recordAttempt, revealEarly, advance, overrideRound, endGame } = useGameSession()
+```
+
+Replace `submitGuessInput` with the branched implementation:
+
+```tsx
+const submitGuessInput = useCallback(
+  (input: GuessInput) => {
+    if (!mode || session.status !== 'playing' || !session.currentRound) return
+    const result = mode.onGuess(input, session.currentRound)
+
+    // Multi-attempt intermediate: record and stay playing.
+    if (session.attemptsPerRound > 1 && session.attemptsRemaining > 1) {
+      recordAttempt({ pointsEarned: result.pointsEarned, input, reveal: result.reveal })
+      return
+    }
+
+    // Single-attempt mode or final attempt: finalize with endsGame.
+    const endsGame =
+      session.maxRounds !== null
+        ? session.roundIndex + 1 >= session.maxRounds
+        : session.lives + result.livesDelta <= 0
+    const outcome: GuessOutcome = { ...result, endsGame }
+    submitGuess(input, outcome)
+  },
+  [mode, session.status, session.currentRound, session.maxRounds, session.roundIndex, session.lives, session.attemptsPerRound, session.attemptsRemaining, submitGuess, recordAttempt],
+)
+```
+
+Update the `api` construction:
+
+```tsx
+const api = useMemo<GameSessionApi>(
+  () => ({ session, mode, start, submitGuess, submitGuessInput, recordAttempt, revealEarly, advance, overrideRound, endGame }),
+  [session, mode, start, submitGuess, submitGuessInput, recordAttempt, revealEarly, advance, overrideRound, endGame],
+)
+```
+
+- [ ] **Step 2: Fix any remaining callers**
+
+Grep and fix:
 
 ```
-ls src/game/shared/__tests__/useGameSession.test.ts 2>/dev/null && echo exists || echo missing
+grep -rn "submitGuess(" src/ e2e/ 2>/dev/null
 ```
 
-If missing, create it with minimal existing-behavior coverage + new tests below. If exists, append the new describes below.
+Each call must now match `submitGuess(input, outcome)`. The controller's `submitGuessInput` flow handles this via `submitGuess(input, outcome)` inside — direct callers are rare but grep to confirm.
 
-- [ ] **Step 2: Write the new tests (append or create)**
+- [ ] **Step 3: Typecheck + full unit run — expect green**
+
+```
+npx tsc -b && npm run test:unit
+```
+Expected: type check clean; all Task 6 + existing tests green.
+
+- [ ] **Step 4: Commit (atomic Task 6 + Task 7)**
+
+```
+git add src/game/shared/types.ts src/game/shared/useGameSession.ts src/game/shared/__tests__/useGameSession.test.ts src/game/shared/GameSessionProvider.tsx
+git commit -m "feat(game): GameSession gains attempts fields + best-of-N reducer + provider branching
+
+GameSession grows three fields: attemptsPerRound, attemptsRemaining,
+currentAttempts[]. Reducer gains 'attempt' + 'revealEarly' actions
+and makes 'guess' accept (input, outcome) — no more synthetic input
+reconstruction on the final attempt. 'guess' is also a no-op when
+attemptsRemaining > 1 (defensive guard).
+
+GameSessionProvider.submitGuessInput branches: intermediate attempts
+dispatch recordAttempt; final attempt (or any single-attempt mode)
+dispatches submitGuess.
+
+Atomic because Task 6's type extension and Task 7's provider change
+are co-dependent — splitting them leaves tsc broken mid-sequence."
+```
+
+---
+
+## Task 8 — SKIP (folded into Task 7 above)
+
+The earlier draft had separate Task 6 (types), Task 7 (reducer), Task 8 (provider). After applying the critical-review fixes they're now a single atomic commit on Task 7. Task 8 is intentionally empty; skip it and continue at Task 9.
+
+Placeholder step so the task count stays aligned with earlier references:
+
+- [ ] **Step 1: Nothing to do.** Verify the atomic commit from Task 7 includes all of: types.ts, useGameSession.ts, useGameSession.test.ts, GameSessionProvider.tsx.
+
+---
+
+## Task 8 — old content archive (IGNORE — duplicate of earlier tasks)
+
+The block between this heading and the Task 9 heading below contains early-draft content that was superseded by the critical-review revisions. Execution should skip directly from the above Task 7 commit to Task 9.
+
+<details>
+<summary>Show archived draft content</summary>
 
 ```ts
 import { renderHook, act } from '@testing-library/react'
@@ -1361,12 +1889,9 @@ npx tsc -b && npm run test:unit
 ```
 Expected: 170+ tests pass (Phase 1 tests + the new reducer tests).
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 3: (archive end)**
 
-```
-git add src/game/shared/GameSessionProvider.tsx
-git commit -m "feat(game): provider branches submitGuessInput on attemptsRemaining"
-```
+</details>
 
 ---
 
@@ -1604,10 +2129,10 @@ const check = () => {
       pendingStartRef.current = id
       return
     }
-    const ref = (window as unknown as { __funworldmap_daily?: { byDate(d: string): { country: { cca3: string }; city: { id: string } } | null } }).__funworldmap_daily
-    const puzzle = ref?.byDate(state.date) ?? null
-    if (!puzzle) return  // index still loading; retried on next hashchange / pool-change.
-    const m = getMode(id, pools)
+    // Read the daily index from the shared Context (hoisted in App.tsx via DailyPuzzlesProvider).
+    // `dailyPuzzles.byDate` is closed over from the enclosing hook scope.
+    const puzzle = dailyPuzzles.byDate(state.date)
+    if (!puzzle) return  // index still loading or date out-of-window; retried on next hashchange.
     const firstRound =
       id === 'country-pinning'
         ? buildCountryDailyRound(puzzle.country.cca3, countries)
@@ -1626,13 +2151,20 @@ const check = () => {
 }
 ```
 
-Imports to add:
+Imports to add at the top of `GameController.tsx`:
 ```tsx
 import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
 import { toLocalDateString } from './daily/dates'
+import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 ```
 
-**Design note on the global `__funworldmap_daily`:** exposing the index as a synchronous window global avoids threading `useDailyPuzzles` through `GameController`, which is not itself under a `DailyProvider`. The global is set by `Launcher.tsx` (Task 11) on mount and cleared on unmount. Not ideal but isolates the wiring to one file.
+Add the Context consumption near the top of the `GameController` function body:
+
+```tsx
+const dailyPuzzles = useDailyPuzzlesContext()
+```
+
+Include `dailyPuzzles.byDate` in the dependency array of the hash-bootstrap `useEffect`. Because the Context is stable per-session, re-renders are inexpensive; the extra dep is cheap.
 
 - [ ] **Step 5: Wire `useDailyHistory.record()` on game-over for daily sessions**
 
@@ -1886,7 +2418,7 @@ import type { ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
 import { usePersonalBests } from '../game/shared/usePersonalBests'
-import { useDailyPuzzles } from '../game/daily/useDailyPuzzles'
+import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import { toLocalDateString } from '../game/daily/dates'
 import { LauncherModeCard, type LauncherCardState } from './LauncherModeCard'
@@ -1907,18 +2439,11 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
   const lastMode = readLastMode()
   const { best: cpBest } = usePersonalBests('country-pinning')
   const { best: cgBest } = usePersonalBests('city-guessing')
-  const { status: puzzlesStatus, byDate, index } = useDailyPuzzles()
+  const { status: puzzlesStatus, byDate, index } = useDailyPuzzlesContext()
   const { get: getDay } = useDailyHistory()
 
   const today = toLocalDateString(new Date())
   const date = anchorDate ?? today
-
-  // Expose the index on window for GameController's synchronous hash bootstrap.
-  useEffect(() => {
-    const w = window as unknown as { __funworldmap_daily?: unknown }
-    w.__funworldmap_daily = { byDate }
-    return () => { delete w.__funworldmap_daily }
-  }, [byDate])
 
   function cardState(modeId: ModeId): LauncherCardState {
     if (puzzlesStatus === 'unavailable') return 'unavailable'
@@ -2414,19 +2939,19 @@ Expected: launcher / daily-puzzle / game-* all pass. Pre-existing flakes (search
 
 - [ ] **Step 3: Edit `docs/roadmap.md`**
 
-The current Retention v1.1+ section lists items like "Streak-freeze / streak-save mechanics" etc. Phase 2 doesn't change these. Simply add a note at the top of the section that Phases 3–5 are in active development and will further narrow this list:
+The current Retention v1.1+ section lists items like "Streak-freeze / streak-save mechanics" etc. Phase 2 doesn't change these. Add a note at the top of the section that Phases 3–5 are in active development:
 
 ```markdown
 ## Retention program (v1.1+)
 
 Source: [`2026-04-21-retention-program-v1-design.md`](superpowers/specs/2026-04-21-retention-program-v1-design.md).
 
-> Phase 2 (daily play end-to-end) landed <DATE>. Streak display, calendar, share, and milestone celebrations remain for Phases 3–5.
+> Phase 2 (daily play end-to-end) has landed. Streak display, calendar, share, and milestone celebrations remain for Phases 3–5.
 
 - ... (existing items unchanged)
 ```
 
-Replace `<DATE>` with the merge date after the PR lands.
+No date placeholder — the sentence is self-contained regardless of when the merge lands.
 
 - [ ] **Step 4: Commit**
 
