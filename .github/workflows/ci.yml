@@ -37,12 +37,16 @@ jobs:
         run: npm run test:unit
 
   e2e:
-    name: e2e (shard ${{ matrix.shard }}/2)
+    name: e2e (${{ matrix.project }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2]
+        # Shard by Playwright project instead of by file: chromium (DOM-only,
+        # fast) and chromium-gpu (angle software-render, slow + flake-prone)
+        # have very different per-file durations. File-sharding put all the
+        # slow tests on one shard; project-sharding balances by kind.
+        project: [chromium, chromium-gpu]
     steps:
       - uses: actions/checkout@v4
 
@@ -62,8 +66,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: E2E tests (shard ${{ matrix.shard }}/2)
-        run: npx playwright test --shard=${{ matrix.shard }}/2 --reporter=blob
+      - name: E2E tests (${{ matrix.project }})
+        run: npx playwright test --project=${{ matrix.project }} --reporter=blob
         env:
           VITE_ANALYTICS_ENDPOINT: ''
           VITE_CF_WA_TOKEN: ''
@@ -72,7 +76,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-blob-${{ matrix.shard }}
+          name: playwright-blob-${{ matrix.project }}
           path: blob-report
           retention-days: 1
 
