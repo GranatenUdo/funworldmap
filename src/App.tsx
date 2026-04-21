@@ -227,7 +227,7 @@ function AppInner({
   }, [mapReady, selected, hintDismissed, gameActive])
 
   useEffect(() => {
-    const resolveDaily = () => {
+    const fireIfDaily = () => {
       const state = parseHash(window.location.hash)
       if (state.kind !== 'daily') return
       const todayStr = toLocalDateString(new Date())
@@ -235,13 +235,11 @@ function AppInner({
       if (state.date === todayStr) dateKind = 'today'
       else if (state.date < todayStr) dateKind = 'past'
       else if (state.date > todayStr) dateKind = 'future'
-      track('deep_link_opened', { dateKind, outcome: 'redirect' })
-      history.replaceState(null, '', window.location.pathname)
-      window.dispatchEvent(new HashChangeEvent('hashchange'))
+      track('deep_link_opened', { dateKind, outcome: 'played' })
     }
-    resolveDaily()
-    window.addEventListener('hashchange', resolveDaily)
-    return () => window.removeEventListener('hashchange', resolveDaily)
+    fireIfDaily()
+    window.addEventListener('hashchange', fireIfDaily)
+    return () => window.removeEventListener('hashchange', fireIfDaily)
   }, [])
 
   useEffect(() => {

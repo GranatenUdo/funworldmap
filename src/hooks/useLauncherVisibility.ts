@@ -5,8 +5,14 @@ function isBareRoot(hash: string): boolean {
   return hash === '' || hash === '#'
 }
 
+function isDailyRoot(hash: string): boolean {
+  const clean = hash.startsWith('#') ? hash.slice(1) : hash
+  return /^daily\/\d{4}-\d{2}-\d{2}$/.test(clean)
+}
+
 export interface LauncherVisibility {
   visible: boolean
+  anchorDate: string | null
   dismiss: () => void
   show: () => void
 }
@@ -36,7 +42,16 @@ export function useLauncherVisibility(): LauncherVisibility {
   const dismiss = useCallback(() => setDismissed(true), [])
   const show = useCallback(() => setDismissed(false), [])
 
-  const visible = isBareRoot(currentHash) && !dismissed && session.status === 'idle'
+  const visible =
+    (isBareRoot(currentHash) || isDailyRoot(currentHash)) &&
+    !dismissed &&
+    session.status === 'idle'
 
-  return { visible, dismiss, show }
+  let anchorDate: string | null = null
+  if (isDailyRoot(currentHash)) {
+    const clean = currentHash.startsWith('#') ? currentHash.slice(1) : currentHash
+    anchorDate = clean.slice('daily/'.length)
+  }
+
+  return { visible, anchorDate, dismiss, show }
 }

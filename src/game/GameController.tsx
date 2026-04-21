@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
-import type { CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
+import type { AttemptRecord, CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
 import type { CountryData } from '../lib/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
@@ -14,6 +14,11 @@ import { LAYER } from '../lib/mapLayers'
 import { centroidFromLatLng } from './shared/distance'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
 import { CityGuessingHudActionsContext } from './modes/city-guessing'
+import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
+import { toLocalDateString } from './daily/dates'
+import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
+import { useDailyHistory } from './daily/useDailyHistory'
+import { track } from '../lib/analytics'
 
 const REVEAL_MS_COUNTRY = 1200
 const REVEAL_MS_CITY = 2000
@@ -94,6 +99,8 @@ interface Props {
 export function GameController({ countries, countriesFull, cities, byCca3 }: Props) {
   const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
+  const dailyPuzzles = useDailyPuzzlesContext()
+  const { record: recordDailyResult } = useDailyHistory()
   const recordedRef = useRef(false)
   const pendingStartRef = useRef<ModeId | null>(null)
 
@@ -107,6 +114,33 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
   useEffect(() => {
     const check = () => {
       const state = parseHash(window.location.hash)
+      // Daily routes (Phase 2 handles /#daily/<date>/<modeId> for TODAY only;
+      // /#daily/<date> is launcher-anchored; past/future are Phase 3 reveal territory).
+      if (state.kind === 'daily' && state.modeId && !state.reveal && statusRef.current === 'idle') {
+        const id = state.modeId as ModeId
+        if (id !== 'country-pinning' && id !== 'city-guessing') return
+
+        const todayStr = toLocalDateString(new Date())
+        if (state.date !== todayStr) {
+          history.replaceState(null, '', window.location.pathname)
+          window.dispatchEvent(new HashChangeEvent('hashchange'))
+          return
+        }
+
+        const hasPool = id === 'country-pinning' ? countries.length > 0 : cities.length > 0
+        if (!hasPool) {
+          pendingStartRef.current = id
+          return
+        }
+        const puzzle = dailyPuzzles.byDate(state.date)
+        if (!puzzle) return
+        const firstRound =
+          id === 'country-pinning'
+            ? buildCountryDailyRound(puzzle.country.cca3, countries)
+            : buildCityDailyRound(puzzle.city.id, cities)
+        start(id, firstRound, 1, 3)
+        return
+      }
       if (state.kind === 'game' && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
         if (id !== 'country-pinning' && id !== 'city-guessing') return
@@ -119,7 +153,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
         const firstRound = m.nextRound(new Set())
         start(id, firstRound, m.maxRounds)
       }
-      if (state.kind !== 'game' && statusRef.current !== 'idle') {
+      if (state.kind !== 'game' && state.kind !== 'daily' && statusRef.current !== 'idle') {
         endGame()
       }
     }
@@ -127,7 +161,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     window.addEventListener('hashchange', check)
     return () => window.removeEventListener('hashchange', check)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countries.length, cities.length])
+  }, [countries.length, cities.length, dailyPuzzles.byDate])
 
   // Drain deferred start once the relevant pool arrives.
   useEffect(() => {
@@ -135,11 +169,24 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     if (!pending || session.status !== 'idle') return
     const hasPool = pending === 'country-pinning' ? countries.length > 0 : cities.length > 0
     if (!hasPool) return
+    // Check what kind of start we need based on current hash:
+    const state = parseHash(window.location.hash)
+    if (state.kind === 'daily' && state.modeId && state.date === toLocalDateString(new Date())) {
+      const puzzle = dailyPuzzles.byDate(state.date)
+      if (!puzzle) return
+      pendingStartRef.current = null
+      const firstRound =
+        pending === 'country-pinning'
+          ? buildCountryDailyRound(puzzle.country.cca3, countries)
+          : buildCityDailyRound(puzzle.city.id, cities)
+      start(pending, firstRound, 1, 3)
+      return
+    }
     pendingStartRef.current = null
     const m = getMode(pending, pools)
     const firstRound = m.nextRound(new Set())
     start(pending, firstRound, m.maxRounds)
-  }, [countries.length, cities.length, session.status, pools, start])
+  }, [countries.length, cities.length, session.status, pools, start, dailyPuzzles])
 
   // Side effects on status change.
   useEffect(() => {
@@ -179,13 +226,56 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     if (session.status === 'game-over' && !recordedRef.current) {
       recordedRef.current = true
       record(session.score, session.bestStreak)
+      // Daily-specific recording:
+      const hash = parseHash(window.location.hash)
+      if (hash.kind === 'daily' && hash.modeId) {
+        const attempts: AttemptRecord[] = session.currentAttempts
+        recordDailyResult(hash.date, session.modeId, {
+          score: session.score,
+          attempts: attempts.map((a) => ({
+            pointsEarned: a.pointsEarned,
+            guessCca3: a.input.kind === 'country' ? a.input.cca3 : undefined,
+            guessLngLat: a.input.kind === 'point' ? a.input.lngLat : undefined,
+            distanceKm: a.reveal.kind === 'country' ? a.reveal.distanceKm : a.reveal.distanceKm,
+          })),
+          completedAt: Date.now(),
+        })
+        track('daily_completed', {
+          mode: session.modeId,
+          bestScoreBucket: Math.min(4, Math.floor(session.score / 20)),
+          attemptsUsed: attempts.length,
+        })
+      }
       dispatchAnnouncement(`Game over. Final score ${session.score}.`)
     }
   }, [
     session.status, session.roundIndex, session.lastOutcome, session.score,
     session.bestStreak, session.lives, session.used, session.currentRound, session.modeId,
-    advance, mode, record,
+    session.currentAttempts,
+    advance, mode, record, recordDailyResult,
   ])
+
+  // Fire daily_attempted per intermediate attempt (only when attemptsPerRound > 1).
+  const lastAttemptCountRef = useRef(0)
+  useEffect(() => {
+    if (session.status !== 'playing' && session.status !== 'round-ended' && session.status !== 'game-over') {
+      lastAttemptCountRef.current = 0
+      return
+    }
+    const prev = lastAttemptCountRef.current
+    const cur = session.currentAttempts.length
+    if (cur > prev) {
+      const a = session.currentAttempts[cur - 1]
+      if (session.attemptsPerRound > 1) {
+        track('daily_attempted', {
+          mode: session.modeId,
+          attemptIndex: prev,
+          scoreBucket: Math.min(4, Math.floor(a.pointsEarned / 20)),
+        })
+      }
+    }
+    lastAttemptCountRef.current = cur
+  }, [session.status, session.currentAttempts, session.attemptsPerRound, session.modeId])
 
   // Reveal geometry: when round-ended, update marker + line sources and fitBounds.
   useEffect(() => {

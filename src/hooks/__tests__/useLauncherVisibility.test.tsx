@@ -150,4 +150,20 @@ describe('useLauncherVisibility', () => {
     act(() => setHash(''))
     expect(result.current.visible).toBe(true)
   })
+
+  it('isDailyRoot matches #daily/YYYY-MM-DD', () => {
+    window.location.hash = '#daily/2026-04-21'
+    const api = makeApi(makeSession({ status: 'idle' }))
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    expect(result.current.visible).toBe(true)
+    expect(result.current.anchorDate).toBe('2026-04-21')
+  })
+
+  it('isDailyRoot does NOT match #daily/YYYY-MM-DD/modeId', () => {
+    window.location.hash = '#daily/2026-04-21/country-pinning'
+    const api = makeApi(makeSession({ status: 'idle' }))
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    expect(result.current.visible).toBe(false)
+    expect(result.current.anchorDate).toBeNull()
+  })
 })
