@@ -230,13 +230,13 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
       const hash = parseHash(window.location.hash)
       if (hash.kind === 'daily' && hash.modeId) {
         const attempts: AttemptRecord[] = session.currentAttempts
-        recordDailyResult(hash.date, session.modeId, {
+        recordDailyResult(hash.date, hash.modeId as ModeId, {
           score: session.score,
           attempts: attempts.map((a) => ({
             pointsEarned: a.pointsEarned,
             guessCca3: a.input.kind === 'country' ? a.input.cca3 : undefined,
             guessLngLat: a.input.kind === 'point' ? a.input.lngLat : undefined,
-            distanceKm: a.reveal.kind === 'country' ? a.reveal.distanceKm : a.reveal.distanceKm,
+            distanceKm: a.reveal.distanceKm,
           })),
           completedAt: Date.now(),
         })
