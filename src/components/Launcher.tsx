@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { listModes } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 import type { ModeId } from '../game/shared/types'
@@ -22,7 +22,7 @@ function focusSearchInput(): void {
 
 export function Launcher({ onDismiss, anchorDate }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const modes = listModes()
+  const modes = useMemo(() => listModes(), [])
   const lastMode = readLastMode()
   const { best: cpBest } = usePersonalBests('country-pinning')
   const { best: cgBest } = usePersonalBests('city-guessing')
