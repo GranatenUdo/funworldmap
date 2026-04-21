@@ -285,7 +285,13 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     const t = window.setTimeout(() => {
       try { clearRevealSources(map); map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b') } catch { /* no-op */ }
     }, 600)
-    return () => { window.clearTimeout(t) }
+    return () => {
+      window.clearTimeout(t)
+      try {
+        clearRevealSources(map)
+        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b')
+      } catch { /* no-op */ }
+    }
   }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
 
   // Camera reset on round start when mode requests it.
