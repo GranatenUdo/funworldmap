@@ -1,0 +1,249 @@
+{
+  "generatedAt": "2026-04-21T17:40:18.689Z",
+  "window": {
+    "start": "2026-03-23",
+    "end": "2026-04-21"
+  },
+  "days": {
+    "2026-03-23": {
+      "country": {
+        "cca3": "ARG"
+      },
+      "city": {
+        "id": "GBR-london"
+      }
+    },
+    "2026-03-24": {
+      "country": {
+        "cca3": "IND"
+      },
+      "city": {
+        "id": "CHL-santiago"
+      }
+    },
+    "2026-03-25": {
+      "country": {
+        "cca3": "KEN"
+      },
+      "city": {
+        "id": "RUS-moscow"
+      }
+    },
+    "2026-03-26": {
+      "country": {
+        "cca3": "EGY"
+      },
+      "city": {
+        "id": "FRA-paris"
+      }
+    },
+    "2026-03-27": {
+      "country": {
+        "cca3": "BRA"
+      },
+      "city": {
+        "id": "IND-mumbai"
+      }
+    },
+    "2026-03-28": {
+      "country": {
+        "cca3": "ZAF"
+      },
+      "city": {
+        "id": "USA-los-angeles"
+      }
+    },
+    "2026-03-29": {
+      "country": {
+        "cca3": "MEX"
+      },
+      "city": {
+        "id": "IDN-jakarta"
+      }
+    },
+    "2026-03-30": {
+      "country": {
+        "cca3": "CAN"
+      },
+      "city": {
+        "id": "BRA-sao-paulo"
+      }
+    },
+    "2026-03-31": {
+      "country": {
+        "cca3": "AUS"
+      },
+      "city": {
+        "id": "TUR-istanbul"
+      }
+    },
+    "2026-04-01": {
+      "country": {
+        "cca3": "USA"
+      },
+      "city": {
+        "id": "IND-kolkata"
+      }
+    },
+    "2026-04-02": {
+      "country": {
+        "cca3": "GBR"
+      },
+      "city": {
+        "id": "CHN-shanghai"
+      }
+    },
+    "2026-04-03": {
+      "country": {
+        "cca3": "CHE"
+      },
+      "city": {
+        "id": "MEX-mexico-city"
+      }
+    },
+    "2026-04-04": {
+      "country": {
+        "cca3": "ESP"
+      },
+      "city": {
+        "id": "CHN-beijing"
+      }
+    },
+    "2026-04-05": {
+      "country": {
+        "cca3": "ITA"
+      },
+      "city": {
+        "id": "EGY-cairo"
+      }
+    },
+    "2026-04-06": {
+      "country": {
+        "cca3": "IDN"
+      },
+      "city": {
+        "id": "BRA-rio-de-janeiro"
+      }
+    },
+    "2026-04-07": {
+      "country": {
+        "cca3": "DEU"
+      },
+      "city": {
+        "id": "COL-bogota"
+      }
+    },
+    "2026-04-08": {
+      "country": {
+        "cca3": "JPN"
+      },
+      "city": {
+        "id": "USA-new-york"
+      }
+    },
+    "2026-04-09": {
+      "country": {
+        "cca3": "PER"
+      },
+      "city": {
+        "id": "DEU-berlin"
+      }
+    },
+    "2026-04-10": {
+      "country": {
+        "cca3": "FRA"
+      },
+      "city": {
+        "id": "NGA-lagos"
+      }
+    },
+    "2026-04-11": {
+      "country": {
+        "cca3": "NOR"
+      },
+      "city": {
+        "id": "JPN-tokyo"
+      }
+    },
+    "2026-04-12": {
+      "country": {
+        "cca3": "IND"
+      },
+      "city": {
+        "id": "RUS-moscow"
+      }
+    },
+    "2026-04-13": {
+      "country": {
+        "cca3": "NOR"
+      },
+      "city": {
+        "id": "IDN-jakarta"
+      }
+    },
+    "2026-04-14": {
+      "country": {
+        "cca3": "MEX"
+      },
+      "city": {
+        "id": "USA-los-angeles"
+      }
+    },
+    "2026-04-15": {
+      "country": {
+        "cca3": "FRA"
+      },
+      "city": {
+        "id": "MEX-mexico-city"
+      }
+    },
+    "2026-04-16": {
+      "country": {
+        "cca3": "IND"
+      },
+      "city": {
+        "id": "BRA-sao-paulo"
+      }
+    },
+    "2026-04-17": {
+      "country": {
+        "cca3": "ITA"
+      },
+      "city": {
+        "id": "IND-mumbai"
+      }
+    },
+    "2026-04-18": {
+      "country": {
+        "cca3": "NOR"
+      },
+      "city": {
+        "id": "MEX-mexico-city"
+      }
+    },
+    "2026-04-19": {
+      "country": {
+        "cca3": "NOR"
+      },
+      "city": {
+        "id": "TUR-istanbul"
+      }
+    },
+    "2026-04-20": {
+      "country": {
+        "cca3": "BRA"
+      },
+      "city": {
+        "id": "FRA-paris"
+      }
+    },
+    "2026-04-21": {
+      "country": {
+        "cca3": "ZAF"
+      },
+      "city": {
+        "id": "USA-los-angeles"
+      }
+    }
+  }
+}

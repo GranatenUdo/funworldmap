@@ -11,6 +11,8 @@
     "format": "prettier --write src/",
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
+    "daily:generate": "tsx scripts/daily-content/generate-index.ts",
+    "daily:validate": "tsx scripts/daily-content/validate-pools.ts",
     "update-data": "tsx scripts/fetch-countries.ts",
     "fetch-cities": "tsx scripts/fetch-cities.ts"
   },

@@ -1,0 +1,13 @@
+name = "funworldmap-analytics"
+main = "index.ts"
+compatibility_date = "2026-04-21"
+workers_dev = false
+
+[[analytics_engine_datasets]]
+binding = "EVENTS"
+dataset = "funworldmap_events"
+
+[env.production]
+routes = [
+  { pattern = "funworldmap.com/api/event", zone_name = "funworldmap.com" }
+]

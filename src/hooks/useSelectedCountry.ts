@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import type { CountryData } from '../lib/types'
 import { parseHash, writeHash } from '../lib/hashState'
+import { track } from '../lib/analytics'
 
 export function useSelectedCountry(
   byCca3: Map<string, CountryData>,
@@ -14,8 +15,11 @@ export function useSelectedCountry(
 } {
   const [selected, setSelected] = useState<CountryData | null>(null)
   const [compareWith, setCompareWith] = useState<CountryData | null>(null)
+  const isInitialResolveRef = useRef(true)
 
   const resolveHash = useCallback(() => {
+    const isInitial = isInitialResolveRef.current
+    isInitialResolveRef.current = false
     const state = parseHash(window.location.hash)
     if (state.kind !== 'country') {
       setSelected(null)
@@ -25,10 +29,16 @@ export function useSelectedCountry(
     const selCountry = byCca3.get(state.cca3) ?? null
     const cmpCountry = state.compareWith ? byCca3.get(state.compareWith) ?? null : null
     if (!selCountry) {
+      if (isInitial) {
+        track('deep_link_opened', { dateKind: 'invalid', outcome: 'redirect' })
+      }
       history.replaceState(null, '', window.location.pathname)
       setSelected(null)
       setCompareWith(null)
       return
+    }
+    if (isInitial) {
+      track('deep_link_opened', { dateKind: 'today', outcome: 'played' })
     }
     setSelected(selCountry)
     setCompareWith(cmpCountry)

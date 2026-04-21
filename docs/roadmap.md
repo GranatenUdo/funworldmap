@@ -73,6 +73,25 @@ Source: [`2026-04-19-assessment-remediation-design.md`](superpowers/specs/2026-0
 
 ---
 
+## Retention program (v1.1+)
+
+Source: [`2026-04-21-retention-program-v1-design.md`](superpowers/specs/2026-04-21-retention-program-v1-design.md).
+
+- **Push notifications** — would require a push service; deferred past v1.
+- **Yesterday's-global-average score overlay** — requires scheduled aggregation from the Analytics Engine into a static JSON; add after v1 data proves the retention lift.
+- **Canvas-rendered PNG share image** — richer Twitter/iMessage unfurl than plain text + URL.
+- **Retroactive free-play of past dailies** — v1 calendar cells are reveal-only.
+- **Regional / difficulty packs.**
+- **Per-timezone daily rollover** — v1 accepts up to 6 h lag east of UTC.
+- **Streak-freeze / streak-save mechanics.**
+- **i18n of daily + share copy.**
+- **Achievements, badges, meta-progress "world explored" map coloring.**
+- **Multiplayer, online leaderboards.**
+- **In-app analytics dashboard** — v1 queries via CF GraphQL / Workers dashboard only.
+- **CI-driven Worker deploys** — v1 deploys the Worker manually; move to a GitHub Action on `cloudflare-worker/**` changes.
+
+---
+
 ## Rejected (won't build)
 
 Nothing here yet. Items that were considered and explicitly rejected (not just deferred) would go here with a one-line reason.
