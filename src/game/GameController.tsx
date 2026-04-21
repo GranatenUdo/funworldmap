@@ -32,7 +32,8 @@ function dispatchAnnouncement(text: string): void {
 }
 
 function writeIdleHash(): void {
-  if (window.location.hash.startsWith('#game')) {
+  const h = window.location.hash
+  if (h.startsWith('#game') || h.startsWith('#daily')) {
     history.replaceState(null, '', window.location.pathname)
   }
 }
