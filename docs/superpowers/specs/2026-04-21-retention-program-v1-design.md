@@ -385,26 +385,46 @@ Share button always uses `/#daily/<date>` (no mode) — recipients see both toda
 
 ---
 
-## Analytics — Cloudflare Web Analytics
+## Analytics — Cloudflare Web Analytics + Workers Analytics Engine
 
-### Infrastructure
+Two complementary layers, both at $0/month within free tiers:
 
-- **Cost: $0/month.** Cloudflare Web Analytics is free, unlimited sites, no cookies, no PII.
-- **Setup (one-time):** point domain nameservers at Cloudflare; enable Proxied DNS in front of `funworldmap.github.io`; enable Web Analytics on the CF dashboard; paste the one-line script tag into `index.html`.
-- **No code dependency.** CF Web Analytics collects page-view + core vitals passively.
+### Layer 1 — passive page-view capture (CF Web Analytics)
 
-### Custom events
+- **Cost: $0/month.** CF Web Analytics is free, unlimited sites, no cookies, no PII.
+- **Setup (one-time):** point domain nameservers at Cloudflare; enable Proxied DNS in front of `funworldmap.github.io`; enable Web Analytics on the CF dashboard; paste the CF beacon script tag into `index.html`.
+- **Captures automatically:** page views, unique visitors (IP-hashed, 24-h TTL), referrers, country stats, core web vitals. No code per-event.
+- **Free tier does NOT support custom events** — confirmed from CF docs. Custom-event measurement handled by Layer 2.
 
-Custom events are tracked via a thin wrapper module `src/lib/analytics.ts`:
+### Layer 2 — custom events (CF Worker + Analytics Engine)
+
+Cloudflare Workers free tier: 100,000 requests/day. Analytics Engine free tier: 10,000,000 writes/month. Both well beyond any realistic v1 traffic.
+
+**Architecture:**
+1. Client `track(name, props)` POSTs JSON to the Worker at `https://analytics.funworldmap.com/event` (or `funworldmap.com/api/event` if routed on the proxied domain).
+2. Worker validates the event (known name + schema), writes to Analytics Engine with typed columns, returns 204.
+3. Queries run via CF's GraphQL API or the Workers dashboard. No in-app dashboard in v1.
+
+**Worker code** (~60 lines) lives in new directory `cloudflare-worker/`:
+- `cloudflare-worker/index.ts` — the Worker entry point.
+- `cloudflare-worker/wrangler.toml` — CF config, including Analytics Engine dataset binding.
+- `cloudflare-worker/__tests__/index.test.ts` — unit tests using Miniflare.
+
+**Deployment:** via `wrangler deploy`, run manually by repo owner on first setup. Subsequent deploys run from CI on changes to `cloudflare-worker/**`.
+
+### Client wrapper
+
+`src/lib/analytics.ts`:
 
 ```ts
 export function track(name: EventName, props?: Record<string, string | number>): void
 ```
 
 Internals:
-- Calls `window.__cfBeacon?.trackEvent(name, props)` if the CF script has loaded.
+- `POST` to `VITE_ANALYTICS_ENDPOINT` (env var set at build time; absent in dev → no-op).
+- Uses `navigator.sendBeacon` when available for reliability on page unload; `fetch(..., { keepalive: true })` fallback.
 - No-op if `navigator.doNotTrack === '1'`.
-- No-op in e2e (detects `window.__PLAYWRIGHT__` set by `beforeEach`).
+- No-op if `window.__PLAYWRIGHT__` is set (detects e2e).
 - In e2e, appends to `window.__testAnalytics: Array<{ name, props }>` for assertion.
 
 ### Events emitted
@@ -487,7 +507,7 @@ Pre-launch baseline instrumented during Phase 1 — `launcher_dismissed`, `free_
 
 ### Phases (5–7 weeks total; was 4–6 — revised up per critical review)
 
-**Phase 1 — Foundation (week 1 + baseline wait).** Analytics wrapper + CF script. Baseline events on existing surfaces. Daily content pipeline: pools (curation blocks Phase 2 merge), picker, GHA, CI validator. `hashState.ts` parses `daily` but handler redirects to `/`. **No user-visible change.** Baseline analytics collects for ≥ 14 days during Phases 2–3 ramp-up.
+**Phase 1 — Foundation (week 1 + baseline wait).** Cloudflare Worker + Analytics Engine deployment. CF WA page-view script. Client `analytics.ts` wrapper. Baseline events on existing surfaces. Daily content pipeline: pools (curation blocks Phase 2 merge), picker, GHA, CI validator. `hashState.ts` parses `daily` but handler redirects to `/`. **No user-visible change.** Baseline analytics collects for ≥ 14 days during Phases 2–3 ramp-up.
 
 **Phase 2 — Daily play end-to-end (weeks 2–3).** `useDailyPuzzles`, `useDailyHistory` hooks. Game framework extension for `attemptsPerRound`. Daily session variants for both modes, between-attempt feedback, reveal aggregation. Launcher mode cards rewritten per §Launcher (all obsolete pieces deleted). `#daily/<date>/<mode>` route active. Events: `daily_opened`, `daily_started`, `daily_attempted`, `daily_completed`, `free_started`. Tests per §Testing.
 
@@ -517,6 +537,8 @@ Pre-launch baseline instrumented during Phase 1 — `launcher_dismissed`, `free_
 | GHA cron fails → stale `index.json` | Client's `unavailable` state plus `free_started` path; toast on retry; Action on-failure emails the repo admin |
 | Share design fails post-launch | `daily_shared` event rate monitored 48 h; Phase 4 revertable without touching 1–3 |
 | CF nameserver switch breaks DNS | Swap tested against staging domain first; rollback is a one-command DNS revert |
+| CF Worker write quota exceeded | 10M Analytics Engine writes/mo free-tier ceiling; v1 traffic estimate < 100K/mo; alarm at 50% via CF dashboard email |
+| Worker deployment drift between local `wrangler deploy` and CI | CI deploys from `cloudflare-worker/` on main-branch changes only; hashed deploy id in Worker logs; single-commit rollback |
 | 3-attempt distance feedback makes puzzles too easy | Score distributions monitored via `daily_attempted` bucket histograms; can tighten feedback in v1.1 |
 
 ### Rollback
@@ -585,6 +607,8 @@ Code and tests obsoleted by this spec are deleted in the same commit as their re
 - **View-source spoiling within today.** A motivated user who inspects network traffic can see today's daily IDs. We accept this — the daily's purpose is social synchrony, not tamper-proof secrecy.
 - **Edge cache staleness.** GitHub Pages does not support custom `Cache-Control` headers. Once Cloudflare is fronting the origin (required for Web Analytics anyway), a CF Page Rule sets `Cache-Control: public, max-age=300` on `/daily/index.json`. Without this rule, stale windows can persist for CF's default edge TTL.
 - **`country-pool` / `city-pool` drift.** If a data update changes an id after the pool was curated, CI fails. Manual re-curation required. Acceptable trade for content-quality control.
+- **No in-app analytics dashboard.** Custom-event data is queryable only via Cloudflare's GraphQL API or the Workers dashboard. Ad-hoc queries suffice for v1. Building a local dashboard is v1.1 or later.
+- **`launcher_dismissed.path = "play-button"` does not fire.** The header play button *re-opens* the launcher (when hidden), never dismisses. The enum value is retained in the type for completeness but emitted nowhere. Reader of dashboards can treat it as always-zero in v1.
 
 ---
 
