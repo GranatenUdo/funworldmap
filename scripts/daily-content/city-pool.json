@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "ids": [
+    "JPN-tokyo",
+    "USA-new-york",
+    "MEX-mexico-city",
+    "IND-mumbai",
+    "BRA-sao-paulo",
+    "CHN-shanghai",
+    "IND-kolkata",
+    "USA-los-angeles",
+    "EGY-cairo",
+    "BRA-rio-de-janeiro",
+    "CHN-beijing",
+    "RUS-moscow",
+    "TUR-istanbul",
+    "FRA-paris",
+    "NGA-lagos",
+    "IDN-jakarta",
+    "GBR-london",
+    "COL-bogota",
+    "CHL-santiago",
+    "DEU-berlin"
+  ]
+}
