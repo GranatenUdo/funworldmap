@@ -88,6 +88,24 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
     await submitAndWait(page, 'FRA', 2)
     await submitAndWait(page, 'FRA', 3)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
+    // recordDailyResult runs inside the status-change useEffect, AFTER the
+    // game-over overlay is rendered. Wait for the localStorage write to
+    // complete before navigating away — otherwise the reload could beat
+    // the effect, losing the persistence signal.
+    await expect
+      .poll(
+        () =>
+          page.evaluate((today) => {
+            const raw = localStorage.getItem('funworldmap-daily-history')
+            if (!raw) return null
+            const parsed = JSON.parse(raw) as {
+              days?: Record<string, Record<string, unknown>>
+            }
+            return parsed.days?.[today]?.['country-pinning'] ?? null
+          }, TODAY),
+        { timeout: 5_000 },
+      )
+      .not.toBeNull()
     await page.getByRole('button', { name: /back to map/i }).click()
     await page.reload()
     await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'played')
