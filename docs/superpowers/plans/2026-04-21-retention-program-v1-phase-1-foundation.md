@@ -2059,10 +2059,24 @@ Edit `src/hooks/useSelectedCountry.ts`. Add import:
 import { track } from '../lib/analytics'
 ```
 
-Modify `resolveHash` to emit on successful resolution of a non-empty country hash:
+Add `useRef` to the existing React import:
+
+```ts
+import { useState, useEffect, useCallback, useRef } from 'react'
+```
+
+Add a ref at the top of the hook body, alongside the other state:
+
+```ts
+  const isInitialResolveRef = useRef(true)
+```
+
+Modify `resolveHash` to emit **only on the initial resolution** — not on subsequent `hashchange` events from in-app navigation. The ref flips to `false` on the first call, so only the cold-load resolve fires `deep_link_opened`:
 
 ```ts
   const resolveHash = useCallback(() => {
+    const isInitial = isInitialResolveRef.current
+    isInitialResolveRef.current = false
     const state = parseHash(window.location.hash)
     if (state.kind !== 'country') {
       setSelected(null)
@@ -2072,37 +2086,23 @@ Modify `resolveHash` to emit on successful resolution of a non-empty country has
     const selCountry = byCca3.get(state.cca3) ?? null
     const cmpCountry = state.compareWith ? byCca3.get(state.compareWith) ?? null : null
     if (!selCountry) {
-      track('deep_link_opened', { dateKind: 'invalid', outcome: 'redirect' })
+      if (isInitial) {
+        track('deep_link_opened', { dateKind: 'invalid', outcome: 'redirect' })
+      }
       history.replaceState(null, '', window.location.pathname)
       setSelected(null)
       setCompareWith(null)
       return
     }
-    // Fire only on initial resolve from an unloaded state (i.e., cold-load deep-link),
-    // not on every hashchange from user clicks. Use a ref to track first resolve.
-    if (!hasLoggedRef.current) {
-      track('deep_link_opened', {
-        dateKind: 'today', // country hashes carry no date; pin dateKind to today for baseline
-        outcome: 'played',
-      })
-      hasLoggedRef.current = true
+    if (isInitial) {
+      track('deep_link_opened', { dateKind: 'today', outcome: 'played' })
     }
     setSelected(selCountry)
     setCompareWith(cmpCountry)
   }, [byCca3])
 ```
 
-Add the ref declaration near the other state at the top of the hook body:
-
-```ts
-  const hasLoggedRef = useRef(false)
-```
-
-And add `useRef` to the existing React import:
-
-```ts
-import { useState, useEffect, useCallback, useRef } from 'react'
-```
+**Why the ref-based guard:** a simple "fire once" flag would also fire on the user's first in-app country click (hashchange → resolveHash → flag still false → spurious event). The `isInitialResolveRef` captures the semantic difference: only the mount-time `resolveHash()` call counts as a deep link. The hashchange listener's subsequent invocations see `isInitial = false`.
 
 - [ ] **Step 2: Smoke-test**
 
@@ -2110,7 +2110,9 @@ Run:
 ```
 npm run dev
 ```
-Visit `http://localhost:5173/#FRA` (cold tab). Expected: one `deep_link_opened` event; switching to another country via search does NOT re-fire.
+Verify **both** cases:
+- Cold-load `http://localhost:5173/#FRA` — exactly one `deep_link_opened { dateKind: 'today' }`.
+- Cold-load `http://localhost:5173/` then click a country via search — **zero** `deep_link_opened` events (the click is in-app navigation, not a deep link).
 
 - [ ] **Step 3: Commit**
 
