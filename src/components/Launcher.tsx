@@ -5,15 +5,14 @@ import type { ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
 import { usePersonalBests } from '../game/shared/usePersonalBests'
-import { LauncherModeCard } from './LauncherModeCard'
+import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
+import { useDailyHistory } from '../game/daily/useDailyHistory'
+import { toLocalDateString } from '../game/daily/dates'
+import { LauncherModeCard, type LauncherCardState } from './LauncherModeCard'
 
 interface Props {
   onDismiss: () => void
-}
-
-const TAGLINES: Record<ModeId, string> = {
-  'country-pinning': 'Click where the country is. 10 rounds.',
-  'city-guessing': 'Drop a pin near the city. 10 rounds.',
+  anchorDate: string | null
 }
 
 function focusSearchInput(): void {
@@ -21,15 +20,45 @@ function focusSearchInput(): void {
   el?.focus()
 }
 
-export function Launcher({ onDismiss }: Props) {
+export function Launcher({ onDismiss, anchorDate }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const { best: countryPinningBest } = usePersonalBests('country-pinning')
-  const { best: cityGuessingBest } = usePersonalBests('city-guessing')
   const modes = listModes()
   const lastMode = readLastMode()
+  const { best: cpBest } = usePersonalBests('country-pinning')
+  const { best: cgBest } = usePersonalBests('city-guessing')
+  const { status: puzzlesStatus, byDate, index } = useDailyPuzzlesContext()
+  const { get: getDay } = useDailyHistory()
 
-  const bestFor = (id: ModeId) =>
-    id === 'country-pinning' ? countryPinningBest : cityGuessingBest
+  const today = toLocalDateString(new Date())
+  const date = anchorDate ?? today
+
+  function cardState(modeId: ModeId): LauncherCardState {
+    if (puzzlesStatus === 'unavailable') return 'unavailable'
+    if (puzzlesStatus === 'loading') return 'unavailable'
+    const puzzle = byDate(date)
+    if (!puzzle) return 'unavailable'
+    const prior = getDay(date, modeId)
+    return prior ? 'played' : 'unplayed'
+  }
+
+  const bestFor = (id: ModeId) => (id === 'country-pinning' ? cpBest : cgBest)
+  const playedFor = (id: ModeId) => {
+    const prior = getDay(date, id)
+    return prior ? { score: prior.score } : undefined
+  }
+
+  const openedRef = useRef<Set<string>>(new Set())
+  useEffect(() => {
+    if (puzzlesStatus !== 'ready' || !index) return
+    for (const m of modes) {
+      const key = `${m.id}:${date}`
+      if (openedRef.current.has(key)) continue
+      if (!byDate(date)) continue
+      openedRef.current.add(key)
+      const dateAge = Math.max(0, Math.round((new Date(today).getTime() - new Date(date).getTime()) / 86_400_000))
+      track('daily_opened', { mode: m.id, dateAge })
+    }
+  }, [puzzlesStatus, index, byDate, date, today, modes])
 
   const dismissWithFocus = useCallback(() => {
     track('launcher_dismissed', { path: 'link' })
@@ -37,7 +66,18 @@ export function Launcher({ onDismiss }: Props) {
     focusSearchInput()
   }, [onDismiss])
 
-  const startMode = useCallback(
+  const startDaily = useCallback(
+    (id: ModeId) => {
+      track('launcher_dismissed', { path: 'card' })
+      track('daily_started', { mode: id })
+      writeLastMode(id)
+      onDismiss()
+      window.location.hash = `daily/${date}/${id}`
+    },
+    [onDismiss, date],
+  )
+
+  const startFree = useCallback(
     (id: ModeId) => {
       track('launcher_dismissed', { path: 'card' })
       track('free_started', { mode: id })
@@ -48,33 +88,26 @@ export function Launcher({ onDismiss }: Props) {
     [onDismiss],
   )
 
-  // Initial focus on last-played mode's card; fall back to country-pinning.
   useEffect(() => {
-    const selector = `[data-testid="launcher-mode-${lastMode}"]`
+    const selector = `[data-testid="launcher-card-${lastMode}-daily-cta"], [data-testid="launcher-card-${lastMode}-free-link"]`
     const target = rootRef.current?.querySelector<HTMLButtonElement>(selector)
     target?.focus()
   }, [lastMode])
 
-  // Focus trap across the three focusable elements: mode card 1, mode card 2, dismiss link.
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return
       const focusables = Array.from(
-        root.querySelectorAll<HTMLButtonElement>('button[data-testid^="launcher-"]'),
+        root.querySelectorAll<HTMLElement>('button[data-testid^="launcher-"]'),
       )
       if (focusables.length === 0) return
       const first = focusables[0]
       const last = focusables[focusables.length - 1]
       const active = document.activeElement as HTMLElement | null
-      if (!e.shiftKey && active === last) {
-        e.preventDefault()
-        first.focus()
-      } else if (e.shiftKey && active === first) {
-        e.preventDefault()
-        last.focus()
-      }
+      if (!e.shiftKey && active === last) { e.preventDefault(); first.focus() }
+      else if (e.shiftKey && active === first) { e.preventDefault(); last.focus() }
     }
     root.addEventListener('keydown', onKey)
     return () => root.removeEventListener('keydown', onKey)
@@ -89,14 +122,11 @@ export function Launcher({ onDismiss }: Props) {
       data-testid="launcher"
       className="fixed inset-0 z-[210] flex items-center justify-center p-6"
     >
-      {/* Backdrop — dimmed + blurred map */}
       <div
         aria-hidden="true"
         className="absolute inset-0 bg-black/55 dark:bg-[rgba(11,15,26,0.7)] backdrop-blur-[4px]"
         style={{ animation: 'launcher-backdrop-in 220ms ease-out' }}
       />
-
-      {/* Card cluster */}
       <div className="relative w-full max-w-2xl mx-auto">
         <header
           className="text-center mb-6"
@@ -106,7 +136,7 @@ export function Launcher({ onDismiss }: Props) {
             funworldmap
           </div>
           <p className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2">
-            194 countries. Explore or guess.
+            {anchorDate ? `Daily · ${anchorDate}` : '194 countries. Explore or guess.'}
           </p>
         </header>
 
@@ -118,10 +148,11 @@ export function Launcher({ onDismiss }: Props) {
             >
               <LauncherModeCard
                 modeId={m.id}
-                title={m.title}
-                tagline={TAGLINES[m.id]}
-                best={bestFor(m.id)}
-                onStart={() => startMode(m.id)}
+                state={cardState(m.id)}
+                played={playedFor(m.id)}
+                freeBest={bestFor(m.id)}
+                onStartDaily={() => startDaily(m.id)}
+                onStartFree={() => startFree(m.id)}
               />
             </div>
           ))}
@@ -135,7 +166,7 @@ export function Launcher({ onDismiss }: Props) {
             type="button"
             onClick={dismissWithFocus}
             data-testid="launcher-dismiss"
-            className="text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 dark:focus-visible:ring-teal-light/60 rounded px-2 py-1"
+            className="text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1"
           >
             Just explore the map
           </button>

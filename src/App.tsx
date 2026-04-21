@@ -92,7 +92,7 @@ function AppInner({
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
   const { session, submitGuessInput } = useGameSessionContext()
-  const { visible: launcherVisible, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
+  const { visible: launcherVisible, anchorDate, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const [mapReady, setMapReady] = useState(false)
@@ -344,7 +344,7 @@ function AppInner({
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
-      {launcherVisible && <Launcher onDismiss={dismissLauncher} />}
+      {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} />}
 
       <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
 
