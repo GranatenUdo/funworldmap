@@ -248,6 +248,46 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     }
   }, [session.status, session.lastOutcome])
 
+  // Intermediate reveal between attempts (daily only): brief guess-highlight, no target.
+  useEffect(() => {
+    if (session.status !== 'playing') return
+    if (session.attemptsPerRound <= 1) return
+    if (session.currentAttempts.length === 0) return
+    const last = session.currentAttempts[session.currentAttempts.length - 1]
+    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    if (!map) return
+
+    if (last.reveal.kind === 'country') {
+      try {
+        map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], last.reveal.clickedCca3 ?? ''])
+        map.setPaintProperty(LAYER.hoverBorder, 'line-color', '#f59e0b')
+        map.setPaintProperty(LAYER.hoverBorder, 'line-width', 3)
+      } catch { /* layer may not exist */ }
+      const t = window.setTimeout(() => {
+        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+      }, 600)
+      return () => { window.clearTimeout(t); try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ } }
+    }
+
+    // City mode: render a single grey marker at the guess point; no line, no target.
+    try {
+      ensureRevealSources(map)
+      const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
+      const point = last.reveal.clickedPoint
+      if (point) {
+        markerSrc.setData({
+          type: 'FeatureCollection',
+          features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: point }, properties: { intermediate: true } }],
+        })
+        try { map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#94a3b8') } catch { /* no-op */ }
+      }
+    } catch { /* style may still be resolving */ }
+    const t = window.setTimeout(() => {
+      try { clearRevealSources(map); map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b') } catch { /* no-op */ }
+    }, 600)
+    return () => { window.clearTimeout(t) }
+  }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
+
   // Camera reset on round start when mode requests it.
   useEffect(() => {
     if (session.status !== 'playing' || !mode) return
