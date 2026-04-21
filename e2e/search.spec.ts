@@ -23,19 +23,20 @@ test.describe('Search', () => {
   })
 
   test('selecting a result opens the country panel', async ({ page }) => {
-    await page.getByTestId('search-input').fill('France')
-    // Use keyboard ArrowDown + Enter to select the France option.
-    // Fuse.js ranks France first for the query "France", so ArrowDown
-    // lands on France. Keyboard activation bypasses any pointer-event
-    // target resolution issues that hit on CI's headless Linux Chromium
-    // (force-click's synthetic pointer was not reliably triggering the
-    // React onClick handler on the <li role="option">).
     const searchInput = page.getByTestId('search-input')
+    await searchInput.fill('France')
+    // Wait for the dropdown to appear AND React to commit the `isOpen`
+    // state that gates SearchBar's onKeyDown handler. Under CI load, an
+    // immediate ArrowDown can race that commit and the handler early-
+    // returns (if !isOpen return), leaving activeIndex at -1 so Enter
+    // is a no-op.
     const firstOption = page
       .getByTestId('search-results')
       .getByRole('option', { name: /^France\s/ })
       .first()
     await expect(firstOption).toBeVisible({ timeout: 10_000 })
+    await page.waitForTimeout(300)
+
     await searchInput.press('ArrowDown')
     await searchInput.press('Enter')
 
