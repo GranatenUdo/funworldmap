@@ -247,6 +247,25 @@ body {
   filter: brightness(0) saturate(100%) invert(83%) sepia(37%) saturate(356%) hue-rotate(122deg) brightness(92%) contrast(93%);
 }
 
+/* MapLibre attribution control — legible against the dark hex-grid backdrop.
+   Default MapLibre styles assume a light basemap; on our dark canvas the
+   links become low-contrast. WCAG AA requires ≥4.5:1 for small text. */
+.maplibregl-ctrl-attrib,
+.maplibregl-ctrl-attrib-inner {
+  background: rgba(4, 6, 13, 0.82) !important;
+  color: #cbd5e1 !important;
+}
+
+.maplibregl-ctrl-attrib a,
+.maplibregl-ctrl-attrib-inner a {
+  color: #7dd3c0 !important;
+}
+
+.maplibregl-ctrl-attrib a:hover,
+.maplibregl-ctrl-attrib-inner a:hover {
+  color: #5eead4 !important;
+}
+
 /* Compare A/B badges */
 .compare-badge {
   display: inline-flex;

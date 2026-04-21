@@ -24,12 +24,16 @@ test.describe('Search', () => {
 
   test('selecting a result opens the country panel', async ({ page }) => {
     await page.getByTestId('search-input').fill('France')
-    const firstOption = page.getByTestId('search-results').getByRole('option').first()
-    await expect(firstOption).toBeVisible({ timeout: 10_000 })
-    // `force: true` skips Playwright's bounding-box stability check —
-    // the dropdown's enter animation can keep the option visually
-    // unstable on slow CI long enough to starve the test budget.
-    await firstOption.click({ force: true })
+    // Target the France option explicitly. Fuse.js returns multiple matches
+    // for "France" (France, French Polynesia, Martinique, French Guiana,
+    // Aruba, French Southern and Antarctic Lands). `.first()` races with
+    // render ordering on slow CI and can grab the wrong row.
+    const franceOption = page
+      .getByTestId('search-results')
+      .getByRole('option', { name: /^France\s/ })
+      .first()
+    await expect(franceOption).toBeVisible({ timeout: 10_000 })
+    await franceOption.click({ force: true })
 
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 10_000 })

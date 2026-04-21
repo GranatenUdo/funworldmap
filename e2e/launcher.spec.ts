@@ -94,9 +94,14 @@ test.describe('Launcher — session scope', () => {
     await freshTab(page)
     await page.getByTestId('launcher-dismiss').click()
     await page.getByTestId('search-input').fill('France')
-    const firstResult = page.getByTestId('search-results').getByRole('option').first()
-    await expect(firstResult).toBeVisible({ timeout: 10_000 })
-    await firstResult.click({ force: true })
+    // Target the France option explicitly; Fuse.js returns multiple matches
+    // and .first() can race with DOM render order on slow CI.
+    const franceOption = page
+      .getByTestId('search-results')
+      .getByRole('option', { name: /^France\s/ })
+      .first()
+    await expect(franceOption).toBeVisible({ timeout: 10_000 })
+    await franceOption.click({ force: true })
     await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
     await page.getByTestId('panel-close').click()
     await page.waitForTimeout(500)
