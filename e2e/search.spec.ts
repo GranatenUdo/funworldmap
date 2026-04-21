@@ -24,21 +24,23 @@ test.describe('Search', () => {
 
   test('selecting a result opens the country panel', async ({ page }) => {
     await page.getByTestId('search-input').fill('France')
-    // Target the France option explicitly. Fuse.js returns multiple matches
-    // for "France" (France, French Polynesia, Martinique, French Guiana,
-    // Aruba, French Southern and Antarctic Lands). `.first()` races with
-    // render ordering on slow CI and can grab the wrong row.
-    const franceOption = page
+    // Use keyboard ArrowDown + Enter to select the France option.
+    // Fuse.js ranks France first for the query "France", so ArrowDown
+    // lands on France. Keyboard activation bypasses any pointer-event
+    // target resolution issues that hit on CI's headless Linux Chromium
+    // (force-click's synthetic pointer was not reliably triggering the
+    // React onClick handler on the <li role="option">).
+    const searchInput = page.getByTestId('search-input')
+    const firstOption = page
       .getByTestId('search-results')
       .getByRole('option', { name: /^France\s/ })
       .first()
-    await expect(franceOption).toBeVisible({ timeout: 10_000 })
-    await franceOption.click({ force: true })
+    await expect(firstOption).toBeVisible({ timeout: 10_000 })
+    await searchInput.press('ArrowDown')
+    await searchInput.press('Enter')
 
     // Hash update is the synchronous signal that selectResult fired; wait
-    // for it first so we know React can have committed the selected state
-    // by the time we assert on panel visibility. Ordering matters on slow
-    // CI where React renders can lag behind the click event.
+    // for it first so React has time to commit the selected state.
     await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 10_000 })
