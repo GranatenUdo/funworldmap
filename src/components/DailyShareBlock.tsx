@@ -70,7 +70,7 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
           type="button"
           onClick={handlePrimary}
           data-testid="daily-share-primary"
-          className="flex-1 px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+          className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
         >
           Share
         </button>
@@ -78,7 +78,7 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
           type="button"
           onClick={handleCopyLink}
           data-testid="daily-share-copy-link"
-          className="px-4 py-2 rounded-xl text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+          className="px-4 py-2 rounded-xl text-teal-accessible dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
         >
           Copy link only
         </button>
