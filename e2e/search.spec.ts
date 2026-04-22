@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { dismissLauncher, waitForAppReady } from './helpers'
 
 test.setTimeout(30000)
 
 test.describe('Search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
+    await waitForAppReady(page)
     await dismissLauncher(page)
-    await page.waitForTimeout(1000)
   })
 
   test('typing shows results dropdown', async ({ page }) => {
