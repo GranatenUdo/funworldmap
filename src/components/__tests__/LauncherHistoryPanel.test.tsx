@@ -1,0 +1,56 @@
+import { render, screen, fireEvent } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { LauncherHistoryPanel } from '../LauncherHistoryPanel'
+
+function seedHistory(today: string) {
+  localStorage.setItem('funworldmap-daily-history', JSON.stringify({
+    version: 1,
+    streak: { current: 1, longest: 1, lastActiveDate: today, lastMilestoneShown: 0 },
+    days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
+  }))
+}
+
+describe('LauncherHistoryPanel', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  it('renders a grid of 35 cells', () => {
+    const onClose = vi.fn()
+    const onCellActivate = vi.fn()
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
+    const cells = screen.getAllByRole('gridcell')
+    expect(cells).toHaveLength(35)
+  })
+
+  it('shows streak captions', () => {
+    seedHistory('2026-04-22')
+    const onClose = vi.fn()
+    const onCellActivate = vi.fn()
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
+    const captions = screen.getByTestId('launcher-history-captions')
+    const text = captions.textContent ?? ''
+    expect(text).toMatch(/current[^\d]*1/i)
+    expect(text).toMatch(/days played[^\d]*1/i)
+  })
+
+  it('activating a cell fires onCellActivate with the date + kind', () => {
+    seedHistory('2026-04-22')
+    const onClose = vi.fn()
+    const onCellActivate = vi.fn()
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
+    fireEvent.click(screen.getByTestId('launcher-cal-2026-04-22'))
+    expect(onCellActivate).toHaveBeenCalledWith('2026-04-22', 'played')
+  })
+
+  it('close button fires onClose', () => {
+    const onClose = vi.fn()
+    const onCellActivate = vi.fn()
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
+    fireEvent.click(screen.getByTestId('launcher-history-close'))
+    expect(onClose).toHaveBeenCalledTimes(1)
+  })
+})

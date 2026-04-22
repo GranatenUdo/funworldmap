@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { beforeEach, afterEach, describe, expect, it } from 'vitest'
 import { useDailyHistory } from '../useDailyHistory'
+import { MILESTONES } from '../types'
 
 describe('useDailyHistory', () => {
   beforeEach(() => { localStorage.clear() })
@@ -63,5 +64,68 @@ describe('useDailyHistory', () => {
     })
     expect(result.current.streak.current).toBe(1)
     expect(result.current.streak.longest).toBe(4)
+  })
+})
+
+describe('useDailyHistory — milestones', () => {
+  beforeEach(() => { localStorage.clear() })
+  afterEach(() => { localStorage.clear() })
+
+  it('pendingMilestone is null when streak is not at a threshold', () => {
+    localStorage.setItem('funworldmap-daily-history', JSON.stringify({
+      version: 1,
+      streak: { current: 2, longest: 2, lastActiveDate: '2026-04-22', lastMilestoneShown: 0 },
+      days: {},
+    }))
+    const { result } = renderHook(() => useDailyHistory())
+    expect(result.current.pendingMilestone).toBeNull()
+  })
+
+  it('pendingMilestone returns 3 when streak is 3 and never shown', () => {
+    localStorage.setItem('funworldmap-daily-history', JSON.stringify({
+      version: 1,
+      streak: { current: 3, longest: 3, lastActiveDate: '2026-04-22', lastMilestoneShown: 0 },
+      days: {},
+    }))
+    const { result } = renderHook(() => useDailyHistory())
+    expect(result.current.pendingMilestone).toBe(3)
+  })
+
+  it('pendingMilestone is null after markMilestoneShown', () => {
+    localStorage.setItem('funworldmap-daily-history', JSON.stringify({
+      version: 1,
+      streak: { current: 3, longest: 3, lastActiveDate: '2026-04-22', lastMilestoneShown: 0 },
+      days: {},
+    }))
+    const { result } = renderHook(() => useDailyHistory())
+    expect(result.current.pendingMilestone).toBe(3)
+    act(() => { result.current.markMilestoneShown() })
+    expect(result.current.pendingMilestone).toBeNull()
+  })
+
+  it('markMilestoneShown persists to localStorage', () => {
+    localStorage.setItem('funworldmap-daily-history', JSON.stringify({
+      version: 1,
+      streak: { current: 7, longest: 7, lastActiveDate: '2026-04-22', lastMilestoneShown: 3 },
+      days: {},
+    }))
+    const { result } = renderHook(() => useDailyHistory())
+    expect(result.current.pendingMilestone).toBe(7)
+    act(() => { result.current.markMilestoneShown() })
+    const stored = JSON.parse(localStorage.getItem('funworldmap-daily-history') ?? '{}')
+    expect(stored.streak.lastMilestoneShown).toBe(7)
+  })
+
+  it('markMilestoneShown is a no-op when no pending milestone', () => {
+    const { result } = renderHook(() => useDailyHistory())
+    expect(result.current.pendingMilestone).toBeNull()
+    act(() => { result.current.markMilestoneShown() })
+    const stored = localStorage.getItem('funworldmap-daily-history')
+    // Either unchanged or still matches empty-history shape.
+    expect(JSON.parse(stored ?? 'null')?.streak?.lastMilestoneShown ?? 0).toBe(0)
+  })
+
+  it('MILESTONES export is [3, 7, 14, 30, 100]', () => {
+    expect([...MILESTONES]).toEqual([3, 7, 14, 30, 100])
   })
 })

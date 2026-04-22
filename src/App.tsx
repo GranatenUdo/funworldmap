@@ -3,6 +3,7 @@ import WorldMap from './components/WorldMap'
 import Header from './components/Header'
 import CountryPanel from './components/CountryPanel'
 import { Launcher } from './components/Launcher'
+import { DailyRevealOverlay } from './components/DailyRevealOverlay'
 import Toast from './components/Toast'
 import { useCountryData } from './hooks/useCountryData'
 import { useCityData } from './hooks/useCityData'
@@ -14,7 +15,7 @@ import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { DailyPuzzlesProvider } from './game/daily/DailyPuzzlesProvider'
 import { GameController } from './game/GameController'
-import type { CityLike, CountryLike } from './game/shared/types'
+import type { CityLike, CountryLike, ModeId } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
@@ -100,6 +101,21 @@ function AppInner({
   const [hintDismissed, setHintDismissed] = useState(false)
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
+  const [revealState, setRevealState] = useState<{ date: string; modeId: ModeId | null } | null>(null)
+
+  useEffect(() => {
+    const read = () => {
+      const state = parseHash(window.location.hash)
+      if (state.kind === 'daily' && state.reveal) {
+        setRevealState({ date: state.date, modeId: state.modeId as ModeId | null })
+      } else {
+        setRevealState(null)
+      }
+    }
+    read()
+    window.addEventListener('hashchange', read)
+    return () => window.removeEventListener('hashchange', read)
+  }, [])
   const openLauncher = useCallback(() => {
     showLauncher()
   }, [showLauncher])
@@ -344,7 +360,7 @@ function AppInner({
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
-      {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} />}
+      {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} countries={pool} cities={cities} />}
 
       <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
 
@@ -367,6 +383,19 @@ function AppInner({
           onEnterCompare={enterComparePicking}
           onExitCompare={exitCompare}
           byCca3={byCca3}
+        />
+      )}
+
+      {revealState && (
+        <DailyRevealOverlay
+          date={revealState.date}
+          modeId={revealState.modeId}
+          countries={pool}
+          cities={cities}
+          onClose={() => {
+            history.replaceState(null, '', window.location.pathname)
+            window.dispatchEvent(new HashChangeEvent('hashchange'))
+          }}
         />
       )}
     </div>

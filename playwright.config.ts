@@ -33,6 +33,9 @@ export default defineConfig({
         'a11y-contrast.spec.ts',
         'launcher.spec.ts',
         'daily-puzzle.spec.ts',
+        'daily-streak.spec.ts',
+        'daily-reveal.spec.ts',
+        'launcher-history.spec.ts',
       ],
     },
     {

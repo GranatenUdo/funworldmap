@@ -1,5 +1,5 @@
-import type { DailyHistoryV1, DailyDayResult, StreakState } from './types'
-import { STORAGE_KEY } from './types'
+import type { DailyHistoryV1, DailyDayResult, StreakState, Milestone } from './types'
+import { STORAGE_KEY, MILESTONES } from './types'
 import type { ModeId } from '../shared/types'
 import { toLocalDateString } from './dates'
 
@@ -91,4 +91,27 @@ export function pruneOlderThan(
     if (date >= cutoffStr) kept[date] = entry
   }
   return { ...h, days: kept }
+}
+
+/**
+ * Return the milestone threshold the current streak has just crossed and
+ * has not yet been marked as shown, or null if none pending.
+ */
+export function pendingMilestone(h: DailyHistoryV1): Milestone | null {
+  const current = h.streak.current
+  const lastShown = h.streak.lastMilestoneShown
+  // MILESTONES is ascending; pick the single threshold equal to `current`
+  // (streak increments by 1 on each new day, so it can only equal exactly one).
+  const hit = MILESTONES.find((m) => m === current) as Milestone | undefined
+  if (!hit) return null
+  if (hit <= lastShown) return null
+  return hit
+}
+
+export function withMilestoneShown(h: DailyHistoryV1, m: Milestone): DailyHistoryV1 {
+  if (m <= h.streak.lastMilestoneShown) return h
+  return {
+    ...h,
+    streak: { ...h.streak, lastMilestoneShown: m },
+  }
 }

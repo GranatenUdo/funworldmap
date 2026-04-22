@@ -101,7 +101,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
   const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
-  const { record: recordDailyResult } = useDailyHistory()
+  const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
   const recordedRef = useRef(false)
   const pendingStartRef = useRef<ModeId | null>(null)
 
@@ -122,9 +122,17 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
         if (id !== 'country-pinning' && id !== 'city-guessing') return
 
         const todayStr = toLocalDateString(new Date())
-        if (state.date !== todayStr) {
+
+        if (state.date > todayStr) {
+          // Future: send to root (handled by launcher when hash clears).
           history.replaceState(null, '', window.location.pathname)
           window.dispatchEvent(new HashChangeEvent('hashchange'))
+          return
+        }
+
+        const alreadyPlayed = dailyHistoryGet(state.date, id) !== null
+        if (state.date < todayStr || alreadyPlayed) {
+          window.location.hash = `daily/${state.date}/${id}/reveal`
           return
         }
 
@@ -162,7 +170,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     window.addEventListener('hashchange', check)
     return () => window.removeEventListener('hashchange', check)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [countries.length, cities.length, dailyPuzzles.byDate])
+  }, [countries.length, cities.length, dailyPuzzles.byDate, dailyHistoryGet])
 
   // Drain deferred start once the relevant pool arrives.
   useEffect(() => {
