@@ -28,7 +28,7 @@ const HEADER_LABEL: Record<ModeId, string> = {
 }
 
 interface PlayedResult {
-  countryName?: string
+  targetName?: string
   score: number
 }
 
@@ -39,9 +39,10 @@ interface Props {
   freeBest: PersonalBest
   onStartDaily: () => void
   onStartFree: () => void
+  onSeeReveal?: () => void
 }
 
-export function LauncherModeCard({ modeId, state, played, freeBest, onStartDaily, onStartFree }: Props) {
+export function LauncherModeCard({ modeId, state, played, freeBest, onStartDaily, onStartFree, onSeeReveal }: Props) {
   const testIdBase = `launcher-card-${modeId}`
   return (
     <div
@@ -77,8 +78,20 @@ export function LauncherModeCard({ modeId, state, played, freeBest, onStartDaily
       )}
 
       {state === 'played' && (
-        <div className="text-sand-900 dark:text-dark-50 text-sm" data-testid={`${testIdBase}-played-result`}>
-          ✓ {played?.countryName ?? 'Played'} · <span className="tabular-nums font-semibold">{played?.score ?? 0}</span>/100
+        <div data-testid={`${testIdBase}-played-result`}>
+          <div className="text-sand-900 dark:text-dark-50 text-sm mb-2">
+            ✓ {played?.targetName ?? 'Played'} · <span className="tabular-nums font-semibold">{played?.score ?? 0}</span>/100
+          </div>
+          {onSeeReveal && (
+            <button
+              type="button"
+              onClick={onSeeReveal}
+              data-testid={`${testIdBase}-see-reveal`}
+              className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 dark:focus-visible:ring-teal-light/60"
+            >
+              See reveal
+            </button>
+          )}
         </div>
       )}
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { listModes } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
-import type { ModeId } from '../game/shared/types'
+import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
 import { usePersonalBests } from '../game/shared/usePersonalBests'
@@ -16,6 +16,8 @@ import { LauncherHistoryPanel, type HistoryCellKind } from './LauncherHistoryPan
 interface Props {
   onDismiss: () => void
   anchorDate: string | null
+  countries: CountryLike[]
+  cities: CityLike[]
 }
 
 function focusSearchInput(): void {
@@ -23,7 +25,7 @@ function focusSearchInput(): void {
   el?.focus()
 }
 
-export function Launcher({ onDismiss, anchorDate }: Props) {
+export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const modes = useMemo(() => listModes(), [])
   const lastMode = readLastMode()
@@ -53,10 +55,18 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
   }
 
   const bestFor = (id: ModeId) => (id === 'country-pinning' ? cpBest : cgBest)
-  const playedFor = (id: ModeId) => {
+  const playedFor = useCallback((id: ModeId) => {
     const prior = getDay(date, id)
-    return prior ? { score: prior.score } : undefined
-  }
+    if (!prior) return undefined
+    const puzzle = byDate(date)
+    if (!puzzle) return { score: prior.score }
+    if (id === 'country-pinning') {
+      const c = countries.find((cc) => cc.cca3 === puzzle.country.cca3)
+      return { score: prior.score, targetName: c?.name.common }
+    }
+    const city = cities.find((cc) => cc.id === puzzle.city.id)
+    return { score: prior.score, targetName: city?.name }
+  }, [getDay, date, byDate, countries, cities])
 
   const openedRef = useRef<Set<string>>(new Set())
   useEffect(() => {
@@ -97,6 +107,15 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
       window.location.hash = writeHash({ kind: 'game', modeId: id, playing: true })
     },
     [onDismiss],
+  )
+
+  const seeReveal = useCallback(
+    (id: ModeId) => {
+      track('launcher_dismissed', { path: 'card' })
+      onDismiss()
+      window.location.hash = `daily/${date}/${id}/reveal`
+    },
+    [onDismiss, date],
   )
 
   const openHistory = useCallback(() => {
@@ -207,6 +226,7 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
                   freeBest={bestFor(m.id)}
                   onStartDaily={() => startDaily(m.id)}
                   onStartFree={() => startFree(m.id)}
+                  onSeeReveal={() => seeReveal(m.id)}
                 />
               </div>
             ))}

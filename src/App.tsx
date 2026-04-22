@@ -344,7 +344,7 @@ function AppInner({
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
-      {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} />}
+      {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} countries={pool} cities={cities} />}
 
       <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
 
