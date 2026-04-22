@@ -132,6 +132,12 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
     const root = rootRef.current
     if (!root) return
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && historyOpen) {
+        e.preventDefault()
+        e.stopPropagation()
+        setHistoryOpen(false)
+        return
+      }
       if (e.key !== 'Tab') return
       const focusables = Array.from(
         root.querySelectorAll<HTMLElement>('button[data-testid^="launcher-"]'),
@@ -145,7 +151,7 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
     }
     root.addEventListener('keydown', onKey)
     return () => root.removeEventListener('keydown', onKey)
-  }, [])
+  }, [historyOpen])
 
   return (
     <>
