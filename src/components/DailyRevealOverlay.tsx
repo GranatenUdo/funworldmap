@@ -4,6 +4,8 @@ import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import { track } from '../lib/analytics'
 import { toLocalDateString } from '../game/daily/dates'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
+import { DailyShareBlock } from './DailyShareBlock'
+import type { ShareResults } from '../game/daily/shareText'
 
 interface Props {
   date: string
@@ -31,7 +33,7 @@ function dateKindOf(date: string): 'today' | 'past' | 'future' | 'invalid' {
 
 export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }: Props) {
   const { byDate } = useDailyPuzzlesContext()
-  const { get } = useDailyHistory()
+  const { get, streak } = useDailyHistory()
   const puzzle = byDate(date)
 
   useEffect(() => {
@@ -52,6 +54,12 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
 
   const cpRecord = get(date, 'country-pinning')
   const cgRecord = get(date, 'city-guessing')
+
+  const shareResults: ShareResults = {
+    'country-pinning': get(date, 'country-pinning'),
+    'city-guessing': get(date, 'city-guessing'),
+  }
+  const anyPlayed = !!shareResults['country-pinning'] || !!shareResults['city-guessing']
 
   return (
     <div
@@ -128,6 +136,14 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
               <div className="mt-2 text-sm text-sand-600 dark:text-dark-100">Not played.</div>
             )}
           </div>
+        )}
+        {anyPlayed && (
+          <DailyShareBlock
+            date={date}
+            results={shareResults}
+            streak={streak}
+            originUrl={window.location.origin}
+          />
         )}
       </div>
     </div>
