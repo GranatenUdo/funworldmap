@@ -37,6 +37,7 @@ export default defineConfig({
         'daily-streak.spec.ts',
         'daily-reveal.spec.ts',
         'daily-share.spec.ts',
+        'daily-deep-link.spec.ts',
         'launcher-history.spec.ts',
       ],
     },
