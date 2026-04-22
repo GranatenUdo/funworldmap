@@ -36,6 +36,7 @@ export default defineConfig({
         'daily-puzzle.spec.ts',
         'daily-streak.spec.ts',
         'daily-reveal.spec.ts',
+        'daily-share.spec.ts',
         'launcher-history.spec.ts',
       ],
     },
