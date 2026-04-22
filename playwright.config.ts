@@ -10,6 +10,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
+    permissions: ['clipboard-read', 'clipboard-write'],
   },
   projects: [
     {
@@ -35,6 +36,8 @@ export default defineConfig({
         'daily-puzzle.spec.ts',
         'daily-streak.spec.ts',
         'daily-reveal.spec.ts',
+        'daily-share.spec.ts',
+        'daily-deep-link.spec.ts',
         'launcher-history.spec.ts',
       ],
     },
