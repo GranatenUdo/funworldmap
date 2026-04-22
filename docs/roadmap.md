@@ -91,6 +91,7 @@ Source: [`2026-04-21-retention-program-v1-design.md`](superpowers/specs/2026-04-
 - **Multiplayer, online leaderboards.**
 - **In-app analytics dashboard** — v1 queries via CF GraphQL / Workers dashboard only.
 - **CI-driven Worker deploys** — v1 deploys the Worker manually; move to a GitHub Action on `cloudflare-worker/**` changes.
+- **Worker blob-slot extension for `modesPlayed`** — `cloudflare-worker/index.ts` doesn't capture the `modesPlayed` field on `daily_shared` events because the blob slots are fixed to `mode, path, method, dateKind, outcome, cellKind`. Adding a 7th blob or converting to JSON-blob storage would surface the 1-mode vs 2-mode split on share dashboards.
 
 ---
 
