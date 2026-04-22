@@ -62,19 +62,36 @@ Simpler alternative: read the session status via `useGameSessionContext()` insid
 ### `GuessByNameButton` removal
 
 - Delete `src/game/shared/hud/GuessByNameButton.tsx`.
-- Remove the `<GuessByNameButton ... />` JSX from whichever HUD component renders it (likely `src/game/GameController.tsx` or a sibling — confirm via grep).
-- Search for `submitGuessInput` callers. If GuessByName is the only caller, remove the action from the reducer + the `submitGuessInput` export from `useGameSession` + the destructure in `GameSessionProvider`. If anything else uses it (the daily-puzzle e2e shim might), keep the action and only remove the UI.
-- Delete unit tests targeting `submitGuessInput` if any are dedicated; relax tests that incidentally call it.
+- In `src/game/GameController.tsx:521-535`, remove the entire conditional block:
+  ```tsx
+  {session.status === 'playing' && session.modeId === 'country-pinning' && (
+    <GuessByNameButton ... />
+  )}
+  ```
+  Plus the import at `GameController.tsx:10`. The wrapping `playing && country-pinning` condition is dedicated to GuessByName only; verified by grep that no other JSX inside `<HudShell>` uses it.
+- **Keep `submitGuessInput`.** It is the universal guess input used by:
+  - `src/App.tsx:150` (map click → country guess for free-play country-pinning),
+  - `src/game/GameController.tsx:413` (map click → point guess for city-guessing),
+  - `src/game/GameController.tsx:430` (test shim `window.__funworldmap_game.submitGuess`),
+  - `src/game/GameController.tsx:507` (`onSkip` button for city-guessing).
+  Only the GuessByName UI is removed; the reducer action, `useGameSession` export, and `GameSessionProvider` plumbing are untouched.
+- No dedicated `submitGuessInput` unit tests to remove.
 
 ### Round-end panel rendering
 
-When `session.status === 'round-ended'` AND we are in country-pinning AND it's a "final outcome":
+**Pre-existing constraint.** The current `<CountryPanel>` render at `src/App.tsx:375` is gated by `selected && !gameActive` — the panel is suppressed during games. The round-end-final-outcome flow needs a parallel render branch that fires when `session.status === 'round-ended'` AND we are in country-pinning AND the outcome is "final".
 
-- Final outcome = `attemptsPerRound === 1` (free-play) OR `attemptsRemaining === 0` (daily final attempt) OR `lastOutcome.reveal.kind === 'country'` and the daily session was reveal-early'd.
+When all those conditions hold:
+
+- **Final outcome** = `attemptsPerRound === 1` (free-play) OR `attemptsRemaining === 0` (daily final attempt was just submitted).
 - Look up the target country: `byCca3.get(session.lastOutcome.reveal.targetCca3)`.
-- Render `<SingleCountryPanel country={target} inGameRound={true} onClose={advanceNow} ... />` inside the existing layout slot (right side on desktop, bottom drawer on mobile — the panel already handles responsive layout).
+- Render a SECOND `<CountryPanel>` instance (sibling of the existing free-play render at line 375) with: `country={target}`, `inGameRound={true}`, `onClose={advanceNow}`, all the other props the free-play render passes.
 
-`advanceNow` is the same callback the existing setTimeout fires today: `mode.nextRound(used)` → `advance(next)`.
+We render a sibling rather than reusing the same JSX block because:
+1. The free-play branch's `comparePickingMode`, `compareWith`, `onEnterCompare`, `onExitCompare` are meaningless in-round.
+2. Conditional logic inside one branch (`if (gameActive) hide buttons else show buttons`) is harder to read than two clearly-named render sites.
+
+`advanceNow` is the callback that today's setTimeout invokes: `mode.nextRound(used)` → `advance(next)`. It is also bound to the Continue button (which is the relabeled close in `inGameRound` mode) and to the early-skip triggers below.
 
 The current setTimeout in `GameController.tsx:228-233` becomes conditional:
 
@@ -90,21 +107,29 @@ if (isDailyIntermediate) {
 }
 
 if (isCorrect) {
-  // Final outcome + correct: 3000 ms max with early-skip.
+  // Final outcome + correct: 3000 ms max with scoped early-skip.
   const t = window.setTimeout(advanceNow, 3000)
-  const onAnyEvent = () => { window.clearTimeout(t); cleanup(); advanceNow() }
-  const cleanup = () => {
-    window.removeEventListener('pointerdown', onAnyEvent)
-    window.removeEventListener('keydown', onAnyEvent)
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+      window.clearTimeout(t); cleanup(); advanceNow()
+    }
   }
-  window.addEventListener('pointerdown', onAnyEvent)
-  window.addEventListener('keydown', onAnyEvent)
+  const cleanup = () => window.removeEventListener('keydown', onKey)
+  window.addEventListener('keydown', onKey)
   return () => { window.clearTimeout(t); cleanup() }
 }
 
-// Final outcome + wrong: no timer; Continue is the only path.
-return // no cleanup needed
+// Final outcome + wrong: no timer; Continue + Escape + Enter on Continue advance.
+const onKey = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') advanceNow()
+}
+window.addEventListener('keydown', onKey)
+return () => window.removeEventListener('keydown', onKey)
 ```
+
+**Why scoped (Enter/Escape/Space + Continue button) instead of "any pointerdown"?** A window-level `pointerdown` listener would fire on clicks INSIDE the panel itself — the mobile expand button, scrolling, even a misclick — and falsely advance. Scoped key triggers + the explicit Continue button cover the legitimate skip paths (keyboard golden path stays Enter; mouse path stays Continue) without grabbing accidental panel clicks.
+
+**Map-canvas click as additional skip trigger** is intentionally NOT included in v1 — clicks on the map during round-ended would naturally be the user trying to start the next guess, but the current map-click handler is wired through `App.tsx:140-170` which calls `submitGuessInput` only when `gameActive && status === 'playing'`. During `round-ended` it falls through to free-play `select` — which is harmless (the panel re-renders with a new `selected`, but the round-end render branch takes precedence). If user-testing reveals a missing affordance ("I clicked the map and nothing happened"), revisit in a follow-up.
 
 ### `SingleCountryPanel` `inGameRound` prop
 
@@ -174,9 +199,11 @@ User clicks country
 | Risk | Mitigation |
 |---|---|
 | Existing free-play country-pinning expectations of auto-advance break the muscle-memory of returning users | The auto-advance still fires on correct (3000 ms with early-skip). Wrong-guess users now read the panel — desired behavior per the spec. |
-| Removing `submitGuessInput` breaks an unexpected caller | Pre-flight grep before deletion. If anything depends on it (e.g., the daily-puzzle e2e's `__funworldmap_game.submitCountryGuess`), keep the reducer action and only remove the UI. |
+| `submitGuessInput` removal would break the universal guess flow | Resolved during research: it is the universal guess input (App.tsx, GameController city-click, Skip, test shim). NOT removed. Only GuessByName UI is removed. |
 | `inGameRound` prop on `SingleCountryPanel` is a feature flag that grows over time | Document the prop as "in-round chrome only — Compare + Copy-link hidden, Close labeled Continue". Future changes go through this single switch. If a third in-round behavior shows up, refactor to a discriminated state object. |
-| Window-level early-skip listener catches user's Compare-panel click | Compare is hidden in `inGameRound` mode, so no conflict. Listener self-unregisters on first event. |
+| Early-skip listener catches user's panel interactions (mobile expand button, scroll) | Resolved: scoped to keyboard (Enter/Escape/Space) only — no `pointerdown` listener on window. Continue button is the explicit click path. |
+| App.tsx's Escape handler returns early on `gameActive` (`App.tsx:272`) | Our round-ended keydown listener runs alongside App's handler. App's branch still no-ops on game-active; ours fires advance. No code change to App.tsx's Escape branch needed. |
+| Round-end CountryPanel render conflicts with the `!gameActive` gate at App.tsx:375 | Add a SEPARATE render branch (sibling JSX) that fires on round-ended-final-outcome — does not modify the existing free-play branch. |
 | Mobile users miss the Continue button below the fold | Place Continue at the panel header (the existing close-button slot is at the top). Mobile bottom-drawer panels already render the header at the top. |
 | Tooltip suppression also disables tooltip after the round-ended state | Acceptable: round-ended → panel is open showing the target's full info; tooltip would be redundant. Tooltip returns to active when status flips back to `'playing'` (next round) or `'idle'` (game ended). |
 
