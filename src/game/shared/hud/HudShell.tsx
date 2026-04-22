@@ -15,6 +15,8 @@ export function HudShell({ session, onEndGame, children }: Props) {
   const fixedRounds = session.maxRounds !== null
   return (
     <div
+      role="region"
+      aria-label="Game HUD"
       className="fixed top-16 sm:top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-auto max-w-[95vw]"
       data-testid="game-hud"
       data-game-status={session.status}
