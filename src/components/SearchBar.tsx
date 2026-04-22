@@ -28,7 +28,13 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
   const results = useCountrySearch(countries, query)
 
   useEffect(() => {
-    setIsOpen(results.length > 0 || (query.trim().length > 0 && results.length === 0))
+    // Gate entirely on query being non-empty so that stale results left over
+    // from the previous debounce cycle do NOT momentarily re-open the dropdown
+    // after selectResult clears the query. Without this guard, the sequence
+    // setQuery('')+setIsOpen(false) can race with the results-from-previous-
+    // query still being present, causing the useEffect to call setIsOpen(true)
+    // for one extra render frame — enough to block a click on panel-close in CI.
+    setIsOpen(query.trim().length > 0)
     setActiveIndex(-1)
   }, [results, query])
 

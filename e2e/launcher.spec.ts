@@ -93,6 +93,10 @@ test.describe('Launcher — session scope', () => {
     await expect(franceOption).toBeVisible({ timeout: 10_000 })
     await franceOption.click({ force: true })
     await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
+    // Wait for the search results dropdown to be fully gone before clicking
+    // panel-close. Even with the SearchBar fix, give the dropdown one clear
+    // render cycle to unmount so it cannot intercept the click at z-50.
+    await expect(page.getByTestId('search-results')).not.toBeAttached({ timeout: 5_000 })
     await page.getByTestId('panel-close').click()
     await page.waitForTimeout(500)
     await expect(page.getByTestId('launcher')).not.toBeVisible()
