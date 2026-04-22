@@ -98,7 +98,7 @@ export function SingleCountryPanel({
       role="complementary"
       aria-label="Country information"
       data-testid="country-panel"
-      style={isDesktop ? { animation: 'panel-card-in 250ms cubic-bezier(0.34, 1.3, 0.64, 1)' } : undefined}
+      style={isDesktop ? { animation: 'panel-card-in 250ms ease-out' } : undefined}
     >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
         {comparePickingMode && (

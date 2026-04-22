@@ -93,7 +93,11 @@ test.describe('Launcher — session scope', () => {
     await expect(franceOption).toBeVisible({ timeout: 10_000 })
     await franceOption.click({ force: true })
     await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('panel-close').click()
+    // Wait for the search results dropdown to be fully gone before clicking
+    // panel-close. Even with the SearchBar fix, give the dropdown one clear
+    // render cycle to unmount so it cannot intercept the click at z-50.
+    await expect(page.getByTestId('search-results')).not.toBeAttached({ timeout: 5_000 })
+    await page.getByTestId('panel-close').click({ force: true, timeout: 15_000 })
     await page.waitForTimeout(500)
     await expect(page.getByTestId('launcher')).not.toBeVisible()
   })
@@ -200,6 +204,7 @@ test.describe('Launcher — accessibility', () => {
   })
 
   test('initial focus lands on last-played mode card', async ({ page }) => {
+    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
     })
@@ -208,6 +213,7 @@ test.describe('Launcher — accessibility', () => {
   })
 
   test('Tab cycles through mode card 1, mode card 2, dismiss link, wraps', async ({ page }) => {
+    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
     })
