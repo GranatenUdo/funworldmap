@@ -82,10 +82,8 @@ Analytics Engine dataset `funworldmap_events`.
 | `launcher_dismissed` | `path: 'link'\|'card'\|'escape'` | |
 | `deep_link_opened` | `dateKind: 'today'\|'past'\|'future'\|'invalid'`, `outcome: 'reveal'\|'start'\|'redirect'` | |
 
-Worker blob/double mapping (`cloudflare-worker/index.ts`): `index1 = name`,
-`blob1 = name`, `blob2..7 = mode, path, method, dateKind, outcome, cellKind`,
-`double1..6 = dateAge, scoreBucket, bestScoreBucket, attemptIndex,
-attemptsUsed, days`.
+Worker blob/double slot mapping: see
+[`cloudflare-worker/queries/README.md`](../../cloudflare-worker/queries/README.md).
 
 ## Known limitations
 
