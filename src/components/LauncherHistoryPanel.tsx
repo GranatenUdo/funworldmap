@@ -88,21 +88,29 @@ export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) 
         </button>
       </div>
 
-      <div role="row" className="grid grid-cols-7 gap-1 mb-1 text-[10px] text-sand-500 dark:text-dark-100 text-center">
+      {/* Day-of-week header row — decorative, hidden from assistive technology */}
+      <div
+        aria-hidden="true"
+        className="grid grid-cols-7 gap-1 mb-1 text-[10px] text-sand-500 dark:text-dark-100 text-center"
+      >
         {DOW_LABELS.map((l, i) => (
-          <span key={i} aria-hidden="true">{l}</span>
+          <span key={i}>{l}</span>
         ))}
       </div>
 
       <div role="grid" aria-label="Calendar" className="grid grid-cols-7 gap-1">
-        {cells.map((c) => (
-          <LauncherCalendarCell
-            key={c.date}
-            date={c.date}
-            status={c.status}
-            playedModes={playedByDate.get(c.date) ?? new Set<ModeId>()}
-            onActivate={onActivate}
-          />
+        {Array.from({ length: Math.ceil(cells.length / 7) }, (_, rowIdx) => (
+          <div key={rowIdx} role="row" className="contents">
+            {cells.slice(rowIdx * 7, rowIdx * 7 + 7).map((c) => (
+              <LauncherCalendarCell
+                key={c.date}
+                date={c.date}
+                status={c.status}
+                playedModes={playedByDate.get(c.date) ?? new Set<ModeId>()}
+                onActivate={onActivate}
+              />
+            ))}
+          </div>
         ))}
       </div>
 
