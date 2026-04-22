@@ -32,6 +32,7 @@ export default defineConfig({
         'panel-focus.spec.ts',
         'satellite-default.spec.ts',
         'a11y-contrast.spec.ts',
+        'a11y-keyboard-smoke.spec.ts',
         'launcher.spec.ts',
         'daily-puzzle.spec.ts',
         'daily-streak.spec.ts',

@@ -64,3 +64,14 @@ The first version focuses on countries:
 
 ### Future Vision
 - Multi-language support, regional groupings (EU, NATO, ASEAN), sub-national divisions, economic comparisons, historical boundary timelines.
+
+## Daily puzzle
+
+A daily layer turns both modes into a returnable habit. Each calendar day,
+every visitor sees the same country and the same city puzzle; results
+persist locally and feed a cross-session streak counter, a 30-day history
+calendar, and a text share artifact. No backend required — content is
+regenerated via GitHub Actions four times a day, scores never leave the
+user's browser except as anonymous aggregate telemetry.
+
+System details: [`systems/daily-puzzle.md`](systems/daily-puzzle.md).
