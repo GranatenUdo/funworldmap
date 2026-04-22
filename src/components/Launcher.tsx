@@ -197,7 +197,8 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
           style={{ animation: 'launcher-backdrop-in 220ms ease-out' }}
         />
         <div className="relative w-full max-w-2xl mx-auto">
-          <header
+          <div
+            role="presentation"
             className="text-center mb-6"
             style={{ animation: 'launcher-text-in 240ms ease-out 60ms both' }}
           >
@@ -207,7 +208,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
             <p className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2">
               {anchorDate ? `Daily · ${anchorDate}` : '194 countries. Explore or guess.'}
             </p>
-          </header>
+          </div>
 
           <div className="mb-4">
             <LauncherStreakPill
