@@ -59,39 +59,50 @@ Three sequential PRs, each independently shippable and revertible:
 
 ## A — Deflake `e2e (chromium)` (prereq)
 
-### Root cause hypothesis
+### Observed failures
 
-Two failure patterns observed across PRs #8 / #9 / #10:
+- PRs #8 / #9 / #10 each saw `chromium` red while `chromium-gpu` green.
+- `chromium-gpu` passing **does not validate the same tests** — `playwright.config.ts` projects are **disjoint by `testMatch`**: `chromium` runs DOM tests only (search, satellite, launcher, daily, etc.); `chromium-gpu` runs map/GPU tests only. They cover different files.
+- Concrete failures observed in PR #10:
+  - `e2e/search.spec.ts:25/110/117` — fill search box, assert results contain country name, get `"No countries found for Paris"` instead.
+  - `e2e/satellite-default.spec.ts:7` — `getByTestId('satellite-toggle')` returns `element(s) not found` within 5 s.
+  - `e2e/launcher.spec.ts:96` — `panel-close` click times out at 60 s, browser closes mid-test (one occurrence, possibly a different class of flake).
 
-1. **Search-data startup race** — "No countries found for Paris/USA" appears in `e2e/search.spec.ts:110/117/25`. The page navigates and asserts before `countries.json` (~150 KB) finishes loading.
-2. **Satellite toggle missing** — `getByTestId('satellite-toggle')` returns `element(s) not found`. The header hasn't mounted yet.
+### Root cause is NOT yet known
 
-`chromium-gpu` passes consistently because GPU init adds wall-clock time during which the static fetches complete. That's a coincidence, not a guarantee.
+Earlier draft assumed a static-data fetch race. **That hypothesis is wrong**: `countries.json` and `cities.json` are statically imported (`src/hooks/useCountryData.ts:2`, `src/hooks/useCityData.ts:2`) and bundled — there is no runtime fetch to mock. Only `/daily/index.json` (small) and the dynamic `world-atlas/countries-50m.json` chunk (large) are runtime requests. A's first task must be **diagnosis**, not a presumed fix.
 
-### Fix
+### Plan
 
-Add two route fixtures to `e2e/fixtures/`:
+A1. **Reproduce locally.** Run `npm run test:e2e -- --project=chromium --workers=2 --retries=0` 10× consecutively. Capture every failure's `trace.zip`. If zero local repros, run on the same Ubuntu runner image as GitHub Actions via `act` (or accept that CI is the only repro environment and instrument the next CI run with `--trace=on`).
 
-- **`routeStaticData(page)`** — `page.route('**/countries.json', …)`, `page.route('**/cities.json', …)`, `page.route('**/daily/index.json', …)`. Each fulfils with the on-disk file from `public/`. Removes filesystem and any partial-fetch variance.
-- **`routeMapTiles(page)`** — `page.route('**/{z}/{x}/{y}.{png,jpg}', …)`, `page.route('**/eox*/**', …)`, `page.route('**/sat-*/**', …)`. Each fulfils with a 1×1 transparent PNG and `Cache-Control: public, max-age=3600`. The map renders blank but layer-style assertions still pass.
+A2. **Diagnose from traces.** For each captured failure, inspect: network panel (was the dynamic country-50m chunk slow?), console (any errors?), DOM snapshot at failure point (was `countries` empty in SearchBar's props at the moment `fill` ran?).
 
-Wire into `playwright.config.ts` via a `use` block so every spec opts in by default. Add an `opt-out` fixture (`useRealTiles`) for any test that genuinely needs network tiles — audit during the prereq; expect zero matches.
+A3. **Fix at source.** Likely candidates and their fixes:
+- *Page hadn't hydrated* → add explicit readiness signal (e.g. `data-app-ready="true"` on `<main>` after first useEffect runs) and have e2e helpers wait on it instead of bare `waitForTimeout`.
+- *MapLibre tile network variance bleeds into DOM tests* → add `routeMapTiles(page)` fixture (`page.route` for EOX raster + tile URLs → 1×1 PNG fulfil). This is the only route mock that has any effect; the static-data mocks would not.
+- *Dynamic-import chunk race* → `page.route` for `world-atlas/countries-50m.json` and `topojson-client` chunks if they're hot-path on the failing tests (they shouldn't be for search.spec, but verify).
+- *React 19 concurrent rendering window* → if SearchBar is mounting before `useCountryData`'s memo resolves on first render, the fix is in the source, not the test.
 
-### Validation
+A4. **Validate.** Run `chromium` project 10× consecutively, both locally and in CI. Zero flakes accepted. If a fix turns out wrong, escalate before papering over with retries.
 
-- Run `npm run test:e2e -- --project=chromium` 5× consecutively. Zero flakes accepted.
-- Run `npm run test:e2e -- --project=chromium-gpu` 5× consecutively. Still green.
-- If a test legitimately fails after the fix, fix at source, not via retry.
+### Honest uncertainty
+
+A may take 2 days or 5 days depending on what the traces reveal. **If diagnosis after 2 days shows no clear root cause and only the satellite + search tests flake, the fallback is to add a ready-state assertion to those tests' helpers and accept that as the fix** — explicitly documented as "tactical, not root cause" with a roadmap follow-up. We do not iterate beyond ~3 days on diagnosis.
 
 ### Out of scope for prereq
 
 - Firefox / Safari projects.
-- New tests.
-- Refactoring existing flaky tests beyond the route fix.
+- New tests beyond the helpers required for the fix.
+- Refactoring existing flaky tests beyond the readiness signal.
 
 ---
 
 ## B — Phase 4: Share flow
+
+### B0 — Pre-flight (first task of B)
+
+Before any code: verify whether `funworldmap.com` (or any custom domain) is configured against GitHub Pages and CF. If yes, the share text URL line uses the custom domain naturally via `window.location.origin`. If no, share text falls back to `granatenudo.github.io/funworldmap` — still functional, less brand-clean. Note the result in the PR description; do not block B on a domain purchase.
 
 ### Components
 
@@ -128,12 +139,20 @@ funworldmap.com/#daily/2026-04-21
 
 `<DailyShareBlock>` Share button:
 - If `navigator.share` available → `navigator.share({ title: 'funworldmap daily', text, url })`.
-- Otherwise → `navigator.clipboard.writeText(text + '\n' + url)` + transient toast "Copied!".
+- Otherwise → `navigator.clipboard.writeText(text + '\n' + url)` + transient toast.
 - Secondary "Copy link only" → `navigator.clipboard.writeText(url)` + toast.
+
+**Toast reuse.** The existing `src/components/Toast.tsx` listens for `window` `CustomEvent('funworldmap:toast', { detail: string })` (already mounted in `App.tsx`). `<DailyShareBlock>` dispatches `window.dispatchEvent(new CustomEvent('funworldmap:toast', { detail: 'Copied!' }))`. No new toast primitive.
 
 All three paths fire `daily_shared` with `method: 'share' | 'clipboard' | 'copy-link'`. If the user cancels the native `navigator.share` sheet (promise rejects with `AbortError`), `daily_shared` is **not** fired — it represents intent-to-share, not a mere button press.
 
 The share block **only mounts when at least one mode of the current day has been played** (`modesPlayed >= 1`). A reveal route loaded with zero stored attempts shows the reveal copy without a share block — there is nothing to share.
+
+### Test mocking strategy (concrete)
+
+- **Clipboard** — Playwright config grants `permissions: ['clipboard-read', 'clipboard-write']` per context. Tests assert content via `page.evaluate(() => navigator.clipboard.readText())`.
+- **`navigator.share`** — `page.addInitScript` overrides `window.navigator.share` to record calls on `window.__lastShare`. Tests inspect `await page.evaluate(() => window.__lastShare)`.
+- **Origin URL** — formatted as `${window.location.origin}/#daily/${date}` (no trailing slash; `origin` returns scheme + host + optional port without trailing). `buildShareText` accepts `originUrl` as a parameter so unit tests pass a fixed string for snapshots.
 
 ### URL routing addition
 
@@ -185,9 +204,11 @@ Props: `{ date: string, modesPlayed: 1 | 2, method: 'share' | 'clipboard' | 'cop
 
 ### Mechanics
 
-1. Add `@axe-core/playwright` as a dev dep.
-2. Add `e2e/fixtures/axe.ts` exporting `expectNoAxeViolations(page, options?)` that runs axe with `tags: ['wcag2aa']` and asserts zero violations, formatting the output for readable failure messages.
-3. Iterate per surface: run, see violations, fix in CSS / aria attribute, re-run. Each surface is a sub-task.
+`@axe-core/playwright` is **already installed** and `e2e/accessibility.spec.ts` runs axe successfully on home + country-panel today. The previously-dropped GameOverOverlay axe test was not flaky — it surfaced **real pre-existing color-contrast violations** (see `e2e/accessibility.spec.ts:127-132`). Phase 5's job is to fix those violations, not to re-stabilise the test infrastructure.
+
+1. Extend `e2e/accessibility.spec.ts` (do not fork an `e2e/a11y/` folder) with one `test('axe-core audit passes on <surface>')` per row in the surface inventory above.
+2. Each test follows the existing pattern: navigate, drive to surface state, `new AxeBuilder({ page }).exclude('.maplibregl-canvas').analyze()`, `expect(results.violations).toEqual([])`.
+3. Iterate per surface: run, see violations, fix in CSS / aria attribute, re-run. Each surface is a sub-task in the eventual plan.
 4. Manual NVDA (Windows) or VoiceOver (mac) pass on golden path:
    - Launcher → focus order, mode-card labels, streak-pill announcement
    - Daily play → attempt feedback, live-region updates
@@ -203,7 +224,7 @@ Props: `{ date: string, modesPlayed: 1 | 2, method: 'share' | 'clipboard' | 'cop
 - Focus-ring contrast across the launcher's warm-accent surfaces.
 - Toast colour-only state communication (add icon or text marker).
 
-If a single surface needs > 1 day of restyle, descope that surface to "fix critical, defer others to v1.1" inside Phase 5 — do not let a11y polish block launch indefinitely. Document descopes inline in the plan.
+If a single surface needs > 1 day of restyle, descope that surface to "fix critical, defer others to v1.1" inside Phase 5 — do not let a11y polish block launch indefinitely. Each descope is recorded in (a) the Phase 5 PR description with the violation severity and rationale, AND (b) a roadmap entry under "Retention v1.1+" with the specific axe rule ID and surface.
 
 ### Docs
 
@@ -254,8 +275,10 @@ To be tracked in the Phase 5 PR description, ticked before merge-to-launch:
 
 ```
 A (deflake)  →  B (Phase 4)  →  C (Phase 5)  →  Launch
-   ~2 days       ~1 week         ~1.5 weeks       72 h monitor
+  2-5 days       ~1 week         ~2 weeks        72 h monitor
 ```
+
+A is the largest scheduling uncertainty: 2 days if traces immediately reveal a clean root cause, 5 days if diagnosis is hard. The hard cap is "tactical fix at 3 days of diagnosis" — see A's "Honest uncertainty" subsection.
 
 Each PR can be reverted by reverting its merge commit; no schema changes, no irreversible CF Worker changes.
 
