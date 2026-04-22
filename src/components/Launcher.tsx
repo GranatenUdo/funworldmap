@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { listModes } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 import type { ModeId } from '../game/shared/types'
@@ -9,6 +9,9 @@ import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import { toLocalDateString } from '../game/daily/dates'
 import { LauncherModeCard, type LauncherCardState } from './LauncherModeCard'
+import { LauncherStreakPill } from './LauncherStreakPill'
+import { LauncherMilestoneOverlay } from './LauncherMilestoneOverlay'
+import { LauncherHistoryPanel, type HistoryCellKind } from './LauncherHistoryPanel'
 
 interface Props {
   onDismiss: () => void
@@ -27,7 +30,15 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
   const { best: cpBest } = usePersonalBests('country-pinning')
   const { best: cgBest } = usePersonalBests('city-guessing')
   const { status: puzzlesStatus, byDate, index } = useDailyPuzzlesContext()
-  const { get: getDay } = useDailyHistory()
+  const { history, get: getDay, streak, pendingMilestone, markMilestoneShown } = useDailyHistory()
+  const [historyOpen, setHistoryOpen] = useState(false)
+
+  const totalDays = useMemo(() => Object.keys(history.days).length, [history])
+  const streakMode: 'active' | 'broken' | 'first' = useMemo(() => {
+    if (streak.lastActiveDate === null) return 'first'
+    const yesterdayStr = toLocalDateString(new Date(Date.now() - 86_400_000))
+    return streak.lastActiveDate >= yesterdayStr ? 'active' : 'broken'
+  }, [streak.lastActiveDate])
 
   const today = toLocalDateString(new Date())
   const date = anchorDate ?? today
@@ -88,6 +99,29 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
     [onDismiss],
   )
 
+  const openHistory = useCallback(() => {
+    setHistoryOpen(true)
+    track('history_opened', {})
+  }, [])
+
+  const closeHistory = useCallback(() => {
+    setHistoryOpen(false)
+  }, [])
+
+  const onCellActivate = useCallback(
+    (d: string, kind: HistoryCellKind) => {
+      track('history_cell_clicked', { cellKind: kind })
+      if (kind === 'rolled-off') return
+      onDismiss()
+      window.location.hash = `daily/${d}/reveal`
+    },
+    [onDismiss],
+  )
+
+  const onMilestoneDismiss = useCallback(() => {
+    markMilestoneShown()
+  }, [markMilestoneShown])
+
   useEffect(() => {
     const selector = `[data-testid="launcher-card-${lastMode}-daily-cta"], [data-testid="launcher-card-${lastMode}-free-link"]`
     const target = rootRef.current?.querySelector<HTMLButtonElement>(selector)
@@ -114,64 +148,87 @@ export function Launcher({ onDismiss, anchorDate }: Props) {
   }, [])
 
   return (
-    <div
-      ref={rootRef}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Choose how to play"
-      data-testid="launcher"
-      className="fixed inset-0 z-[210] flex items-center justify-center p-6"
-    >
+    <>
+      {pendingMilestone && (
+        <LauncherMilestoneOverlay days={pendingMilestone} onDismiss={onMilestoneDismiss} />
+      )}
       <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-black/55 dark:bg-[rgba(11,15,26,0.7)] backdrop-blur-[4px]"
-        style={{ animation: 'launcher-backdrop-in 220ms ease-out' }}
-      />
-      <div className="relative w-full max-w-2xl mx-auto">
-        <header
-          className="text-center mb-6"
-          style={{ animation: 'launcher-text-in 240ms ease-out 60ms both' }}
-        >
-          <div className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">
-            funworldmap
-          </div>
-          <p className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2">
-            {anchorDate ? `Daily · ${anchorDate}` : '194 countries. Explore or guess.'}
-          </p>
-        </header>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          {modes.map((m, i) => (
-            <div
-              key={m.id}
-              style={{ animation: `launcher-card-in 220ms ease-out ${120 + i * 60}ms both` }}
-            >
-              <LauncherModeCard
-                modeId={m.id}
-                state={cardState(m.id)}
-                played={playedFor(m.id)}
-                freeBest={bestFor(m.id)}
-                onStartDaily={() => startDaily(m.id)}
-                onStartFree={() => startFree(m.id)}
-              />
-            </div>
-          ))}
-        </div>
-
+        ref={rootRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Choose how to play"
+        data-testid="launcher"
+        className="fixed inset-0 z-[210] flex items-center justify-center p-6"
+      >
         <div
-          className="mt-6 text-center"
-          style={{ animation: 'launcher-text-in 180ms ease-out 260ms both' }}
-        >
-          <button
-            type="button"
-            onClick={dismissWithFocus}
-            data-testid="launcher-dismiss"
-            className="text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1"
+          aria-hidden="true"
+          className="absolute inset-0 bg-black/55 dark:bg-[rgba(11,15,26,0.7)] backdrop-blur-[4px]"
+          style={{ animation: 'launcher-backdrop-in 220ms ease-out' }}
+        />
+        <div className="relative w-full max-w-2xl mx-auto">
+          <header
+            className="text-center mb-6"
+            style={{ animation: 'launcher-text-in 240ms ease-out 60ms both' }}
           >
-            Just explore the map
-          </button>
+            <div className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">
+              funworldmap
+            </div>
+            <p className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2">
+              {anchorDate ? `Daily · ${anchorDate}` : '194 countries. Explore or guess.'}
+            </p>
+          </header>
+
+          <div className="mb-4">
+            <LauncherStreakPill
+              current={streak.current}
+              longest={streak.longest}
+              totalDays={totalDays}
+              streakMode={streakMode}
+              onOpenHistory={openHistory}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {modes.map((m, i) => (
+              <div
+                key={m.id}
+                style={{ animation: `launcher-card-in 220ms ease-out ${120 + i * 60}ms both` }}
+              >
+                <LauncherModeCard
+                  modeId={m.id}
+                  state={cardState(m.id)}
+                  played={playedFor(m.id)}
+                  freeBest={bestFor(m.id)}
+                  onStartDaily={() => startDaily(m.id)}
+                  onStartFree={() => startFree(m.id)}
+                />
+              </div>
+            ))}
+          </div>
+
+          {historyOpen && (
+            <LauncherHistoryPanel
+              today={new Date()}
+              onClose={closeHistory}
+              onCellActivate={onCellActivate}
+            />
+          )}
+
+          <div
+            className="mt-6 text-center"
+            style={{ animation: 'launcher-text-in 180ms ease-out 260ms both' }}
+          >
+            <button
+              type="button"
+              onClick={dismissWithFocus}
+              data-testid="launcher-dismiss"
+              className="text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1"
+            >
+              Just explore the map
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
