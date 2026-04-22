@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { track } from '../lib/analytics'
 import type { Milestone } from '../game/daily/types'
 
@@ -16,8 +16,12 @@ interface Props {
 }
 
 export function LauncherMilestoneOverlay({ days, onDismiss }: Props) {
+  const firedRef = useRef(false)
   useEffect(() => {
-    track('streak_reached_milestone', { days })
+    if (!firedRef.current) {
+      firedRef.current = true
+      track('streak_reached_milestone', { days })
+    }
     const t = window.setTimeout(onDismiss, 2500)
     return () => { window.clearTimeout(t) }
   }, [days, onDismiss])

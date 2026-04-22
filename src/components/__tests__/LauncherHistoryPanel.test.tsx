@@ -21,7 +21,7 @@ describe('LauncherHistoryPanel', () => {
   it('renders a grid of 35 cells', () => {
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(<LauncherHistoryPanel today={new Date(2026, 3, 22)} onClose={onClose} onCellActivate={onCellActivate} />)
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
     const cells = screen.getAllByRole('gridcell')
     expect(cells).toHaveLength(35)
   })
@@ -30,7 +30,7 @@ describe('LauncherHistoryPanel', () => {
     seedHistory('2026-04-22')
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(<LauncherHistoryPanel today={new Date(2026, 3, 22)} onClose={onClose} onCellActivate={onCellActivate} />)
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
     const captions = screen.getByTestId('launcher-history-captions')
     const text = captions.textContent ?? ''
     expect(text).toMatch(/current[^\d]*1/i)
@@ -41,7 +41,7 @@ describe('LauncherHistoryPanel', () => {
     seedHistory('2026-04-22')
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(<LauncherHistoryPanel today={new Date(2026, 3, 22)} onClose={onClose} onCellActivate={onCellActivate} />)
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
     fireEvent.click(screen.getByTestId('launcher-cal-2026-04-22'))
     expect(onCellActivate).toHaveBeenCalledWith('2026-04-22', 'played')
   })
@@ -49,7 +49,7 @@ describe('LauncherHistoryPanel', () => {
   it('close button fires onClose', () => {
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(<LauncherHistoryPanel today={new Date(2026, 3, 22)} onClose={onClose} onCellActivate={onCellActivate} />)
+    render(<LauncherHistoryPanel today="2026-04-22" onClose={onClose} onCellActivate={onCellActivate} />)
     fireEvent.click(screen.getByTestId('launcher-history-close'))
     expect(onClose).toHaveBeenCalledTimes(1)
   })

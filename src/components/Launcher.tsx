@@ -36,13 +36,19 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   const [historyOpen, setHistoryOpen] = useState(false)
 
   const totalDays = useMemo(() => Object.keys(history.days).length, [history])
-  const streakMode: 'active' | 'broken' | 'first' = useMemo(() => {
-    if (streak.lastActiveDate === null) return 'first'
-    const yesterdayStr = toLocalDateString(new Date(Date.now() - 86_400_000))
-    return streak.lastActiveDate >= yesterdayStr ? 'active' : 'broken'
-  }, [streak.lastActiveDate])
 
-  const today = toLocalDateString(new Date())
+  const todayDate = new Date()
+  const today = toLocalDateString(todayDate)
+  const yesterday = toLocalDateString(
+    new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 1),
+  )
+  const streakMode: 'active' | 'broken' | 'first' =
+    streak.lastActiveDate === null
+      ? 'first'
+      : streak.lastActiveDate >= yesterday
+        ? 'active'
+        : 'broken'
+
   const date = anchorDate ?? today
 
   function cardState(modeId: ModeId): LauncherCardState {
@@ -234,7 +240,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
 
           {historyOpen && (
             <LauncherHistoryPanel
-              today={new Date()}
+              today={today}
               onClose={closeHistory}
               onCellActivate={onCellActivate}
             />

@@ -8,7 +8,7 @@ import { LauncherCalendarCell } from './LauncherCalendarCell'
 export type HistoryCellKind = 'played' | 'unplayed-in-window' | 'rolled-off'
 
 interface Props {
-  today: Date
+  today: string
   onClose: () => void
   onCellActivate: (date: string, kind: HistoryCellKind) => void
 }
@@ -17,7 +17,10 @@ const DOW_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) {
   const { history } = useDailyHistory()
-  const cells = useMemo(() => calendarGrid(today, 30), [today])
+  const cells = useMemo(() => {
+    const [y, m, d] = today.split('-').map(Number)
+    return calendarGrid(new Date(y, m - 1, d), 30)
+  }, [today])
   const rootRef = useRef<HTMLDivElement>(null)
 
   const playedByDate = useMemo(() => {
