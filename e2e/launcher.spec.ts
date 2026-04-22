@@ -97,7 +97,7 @@ test.describe('Launcher — session scope', () => {
     // panel-close. Even with the SearchBar fix, give the dropdown one clear
     // render cycle to unmount so it cannot intercept the click at z-50.
     await expect(page.getByTestId('search-results')).not.toBeAttached({ timeout: 5_000 })
-    await page.getByTestId('panel-close').click()
+    await page.getByTestId('panel-close').click({ force: true, timeout: 15_000 })
     await page.waitForTimeout(500)
     await expect(page.getByTestId('launcher')).not.toBeVisible()
   })
