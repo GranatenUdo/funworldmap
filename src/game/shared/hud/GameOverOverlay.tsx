@@ -61,7 +61,7 @@ export function GameOverOverlay({
         >
           Game over
         </h2>
-        <p className="text-sm text-sand-500 dark:text-dark-100 mb-4">
+        <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">
           {session.maxRounds === null
             ? 'Three wrong guesses.'
             : `${session.maxRounds} rounds complete.`}
@@ -73,7 +73,7 @@ export function GameOverOverlay({
           } gap-3 mb-6`}
         >
           <div>
-            <dt className="text-xs uppercase text-sand-500 dark:text-dark-100">Score</dt>
+            <dt className="text-xs uppercase text-sand-600 dark:text-dark-100">Score</dt>
             <dd
               className="text-2xl font-bold text-sand-900 dark:text-dark-50 tabular-nums"
               data-testid="game-over-score"
@@ -83,7 +83,7 @@ export function GameOverOverlay({
           </div>
           {session.maxRounds === null && (
             <div>
-              <dt className="text-xs uppercase text-sand-500 dark:text-dark-100">Longest streak</dt>
+              <dt className="text-xs uppercase text-sand-600 dark:text-dark-100">Longest streak</dt>
               <dd
                 className="text-2xl font-bold text-sand-900 dark:text-dark-50 tabular-nums"
                 data-testid="game-over-best-streak"
@@ -94,9 +94,9 @@ export function GameOverOverlay({
           )}
         </dl>
 
-        <div className="text-xs text-sand-500 dark:text-dark-100 mb-5" data-testid="game-over-pb">
+        <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
           {beatPersonalBest ? (
-            <span className="font-semibold text-teal dark:text-teal-light">New personal best!</span>
+            <span className="font-semibold text-teal-accessible dark:text-teal-light">New personal best!</span>
           ) : (
             <>Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak</>
           )}
@@ -106,7 +106,7 @@ export function GameOverOverlay({
           <button
             type="button"
             onClick={onPlayAgain}
-            className="flex-1 px-4 py-2 rounded-xl bg-teal text-white font-medium hover:bg-teal/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50"
+            className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-medium hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50"
             data-testid="game-over-play-again"
           >
             Play again

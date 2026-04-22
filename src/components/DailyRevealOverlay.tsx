@@ -76,7 +76,7 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
       <div className="relative w-full max-w-xl mx-auto bg-sand-50 dark:bg-dark-400 rounded-2xl shadow-2xl p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-teal dark:text-teal-light">Daily reveal</div>
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-teal-accessible dark:text-teal-light">Daily reveal</div>
             <div className="text-lg font-bold text-sand-900 dark:text-dark-50 tabular-nums">{date}</div>
           </div>
           <button
@@ -98,7 +98,7 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
 
         {puzzle && showCountry && country && (
           <div data-testid="daily-reveal-country" className="mb-4 pb-4 border-b border-sand-200 dark:border-dark-300">
-            <div className="text-[11px] uppercase tracking-widest text-teal dark:text-teal-light mb-1">Country</div>
+            <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">Country</div>
             <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{country.name.common}</div>
             {cpRecord && (
               <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">
@@ -119,7 +119,7 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
 
         {puzzle && showCity && city && (
           <div data-testid="daily-reveal-city">
-            <div className="text-[11px] uppercase tracking-widest text-teal dark:text-teal-light mb-1">City</div>
+            <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">City</div>
             <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{city.name}, {city.countryName}</div>
             {cgRecord && (
               <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">

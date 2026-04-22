@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import { dismissLauncher } from './helpers'
+import { dismissLauncher, waitForAppReady, seedDailyHistory, stubDailyIndex, submitAndWait } from './helpers'
 
 test.setTimeout(60_000)
+
+const TODAY = new Date().toISOString().slice(0, 10)
 
 test.describe('Accessibility', () => {
   test('skip to search link works', async ({ page }) => {
@@ -130,4 +132,134 @@ test.describe('Accessibility', () => {
   // focus to Play again" test. The axe audit on top surfaced pre-existing
   // color-contrast issues in the overlay's copy — those deserve their own
   // fix, not a blocker for the focus-management PR. Tracked on the roadmap.
+
+  // ── Surface 1: Launcher (idle) ────────────────────────────────────────────
+  test('axe-core audit passes on launcher (idle)', async ({ page }) => {
+    await page.goto('/')
+    await waitForAppReady(page)
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
+    const results = await new AxeBuilder({ page })
+      .include('[data-testid="launcher"]')
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
+
+  // ── Surface 2: Launcher (anchored to date) ────────────────────────────────
+  test('axe-core audit passes on launcher (anchored)', async ({ page }) => {
+    await page.goto(`/#daily/${TODAY}`)
+    await waitForAppReady(page)
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
+    const results = await new AxeBuilder({ page })
+      .include('[data-testid="launcher"]')
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
+
+  // ── Surface 3: Streak pill (active state) ────────────────────────────────
+  test('axe-core audit passes on launcher streak pill (active)', async ({ page }) => {
+    await seedDailyHistory(page, { date: TODAY })
+    await page.goto('/')
+    await waitForAppReady(page)
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
+    await expect(page.locator('[data-streak-mode="active"]')).toBeVisible({ timeout: 5_000 })
+    const results = await new AxeBuilder({ page })
+      .include('[data-streak-mode="active"]')
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
+
+  // ── Surface 4: History panel + calendar cells ─────────────────────────────
+  test('axe-core audit passes on launcher history panel', async ({ page }) => {
+    await seedDailyHistory(page, { date: TODAY })
+    await page.goto('/')
+    await waitForAppReady(page)
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
+    // launcher-history-link is the history open button in the streak pill
+    await page.getByTestId('launcher-history-link').click()
+    await expect(page.getByTestId('launcher-history')).toBeVisible({ timeout: 5_000 })
+    const results = await new AxeBuilder({ page })
+      .include('[data-testid="launcher-history"]')
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
+
+  // ── Surface 5: Milestone overlay ─────────────────────────────────────────
+  test('axe-core audit passes on milestone overlay', async ({ page }) => {
+    await seedDailyHistory(page, { date: TODAY, lastMilestoneShown: 0 })
+    await page.goto('/')
+    await waitForAppReady(page)
+    await expect(page.getByTestId('launcher-milestone')).toBeVisible({ timeout: 5_000 })
+    // Wait for the entrance animation (260ms) to complete so axe computes
+    // contrast against the final fully-opaque state, not a mid-animation frame.
+    await page.waitForTimeout(400)
+    const results = await new AxeBuilder({ page })
+      .include('[data-testid="launcher-milestone"]')
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
+
+  // ── Surface 6: DailyRevealOverlay (both modes played) ────────────────────
+  test('axe-core audit passes on DailyRevealOverlay (both modes)', async ({ page }) => {
+    await seedDailyHistory(page, { date: TODAY, modes: ['country-pinning', 'city-guessing'] })
+    await stubDailyIndex(page, TODAY)
+    await page.goto(`/#daily/${TODAY}/reveal`)
+    await waitForAppReady(page)
+    // testid is "daily-reveal" (not "daily-reveal-overlay")
+    await expect(page.getByTestId('daily-reveal')).toBeVisible({ timeout: 5_000 })
+    const results = await new AxeBuilder({ page })
+      .include('[data-testid="daily-reveal"]')
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
+
+  // ── Surface 7: DailyShareBlock ────────────────────────────────────────────
+  test('axe-core audit passes on DailyShareBlock', async ({ page }) => {
+    await seedDailyHistory(page, { date: TODAY })
+    await stubDailyIndex(page, TODAY)
+    await page.goto(`/#daily/${TODAY}/reveal`)
+    await waitForAppReady(page)
+    await expect(page.getByTestId('daily-share-block')).toBeVisible({ timeout: 5_000 })
+    const results = await new AxeBuilder({ page })
+      .include('[data-testid="daily-share-block"]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
+
+  // ── Surface 8: GameOverOverlay (daily state) ──────────────────────────────
+  test('axe-core audit passes on GameOverOverlay (daily)', async ({ page }) => {
+    await stubDailyIndex(page, TODAY)
+    await page.goto('/')
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
+      .toContain(`daily/${TODAY}/country-pinning`)
+    await page.waitForFunction(
+      () => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game),
+    )
+
+    await submitAndWait(page, 'DEU', 1)
+    await submitAndWait(page, 'ESP', 2)
+    await submitAndWait(page, 'FRA', 3)
+
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
+    const results = await new AxeBuilder({ page })
+      .include('[data-testid="game-over"]')
+      .exclude('.maplibregl-canvas')
+      .exclude('.z-\\[200\\]')
+      .analyze()
+    expect(results.violations).toEqual([])
+  })
 })

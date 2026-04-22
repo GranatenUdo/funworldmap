@@ -1,5 +1,105 @@
 import { expect, type Page } from '@playwright/test'
 import { Buffer } from 'node:buffer'
+import type { ModeId } from '../src/game/shared/types'
+
+export interface SeedHistoryOptions {
+  date: string
+  lastMilestoneShown?: 0 | 3 | 7 | 14 | 30 | 100
+  modes?: ReadonlyArray<ModeId>
+}
+
+/**
+ * Seed `funworldmap-daily-history` in localStorage BEFORE page.goto, so the
+ * launcher / reveal overlay renders with a known history state.
+ * Defaults: country-pinning mode only, lastMilestoneShown=3 (prevents the
+ * milestone overlay from firing in tests that aren't about it).
+ */
+export async function seedDailyHistory(
+  page: Page,
+  { date, lastMilestoneShown = 3, modes = ['country-pinning'] }: SeedHistoryOptions,
+): Promise<void> {
+  await page.addInitScript(
+    ({ d, ms, mods }) => {
+      const days: Record<string, Record<string, unknown>> = {}
+      const dayEntries: Record<string, unknown> = {}
+      if (mods.includes('country-pinning')) {
+        dayEntries['country-pinning'] = {
+          score: 87,
+          attempts: [
+            { pointsEarned: 42, distanceKm: 1200 },
+            { pointsEarned: 63, distanceKm: 400 },
+            { pointsEarned: 91, distanceKm: 0 },
+          ],
+          completedAt: 1,
+        }
+      }
+      if (mods.includes('city-guessing')) {
+        dayEntries['city-guessing'] = {
+          score: 81,
+          attempts: [
+            { pointsEarned: 34, distanceKm: 1500 },
+            { pointsEarned: 78, distanceKm: 200 },
+            { pointsEarned: 95, distanceKm: 10 },
+          ],
+          completedAt: 2,
+        }
+      }
+      days[d] = dayEntries
+      const history = {
+        version: 1,
+        streak: { current: 3, longest: 3, lastActiveDate: d, lastMilestoneShown: ms },
+        days,
+      }
+      localStorage.setItem('funworldmap-daily-history', JSON.stringify(history))
+    },
+    { d: date, ms: lastMilestoneShown, mods: Array.from(modes) },
+  )
+}
+
+/**
+ * Stub `/daily/index.json` with a one-day index containing France + Paris.
+ * Call BEFORE page.goto. Defaults to FRA/FRA-paris; other IDs can be
+ * supplied if a test needs them.
+ */
+export async function stubDailyIndex(
+  page: Page,
+  date: string,
+  opts: { cca3?: string; cityId?: string } = {},
+): Promise<void> {
+  const { cca3 = 'FRA', cityId = 'FRA-paris' } = opts
+  await page.route('**/daily/index.json', (route) =>
+    route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        generatedAt: `${date}T00:00:00.000Z`,
+        window: { start: date, end: date },
+        days: { [date]: { country: { cca3 }, city: { id: cityId } } },
+      }),
+    }),
+  )
+}
+
+/**
+ * Submit a country guess via the game's exposed API and wait for the session
+ * to reflect the new attempt count.
+ */
+export async function submitAndWait(page: Page, cca3: string, expectAfter: number): Promise<void> {
+  await page.evaluate(({ c }) => {
+    const game = (window as unknown as { __funworldmap_game?: { submitCountryGuess: (cca3: string) => void } })
+      .__funworldmap_game
+    game?.submitCountryGuess(c)
+  }, { c: cca3 })
+  await expect
+    .poll(
+      () => page.evaluate(() => {
+        const game = (window as unknown as { __funworldmap_game?: { getSession: () => { currentAttempts: unknown[] } } })
+          .__funworldmap_game
+        return game?.getSession().currentAttempts.length ?? 0
+      }),
+      { timeout: 5_000 },
+    )
+    .toBe(expectAfter)
+}
 
 /**
  * Dismiss the launcher if it is visible. No-op if the test uses a deep-link

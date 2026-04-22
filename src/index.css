@@ -52,6 +52,9 @@
   --color-teal: #14b8a6;
   --color-teal-light: #5eead4;
   --color-teal-dim: #0d9488;
+  /* Deep teal: WCAG AA on white/sand-50 (≥4.5:1). Use for interactive text
+     and primary CTA backgrounds in light mode where teal / teal-dim fall short. */
+  --color-teal-accessible: #065f56;
 
   --color-coral: #f43f5e;
   --color-coral-light: #fb7185;
