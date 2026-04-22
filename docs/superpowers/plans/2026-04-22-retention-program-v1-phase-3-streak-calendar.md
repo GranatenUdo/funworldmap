@@ -436,34 +436,34 @@ Presentational only — renders streak copy in one of three states. No internal 
 - [ ] **Step 1: Create the component**
 
 ```tsx
+export type StreakMode = 'active' | 'broken' | 'first'
+
 interface Props {
   current: number
   longest: number
   totalDays: number
-  isBroken: boolean
+  streakMode: StreakMode
   onOpenHistory: () => void
 }
 
-export function LauncherStreakPill({ current, longest, totalDays, isBroken, onOpenHistory }: Props) {
-  const showActive = current >= 1
-  const showBroken = current === 0 && isBroken
-
+export function LauncherStreakPill({ current, longest, totalDays, streakMode, onOpenHistory }: Props) {
   return (
     <div
       data-testid="launcher-streak"
+      data-streak-mode={streakMode}
       className="flex items-center justify-center gap-3 text-[13px] text-sand-50/90 dark:text-dark-100"
       style={{ animation: 'launcher-streak-in 180ms ease-out 30ms both' }}
     >
-      {showActive && (
+      {streakMode === 'active' && (
         <span>
           <span aria-hidden="true">🔥 </span>
           <span className="tabular-nums font-semibold">{current}-day streak</span>
         </span>
       )}
-      {showBroken && (
+      {streakMode === 'broken' && (
         <span>Start your streak — play today's daily.</span>
       )}
-      {!showActive && !showBroken && (
+      {streakMode === 'first' && (
         <span>Play today's daily.</span>
       )}
 
@@ -482,6 +482,8 @@ export function LauncherStreakPill({ current, longest, totalDays, isBroken, onOp
   )
 }
 ```
+
+**Why `streakMode` not `isBroken`:** `updateStreak` in Phase 2 never sets `streak.current` to `0` — its `else` branch resets to `1`. So a user with a stale streak has `current >= 1` but `lastActiveDate` days in the past. The "broken" UI state has to be derived at render time from `lastActiveDate`, not from `current`. The pill only renders the mode it's told about; the caller (Task 9) decides. `data-streak-mode` attribute makes the state e2e-testable without relying on text content.
 
 - [ ] **Step 2: Typecheck**
 
@@ -1217,13 +1219,19 @@ to:
 const { history, get: getDay, streak, pendingMilestone, markMilestoneShown } = useDailyHistory()
 ```
 
-- [ ] **Step 3: Derive `totalDays` and `isBroken`**
+- [ ] **Step 3: Derive `totalDays` and `streakMode`**
 
 After the destructure, add:
 ```tsx
 const totalDays = useMemo(() => Object.keys(history.days).length, [history])
-const isBroken = streak.current === 0 && totalDays > 0
+const streakMode: 'active' | 'broken' | 'first' = useMemo(() => {
+  if (streak.lastActiveDate === null) return 'first'
+  const yesterdayStr = toLocalDateString(new Date(Date.now() - 86_400_000))
+  return streak.lastActiveDate >= yesterdayStr ? 'active' : 'broken'
+}, [streak.lastActiveDate])
 ```
+
+`toLocalDateString` is already imported at the top of `Launcher.tsx` (Phase 2).
 
 - [ ] **Step 4: Add `historyOpen` state**
 
@@ -1268,7 +1276,7 @@ In the JSX, after the `<header>` block and before the mode-card grid:
     current={streak.current}
     longest={streak.longest}
     totalDays={totalDays}
-    isBroken={isBroken}
+    streakMode={streakMode}
     onOpenHistory={openHistory}
   />
 </div>
@@ -1402,7 +1410,7 @@ Replace the existing played branch:
 {state === 'played' && (
   <div data-testid={`${testIdBase}-played-result`}>
     <div className="text-sand-900 dark:text-dark-50 text-sm mb-2">
-      ✓ {played?.countryName ?? 'Played'} · <span className="tabular-nums font-semibold">{played?.score ?? 0}</span>/100
+      ✓ {played?.targetName ?? 'Played'} · <span className="tabular-nums font-semibold">{played?.score ?? 0}</span>/100
     </div>
     {onSeeReveal && (
       <button
@@ -1418,18 +1426,20 @@ Replace the existing played branch:
 )}
 ```
 
-- [ ] **Step 3: Extend `PlayedResult` with countryName**
+- [ ] **Step 3: Rename `PlayedResult.countryName` → `targetName`**
+
+Phase 2 called this field `countryName`, but it's used for both country mode (holds the country name) and city mode (holds the city name). Rename to `targetName` across the interface, the render template (Step 2 above), and the `playedFor` callback (Step 4 below).
 
 Inside `LauncherModeCard.tsx`, update:
 
 ```tsx
 interface PlayedResult {
-  countryName?: string
+  targetName?: string
   score: number
 }
 ```
 
-(Already has `countryName?` — leave as-is.)
+Grep for any other `countryName` references in `LauncherModeCard.tsx` and update.
 
 - [ ] **Step 4: Wire `onSeeReveal` in Launcher.tsx**
 
@@ -1443,10 +1453,10 @@ const playedFor = useCallback((id: ModeId) => {
   if (!puzzle) return { score: prior.score }
   if (id === 'country-pinning') {
     const c = countries.find((cc) => cc.cca3 === puzzle.country.cca3)
-    return { score: prior.score, countryName: c?.name.common }
+    return { score: prior.score, targetName: c?.name.common }
   }
   const city = cities.find((cc) => cc.id === puzzle.city.id)
-  return { score: prior.score, countryName: city?.name }
+  return { score: prior.score, targetName: city?.name }
 }, [getDay, date, byDate, countries, cities])
 ```
 
@@ -1675,15 +1685,20 @@ test.describe('Daily streak', () => {
     await expect(page.getByTestId('launcher-streak')).toContainText(/5-day streak/)
   })
 
-  test('streak pill shows broken-streak invite when current=0 with prior entries', async ({ page }) => {
+  test('streak pill shows broken-streak invite when lastActiveDate < yesterday', async ({ page }) => {
+    // Phase 2's updateStreak never sets current to 0 — it resets to 1 on the
+    // next play after a gap. So a stale streak has current >= 1 AND a
+    // lastActiveDate that's more than one day old. The "broken" UI mode is
+    // derived at render time from lastActiveDate vs. yesterday.
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-daily-history', JSON.stringify({
         version: 1,
-        streak: { current: 0, longest: 3, lastActiveDate: '2026-04-18', lastMilestoneShown: 3 },
+        streak: { current: 3, longest: 3, lastActiveDate: '2026-04-18', lastMilestoneShown: 3 },
         days: { '2026-04-18': { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
       }))
     })
     await page.goto('/')
+    await expect(page.getByTestId('launcher-streak')).toHaveAttribute('data-streak-mode', 'broken')
     await expect(page.getByTestId('launcher-streak')).toContainText(/start your streak/i)
   })
 
