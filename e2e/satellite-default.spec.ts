@@ -1,15 +1,23 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher, waitForAppReady } from './helpers'
+import { dismissLauncher, waitForAppReady, routeMapTiles } from './helpers'
 
 test.setTimeout(60_000)
 
 test.describe('Satellite is the default basemap', () => {
+  // routeMapTiles stubs external tile / sprite / TileJSON requests so that
+  // network variance cannot block MapLibre's 'load' event.  The stub runs
+  // before page.goto so the intercepts are in place before any fetch fires.
+  test.beforeEach(async ({ page }) => {
+    await routeMapTiles(page)
+  })
+
   test('toggle is pressed on first load', async ({ page }) => {
     await page.goto('/')
     await waitForAppReady(page)
     await dismissLauncher(page)
-    await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 
+    // aria-pressed is driven by React state (satellite = useState(true))
+    // and does not require the MapLibre 'load' event.
     const toggle = page.getByTestId('satellite-toggle')
     await expect(toggle).toHaveAttribute('aria-pressed', 'true')
   })
@@ -18,7 +26,10 @@ test.describe('Satellite is the default basemap', () => {
     await page.goto('/')
     await waitForAppReady(page)
     await dismissLauncher(page)
-    await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+
+    // satellite-layer is added by addRasterSources() inside onLoad(), so we
+    // must wait for the MapLibre 'load' event to have fired.
+    await page.waitForSelector('[data-map-loaded]', { timeout: 30_000 })
 
     const visibility = await page.evaluate(() => {
       const map = (window as unknown as {
@@ -35,8 +46,9 @@ test.describe('Satellite is the default basemap', () => {
     await page.goto('/')
     await waitForAppReady(page)
     await dismissLauncher(page)
-    await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 
+    // Toggle click and aria-pressed check work on React state alone —
+    // no map-loaded synchronisation needed.
     const toggle = page.getByTestId('satellite-toggle')
     await toggle.click()
     await expect(toggle).toHaveAttribute('aria-pressed', 'false')
