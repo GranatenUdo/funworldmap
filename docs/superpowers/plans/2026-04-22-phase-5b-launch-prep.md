@@ -419,12 +419,12 @@ drifted — update both the query and this README.
 -- Recommended chart: line, x=day, y=count, color=mode.
 
 SELECT
-  toStartOfDay(timestamp) AS day,
+  toStartOfInterval(_timestamp, INTERVAL '1' DAY) AS day,
   blob2 AS mode,
   SUM(_sample_interval) AS events
 FROM funworldmap_events
 WHERE index1 = 'daily_opened'
-  AND timestamp > NOW() - INTERVAL '30' DAY
+  AND _timestamp > NOW() - INTERVAL '30' DAY
 GROUP BY day, mode
 ORDER BY day ASC, mode ASC;
 ```
@@ -437,12 +437,12 @@ ORDER BY day ASC, mode ASC;
 -- Recommended chart: stacked bar, x=day, y=count, stack=name.
 
 SELECT
-  toStartOfDay(timestamp) AS day,
+  toStartOfInterval(_timestamp, INTERVAL '1' DAY) AS day,
   index1 AS name,
   SUM(_sample_interval) AS events
 FROM funworldmap_events
 WHERE index1 IN ('daily_started', 'daily_completed')
-  AND timestamp > NOW() - INTERVAL '30' DAY
+  AND _timestamp > NOW() - INTERVAL '30' DAY
 GROUP BY day, name
 ORDER BY day ASC, name ASC;
 ```
@@ -459,7 +459,7 @@ SELECT
   SUM(_sample_interval) AS events
 FROM funworldmap_events
 WHERE index1 = 'streak_reached_milestone'
-  AND timestamp > NOW() - INTERVAL '30' DAY
+  AND _timestamp > NOW() - INTERVAL '30' DAY
 GROUP BY milestone_days
 ORDER BY milestone_days ASC;
 ```
@@ -472,11 +472,11 @@ ORDER BY milestone_days ASC;
 -- Recommended chart: line, x=day, y=count.
 
 SELECT
-  toStartOfDay(timestamp) AS day,
+  toStartOfInterval(_timestamp, INTERVAL '1' DAY) AS day,
   SUM(_sample_interval) AS events
 FROM funworldmap_events
 WHERE index1 = 'history_opened'
-  AND timestamp > NOW() - INTERVAL '30' DAY
+  AND _timestamp > NOW() - INTERVAL '30' DAY
 GROUP BY day
 ORDER BY day ASC;
 ```
@@ -490,12 +490,12 @@ ORDER BY day ASC;
 -- Note: modesPlayed is not captured at the Worker level (v1.1 roadmap item).
 
 SELECT
-  toStartOfDay(timestamp) AS day,
+  toStartOfInterval(_timestamp, INTERVAL '1' DAY) AS day,
   blob4 AS method,
   SUM(_sample_interval) AS events
 FROM funworldmap_events
 WHERE index1 = 'daily_shared'
-  AND timestamp > NOW() - INTERVAL '30' DAY
+  AND _timestamp > NOW() - INTERVAL '30' DAY
 GROUP BY day, method
 ORDER BY day ASC, method ASC;
 ```
