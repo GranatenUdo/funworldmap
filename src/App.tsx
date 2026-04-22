@@ -88,6 +88,7 @@ function AppInner({
   sources,
   cities,
 }: AppInnerProps) {
+  const appReady = countries.length > 0 && cities.length > 0
   const { selected, compareWith, select, compareSelect, clearCompare, deselect } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
@@ -334,7 +335,7 @@ function AppInner({
       <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-10"
         style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.10) 100%)' }} />
 
-      <main>
+      <main data-app-ready={appReady ? 'true' : 'false'}>
         <WorldMap
           byNumeric={byNumeric}
           selected={selected}
