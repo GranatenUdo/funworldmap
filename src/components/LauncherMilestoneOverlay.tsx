@@ -31,15 +31,8 @@ export function LauncherMilestoneOverlay({ days, onDismiss }: Props) {
       type="button"
       onClick={onDismiss}
       data-testid="launcher-milestone"
-      className="fixed inset-x-0 top-16 z-[220] mx-auto max-w-md px-6 py-3 rounded-xl shadow-2xl text-center text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-light/80"
-      style={{
-        animation: 'launcher-milestone-in 260ms ease-out both',
-        /* #065f56 on #ffffff: contrast ≈ 6.9:1 — WCAG AA pass.
-           teal/teal-dim (#14b8a6 / #0d9488) both fail with white text.
-           Using a deep-teal that stays on brand while meeting WCAG. */
-        backgroundColor: '#065f56',
-        color: '#ffffff',
-      }}
+      className="fixed inset-x-0 top-16 z-[220] mx-auto max-w-md px-6 py-3 rounded-xl shadow-2xl text-center text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-light/80 bg-teal-accessible text-white"
+      style={{ animation: 'launcher-milestone-in 260ms ease-out both' }}
       aria-live="polite"
     >
       <span aria-hidden="true">🔥 </span>{COPY[days]}
