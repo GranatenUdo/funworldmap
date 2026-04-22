@@ -200,6 +200,7 @@ test.describe('Launcher — accessibility', () => {
   })
 
   test('initial focus lands on last-played mode card', async ({ page }) => {
+    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
     })
@@ -208,6 +209,7 @@ test.describe('Launcher — accessibility', () => {
   })
 
   test('Tab cycles through mode card 1, mode card 2, dismiss link, wraps', async ({ page }) => {
+    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
     })

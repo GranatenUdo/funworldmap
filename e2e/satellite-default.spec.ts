@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { dismissLauncher, waitForAppReady } from './helpers'
 
 test.setTimeout(60_000)
 
 test.describe('Satellite is the default basemap', () => {
   test('toggle is pressed on first load', async ({ page }) => {
     await page.goto('/')
+    await waitForAppReady(page)
     await dismissLauncher(page)
     await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 
@@ -15,6 +16,7 @@ test.describe('Satellite is the default basemap', () => {
 
   test('satellite raster layer is visible on first load', async ({ page }) => {
     await page.goto('/')
+    await waitForAppReady(page)
     await dismissLauncher(page)
     await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 
@@ -31,6 +33,7 @@ test.describe('Satellite is the default basemap', () => {
 
   test('user can still toggle back to vector basemap', async ({ page }) => {
     await page.goto('/')
+    await waitForAppReady(page)
     await dismissLauncher(page)
     await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 
