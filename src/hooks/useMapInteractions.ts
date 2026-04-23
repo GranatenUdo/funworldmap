@@ -3,6 +3,7 @@ import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
+import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 
 interface Options {
   loaded: boolean
@@ -33,6 +34,9 @@ export function useMapInteractions({
   const byNumericRef = useRef(byNumeric)
   byNumericRef.current = byNumeric
 
+  const { session } = useGameSessionContext()
+  const tooltipsEnabled = !(session.modeId === 'country-pinning' && session.status === 'playing')
+
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
@@ -50,34 +54,38 @@ export function useMapInteractions({
         const canvas = map.getCanvas()
         if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'pointer'
 
-        const tooltip = tooltipRef.current
-        if (tooltip) {
-          const country = byNumericRef.current.get(id)
-          if (country) {
-            tooltip.replaceChildren()
-            const img = document.createElement('img')
-            img.src = country.flag
-            img.alt = ''
-            tooltip.appendChild(img)
+        if (tooltipsEnabled) {
+          const tooltip = tooltipRef.current
+          if (tooltip) {
+            const country = byNumericRef.current.get(id)
+            if (country) {
+              tooltip.replaceChildren()
+              const img = document.createElement('img')
+              img.src = country.flag
+              img.alt = ''
+              tooltip.appendChild(img)
 
-            const textWrap = document.createElement('div')
-            textWrap.className = 'tooltip-text'
+              const textWrap = document.createElement('div')
+              textWrap.className = 'tooltip-text'
 
-            const nameEl = document.createElement('div')
-            nameEl.className = 'tooltip-name'
-            nameEl.textContent = country.name.common
-            textWrap.appendChild(nameEl)
+              const nameEl = document.createElement('div')
+              nameEl.className = 'tooltip-name'
+              nameEl.textContent = country.name.common
+              textWrap.appendChild(nameEl)
 
-            if (country.capital.length > 0) {
-              const capitalEl = document.createElement('div')
-              capitalEl.className = 'tooltip-capital'
-              capitalEl.textContent = country.capital[0]
-              textWrap.appendChild(capitalEl)
+              if (country.capital.length > 0) {
+                const capitalEl = document.createElement('div')
+                capitalEl.className = 'tooltip-capital'
+                capitalEl.textContent = country.capital[0]
+                textWrap.appendChild(capitalEl)
+              }
+
+              tooltip.appendChild(textWrap)
+              tooltip.classList.add('visible')
             }
-
-            tooltip.appendChild(textWrap)
-            tooltip.classList.add('visible')
           }
+        } else {
+          tooltipRef.current?.classList.remove('visible')
         }
       }
     }
@@ -147,7 +155,7 @@ export function useMapInteractions({
       map.off('dragstart', dragStart)
       map.off('dragend', dragEnd)
     }
-  }, [loaded, mapRef, hoveredRef, tooltipRef])
+  }, [loaded, mapRef, hoveredRef, tooltipRef, tooltipsEnabled])
 
   // Crosshair cursor while picking a compare target. When picking ends, restore
   // either pointer (if hovering a country) or grab (if not).
