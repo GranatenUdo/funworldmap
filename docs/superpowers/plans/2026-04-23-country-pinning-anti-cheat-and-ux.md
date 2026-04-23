@@ -147,7 +147,7 @@ At `SingleCountryPanel.tsx:189` where `<CloseButton onClick={onClose} ariaLabel=
     type="button"
     onClick={onClose}
     data-testid="game-continue"
-    className="px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-accessible/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
+    className="px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
   >
     Continue
   </button>
@@ -600,9 +600,9 @@ Append a new test inside the existing describe block:
 
 ```ts
 test('tooltip identity hidden during country-pinning guess phase', async ({ page }) => {
-  // Start a country-pinning game via the test shim
-  await page.goto('/#game/country-pinning')
-  await waitForAppReady(page)
+  await page.goto('/')
+  await waitForMap(page)
+  await openCountryPinning(page)
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
   // Hover a country on the map (any country — the tooltip should NOT show identity).
@@ -619,33 +619,45 @@ test('tooltip identity hidden during country-pinning guess phase', async ({ page
 })
 ```
 
+Use the spec's pre-existing local helpers `waitForMap` and `openCountryPinning` — no new imports from `./helpers`.
+
 - [ ] **Step 5: Add round-end panel + continue test**
 
 ```ts
 test('round-end on wrong guess opens target panel; Continue advances', async ({ page }) => {
-  await page.goto('/#game/country-pinning')
-  await waitForAppReady(page)
+  await page.goto('/')
+  await waitForMap(page)
+  await openCountryPinning(page)
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
-  // Submit an intentional wrong guess via the test shim
-  await page.evaluate(() => {
-    const game = (window as unknown as { __funworldmap_game?: { submitGuess: (input: unknown) => void } }).__funworldmap_game
-    game?.submitGuess({ kind: 'country', cca3: 'USA', name: 'United States', centroid: [-100, 40] })
+  // Submit an intentional wrong guess via the existing test shim
+  // (__funworldmap_game.submitCountryGuess takes cca3 and returns boolean).
+  const usaWasTarget = await page.evaluate(() => {
+    const game = (window as unknown as {
+      __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+    }).__funworldmap_game
+    return game?.submitCountryGuess('USA') ?? false
   })
 
-  // The target panel should open (either USA if USA was correct, or the real target)
+  // The target panel should open regardless of whether USA was the target
+  // (on correct, the target IS USA; on wrong, it's whoever was the target).
   await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 5_000 })
+
   // Compare + copy-link buttons must NOT be present in-round
   await expect(page.locator('button[aria-label="Compare with another country"]')).not.toBeAttached()
   await expect(page.locator('button[aria-label="Copy link to this country"]')).not.toBeAttached()
 
-  // Continue button is visible and advances the round
+  // If USA was the target (correct), the auto-advance timer fires or Continue
+  // advances. If wrong, Continue is required. In either case, clicking Continue
+  // moves to the next round.
   const continueBtn = page.getByTestId('game-continue')
   await expect(continueBtn).toBeVisible()
   await continueBtn.click()
 
   // Next round: panel should disappear
   await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 5_000 })
+  // Unused variable guard for lint
+  void usaWasTarget
 })
 ```
 
@@ -686,38 +698,44 @@ Append a test that verifies attempts 1 and 2 DO NOT open the panel:
 
 ```ts
 test('daily country-pinning: panel suppressed for attempts 1 + 2; opens on attempt 3', async ({ page }) => {
-  const today = new Date().toISOString().slice(0, 10)
-  await stubDailyIndex(page, today)
-  await page.goto(`/#daily/${today}/country-pinning`)
-  await waitForAppReady(page)
+  await withDailyStub(page)
+  await page.goto(`/#daily/${TODAY}/country-pinning`)
+  await waitForMap(page)
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
-  // Attempt 1: wrong guess
+  // Attempt 1: wrong guess via the existing shim
   await page.evaluate(() => {
-    const game = (window as unknown as { __funworldmap_game?: { submitGuess: (input: unknown) => void } }).__funworldmap_game
-    game?.submitGuess({ kind: 'country', cca3: 'USA', name: 'United States', centroid: [-100, 40] })
+    const game = (window as unknown as {
+      __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+    }).__funworldmap_game
+    game?.submitCountryGuess('USA')
   })
-  // Panel must NOT appear between attempts
-  await page.waitForTimeout(1500)  // wait past the existing intermediate timer
+  await page.waitForTimeout(1500) // wait past existing intermediate 1200ms timer
   await expect(page.getByTestId('country-panel')).not.toBeAttached()
 
   // Attempt 2: wrong guess
   await page.evaluate(() => {
-    const game = (window as unknown as { __funworldmap_game?: { submitGuess: (input: unknown) => void } }).__funworldmap_game
-    game?.submitGuess({ kind: 'country', cca3: 'CHN', name: 'China', centroid: [105, 35] })
+    const game = (window as unknown as {
+      __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+    }).__funworldmap_game
+    game?.submitCountryGuess('CHN')
   })
   await page.waitForTimeout(1500)
   await expect(page.getByTestId('country-panel')).not.toBeAttached()
 
-  // Attempt 3: wrong guess → panel opens
+  // Attempt 3: wrong guess → panel opens + Continue button visible
   await page.evaluate(() => {
-    const game = (window as unknown as { __funworldmap_game?: { submitGuess: (input: unknown) => void } }).__funworldmap_game
-    game?.submitGuess({ kind: 'country', cca3: 'BRA', name: 'Brazil', centroid: [-55, -10] })
+    const game = (window as unknown as {
+      __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+    }).__funworldmap_game
+    game?.submitCountryGuess('BRA')
   })
   await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 5_000 })
   await expect(page.getByTestId('game-continue')).toBeVisible()
 })
 ```
+
+Uses the spec's pre-existing `withDailyStub` and `waitForMap` helpers plus the `TODAY` module-level constant — no `stubDailyIndex`/`waitForAppReady` imports needed.
 
 - [ ] **Step 3: Run the daily spec 3× locally**
 
