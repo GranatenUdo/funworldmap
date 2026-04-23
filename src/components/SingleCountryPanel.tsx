@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
 import { CloseButton } from './CloseButton'
 import { FieldLabel } from './FieldLabel'
+import { CountryNewsSection } from './CountryNewsSection'
 
 interface Props {
   country: CountryData
@@ -329,6 +330,8 @@ export function SingleCountryPanel({
             )}
           </>
         )}
+
+        {!inGameRound && <CountryNewsSection cca3={country.cca3} />}
       </div>
     </div>
   )
