@@ -11,7 +11,7 @@
 Show a "Recent news" section with up to 5 Guardian Open Platform articles from the last 7 days at the bottom of `SingleCountryPanel`, so a user clicking a country on the map immediately sees what's happening there now.
 
 **Primary success criteria.**
-- When a user selects any of the 194 countries, the panel shows a labelled "Recent news (last 7 days)" section.
+- When a user selects any of the 249 countries + territories, the panel shows a labelled "Recent news (last 7 days)" section.
 - Coverage-rich countries (major EU/US/UK/Asia) show 5 country-specific stories.
 - Coverage-sparse countries fall back to continent-level Guardian tags (`world/africa` / `world/americas` / `world/asia` / `world/europe`) to fill the remainder; region articles are visually marked with a continent badge.
 - Countries that Guardian has no tag for (e.g. some Pacific microstates) and belong to continents Guardian doesn't tag regionally (Oceania, Antarctic) show an honest "No recent Guardian stories about this country or region" line with a direct link to `theguardian.com/world/<tag>` when one exists.
@@ -54,7 +54,7 @@ Show a "Recent news" section with up to 5 Guardian Open Platform articles from t
 
 ### Data pipeline (build-time)
 
-The GitHub Action runs once a day; scales to 194 Guardian API calls per run (plus some for region fallbacks — bounded by country count). Guardian's Open Platform free tier is "unlimited, non-commercial" with practical per-minute throttling; a daily batch with a 250 ms delay between requests stays well within fair use.
+The GitHub Action runs once a day. Guardian's Open Platform developer tier enforces **1 call/sec and 5000 calls/day**. At 249 countries + territories × up to 2 calls each (country + region fallback) × 1100 ms throttle, a full run takes ≈ 9 min — well under the daily quota.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -78,11 +78,18 @@ The GitHub Action runs once a day; scales to 194 Guardian API calls per run (plu
 **Guardian API details:**
 - Endpoint: `https://content.guardianapis.com/search`
 - Auth: `api-key=<GUARDIAN_KEY>` (stored as GitHub Actions secret `GUARDIAN_KEY`; registered at `open-platform.theguardian.com`).
-- Country tags: `world/germany`, `world/france`, etc. United States is `us-news` not `world/usa`. UK is `world/uk`. Hand-curated table covers the 194 countries; countries Guardian has no tag for map to `null`.
-- Region tags: `world/africa`, `world/americas`, `world/asia`, `world/europe`. Oceania + Antarctic countries have no region tag.
+- Country tags: `world/germany`, `world/france`, etc. United States is `us-news` not `world/usa`. UK is `world/uk`. Hand-curated table covers the 249 countries + territories; countries Guardian has no tag for map to `null`.
+- Region tags (hand-curated via Guardian's tag taxonomy; some regions have no clean tag):
+  - `Africa` → `world/africa`
+  - `Europe` → `world/europe`
+  - `Asia` → `world/asia-pacific` (Guardian covers Asia + Pacific under one tag)
+  - `Oceania` → `world/asia-pacific` (same tag)
+  - `Americas` → `null` (Guardian has no single "Americas" tag; `us-news` + per-subregion tags exist but don't unify cleanly — accept no region fallback for this region)
+  - `Antarctic` → `null` (no Guardian coverage tag)
+  - Middle-East cca3s whose `region === 'Asia'` can be manually mapped to `world/middleeast` via a small subregion-override table; default is `world/asia-pacific`.
 - Query parameters: `from-date=<today - 7 days>`, `order-by=newest`, `page-size=5` (country), `page-size=<5-N>*2` (region — over-fetch to allow dedupe by article id).
 - Fields: `show-fields=trailText,thumbnail` — adds summary + image URL.
-- Rate: one request per 250 ms → ~50 s for 194 countries; region fallbacks run in the same batch, bounded by country count.
+- Rate: ≥ 1100 ms delay between requests (Guardian's free tier is 1 call/sec). Full run ≈ 9 min.
 
 ### Output JSON shape (`public/news/<cca3>.json`)
 
@@ -139,7 +146,7 @@ export function CountryNewsSection({ cca3 }: Props) {
 **Article card layout:**
 - Title (bold, medium weight)
 - trailText (regular weight, smaller, max 2 lines via `line-clamp-2`)
-- Metadata line: `<publishedAt>` (relative, "2 days ago") + section badge + scope badge (only when `scope === 'region'`, reads e.g. "Europe")
+- Metadata line: `<publishedAt>` (relative, "2 days ago") + section badge + scope badge (only when `scope === 'region'`, reads e.g. "Europe"). The relative-time formatter is a small hand-rolled helper in `src/lib/relativeTime.ts` (no new npm dep).
 - Thumbnail 64×48 on the left when `thumbnail` is present; falls through to text-only when absent.
 - Whole card is a single `<a href>` with `target="_blank" rel="noopener noreferrer"` — click opens the article on theguardian.com in a new tab.
 
@@ -186,13 +193,15 @@ Sort order within `articles`: country-specific first (by publishedAt desc), then
 | `scripts/news/guardian-client.ts` | Create (~40 LOC) | Thin Guardian search wrapper with the right query parameters |
 | `scripts/news/guardian-tags.ts` | Create (~210 LOC — 194 entries + comments) | cca3 → Guardian tag lookup |
 | `scripts/news/regions.ts` | Create (~10 LOC) | region → Guardian region tag |
-| `scripts/news/sanitise.ts` | Create (~15 LOC) | Strip HTML from `trailText` |
-| `scripts/news/__tests__/sanitise.test.ts` | Create | Unit test for tag stripping |
+| `scripts/news/sanitise.ts` | Create (~25 LOC) | Strip HTML tags AND decode HTML entities (`&amp;`, `&#x2019;`, etc.) from `trailText` |
+| `scripts/news/__tests__/sanitise.test.ts` | Create | Unit tests for tag stripping + entity decoding (covers `&amp;`, numeric entities like `&#8217;`, hex entities like `&#x2019;`) |
 | `scripts/news/__tests__/regions.test.ts` | Create | Unit test for region map |
 | `public/news/<cca3>.json` | Generated (194 files) | Per-country news payload |
 | `src/components/CountryNewsSection.tsx` | Create (~90 LOC) | Presentational: fetch + render |
 | `src/components/__tests__/CountryNewsSection.test.tsx` | Create | Unit test: loading / error / empty / populated states |
 | `src/components/SingleCountryPanel.tsx` | Modify (+3 LOC) | Mount `<CountryNewsSection>` at bottom; gate on `!inGameRound` |
+| `src/lib/relativeTime.ts` | Create (~30 LOC) | Hand-rolled relative-time formatter: "just now" / "N minutes ago" / "N hours ago" / "N days ago" / absolute YYYY-MM-DD past 7 days |
+| `src/lib/__tests__/relativeTime.test.ts` | Create | Unit tests for bucket boundaries |
 | `e2e/country-news.spec.ts` | Create | Route-stub, open panel for Germany, assert rendering |
 | `playwright.config.ts` | Modify (+1 line) | Add spec to chromium testMatch |
 
@@ -237,7 +246,7 @@ No new runtime dependencies (Guardian fetch uses native `fetch`). No CF Worker c
 | Article has no thumbnail | Card renders without image; layout still works. |
 | Article's `trailText` has unusual HTML / script tags | Build-time sanitiser strips all HTML tags; only plain text is stored. Client never receives HTML for this field. |
 | User's Guardian tag page link (empty state fallback) points to a non-existent URL | We only emit the link when `guardianTags[cca3]` is non-null; tag existence is manually verified during the build of `guardian-tags.ts`. |
-| 404 on `/news/<cca3>.json` (cold deploy, or file missing) | Client renders "News unavailable"; no crash. First deploy after merging this PR must include at least one successful news build — coordinate the GHA's first run with the merge. |
+| 404 on `/news/<cca3>.json` (cold deploy, or file missing) | Client renders "News unavailable"; no crash. **First deploy plan: run the build script locally once during the implementation PR and commit the initial 249 JSON files alongside the code.** Merge then ships with data immediately available; the daily GHA keeps it fresh from there. |
 | Article thumbnail URL returns 404 | `<img>` shows its alt text; `loading="lazy"` means no performance impact. |
 | Article title or trailText is unusually long | Title uses `line-clamp-2`; trailText uses `line-clamp-2`. Fixed card heights. |
 
@@ -247,7 +256,7 @@ No new runtime dependencies (Guardian fetch uses native `fetch`). No CF Worker c
 
 ### Unit
 
-- `scripts/news/__tests__/sanitise.test.ts` — strip HTML tags from trailText; leave plain text untouched; handle nested tags.
+- `scripts/news/__tests__/sanitise.test.ts` — strip HTML tags from trailText; decode HTML entities (`&amp;`, `&#8217;`, `&#x2019;`); leave plain text untouched; handle nested tags.
 - `scripts/news/__tests__/regions.test.ts` — `regionToGuardianTag` returns correct Guardian tag for each of 6 region values; Oceania + Antarctic return `null`.
 - `src/components/__tests__/CountryNewsSection.test.tsx` — four tests:
   - Renders "Loading news…" while fetch is in-flight.
@@ -284,7 +293,7 @@ No new runtime dependencies (Guardian fetch uses native `fetch`). No CF Worker c
 | `us-news` section vs `world/usa` tag confusion | Hand-curated `guardian-tags.ts` pins USA → `us-news`; unit-tested. |
 | Article thumbnails slow panel render | `loading="lazy"` defers image load until scroll into view. Cards render text-first. |
 | News section visible during country-pinning round-end panel clutters the educational UI | Gated on `!inGameRound`. Round-end panel shows target info only. |
-| Build script takes too long (GHA job limit 6 h) | 194 countries × ~300 ms each (fetch + 250 ms throttle) = ~60 s. Region fallback adds ~30 s. Well under any limit. |
+| Build script takes too long (GHA job limit 6 h) | 249 countries + territories × ≥ 1100 ms throttle (Guardian's 1 call/sec free tier) ≈ 5 min baseline, + region fallback ≈ 4 min = ~9 min. Well under any limit. |
 | `countries.json` changes (cca3 added/renamed) and `guardian-tags.ts` drifts | Build script logs a warning for any cca3 present in countries.json but missing from `guardian-tags.ts`. Does not fail the run — tag lookup falls through to null → region fallback. |
 
 ---
