@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>funworldmap — font pairing comparison</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Fraunces:opsz,wght,SOFT@9..144,400..700,0..100&family=Instrument+Serif:ital@0;1&family=DM+Serif+Display&family=Redaction:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --paper: #f6f1e6;
+        --ink: #2c2924;
+        --ink-soft: #6b6459;
+        --teal: #14b8a6;
+        --teal-light: #5eead4;
+        --coral: #f43f5e;
+        --sand-200: #f0ebe3;
+        --sand-300: #e0d8cc;
+        --dark-400: #161a22;
+        --dark-300: #1e2430;
+        --dark-50: #f1f5f9;
+        --dark-100: #94a3b8;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Outfit', system-ui, sans-serif;
+        background: #ece6d8;
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      .page {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 48px 32px 96px;
+      }
+
+      header.intro {
+        margin-bottom: 48px;
+        max-width: 720px;
+      }
+
+      header.intro .eyebrow {
+        font-size: 11px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--teal);
+        font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      header.intro h1 {
+        font-family: 'Fraunces', serif;
+        font-variation-settings: 'SOFT' 50, 'opsz' 100;
+        font-weight: 500;
+        font-size: 40px;
+        line-height: 1.1;
+        margin: 0 0 12px;
+        letter-spacing: -0.01em;
+      }
+
+      header.intro p {
+        font-size: 15px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+
+      .theme-switcher {
+        display: inline-flex;
+        gap: 4px;
+        margin-top: 20px;
+        padding: 4px;
+        background: var(--sand-200);
+        border-radius: 10px;
+        border: 1px solid var(--sand-300);
+      }
+
+      .theme-switcher button {
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border: 0;
+        background: transparent;
+        color: var(--ink-soft);
+        border-radius: 7px;
+        cursor: pointer;
+      }
+
+      .theme-switcher button.active {
+        background: var(--paper);
+        color: var(--ink);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 24px;
+      }
+
+      .card {
+        background: var(--paper);
+        border: 1px solid var(--sand-300);
+        border-radius: 16px;
+        padding: 28px 26px 32px;
+        overflow: hidden;
+      }
+
+      body.dark { background: #0b0f1a; color: var(--dark-50); }
+      body.dark header.intro h1 { color: var(--dark-50); }
+      body.dark header.intro p { color: var(--dark-100); }
+      body.dark header.intro .eyebrow { color: var(--teal-light); }
+      body.dark .theme-switcher {
+        background: var(--dark-300);
+        border-color: rgba(94, 234, 212, 0.15);
+      }
+      body.dark .theme-switcher button { color: var(--dark-100); }
+      body.dark .theme-switcher button.active {
+        background: var(--dark-400);
+        color: var(--dark-50);
+      }
+      body.dark .card {
+        background: var(--dark-400);
+        border-color: rgba(94, 234, 212, 0.1);
+      }
+      body.dark .card .descriptor { color: var(--dark-100); }
+      body.dark .card .wordmark,
+      body.dark .card .country-name { color: var(--dark-50); }
+      body.dark .card .official { color: var(--dark-100); }
+      body.dark .card .capital { color: var(--teal-light); }
+      body.dark .card .section-label { color: var(--teal-light); }
+      body.dark .card .data-label { color: var(--teal-light); }
+      body.dark .card .data-value { color: var(--dark-50); }
+      body.dark .card .divider { background: rgba(94, 234, 212, 0.12); }
+      body.dark .card .region-stamp {
+        background: rgba(59, 130, 246, 0.18);
+        color: #93c5fd;
+      }
+
+      .card-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
+
+      .card-head .font-name {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--teal);
+      }
+
+      .card-head .descriptor {
+        font-size: 11px;
+        color: var(--ink-soft);
+      }
+
+      body.dark .card-head .font-name { color: var(--teal-light); }
+
+      .wordmark-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+      }
+
+      .meridian {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 1px solid currentColor;
+        position: relative;
+        color: var(--teal);
+        flex-shrink: 0;
+      }
+
+      .meridian::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: currentColor;
+        transform: translateX(-50%);
+      }
+
+      body.dark .meridian { color: var(--teal-light); }
+
+      .wordmark {
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.005em;
+        color: var(--ink);
+      }
+
+      .country-row {
+        display: flex;
+        gap: 14px;
+        margin-bottom: 16px;
+      }
+
+      .flag {
+        width: 72px;
+        height: 50px;
+        border-radius: 10px;
+        flex-shrink: 0;
+        background: linear-gradient(
+          to right,
+          #0055a4 0 33%,
+          #ffffff 33% 66%,
+          #ef4135 66% 100%
+        );
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      .country-name {
+        font-size: 30px;
+        line-height: 1.05;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin: 0 0 4px;
+      }
+
+      .official {
+        font-size: 12px;
+        color: var(--ink-soft);
+        margin: 0;
+      }
+
+      .capital {
+        font-size: 12px;
+        color: var(--teal);
+        margin: 2px 0 0;
+      }
+
+      .region-stamp {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        border-radius: 999px;
+        background: rgba(59, 130, 246, 0.14);
+        color: #1d4ed8;
+      }
+
+      .divider {
+        height: 1px;
+        background: rgba(20, 184, 166, 0.12);
+        margin: 22px 0 18px;
+      }
+
+      .section-label {
+        font-family: 'Outfit', sans-serif;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin: 0 0 10px;
+      }
+
+      .data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 18px;
+      }
+
+      .data-cell .data-label {
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--teal);
+        margin-bottom: 3px;
+      }
+
+      .data-cell .data-value {
+        font-size: 15px;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        color: var(--ink);
+      }
+
+      /* ========== PER-FONT DISPLAY TYPE OVERRIDES ========== */
+
+      .card.fraunces .country-name,
+      .card.fraunces .wordmark,
+      .card.fraunces .section-heading {
+        font-family: 'Fraunces', serif;
+        font-variation-settings: 'SOFT' 50, 'opsz' 100, 'wght' 600;
+      }
+
+      .card.fraunces .country-name {
+        font-variation-settings: 'SOFT' 50, 'opsz' 120, 'wght' 600;
+        letter-spacing: -0.015em;
+      }
+
+      .card.instrument .country-name,
+      .card.instrument .wordmark,
+      .card.instrument .section-heading {
+        font-family: 'Instrument Serif', serif;
+      }
+
+      .card.instrument .country-name {
+        font-weight: 400;
+        letter-spacing: -0.01em;
+      }
+
+      .card.instrument .wordmark {
+        font-weight: 400;
+      }
+
+      .card.dmserif .country-name,
+      .card.dmserif .wordmark,
+      .card.dmserif .section-heading {
+        font-family: 'DM Serif Display', serif;
+      }
+
+      .card.dmserif .country-name {
+        font-weight: 400;
+        letter-spacing: -0.015em;
+      }
+
+      .card.dmserif .wordmark {
+        font-weight: 400;
+      }
+
+      .card.redaction .country-name,
+      .card.redaction .wordmark,
+      .card.redaction .section-heading {
+        font-family: 'Redaction', serif;
+      }
+
+      .card.redaction .country-name {
+        font-weight: 700;
+      }
+
+      .card.redaction .wordmark {
+        font-weight: 400;
+      }
+
+      footer.legend {
+        margin-top: 56px;
+        padding-top: 24px;
+        border-top: 1px dashed var(--sand-300);
+        font-size: 13px;
+        color: var(--ink-soft);
+        line-height: 1.6;
+      }
+
+      body.dark footer.legend {
+        border-top-color: rgba(94, 234, 212, 0.15);
+        color: var(--dark-100);
+      }
+
+      .legend code {
+        background: var(--sand-200);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+
+      body.dark .legend code {
+        background: var(--dark-300);
+      }
+
+      .section-heading {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0 0 10px;
+        letter-spacing: -0.005em;
+      }
+    </style>
+  </head>
+  <body class="light">
+    <div class="page">
+      <header class="intro">
+        <div class="eyebrow">Foundation · display face evaluation</div>
+        <h1>Pick the voice of the atlas.</h1>
+        <p>
+          Four free serifs paired with Outfit as body. The wordmark, the country
+          name, and the section heading all switch; everything else stays in Outfit.
+          Each card shows the same content so differences are only typographic.
+        </p>
+        <div class="theme-switcher" role="tablist">
+          <button class="active" data-theme="light">Light</button>
+          <button data-theme="dark">Dark</button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <!-- FRAUNCES -->
+        <section class="card fraunces">
+          <div class="card-head">
+            <span class="font-name">Fraunces</span>
+            <span class="descriptor">literary atlas · recommended</span>
+          </div>
+
+          <div class="wordmark-row">
+            <span class="meridian"></span>
+            <span class="wordmark">funworldmap</span>
+          </div>
+
+          <div class="country-row">
+            <div class="flag"></div>
+            <div>
+              <h2 class="country-name">France</h2>
+              <p class="official">French Republic</p>
+              <p class="capital">Paris</p>
+              <span class="region-stamp">Europe / Western Europe</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="section-heading">Overview</h3>
+          <div class="data-grid">
+            <div class="data-cell">
+              <div class="data-label">Population</div>
+              <div class="data-value">68,374,591</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Area</div>
+              <div class="data-value">643,801 km²</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Government</div>
+              <div class="data-value">Semi-presidential</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">UN Member</div>
+              <div class="data-value">Yes</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- INSTRUMENT SERIF -->
+        <section class="card instrument">
+          <div class="card-head">
+            <span class="font-name">Instrument Serif</span>
+            <span class="descriptor">scholarly reference · classical</span>
+          </div>
+
+          <div class="wordmark-row">
+            <span class="meridian"></span>
+            <span class="wordmark">funworldmap</span>
+          </div>
+
+          <div class="country-row">
+            <div class="flag"></div>
+            <div>
+              <h2 class="country-name">France</h2>
+              <p class="official">French Republic</p>
+              <p class="capital">Paris</p>
+              <span class="region-stamp">Europe / Western Europe</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="section-heading">Overview</h3>
+          <div class="data-grid">
+            <div class="data-cell">
+              <div class="data-label">Population</div>
+              <div class="data-value">68,374,591</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Area</div>
+              <div class="data-value">643,801 km²</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Government</div>
+              <div class="data-value">Semi-presidential</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">UN Member</div>
+              <div class="data-value">Yes</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- DM SERIF DISPLAY -->
+        <section class="card dmserif">
+          <div class="card-head">
+            <span class="font-name">DM Serif Display</span>
+            <span class="descriptor">editorial luxury · high contrast</span>
+          </div>
+
+          <div class="wordmark-row">
+            <span class="meridian"></span>
+            <span class="wordmark">funworldmap</span>
+          </div>
+
+          <div class="country-row">
+            <div class="flag"></div>
+            <div>
+              <h2 class="country-name">France</h2>
+              <p class="official">French Republic</p>
+              <p class="capital">Paris</p>
+              <span class="region-stamp">Europe / Western Europe</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="section-heading">Overview</h3>
+          <div class="data-grid">
+            <div class="data-cell">
+              <div class="data-label">Population</div>
+              <div class="data-value">68,374,591</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Area</div>
+              <div class="data-value">643,801 km²</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Government</div>
+              <div class="data-value">Semi-presidential</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">UN Member</div>
+              <div class="data-value">Yes</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REDACTION -->
+        <section class="card redaction">
+          <div class="card-head">
+            <span class="font-name">Redaction</span>
+            <span class="descriptor">gazetteer · printerly</span>
+          </div>
+
+          <div class="wordmark-row">
+            <span class="meridian"></span>
+            <span class="wordmark">funworldmap</span>
+          </div>
+
+          <div class="country-row">
+            <div class="flag"></div>
+            <div>
+              <h2 class="country-name">France</h2>
+              <p class="official">French Republic</p>
+              <p class="capital">Paris</p>
+              <span class="region-stamp">Europe / Western Europe</span>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="section-heading">Overview</h3>
+          <div class="data-grid">
+            <div class="data-cell">
+              <div class="data-label">Population</div>
+              <div class="data-value">68,374,591</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Area</div>
+              <div class="data-value">643,801 km²</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">Government</div>
+              <div class="data-value">Semi-presidential</div>
+            </div>
+            <div class="data-cell">
+              <div class="data-label">UN Member</div>
+              <div class="data-value">Yes</div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="legend">
+        <strong>How to read this:</strong> the three things that change between
+        cards are the <code>wordmark</code>, the <code>country name h2</code>, and
+        the <code>section heading</code>. Body text, labels, numbers and UI all
+        stay in Outfit regardless. Toggle light/dark at the top.
+        <br /><br />
+        The meridian glyph before the wordmark is a preview of the mark that would
+        land in the separate "cartographic identity" spec — included here only so
+        you can judge how the wordmark sits next to it.
+      </footer>
+    </div>
+
+    <script>
+      const buttons = document.querySelectorAll('.theme-switcher button');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const theme = btn.dataset.theme;
+          document.body.className = theme;
+          buttons.forEach((b) =>
+            b.classList.toggle('active', b.dataset.theme === theme),
+          );
+        });
+      });
+    </script>
+  </body>
+</html>

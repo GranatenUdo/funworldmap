@@ -1,4 +1,4 @@
-# Country-Pinning — Anti-Cheat + Round-End UX Reform Design
+# Country-Pinning — Guess-Phase Fixes + Round-End UX Reform Design
 
 **Date:** 2026-04-22
 **Status:** Draft — pending user review
@@ -8,7 +8,7 @@
 
 ## Goal
 
-Remove two cheat surfaces from the country-pinning game and replace the auto-advance round-end with a panel-driven flow that doubles as an educational reward.
+Fix two guess-phase bugs that invalidate the country-pinning game (hovering a country reveals its name; the Guess-by-name input lets you type the name already shown in the HUD) and replace the auto-advance round-end with a panel-driven flow that doubles as an educational reward.
 
 **Primary success criteria.**
 - During a country-pinning guess phase, hovering a country on the map reveals **nothing** about its identity beyond the standard hover highlight.
@@ -18,7 +18,7 @@ Remove two cheat surfaces from the country-pinning game and replace the auto-adv
 - Daily 3-attempt rounds keep the existing incremental-distance puzzle: the panel is suppressed for attempts 1-2, opens for the final outcome.
 
 **Explicit non-goals.**
-- City-guessing receives the same tooltip cheat (a city's tooltip identifies its country); fix deferred to a separate plan.
+- City-guessing has the same tooltip-reveals-answer bug (a city's tooltip identifies its country); fix deferred to a separate plan.
 - News-feed-on-CountryPanel is a separate plan.
 - No visual redesign of `SingleCountryPanel`'s header — Continue reuses the existing close-button slot.
 - No changes to per-attempt scoring, reveal-marker rendering, or the daily content pipeline.
@@ -38,7 +38,7 @@ Remove two cheat surfaces from the country-pinning game and replace the auto-adv
 
 ### Out of scope (deferred)
 
-- City-guessing tooltip cheat (same class of bug, separate plan).
+- City-guessing tooltip-reveals-answer bug (same class, separate plan).
 - News-feed feature (separate plan; see Country News Feed brainstorm next).
 - Visual chrome changes beyond the in-round button hide/relabel.
 - Refactoring the daily 3-attempt scoring or attempt-tracking model.
@@ -55,7 +55,7 @@ Wiring:
 - `App.tsx` already has `gameActive` derived from session status (`App.tsx:354`). Define `tooltipsEnabled = !gameActive` (or, more precisely, `!(gameActive && session.status === 'playing')` once session is in scope).
 - Pass through `WorldMap` props → `useMapInstance` → `useMapInteractions` (or directly to `useMapInteractions` if it already takes a hook on its own).
 
-Simpler alternative: read the session status via `useGameSessionContext()` inside `useMapInteractions`. Cleaner, no prop-drilling. The interactions hook does not currently consume game session — adding it is acceptable since the cheat-suppression rule is fundamentally a game-state concern.
+Simpler alternative: read the session status via `useGameSessionContext()` inside `useMapInteractions`. Cleaner, no prop-drilling. The interactions hook does not currently consume game session — adding it is acceptable since the rule that drives tooltip content is fundamentally a game-state concern.
 
 **Decision: read via `useGameSessionContext()` inside `useMapInteractions`.** Avoids prop-drilling.
 
@@ -211,7 +211,7 @@ User clicks country
 
 ## Definition of done
 
-- All cheat surfaces removed (verified by E2E tooltip + GuessByName tests).
+- Both guess-phase bugs fixed (verified by E2E tooltip + GuessByName tests).
 - Round-end panel opens for free-play and for final daily attempt.
 - Continue button advances on wrong guesses; correct auto-advances within 3000 ms with early-skip.
 - Daily 3-attempt scoring unchanged; intermediate panel suppression verified.

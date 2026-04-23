@@ -1,14 +1,14 @@
-# Country-Pinning Anti-Cheat + Round-End UX Implementation Plan
+# Country-Pinning Guess-Phase Fixes + Round-End UX Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Remove the tooltip-name and Guess-by-name cheat surfaces from country-pinning and replace the fixed auto-advance with a target-country panel that opens on guess (continue-required on wrong, skippable auto-advance on correct).
+**Goal:** Fix the tooltip-reveals-name and Guess-by-name bugs in country-pinning, and replace the fixed auto-advance with a target-country panel that opens on guess (continue-required on wrong, skippable auto-advance on correct).
 
 **Architecture:** Three decoupled changes plus one orchestration change. (1) `SingleCountryPanel` gains an `inGameRound` prop that hides Compare + Copy-link and replaces the close-icon with a "Continue" text button. (2) `useMapInteractions` reads game state via `useGameSessionContext()` and suppresses the tooltip's identity content during country-pinning guess phases. (3) `GuessByNameButton.tsx` is deleted along with its render block at `GameController.tsx:521-535`. (4) `App.tsx` gains a parallel `<CountryPanel>` render branch for round-ended-final-outcome, and `GameController.tsx`'s round-end effect becomes conditional (correct → 3000 ms timer + scoped keydown skip; wrong → no timer, Continue + Escape advance).
 
 **Tech Stack:** React 19, TypeScript, MapLibre GL, Playwright.
 
-**Spec:** [`2026-04-22-country-pinning-anti-cheat-and-ux.md`](../specs/2026-04-22-country-pinning-anti-cheat-and-ux.md).
+**Spec:** [`2026-04-22-country-pinning-guess-fixes-and-ux.md`](../specs/2026-04-22-country-pinning-guess-fixes-and-ux.md).
 
 ---
 
@@ -18,7 +18,7 @@
 |---|---|---|
 | `src/components/SingleCountryPanel.tsx` | Modify (~15 LOC) | Add optional `inGameRound?: boolean` prop. When true: hide Compare + Copy-link buttons; replace close-icon with a "Continue" text button (same `onClose` handler, testid `game-continue`). |
 | `src/hooks/useMapInteractions.ts` | Modify (~10 LOC) | Read `session` via `useGameSessionContext()`. When `session.modeId === 'country-pinning' && session.status === 'playing'`, skip the tooltip identity-write block; hover highlight stays. |
-| `src/game/shared/hud/GuessByNameButton.tsx` | **Delete** | Cheat input removed. |
+| `src/game/shared/hud/GuessByNameButton.tsx` | **Delete** | Broken input removed — target name is already in the HUD, typing it is trivial. |
 | `src/game/GameController.tsx:10,521-535` | Modify | Remove import + entire `{session.status === 'playing' && session.modeId === 'country-pinning' && (<GuessByNameButton ... />)}` block. |
 | `src/game/GameController.tsx:225-233` | Modify (~35 LOC) | Rewrite round-end effect: intermediate daily attempts keep existing `setTimeout`; final outcome + correct → 3000ms timer + scoped keydown listener; final outcome + wrong → no timer, `keydown(Escape)` advance, Continue button is the primary path. |
 | `src/App.tsx` | Modify (~15 LOC) | Add a second `<CountryPanel>` render branch for `session.status === 'round-ended' && country-pinning && final-outcome`. |
@@ -36,7 +36,7 @@ No new dependencies.
 - [ ] **Step 1: Create worktree off main**
 
 ```bash
-git worktree add ../polworldmap-country-pinning-ux -b feat/country-pinning-anti-cheat-ux main
+git worktree add ../polworldmap-country-pinning-ux -b feat/country-pinning-guess-fixes-ux main
 ```
 
 - [ ] **Step 2: Install deps**
@@ -331,7 +331,7 @@ Expected: clean. If tsc reports "cannot find module", there's another caller of 
 
 ```bash
 git add -u src/game/GameController.tsx src/game/shared/hud/GuessByNameButton.tsx
-git commit -m "feat(country-pinning): remove GuessByName UI (cheat surface)"
+git commit -m "feat(country-pinning): remove GuessByName UI (target name was already shown in HUD)"
 ```
 
 ---
@@ -793,13 +793,13 @@ Expected: green.
 - [ ] **Step 4: Push branch**
 
 ```bash
-git push -u origin feat/country-pinning-anti-cheat-ux
+git push -u origin feat/country-pinning-guess-fixes-ux
 ```
 
 - [ ] **Step 5: Open PR**
 
 ```bash
-gh pr create --base main --title "feat(country-pinning): anti-cheat + round-end UX reform" --body "$(cat <<'EOF'
+gh pr create --base main --title "feat(country-pinning): guess-phase fixes + round-end UX reform" --body "$(cat <<'EOF'
 ## Summary
 
 - **Tooltip suppression** — `useMapInteractions` reads game session via `useGameSessionContext`; during country-pinning guess phase the tooltip identity content (flag + name + capital) is suppressed. Hover highlight stays.
@@ -812,15 +812,15 @@ Zero changes to scoring, reveal animation, daily content pipeline, city-guessing
 
 ## Why
 
-Spec: `docs/superpowers/specs/2026-04-22-country-pinning-anti-cheat-and-ux.md`.
+Spec: `docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md`.
 
-Two cheat surfaces invalidated the country-pinning game (hover reveals name; Guess-by-name types the shown name). Round-end UX previously auto-dismissed too fast to learn anything. This PR addresses both.
+Two bugs invalidated the country-pinning guess phase (hover reveals name; Guess-by-name lets you type the name already shown in the HUD). Round-end UX previously auto-dismissed too fast to learn anything. This PR addresses both.
 
-Plan: `docs/superpowers/plans/2026-04-23-country-pinning-anti-cheat-and-ux.md`.
+Plan: `docs/superpowers/plans/2026-04-23-country-pinning-guess-fixes-and-ux.md`.
 
 ## Out of scope (follow-up plans)
 
-- City-guessing tooltip cheat (same class of bug, separate plan).
+- City-guessing tooltip-reveals-answer bug (same class, separate plan).
 - Country news feed on `CountryPanel` (separate brainstorm).
 
 ## Test Plan
