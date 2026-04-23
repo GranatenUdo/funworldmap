@@ -97,6 +97,8 @@ The GitHub Action runs once a day. Guardian's Open Platform developer tier enfor
 interface CountryNewsFile {
   updatedAt: string              // ISO timestamp of GHA build
   country: { cca3: string; name: string }
+  guardianTag: string | null      // e.g. 'world/germany'; null when country has no Guardian tag
+                                  // — used by the client's empty-state "Browse all coverage" link
   articles: CountryNewsArticle[]  // 0..5
 }
 
