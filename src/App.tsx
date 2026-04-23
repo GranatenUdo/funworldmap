@@ -40,10 +40,6 @@ export default function App() {
         })),
     [countries],
   )
-  const poolFull = useMemo<CountryData[]>(
-    () => countries.filter((c: CountryData) => c.independent === true),
-    [countries],
-  )
   const poolByCca3 = useMemo(() => new Map(pool.map((c) => [c.cca3, c])), [pool])
   const pools = useMemo(() => ({ countries: pool, cities }), [pool, cities])
 
@@ -53,7 +49,6 @@ export default function App() {
         <DailyPuzzlesProvider>
           <AppInner
             countries={countries}
-            countriesFull={poolFull}
             pool={pool}
             byNumeric={byNumeric}
             byCca3={byCca3}
@@ -69,7 +64,6 @@ export default function App() {
 
 interface AppInnerProps {
   countries: CountryData[]
-  countriesFull: CountryData[]
   pool: CountryLike[]
   byNumeric: Map<string, CountryData>
   byCca3: Map<string, CountryData>
@@ -80,7 +74,6 @@ interface AppInnerProps {
 
 function AppInner({
   countries,
-  countriesFull,
   pool,
   byNumeric,
   byCca3,
@@ -93,7 +86,7 @@ function AppInner({
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
-  const { session, submitGuessInput } = useGameSessionContext()
+  const { session, submitGuessInput, advance, mode } = useGameSessionContext()
   const { visible: launcherVisible, anchorDate, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const prevSelectedRef = useRef<string | null>(null)
@@ -135,6 +128,30 @@ function AppInner({
   }, [clearCompare])
 
   const gameActive = session.status !== 'idle'
+
+  const roundEndTarget = useMemo(() => {
+    if (session.status !== 'round-ended') return null
+    if (session.modeId !== 'country-pinning') return null
+    const isFinalOutcome =
+      session.attemptsPerRound === 1 || session.attemptsRemaining === 0
+    if (!isFinalOutcome) return null
+    const reveal = session.lastOutcome?.reveal
+    if (!reveal || reveal.kind !== 'country') return null
+    return byCca3.get(reveal.targetCca3) ?? null
+  }, [
+    session.status,
+    session.modeId,
+    session.attemptsPerRound,
+    session.attemptsRemaining,
+    session.lastOutcome,
+    byCca3,
+  ])
+
+  const advanceRoundEndPanel = useCallback(() => {
+    if (session.status !== 'round-ended' || !mode) return
+    const next = mode.nextRound(session.used)
+    advance(next)
+  }, [session.status, session.used, advance, mode])
 
   const onMapSelect = useCallback(
     (cca3: string) => {
@@ -363,7 +380,7 @@ function AppInner({
 
       {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} countries={pool} cities={cities} />}
 
-      <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
+      <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
       {showHint && !selected && !gameActive && (
         <div role="status"
@@ -384,6 +401,22 @@ function AppInner({
           onEnterCompare={enterComparePicking}
           onExitCompare={exitCompare}
           byCca3={byCca3}
+        />
+      )}
+
+      {roundEndTarget && (
+        <CountryPanel
+          country={roundEndTarget}
+          compareWith={null}
+          comparePickingMode={false}
+          sources={sources}
+          isDesktop={isDesktop}
+          onSelect={() => { /* no-op during round-end */ }}
+          onClose={advanceRoundEndPanel}
+          onEnterCompare={() => { /* no-op — hidden by inGameRound */ }}
+          onExitCompare={() => { /* no-op — hidden by inGameRound */ }}
+          byCca3={byCca3}
+          inGameRound={true}
         />
       )}
 

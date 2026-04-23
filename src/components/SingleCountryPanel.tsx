@@ -12,6 +12,7 @@ interface Props {
   onClose: () => void
   onEnterCompare: () => void
   byCca3: Map<string, CountryData>
+  inGameRound?: boolean
 }
 
 function DataCell({
@@ -66,6 +67,7 @@ export function SingleCountryPanel({
   onClose,
   onEnterCompare,
   byCca3,
+  inGameRound = false,
 }: Props) {
   const [expanded, setExpanded] = useState(false)
   const showSecondary = isDesktop || expanded
@@ -145,7 +147,7 @@ export function SingleCountryPanel({
           </div>
 
           <div className="flex items-center gap-1 shrink-0">
-            {!comparePickingMode && (
+            {!comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}
                 className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-teal dark:text-teal-light transition-colors"
@@ -159,16 +161,18 @@ export function SingleCountryPanel({
               </button>
             )}
 
-            <button
-              onClick={onShareLink}
-              className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
-              aria-label="Copy link to this country"
-              title="Copy link"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
-            </button>
+            {!inGameRound && (
+              <button
+                onClick={onShareLink}
+                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
+                aria-label="Copy link to this country"
+                title="Copy link"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+              </button>
+            )}
 
             {!isDesktop && (
               <button
@@ -186,7 +190,18 @@ export function SingleCountryPanel({
                 </svg>
               </button>
             )}
-            <CloseButton onClick={onClose} ariaLabel="Close panel" testId="panel-close" />
+            {inGameRound ? (
+              <button
+                type="button"
+                onClick={onClose}
+                data-testid="game-continue"
+                className="px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
+              >
+                Continue
+              </button>
+            ) : (
+              <CloseButton onClick={onClose} ariaLabel="Close panel" testId="panel-close" />
+            )}
           </div>
         </div>
       </div>

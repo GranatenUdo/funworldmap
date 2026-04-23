@@ -13,6 +13,7 @@ interface Props {
   onEnterCompare: () => void
   onExitCompare: () => void
   byCca3: Map<string, CountryData>
+  inGameRound?: boolean
 }
 
 export default function CountryPanel({
@@ -26,6 +27,7 @@ export default function CountryPanel({
   onEnterCompare,
   onExitCompare,
   byCca3,
+  inGameRound,
 }: Props) {
   if (compareWith) {
     return (
@@ -51,6 +53,7 @@ export default function CountryPanel({
       onClose={onClose}
       onEnterCompare={onEnterCompare}
       byCca3={byCca3}
+      inGameRound={inGameRound}
     />
   )
 }

@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { AttemptRecord, CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
-import type { CountryData } from '../lib/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { getMode } from './modes'
 import { HudShell } from './shared/hud/HudShell'
 import { GameOverOverlay } from './shared/hud/GameOverOverlay'
-import { GuessByNameButton } from './shared/hud/GuessByNameButton'
 import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
 import { parseHash } from '../lib/hashState'
 import { LAYER } from '../lib/mapLayers'
@@ -92,12 +90,11 @@ function clearRevealSources(map: maplibregl.Map): void {
 
 interface Props {
   countries: CountryLike[]
-  countriesFull: CountryData[]
   cities: CityLike[]
   byCca3: Map<string, CountryLike>
 }
 
-export function GameController({ countries, countriesFull, cities, byCca3 }: Props) {
+export function GameController({ countries, cities, byCca3 }: Props) {
   const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
@@ -225,12 +222,55 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
           dispatchAnnouncement(`${Math.round(d)} kilometres off. Plus ${o.pointsEarned} points.`)
         }
       }
-      const revealMs = session.modeId === 'city-guessing' ? REVEAL_MS_CITY : REVEAL_MS_COUNTRY
-      const t = window.setTimeout(() => {
+      const isFinalOutcome =
+        session.attemptsPerRound === 1 || session.attemptsRemaining === 0
+      const isCountryPinning = session.modeId === 'country-pinning'
+      const isCorrect =
+        session.lastOutcome.reveal?.kind === 'country'
+          ? session.lastOutcome.reveal.correct
+          : false
+
+      const advanceNow = () => {
         const next = mode.nextRound(session.used)
         advance(next)
-      }, revealMs)
-      return () => window.clearTimeout(t)
+      }
+
+      // Country-pinning intermediate daily attempt → existing behavior (no panel, auto-advance via timer).
+      if (isCountryPinning && !isFinalOutcome) {
+        const t = window.setTimeout(advanceNow, REVEAL_MS_COUNTRY)
+        return () => window.clearTimeout(t)
+      }
+
+      // City-guessing → unchanged existing behavior (current timer values preserved).
+      if (!isCountryPinning) {
+        const revealMs = session.modeId === 'city-guessing' ? REVEAL_MS_CITY : REVEAL_MS_COUNTRY
+        const t = window.setTimeout(advanceNow, revealMs)
+        return () => window.clearTimeout(t)
+      }
+
+      // Country-pinning final outcome + correct → 3000ms auto-advance, scoped keyboard early-skip.
+      if (isCorrect) {
+        const t = window.setTimeout(advanceNow, 3000)
+        const onKey = (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+            window.clearTimeout(t)
+            window.removeEventListener('keydown', onKey)
+            advanceNow()
+          }
+        }
+        window.addEventListener('keydown', onKey)
+        return () => {
+          window.clearTimeout(t)
+          window.removeEventListener('keydown', onKey)
+        }
+      }
+
+      // Country-pinning final outcome + wrong → no timer; Escape advances (Continue button is the primary click path).
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') advanceNow()
+      }
+      window.addEventListener('keydown', onKey)
+      return () => window.removeEventListener('keydown', onKey)
     }
     if (session.status === 'game-over' && !recordedRef.current) {
       recordedRef.current = true
@@ -483,8 +523,10 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
   }, [mode, session.modeId, byCca3, cities, start, overrideRound, submitGuessInput])
 
   // Escape exits.
+  // Country-pinning round-ended: Escape is owned by the round-end effect above (advance, not exit).
   useEffect(() => {
     if (session.status === 'idle') return
+    if (session.status === 'round-ended' && session.modeId === 'country-pinning') return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
       const tgt = e.target as HTMLElement | null
@@ -495,7 +537,7 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [session.status, endGame])
+  }, [session.status, session.modeId, endGame])
 
   const onEndGame = () => { endGame(); writeIdleHash() }
   const onPlayAgain = () => {
@@ -518,21 +560,6 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
       )}
       <HudShell session={session} onEndGame={onEndGame}>
         <Hud session={session} />
-        {session.status === 'playing' && session.modeId === 'country-pinning' && (
-          <GuessByNameButton
-            pool={countriesFull}
-            onGuess={(cca3) => {
-              const c = byCca3.get(cca3.toUpperCase())
-              if (!c) return
-              submitGuessInput({
-                kind: 'country',
-                cca3: cca3.toUpperCase(),
-                name: c.name.common,
-                centroid: centroidFromLatLng(c.latlng),
-              })
-            }}
-          />
-        )}
       </HudShell>
       {session.status === 'game-over' && (
         <GameOverOverlay
