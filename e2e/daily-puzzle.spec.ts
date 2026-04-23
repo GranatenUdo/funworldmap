@@ -110,6 +110,39 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
     await page.reload()
     await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'played')
   })
+
+  test('daily country-pinning: panel suppressed for intermediate attempts 1 + 2', async ({ page }) => {
+    await withDailyStub(page)
+    await page.goto(`/#daily/${TODAY}/country-pinning`)
+    await page.waitForFunction(() => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game))
+    await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
+
+    // Attempt 1: wrong guess. After the existing 1200ms intermediate timer fires,
+    // the round advances to attempt 2 — no panel should have appeared.
+    await page.evaluate(() => {
+      const game = (window as unknown as {
+        __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+      }).__funworldmap_game
+      game?.submitCountryGuess('USA')
+    })
+    await page.waitForTimeout(1500)
+    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+
+    // Attempt 2: wrong guess. Same expectation — no panel between attempts.
+    await page.evaluate(() => {
+      const game = (window as unknown as {
+        __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+      }).__funworldmap_game
+      game?.submitCountryGuess('CHN')
+    })
+    await page.waitForTimeout(1500)
+    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+
+    // Note: attempt 3 transitions directly to `status: 'game-over'` (not
+    // `round-ended`), so the new round-end panel does not open. The existing
+    // GameOverOverlay handles the final state. See the spec §Daily
+    // intermediate-attempt suppression for rationale.
+  })
 })
 
 test.describe('Daily puzzle — launcher-anchored deep link', () => {
