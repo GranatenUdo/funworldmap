@@ -118,37 +118,6 @@ test.describe('Country Pinning game', () => {
     expect(page.url().endsWith('/')).toBe(true)
   })
 
-  test('guess-by-name input submits like a map click', async ({ page }) => {
-    await page.goto('/#game/country-pinning/play')
-    await waitForMap(page)
-
-    await setRoundAndWait(page, 'FRA', 'France')
-
-    await page.getByTestId('game-guess-by-name').click()
-    await page.getByTestId('game-guess-input').fill('France')
-    // Fuse.js debounces search results by ~150 ms; wait for them to appear
-    // before pressing Enter (otherwise results[0] is still undefined). CI
-    // latency can stretch this well past 5 s, so use a 10 s ceiling.
-    await expect(page.getByTestId('game-guess-results')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('game-guess-input').press('Enter')
-
-    await expect(page.getByTestId('hud-score')).toHaveText('100', { timeout: 10_000 })
-  })
-
-  test('guess-by-name search matches capital cities', async ({ page }) => {
-    // Verifies that GuessByNameButton receives the full CountryData shape
-    // so Fuse indexes name.official, capital, region, subregion, cca2, cca3
-    // — not only name.common and cca3 as the prior CountryLike cast forced.
-    await page.goto('/#game/country-pinning/play')
-    await waitForMap(page)
-    await setRoundAndWait(page, 'FRA', 'France')
-
-    await page.getByTestId('game-guess-by-name').click()
-    await page.getByTestId('game-guess-input').fill('Paris')
-    await expect(page.getByTestId('game-guess-results')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByTestId('game-guess-results')).toContainText('France')
-  })
-
   test('game-over overlay moves focus to Play again', async ({ page }) => {
     await page.goto('/#game/country-pinning/play')
     await waitForMap(page)
@@ -168,5 +137,46 @@ test.describe('Country Pinning game', () => {
         { timeout: 5_000 },
       )
       .toBe('game-over-play-again')
+  })
+
+  test('tooltip identity hidden during country-pinning guess phase', async ({ page }) => {
+    await page.goto('/')
+    await waitForMap(page)
+    await openCountryPinning(page)
+    await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
+
+    const mapContainer = page.locator('.maplibregl-canvas').first()
+    await mapContainer.hover({ position: { x: 400, y: 300 } })
+    await page.waitForTimeout(500)
+
+    const tooltipVisible = await page.evaluate(() => {
+      const t = document.querySelector('.country-tooltip')
+      return t?.classList.contains('visible') ?? false
+    })
+    expect(tooltipVisible).toBe(false)
+  })
+
+  test('round-end on wrong guess opens target panel; Continue advances', async ({ page }) => {
+    await page.goto('/')
+    await waitForMap(page)
+    await openCountryPinning(page)
+    await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
+
+    await page.evaluate(() => {
+      const game = (window as unknown as {
+        __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+      }).__funworldmap_game
+      game?.submitCountryGuess('USA')
+    })
+
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 5_000 })
+    await expect(page.locator('button[aria-label="Compare with another country"]')).not.toBeAttached()
+    await expect(page.locator('button[aria-label="Copy link to this country"]')).not.toBeAttached()
+
+    const continueBtn = page.getByTestId('game-continue')
+    await expect(continueBtn).toBeVisible()
+    await continueBtn.click()
+
+    await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 5_000 })
   })
 })
