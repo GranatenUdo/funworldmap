@@ -1,13 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { AttemptRecord, CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
-import type { CountryData } from '../lib/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { getMode } from './modes'
 import { HudShell } from './shared/hud/HudShell'
 import { GameOverOverlay } from './shared/hud/GameOverOverlay'
-import { GuessByNameButton } from './shared/hud/GuessByNameButton'
 import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
 import { parseHash } from '../lib/hashState'
 import { LAYER } from '../lib/mapLayers'
@@ -92,12 +90,11 @@ function clearRevealSources(map: maplibregl.Map): void {
 
 interface Props {
   countries: CountryLike[]
-  countriesFull: CountryData[]
   cities: CityLike[]
   byCca3: Map<string, CountryLike>
 }
 
-export function GameController({ countries, countriesFull, cities, byCca3 }: Props) {
+export function GameController({ countries, cities, byCca3 }: Props) {
   const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
@@ -518,21 +515,6 @@ export function GameController({ countries, countriesFull, cities, byCca3 }: Pro
       )}
       <HudShell session={session} onEndGame={onEndGame}>
         <Hud session={session} />
-        {session.status === 'playing' && session.modeId === 'country-pinning' && (
-          <GuessByNameButton
-            pool={countriesFull}
-            onGuess={(cca3) => {
-              const c = byCca3.get(cca3.toUpperCase())
-              if (!c) return
-              submitGuessInput({
-                kind: 'country',
-                cca3: cca3.toUpperCase(),
-                name: c.name.common,
-                centroid: centroidFromLatLng(c.latlng),
-              })
-            }}
-          />
-        )}
       </HudShell>
       {session.status === 'game-over' && (
         <GameOverOverlay

@@ -40,10 +40,6 @@ export default function App() {
         })),
     [countries],
   )
-  const poolFull = useMemo<CountryData[]>(
-    () => countries.filter((c: CountryData) => c.independent === true),
-    [countries],
-  )
   const poolByCca3 = useMemo(() => new Map(pool.map((c) => [c.cca3, c])), [pool])
   const pools = useMemo(() => ({ countries: pool, cities }), [pool, cities])
 
@@ -53,7 +49,6 @@ export default function App() {
         <DailyPuzzlesProvider>
           <AppInner
             countries={countries}
-            countriesFull={poolFull}
             pool={pool}
             byNumeric={byNumeric}
             byCca3={byCca3}
@@ -69,7 +64,6 @@ export default function App() {
 
 interface AppInnerProps {
   countries: CountryData[]
-  countriesFull: CountryData[]
   pool: CountryLike[]
   byNumeric: Map<string, CountryData>
   byCca3: Map<string, CountryData>
@@ -80,7 +74,6 @@ interface AppInnerProps {
 
 function AppInner({
   countries,
-  countriesFull,
   pool,
   byNumeric,
   byCca3,
@@ -363,7 +356,7 @@ function AppInner({
 
       {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} countries={pool} cities={cities} />}
 
-      <GameController countries={pool} countriesFull={countriesFull} cities={cities} byCca3={poolByCca3} />
+      <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
       {showHint && !selected && !gameActive && (
         <div role="status"
