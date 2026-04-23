@@ -143,7 +143,7 @@ The default behavior (`inGameRound` undefined or false) is the existing free-pla
 
 ### Daily intermediate-attempt suppression
 
-A daily 3-attempt round fires `round-ended` after each attempt. Today the existing `setTimeout` (1200/2000 ms) advances to the next attempt. This plan keeps that exact timer for intermediate attempts and only suppresses the panel — no other change to the daily-attempt scoring, reveal animation, or distance feedback.
+A daily 3-attempt round fires `round-ended` after each attempt 1-2; the existing `setTimeout` (1200 ms) advances to the next attempt. Attempt 3's `submitGuess` fires with `endsGame = true` (because `roundIndex+1 >= maxRounds = 1`), transitioning status directly from `'playing'` to `'game-over'` — **no `'round-ended'` intermediate**. This plan keeps the existing timer for attempts 1-2 and suppresses the panel; for attempt 3, `GameOverOverlay` handles the final state (existing behavior). The daily-attempt-3 panel originally promised in the spec is not implemented — daily users who want country info after the final attempt can navigate to `#daily/<today>/reveal` (which opens `DailyRevealOverlay` with the full country + city info) or click the country in free-play. Extending the round-end panel to open on `game-over` for country-pinning is a possible follow-up if user-testing shows the reveal URL isn't discoverable enough.
 
 The check `attemptsPerRound > 1 && attemptsRemaining > 0` distinguishes intermediate from final. (`attemptsRemaining === 0` after the final attempt; the reducer also flips status to `game-over` once all rounds are done — both states represent "show the panel".)
 
