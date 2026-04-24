@@ -53,7 +53,43 @@ export default defineConfig({
         },
       },
       // Map interaction tests need real GPU
-      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts', 'keyboard-map-nav.spec.ts', 'game-country-pinning.spec.ts', 'game-city-guessing.spec.ts', 'compare-view-dimming.spec.ts'],
+      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts', 'keyboard-map-nav.spec.ts', 'game-country-pinning.spec.ts', 'game-city-guessing.spec.ts', 'compare-view-dimming.spec.ts', 'reveal-animation.spec.ts', 'reveal-animation-reduced-motion.spec.ts'],
+    },
+    {
+      name: 'mobile-chromium',
+      use: {
+        ...devices['Pixel 7'],
+        launchOptions: {
+          args: ['--use-gl=angle', '--use-angle=default'],
+        },
+      },
+      testMatch: ['mobile-smoke.spec.ts', 'mobile-tap.spec.ts', 'mobile-daily-flow.spec.ts', 'mobile-free-play.spec.ts'],
+    },
+    {
+      name: 'mobile-webkit',
+      use: {
+        ...devices['iPhone 14'],
+        // WebKit rejects 'clipboard-read'/'clipboard-write' from the top-level
+        // `use.permissions` (Unknown permission). Override to empty for the
+        // mobile-webkit project — the mobile smoke spec doesn't use clipboard.
+        permissions: [],
+      },
+      testMatch: ['mobile-smoke.spec.ts', 'mobile-tap.spec.ts'],
+    },
+    {
+      name: 'desktop-firefox-touch',
+      use: {
+        defaultBrowserType: 'firefox',
+        viewport: { width: 412, height: 839 },
+        hasTouch: true,
+        userAgent:
+          'Mozilla/5.0 (Android 14; Mobile; rv:128.0) Gecko/128.0 Firefox/128.0',
+        // Firefox rejects 'clipboard-read'/'clipboard-write' from the
+        // top-level `use.permissions` (Unknown permission). Override to empty
+        // for this project — the mobile smoke spec doesn't use clipboard.
+        permissions: [],
+      },
+      testMatch: ['mobile-smoke.spec.ts', 'mobile-tap.spec.ts'],
     },
   ],
   webServer: {
