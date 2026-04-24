@@ -28,8 +28,6 @@ jobs:
       - run: npm ci
 
       - name: Build news
-        env:
-          GUARDIAN_KEY: ${{ secrets.GUARDIAN_KEY }}
         run: npm run news:build
 
       - name: Commit if changed
