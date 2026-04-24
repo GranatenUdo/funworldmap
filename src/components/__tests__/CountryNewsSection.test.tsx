@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, afterEach, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import { CountryNewsSection } from '../CountryNewsSection'
 
@@ -19,70 +19,56 @@ describe('CountryNewsSection', () => {
     expect(screen.getByText(/Loading news/i)).toBeTruthy()
   })
 
-  it('renders 5 article links on success', async () => {
+  it('renders 5 article links with domain and relative time', async () => {
     mockFetch({
-      updatedAt: '2026-04-23T06:00:00.000Z',
+      updatedAt: '2026-04-24T06:00:00.000Z',
       country: { cca3: 'DEU', name: 'Germany' },
-      guardianTag: 'world/germany',
       articles: [1, 2, 3, 4, 5].map((i) => ({
-        id: `world/2026/apr/2${i}/story-${i}`,
+        id: `https://www.bbc.com/story-${i}`,
         title: `Story ${i}`,
-        trailText: `Summary ${i}`,
-        url: `https://www.theguardian.com/world/2026/apr/2${i}/story-${i}`,
+        url: `https://www.bbc.com/story-${i}`,
         publishedAt: `2026-04-2${i}T12:00:00.000Z`,
-        section: 'world',
+        domain: 'bbc.com',
         thumbnail: null,
-        scope: 'country' as const,
       })),
     })
     render(<CountryNewsSection cca3="DEU" />)
-    await waitFor(() => expect(screen.getAllByRole('link')).toHaveLength(5))
+    await waitFor(() => expect(screen.getAllByRole('link')).toHaveLength(6)) // 5 articles + GDELT attribution link
     expect(screen.getByText('Story 1')).toBeTruthy()
+    expect(screen.getAllByText('bbc.com').length).toBeGreaterThan(0)
   })
 
-  it('renders region badge when scope is region', async () => {
+  it('renders GDELT attribution link when articles present', async () => {
     mockFetch({
-      updatedAt: '2026-04-23T06:00:00.000Z',
+      updatedAt: '2026-04-24T06:00:00.000Z',
       country: { cca3: 'DEU', name: 'Germany' },
-      guardianTag: 'world/germany',
       articles: [
         {
-          id: 'world/a',
-          title: 'Country story',
-          trailText: '',
-          url: 'https://www.theguardian.com/a',
-          publishedAt: '2026-04-22T12:00:00.000Z',
-          section: 'world',
+          id: 'https://www.bbc.com/a',
+          title: 'Story',
+          url: 'https://www.bbc.com/a',
+          publishedAt: '2026-04-23T12:00:00.000Z',
+          domain: 'bbc.com',
           thumbnail: null,
-          scope: 'country' as const,
-        },
-        {
-          id: 'world/b',
-          title: 'Region story',
-          trailText: '',
-          url: 'https://www.theguardian.com/b',
-          publishedAt: '2026-04-21T12:00:00.000Z',
-          section: 'world',
-          thumbnail: null,
-          scope: 'region' as const,
         },
       ],
     })
     render(<CountryNewsSection cca3="DEU" />)
-    await waitFor(() => expect(screen.getAllByRole('link')).toHaveLength(2))
-    const regionBadges = screen.getAllByText(/Europe|Region/i)
-    expect(regionBadges.length).toBeGreaterThan(0)
+    await waitFor(() => {
+      expect(screen.getByText(/GDELT Project/i)).toBeTruthy()
+    })
   })
 
-  it('renders empty-state line when articles is empty', async () => {
+  it('renders updated empty-state line when articles is empty', async () => {
     mockFetch({
-      updatedAt: '2026-04-23T06:00:00.000Z',
+      updatedAt: '2026-04-24T06:00:00.000Z',
       country: { cca3: 'TUV', name: 'Tuvalu' },
-      guardianTag: null,
       articles: [],
     })
     render(<CountryNewsSection cca3="TUV" />)
-    await waitFor(() => expect(screen.getByText(/No recent Guardian stories/i)).toBeTruthy())
+    await waitFor(() => {
+      expect(screen.getByText(/No recent English-language news/i)).toBeTruthy()
+    })
   })
 
   it('renders "News unavailable" on 404', async () => {

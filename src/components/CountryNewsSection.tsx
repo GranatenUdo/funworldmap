@@ -4,18 +4,15 @@ import { relativeTime } from '../lib/relativeTime'
 interface Article {
   id: string
   title: string
-  trailText: string
   url: string
   publishedAt: string
-  section: string
+  domain: string
   thumbnail: string | null
-  scope: 'country' | 'region'
 }
 
 interface CountryNewsFile {
   updatedAt: string
   country: { cca3: string; name: string }
-  guardianTag: string | null  // for the empty-state "Browse all coverage" link
   articles: Article[]
 }
 
@@ -62,38 +59,32 @@ export function CountryNewsSection({ cca3 }: Props) {
       )}
 
       {status === 'ready' && data && data.articles.length === 0 && (
-        <EmptyState tag={data.guardianTag} />
+        <p className="text-xs text-sand-600 dark:text-dark-100">
+          No recent English-language news about this country in the last 7 days.
+        </p>
       )}
 
       {status === 'ready' && data && data.articles.length > 0 && (
-        <ul className="space-y-3">
-          {data.articles.map((a) => (
-            <ArticleCard key={a.id} article={a} />
-          ))}
-        </ul>
-      )}
-    </div>
-  )
-}
-
-function EmptyState({ tag }: { tag: string | null }) {
-  return (
-    <p className="text-xs text-sand-600 dark:text-dark-100">
-      No recent Guardian stories about this country or region.
-      {tag && (
         <>
-          {' '}
-          <a
-            href={`https://www.theguardian.com/${tag}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-teal-accessible dark:text-teal-light hover:underline"
-          >
-            Browse all coverage →
-          </a>
+          <ul className="space-y-3">
+            {data.articles.map((a) => (
+              <ArticleCard key={a.id} article={a} />
+            ))}
+          </ul>
+          <p className="mt-4 text-[10px] text-sand-500 dark:text-dark-100">
+            News data via{' '}
+            <a
+              href="https://www.gdeltproject.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-teal-accessible dark:hover:text-teal-light"
+            >
+              the GDELT Project
+            </a>.
+          </p>
         </>
       )}
-    </p>
+    </div>
   )
 }
 
@@ -121,18 +112,10 @@ function ArticleCard({ article }: { article: Article }) {
           <div className="text-sm font-semibold text-sand-900 dark:text-dark-50 line-clamp-2">
             {article.title}
           </div>
-          {article.trailText && (
-            <div className="text-xs text-sand-600 dark:text-dark-100 line-clamp-2 mt-0.5">
-              {article.trailText}
-            </div>
-          )}
           <div className="flex items-center gap-2 mt-1 text-[11px] text-sand-500 dark:text-dark-100">
+            <span className="font-medium">{article.domain}</span>
+            <span aria-hidden>·</span>
             <span>{relativeTime(article.publishedAt)}</span>
-            {article.scope === 'region' && (
-              <span className="px-1.5 py-0.5 rounded bg-teal/10 dark:bg-teal-light/10 text-teal-accessible dark:text-teal-light">
-                Region
-              </span>
-            )}
           </div>
         </div>
       </a>
