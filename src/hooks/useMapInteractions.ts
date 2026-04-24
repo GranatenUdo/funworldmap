@@ -121,7 +121,13 @@ export function useMapInteractions({
     }
 
     const clickMap = (e: maplibregl.MapMouseEvent) => {
-      const features = map.queryRenderedFeatures(e.point, { layers: [LAYER.fill] })
+      // 4 px bbox — Mapbox-recommended pattern for hit-testing at a click
+      // point, handles sub-pixel rounding and thin polygons (tiny islands).
+      const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
+        [e.point.x - 4, e.point.y - 4],
+        [e.point.x + 4, e.point.y + 4],
+      ]
+      const features = map.queryRenderedFeatures(bbox, { layers: [LAYER.fill] })
       if (features.length === 0) onDeselectRef.current()
     }
 
