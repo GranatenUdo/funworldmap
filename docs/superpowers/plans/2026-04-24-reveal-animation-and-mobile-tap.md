@@ -97,13 +97,14 @@ describe('slerpLngLat', () => {
     expect(slerpLngLat(paris, paris, 0.7)).toEqual(paris)
   })
 
-  it('matches antipodal behaviour: equator halfway is a pole-latitude point', () => {
-    // [0,0] and [180,0] are antipodal through the equator; at t=0.5 the slerp
-    // result is equidistant from both and the angular distance from either is 90°.
-    const mid = slerpLngLat([0, 0], [180, 0], 0.5)
-    const d = haversineKm([0, 0], mid)
-    expect(d).toBeGreaterThan(10000)
-    expect(d).toBeLessThan(10010)
+  it('handles a long transcontinental arc (NYC → Tokyo) with midpoint in the Arctic-ish range', () => {
+    // NYC [-74, 40.7] → Tokyo [139.7, 35.7] is ~10 800 km; the great-circle
+    // midpoint is far north of the straight-line midpoint, which proves the
+    // slerp path follows the geodesic rather than lerping in Mercator space.
+    const nyc: [number, number] = [-74.006, 40.7128]
+    const tokyo: [number, number] = [139.6917, 35.6895]
+    const mid = slerpLngLat(nyc, tokyo, 0.5)
+    expect(mid[1]).toBeGreaterThan(55) // geodesic midpoint is much further north
   })
 })
 ```
@@ -464,6 +465,8 @@ Expected: PASS — all cases green.
 
 **Files:**
 - Modify: `src/game/GameController.tsx` (imports + reveal-geometry effect at lines ~329–388)
+
+> **Highest-risk task in this plan.** Replaces the entire reveal-geometry effect (~60 LOC with 2 return paths) with a unified flow (~90 LOC, 1 return path). The existing effect has distinct behaviour for correct-country, wrong-country, city-with-click, and city-skip. Verify each of these four paths still works in the dev-server smoke test (step 5) before committing.
 
 - [ ] **Step 1: Add imports**
 
@@ -1086,73 +1089,75 @@ import { routeMapTiles, dismissLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
-async function openCountryPinning(page: Page) {
+async function setupWithCountryPinning(page: Page) {
+  await routeMapTiles(page)
+  await page.goto('/')
+  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+  await dismissLauncher(page)
   await page.getByTestId('launcher-card-country-pinning-free-link').click()
+  await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 }
 
-test.describe('mobile tap reliability', () => {
-  test('a 5 px finger-roll tap still registers as a click', async ({ page }) => {
-    await routeMapTiles(page)
-    await page.goto('/')
-    await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-    await dismissLauncher(page)
-    await openCountryPinning(page)
-    await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
-
-    // Pin Italy as the target.
-    await page.evaluate(() => {
-      const g = (window as unknown as { __funworldmap_game?: { setRound: (c: string) => boolean } }).__funworldmap_game
-      g?.setRound('ITA')
+// Install a click counter on window.__mapClickCount that MapLibre's click
+// handler increments for every accepted click. Must run BEFORE the gesture
+// so the handler is subscribed when the click fires.
+async function installClickCounter(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    ;(window as unknown as { __mapClickCount?: number }).__mapClickCount = 0
+    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    if (!map) return
+    map.on('click', () => {
+      const w = window as unknown as { __mapClickCount?: number }
+      w.__mapClickCount = (w.__mapClickCount ?? 0) + 1
     })
-    await expect(page.getByTestId('game-prompt-name')).toHaveText('Italy', { timeout: 10_000 })
+  })
+}
 
-    // Measure the map canvas centre as a stand-in tap point — under tile
-    // stubs the polygons do not render, but MapLibre's click handler still
-    // fires and the guess pipeline exercises the same clickTolerance gate.
-    const canvas = page.locator('.maplibregl-canvas').first()
-    const box = await canvas.boundingBox()
-    if (!box) throw new Error('canvas not measurable')
-    const cx = box.x + box.width / 2
-    const cy = box.y + box.height / 2
+async function mapClickCount(page: Page): Promise<number> {
+  return page.evaluate(() => (window as unknown as { __mapClickCount?: number }).__mapClickCount ?? 0)
+}
 
-    // Simulate a finger-roll: mousedown at (cx, cy), move +5 px, mouseup.
-    // Without clickTolerance: 8 this click is dropped by MapEventHandler.click.
-    await page.mouse.move(cx, cy)
+async function canvasCentre(page: Page): Promise<{ x: number; y: number }> {
+  const canvas = page.locator('.maplibregl-canvas').first()
+  const box = await canvas.boundingBox()
+  if (!box) throw new Error('canvas not measurable')
+  return { x: box.x + box.width / 2, y: box.y + box.height / 2 }
+}
+
+test.describe('mobile tap reliability — clickTolerance', () => {
+  test('5 px finger-roll tap is accepted (within tolerance)', async ({ page }) => {
+    await setupWithCountryPinning(page)
+    await installClickCounter(page)
+
+    const { x, y } = await canvasCentre(page)
+    // Simulate a touch-style finger roll: mousedown, move +5 px, mouseup.
+    // With default clickTolerance=3, MapEventHandler.click drops this click.
+    // With clickTolerance=8 (our fix), the click is accepted and the counter
+    // increments.
+    await page.mouse.move(x, y)
     await page.mouse.down()
-    await page.mouse.move(cx + 5, cy + 5, { steps: 3 })
+    await page.mouse.move(x + 5, y + 5, { steps: 3 })
     await page.mouse.up()
 
-    // Poll for 1 s: the event-handler path firing proves clickTolerance
-    // accepted the click. We cannot assert a specific country was clicked
-    // (no polygon rendered under tile stubs) so assert on the synthetic
-    // mouse-event delivery reaching MapLibre's click handler instead.
-    const clicked = await page.evaluate(async () => {
-      return new Promise<boolean>((resolve) => {
-        const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
-        if (!map) return resolve(false)
-        let delivered = false
-        const handler = () => { delivered = true }
-        map.on('click', handler)
-        setTimeout(() => {
-          map.off('click', handler)
-          resolve(delivered)
-        }, 500)
-        // Re-dispatch a synthetic click at the canvas centre to exercise
-        // the handler-registration path inside the page. The outer Playwright
-        // mouse gesture already ran; this inner check confirms MapLibre's
-        // click pipeline is alive under the current clickTolerance.
-        const canvas = document.querySelector('.maplibregl-canvas') as HTMLCanvasElement | null
-        if (!canvas) return resolve(false)
-        const rect = canvas.getBoundingClientRect()
-        const evt = new MouseEvent('click', {
-          bubbles: true, cancelable: true,
-          clientX: rect.left + rect.width / 2,
-          clientY: rect.top + rect.height / 2,
-        })
-        canvas.dispatchEvent(evt)
-      })
-    })
-    expect(clicked).toBe(true)
+    await expect.poll(() => mapClickCount(page), { timeout: 2000 }).toBe(1)
+  })
+
+  test('12 px drag is NOT accepted as a click (above tolerance)', async ({ page }) => {
+    await setupWithCountryPinning(page)
+    await installClickCounter(page)
+
+    const { x, y } = await canvasCentre(page)
+    // 12 px delta is above clickTolerance=8 — this should be treated as a
+    // drag (or no-click), NOT an accepted tap. Pairs with the 5 px test to
+    // prove the threshold is meaningful, not just "accepts everything".
+    await page.mouse.move(x, y)
+    await page.mouse.down()
+    await page.mouse.move(x + 12, y + 12, { steps: 4 })
+    await page.mouse.up()
+
+    // Wait the same 2 s window, then assert the counter is still 0.
+    await page.waitForTimeout(2000)
+    expect(await mapClickCount(page)).toBe(0)
   })
 })
 ```
