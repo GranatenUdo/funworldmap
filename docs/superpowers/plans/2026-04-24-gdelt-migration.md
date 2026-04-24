@@ -6,7 +6,7 @@
 
 **Goal:** Replace the Guardian Open Platform news source with GDELT 2.0's Doc API so the country-news feature becomes commercial-use compatible. Simplify the pipeline: no API key, no hand-curated per-country tag list, no region fallback.
 
-**Architecture:** Daily GHA → `scripts/news/build.ts` → GDELT Doc 2.0 `/api/v2/doc/doc` with `location:<FIPS> sourcelang:eng` query → per-country JSON at `public/news/<cca3>.json` → `CountryNewsSection` renders title + domain + relative time + thumbnail. New `scripts/news/fips-codes.ts` maps cca3 → FIPS-10-4 via overrides (~40 divergent) + fallback to cca2 (the other ~210 match). Delete three Guardian-specific modules.
+**Architecture:** Daily GHA → `scripts/news/build.ts` → GDELT Doc 2.0 `/api/v2/doc/doc` with `locationcc:<FIPS> sourcelang:english` query → per-country JSON at `public/news/<cca3>.json` → `CountryNewsSection` renders title + domain + relative time + thumbnail. New `scripts/news/fips-codes.ts` maps cca3 → FIPS-10-4 via overrides (~40 divergent) + fallback to cca2 (the other ~210 match). Delete three Guardian-specific modules.
 
 **Tech Stack:** TypeScript, `tsx`, React 19, Playwright. No new npm deps.
 
@@ -21,7 +21,7 @@
 Before Task 1, the implementer must do a schema-drift check. GDELT is stable but this plan sits on the shelf; APIs move.
 
 ```bash
-curl -s 'https://api.gdeltproject.org/api/v2/doc/doc?query=location:GM%20sourcelang:eng&mode=ArtList&maxrecords=1&timespan=7d&format=json' | jq .
+curl -s 'https://api.gdeltproject.org/api/v2/doc/doc?query=locationcc:GM%20sourcelang:english&mode=ArtList&maxrecords=1&timespan=7d&format=json' | jq .
 ```
 
 Expected fields in each article in `articles[]`: `url`, `url_mobile`, `title`, `seendate`, `socialimage`, `domain`, `language`, `sourcecountry`.
@@ -85,7 +85,10 @@ Expected: all pass, tsc clean.
 - [ ] **Step 4: Live GDELT schema check**
 
 ```bash
-curl -s 'https://api.gdeltproject.org/api/v2/doc/doc?query=location:GM%20sourcelang:eng&mode=ArtList&maxrecords=3&timespan=7d&format=json' | jq '.articles[0] | keys'
+curl -s 'https://api.gdeltproject.org/api/v2/doc/doc?query=locationcc:GM%20sourcelang:english&mode=ArtList&maxrecords=3&timespan=7d&format=json' | jq '.articles[0] | keys'
+# NOTE: operator is `locationcc:` not `location:`; `sourcelang:english` not `:eng`.
+# These were verified against live GDELT on 2026-04-24; if the operator name
+# or sourcelang code changes, update gdelt-client.ts's query string accordingly.
 ```
 
 Expected output (order may vary):
@@ -358,15 +361,19 @@ function seendateToIso(seendate: string): string {
 }
 
 export interface GdeltSearchParams {
-  fips: string        // 2-letter FIPS-10-4 country code (GDELT location:)
-  sourceLang: string  // e.g. 'eng'
+  fips: string        // 2-letter FIPS-10-4 country code (GDELT locationcc:)
+  sourceLang: string  // e.g. 'english' — GDELT uses full English names, not ISO codes
   timespan: string    // e.g. '7d'
   maxRecords: number  // 1..250
 }
 
 export async function gdeltSearch(params: GdeltSearchParams): Promise<GdeltArticle[]> {
+  // NOTE: verified 2026-04-24 — GDELT's country filter is `locationcc:` (NOT
+  // `location:`); language filter uses full English names (`sourcelang:english`,
+  // NOT `sourcelang:eng`). Earlier attempts with shorter forms returned either
+  // "keyword too short" or "invalid location search" errors.
   const qs = new URLSearchParams({
-    query: `location:${params.fips} sourcelang:${params.sourceLang}`,
+    query: `locationcc:${params.fips} sourcelang:${params.sourceLang}`,
     mode: 'ArtList',
     maxrecords: String(params.maxRecords),
     timespan: params.timespan,
@@ -440,7 +447,7 @@ async function main(): Promise<void> {
       continue
     }
     try {
-      const articles = await gdeltSearch({ fips, sourceLang: 'eng', timespan: '30d', maxRecords: 1 })
+      const articles = await gdeltSearch({ fips, sourceLang: 'english', timespan: '30d', maxRecords: 1 })
       if (articles.length === 0) {
         noResults.push(`${c.cca3} (${c.name.common}) FIPS=${fips}`)
       }
@@ -535,7 +542,7 @@ async function buildCountry(country: Country): Promise<CountryNewsFile> {
     try {
       articles = await gdeltSearch({
         fips,
-        sourceLang: 'eng',
+        sourceLang: 'english',
         timespan: WINDOW,
         maxRecords: 5,
       })
@@ -1054,7 +1061,7 @@ the bottom of `SingleCountryPanel` whenever a user clicks a country.
 .github/workflows/news.yml  (cron: 0 6 * * *)
   └─ scripts/news/build.ts
        ├─ iterates src/data/countries.json (249 entries)
-       ├─ for each country: gdeltSearch(location=<FIPS>, sourceLang=eng, timespan=7d, maxRecords=5)
+       ├─ for each country: gdeltSearch(fips=<FIPS>, sourceLang=english, timespan=7d, maxRecords=5)
        └─ writes public/news/<cca3>.json
   └─ git commit + push → deploy.yml → gh-pages
 ```
@@ -1216,7 +1223,7 @@ gh pr create --base main --title "chore(news): migrate Guardian → GDELT for co
 Replaces Guardian Open Platform with GDELT 2.0's Doc API as the country-news source. Unblocks commercial monetisation (Guardian's free tier forbids commercial use; GDELT is open-data CC/commercial-OK).
 
 - `scripts/news/fips-codes.ts` — cca3 → FIPS-10-4 overrides (~40 entries) + cca2 fallback.
-- `scripts/news/gdelt-client.ts` — GDELT Doc 2.0 wrapper with `location:<FIPS> sourcelang:eng` query.
+- `scripts/news/gdelt-client.ts` — GDELT Doc 2.0 wrapper with `locationcc:<FIPS> sourcelang:english` query.
 - `scripts/news/build.ts` — rewritten: single query per country, no region fallback, 500 ms throttle.
 - **Deleted:** `guardian-client.ts`, `guardian-tags.ts`, `regions.ts` (+ their tests).
 - `CountryNewsSection` adapted: drop trailText row; replace section badge with source domain; add GDELT attribution footer; updated empty-state copy.
@@ -1268,7 +1275,7 @@ Present the 4-option menu.
 
 ## Self-review notes
 
-- **Spec coverage:** GDELT source → Task 3. FIPS overrides → Task 2. Query shape `location:<FIPS> sourcelang:eng` → Task 3 Step 1 + Task 5. No region fallback → Task 5. UI drop trailText + domain badge + attribution → Task 7. Delete Guardian modules → Task 6. GHA key removal → Task 9. Initial JSON regen → Task 10. FIPS validation runner → Task 4.
+- **Spec coverage:** GDELT source → Task 3. FIPS overrides → Task 2. Query shape `locationcc:<FIPS> sourcelang:english` → Task 3 Step 1 + Task 5. No region fallback → Task 5. UI drop trailText + domain badge + attribution → Task 7. Delete Guardian modules → Task 6. GHA key removal → Task 9. Initial JSON regen → Task 10. FIPS validation runner → Task 4.
 - **Placeholder scan:** the `AUS_` placeholder in Task 2 Step 4 is deliberate — Step 5 immediately replaces it. The "fill in during _validate-fips run" comment for nulls at the bottom of FIPS_OVERRIDES is the explicit handoff to Task 4's iterative validation. Every other step has concrete code or command.
 - **Type consistency:** `GdeltArticle` shape flows from `gdelt-client.ts` (Task 3) → `build.ts` (Task 5) → output JSON shape → `CountryNewsSection`'s local `Article` interface (Task 7) → e2e fixtures (Task 8). Field names `id`, `title`, `url`, `publishedAt`, `domain`, `thumbnail` are consistent throughout.
 - **Shelf-readiness:** pre-flight Task 1 Step 4 re-verifies GDELT schema before execution — protects against drift. All other tasks depend on that verification passing. If GDELT changes its response shape between now and execution, pre-flight fails and the spec gets revised before any code lands.

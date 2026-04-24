@@ -52,7 +52,7 @@ Verified trade-offs vs Guardian:
 - `scripts/news/gdelt-client.ts` — GDELT Doc 2.0 `/api/v2/doc/doc` wrapper.
 - `scripts/news/fips-codes.ts` — `cca3 → FIPS-10-4` lookup for 249 `countries.json` entries (null for countries with no FIPS code, e.g. some disputed territories).
 - `scripts/news/__tests__/fips-codes.test.ts` — spot-check unit tests.
-- `scripts/news/build.ts` — rewrite. Single query per country (`location:<country> sourcelang:eng`), no fallback logic.
+- `scripts/news/build.ts` — rewrite. Single query per country (`locationcc:<FIPS> sourcelang:englishlish`), no fallback logic.
 - **Delete:** `scripts/news/guardian-client.ts`, `scripts/news/guardian-tags.ts`, `scripts/news/regions.ts`, and `scripts/news/__tests__/regions.test.ts`.
 - `scripts/news/sanitise.ts` + tests — kept (GDELT titles occasionally contain HTML entities).
 - `src/components/CountryNewsSection.tsx` — updated render: drop trailText row, replace section badge with domain, drop region-scope badge logic.
@@ -101,12 +101,16 @@ Verified trade-offs vs Guardian:
 
 **GDELT query shape:**
 - Endpoint: `https://api.gdeltproject.org/api/v2/doc/doc`
-- Query: `query=location:<FIPS>%20sourcelang:eng` where `<FIPS>` is the 2-letter FIPS-10-4 country code (e.g. `GM` for Germany, `CH` for China).
+- Query: `query=locationcc:<FIPS>%20sourcelang:english` where `<FIPS>` is the 2-letter FIPS-10-4 country code (e.g. `GM` for Germany, `CH` for China).
 - Parameters: `mode=ArtList`, `maxrecords=5`, `timespan=7d`, `sort=hybridrel`, `format=json`
 - No API key required.
 - Throttle: 500 ms between requests (community-polite; GDELT hasn't published a hard limit).
 
-**Why `location:` not `sourcecountry:`:** Confirmed during brainstorm Q2. `location:` surfaces articles *about* the country (via GDELT's GKG geographic annotations) from any English-language outlet worldwide — matches the user's original framing of the feature ("top news stories on the Country Information screen"). `sourcecountry:` would restrict to articles published by that country's domestic outlets, which fails for non-English-primary countries. `location:` with the FIPS code is unambiguous (avoids the "Georgia country vs US state", "Chad", "Niger" name-collision problems) and keeps queries short.
+**Why `locationcc:` not `sourcecountry:`:** Confirmed during brainstorm Q2. `locationcc:` surfaces articles *about* the country (via GDELT's GKG geographic annotations) from any English-language outlet worldwide — matches the user's original framing of the feature ("top news stories on the Country Information screen"). `sourcecountry:` would restrict to articles published by that country's domestic outlets, which fails for non-English-primary countries. `locationcc:` with the FIPS code is unambiguous (avoids the "Georgia country vs US state", "Chad", "Niger" name-collision problems) and keeps queries short.
+
+**Why `locationcc:` not `location:`:** Verified against live GDELT API on 2026-04-24. `location:` is a different operator that rejects short 2-character arguments with "location:0" / "location keyword too short" errors. `locationcc:` is the correct operator for FIPS country-code filtering.
+
+**Why `sourcelang:english` not `sourcelang:eng`:** Verified against live GDELT API on 2026-04-24. GDELT uses full English language names as codes, not ISO-639-3. The response payload's `language` field also contains the full name (e.g. `"English"`, `"German"`, `"Chinese"`).
 
 ### Output JSON shape (`public/news/<cca3>.json`)
 
@@ -186,7 +190,7 @@ GDELT's country-filter uses FIPS-10-4 2-letter codes, which differ from ISO 3166
 
 The `fips-codes.ts` table is a hand-curated `Record<cca3, string | null>` — ~249 entries. Entries for countries where FIPS has no code (e.g., Svalbard, some disputed regions) are `null`; the build script writes empty-articles JSON for those.
 
-The `location:<FIPS>` query is the core of the build script — the FIPS code IS the query input, not defensive metadata. Countries whose cca3 has no FIPS equivalent (a handful of territories) get `articles: []` without hitting GDELT.
+The `locationcc:<FIPS>` query is the core of the build script — the FIPS code IS the query input, not defensive metadata. Countries whose cca3 has no FIPS equivalent (a handful of territories) get `articles: []` without hitting GDELT.
 
 ---
 
@@ -226,7 +230,7 @@ The `location:<FIPS>` query is the core of the build script — the FIPS code IS
 | Country has no FIPS code (rare — ~0-5 entries) | Skip in build.ts; write `articles: []`; client renders empty state. |
 | GDELT rate-limits during a run | Log + skip country; previous JSON stays on disk. Next day retries. No retry-in-same-run — keeps build time bounded. |
 | GDELT returns 0 articles for a country (e.g. Tuvalu) | Empty-state line. No region fallback. |
-| GDELT returns non-English article despite `sourcelang:eng` | Defensive client-side filter: render only articles with `language === 'English'`. Fallback defense; rare. |
+| GDELT returns non-English article despite `sourcelang:english` | Defensive client-side filter: render only articles with `language === 'English'`. Fallback defense; rare. |
 | Thumbnail URL blocked by outlet (hotlinking, SSL) | `<img>` shows alt; card keeps text-only layout. `loading="lazy"` + `referrerpolicy="no-referrer"` stay. |
 | Guardian-tag-link in old cached clients | Old JSON with `guardianTag` field will be replaced by new JSON when GHA next runs. Component ignores the old field if cached client loads a new JSON (JSON parse with extra unknown fields is fine in TypeScript). |
 | GDELT wholly unavailable | GHA run fails; deploy doesn't fire; `public/news/*.json` stays at yesterday's snapshot. User-invisible. |
