@@ -25,9 +25,10 @@ describe('cca3ToFips', () => {
   })
 
   it('returns null when override is explicitly null (no FIPS code)', () => {
-    // Fill in an actual null-FIPS cca3 during implementation — one of the
-    // disputed-territory or recent-sovereignty cases. For now, the
-    // implementation should start with zero nulls; add them during the
-    // validation run (Task 4).
+    // Territories with no FIPS code assigned (confirmed via Wikipedia's FIPS list)
+    expect(cca3ToFips('BVT', 'BV')).toBeNull() // Bouvet Island
+    expect(cca3ToFips('BES', 'BQ')).toBeNull() // Caribbean Netherlands
+    expect(cca3ToFips('ATA', 'AQ')).toBeNull() // Antarctica
+    expect(cca3ToFips('ALA', 'AX')).toBeNull() // Åland Islands
   })
 })
