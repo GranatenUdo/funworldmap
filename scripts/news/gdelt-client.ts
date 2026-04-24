@@ -67,8 +67,11 @@ export async function gdeltSearch(params: GdeltSearchParams): Promise<GdeltArtic
     sort: 'hybridrel',
     format: 'json',
   })
-  const res = await fetch(`${BASE}?${qs}`)
-  if (!res.ok) throw new Error(`gdelt location:${params.fips} → HTTP ${res.status}`)
+  // 15 s total timeout — without this, an unreachable endpoint hangs
+  // Node's fetch at the TCP-connect stage for minutes per call, which would
+  // stall the daily build for hours if GDELT's CDN ever blocks a runner IP.
+  const res = await fetch(`${BASE}?${qs}`, { signal: AbortSignal.timeout(15_000) })
+  if (!res.ok) throw new Error(`gdelt locationcc:${params.fips} → HTTP ${res.status}`)
   const data = (await res.json()) as GdeltResponse
   const raw = data.articles ?? []
   return raw
