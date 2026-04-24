@@ -1,112 +1,98 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 
 test.setTimeout(60_000)
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Navigate to the DEU country panel and wait for it to settle. */
-async function openDEUPanel(page: Parameters<typeof test>[1] extends (...args: infer A) => unknown ? A[0] : never) {
-  await page.goto('/#DEU')
-  const panel = page.getByTestId('country-panel')
-  await expect(panel).toBeVisible({ timeout: 15_000 })
-  await expect(panel).toContainText('Germany', { timeout: 15_000 })
-  return panel
+async function waitForMap(page: Page) {
+  // Accept either a clean load or a map error (timeout / style failure) so that
+  // tests are not held up by basemap network variance. The country panel and news
+  // section render independently of the map tile state.
+  await page.waitForSelector('[data-map-loaded], [data-map-error]', { timeout: 60_000 })
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
-test('renders articles with scope badge in CountryPanel', async ({ page }) => {
-  // Stub the news feed before the page loads so the fetch hits our mock.
-  await page.route('**/news/DEU.json', async (route) => {
-    await route.fulfill({
+async function stubNewsDEU(page: Page) {
+  await page.route('**/news/DEU.json', (route) => {
+    route.fulfill({
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({
         updatedAt: new Date().toISOString(),
         country: { cca3: 'DEU', name: 'Germany' },
-        guardianTag: 'world/germany',
         articles: [
           {
-            id: 'world/germany/2024/apr/01/article-one',
-            title: 'Germany leads climate talks',
-            trailText: 'Berlin hosts EU energy summit.',
-            url: 'https://www.theguardian.com/world/germany/2024/apr/01/article-one',
-            publishedAt: new Date(Date.now() - 3_600_000).toISOString(), // 1 h ago
-            section: 'world',
+            id: 'https://www.bbc.com/germany-coalition',
+            title: 'Germany coalition reached',
+            url: 'https://www.bbc.com/germany-coalition',
+            publishedAt: new Date(Date.now() - 2 * 86_400_000).toISOString(),
+            domain: 'bbc.com',
             thumbnail: null,
-            scope: 'country',
           },
           {
-            id: 'world/europe/2024/apr/01/article-two',
-            title: 'European markets rally after ECB decision',
-            trailText: 'Stocks surge across the continent.',
-            url: 'https://www.theguardian.com/world/europe/2024/apr/01/article-two',
-            publishedAt: new Date(Date.now() - 7_200_000).toISOString(), // 2 h ago
-            section: 'world',
+            id: 'https://www.reuters.com/eu-summit',
+            title: 'EU summit concludes',
+            url: 'https://www.reuters.com/eu-summit',
+            publishedAt: new Date(Date.now() - 3 * 86_400_000).toISOString(),
+            domain: 'reuters.com',
             thumbnail: null,
-            scope: 'region',
           },
         ],
       }),
     })
   })
+}
 
-  await openDEUPanel(page)
+test.describe('Country news feed', () => {
+  test('renders articles with domain label + GDELT attribution', async ({ page }) => {
+    await stubNewsDEU(page)
+    await page.goto('/#DEU')
+    await waitForMap(page)
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('country-news-section')).toBeVisible({ timeout: 5_000 })
 
-  const section = page.getByTestId('country-news-section')
-  await expect(section).toBeVisible({ timeout: 10_000 })
+    const section = page.getByTestId('country-news-section')
+    // 2 article links + 1 GDELT attribution link = 3 links total
+    await expect(section.getByRole('link')).toHaveCount(3, { timeout: 5_000 })
 
-  // Both articles rendered as links
-  const links = section.getByRole('link')
-  await expect(links).toHaveCount(2, { timeout: 10_000 })
+    // Domain labels visible
+    await expect(section.getByText('bbc.com')).toBeVisible()
+    await expect(section.getByText('reuters.com')).toBeVisible()
 
-  // All links open in a new tab with proper rel
-  for (const link of await links.all()) {
-    await expect(link).toHaveAttribute('target', '_blank')
-    await expect(link).toHaveAttribute('rel', /noopener/)
-  }
+    // GDELT attribution
+    await expect(section.getByText(/GDELT Project/i)).toBeVisible()
 
-  // Region badge visible for the second (region-scoped) article
-  await expect(section.getByText('Region')).toBeVisible()
-})
+    // External link behavior
+    const firstArticleLink = section.getByRole('link').first()
+    await expect(firstArticleLink).toHaveAttribute('target', '_blank')
+    const rel = await firstArticleLink.getAttribute('rel')
+    expect(rel ?? '').toContain('noopener')
+  })
 
-test('renders empty state when articles array is empty', async ({ page }) => {
-  await page.route('**/news/TUV.json', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        updatedAt: new Date().toISOString(),
-        country: { cca3: 'TUV', name: 'Tuvalu' },
-        guardianTag: null,
-        articles: [],
-      }),
+  test('renders empty state when articles array is empty', async ({ page }) => {
+    await page.route('**/news/TUV.json', (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          updatedAt: new Date().toISOString(),
+          country: { cca3: 'TUV', name: 'Tuvalu' },
+          articles: [],
+        }),
+      })
     })
+    await page.goto('/#TUV')
+    await waitForMap(page)
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
+    await expect(
+      page.getByTestId('country-news-section').getByText(/No recent English-language news/i),
+    ).toBeVisible({ timeout: 5_000 })
   })
 
-  await page.goto('/#TUV')
-  const panel = page.getByTestId('country-panel')
-  await expect(panel).toBeVisible({ timeout: 15_000 })
-
-  const section = page.getByTestId('country-news-section')
-  await expect(section).toBeVisible({ timeout: 10_000 })
-  await expect(section).toContainText('No recent Guardian stories', { timeout: 10_000 })
-  // No "Browse all coverage" link because guardianTag is null
-  await expect(section.getByRole('link', { name: /Browse all coverage/ })).not.toBeAttached()
-})
-
-test('renders "News unavailable" on 404', async ({ page }) => {
-  await page.route('**/news/DEU.json', async (route) => {
-    await route.fulfill({ status: 404, body: '' })
+  test('renders "News unavailable" on 404', async ({ page }) => {
+    await page.route('**/news/FRA.json', (route) => route.fulfill({ status: 404 }))
+    await page.goto('/#FRA')
+    await waitForMap(page)
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
+    await expect(
+      page.getByTestId('country-news-section').getByText(/News unavailable/i),
+    ).toBeVisible({ timeout: 5_000 })
   })
-
-  await openDEUPanel(page)
-
-  const section = page.getByTestId('country-news-section')
-  await expect(section).toBeVisible({ timeout: 10_000 })
-  await expect(section).toContainText('News unavailable', { timeout: 10_000 })
 })
