@@ -33,8 +33,11 @@ test.describe('reveal animation — reduced motion', () => {
       g?.submitCountryGuess('DEU')
     })
 
-    // Within 250 ms the full 65-point arc must already be in the source data.
-    // Under non-reduced motion the arc would still be growing past this point.
+    // Wait for the reveal line to have content, then assert it's already the
+    // FULL 65-point arc in the first polled frame — under reduced motion the
+    // setData happens in one shot, not a rAF sequence. Generous timeout so CI
+    // scheduling delays don't flake the wait itself; the strict count===65
+    // assertion is what proves the reduced-motion path fired.
     const handle = await page.waitForFunction(() => {
       const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
       if (!map) return null
@@ -43,8 +46,12 @@ test.describe('reveal animation — reduced motion', () => {
       const data = (src as unknown as { serialize: () => { data: GeoJSON.FeatureCollection } }).serialize().data
       if (!data?.features?.length) return null
       const g = data.features[0].geometry as GeoJSON.LineString
-      return g && g.type === 'LineString' ? g.coordinates.length : null
-    }, null, { timeout: 250 })
+      if (!g || g.type !== 'LineString') return null
+      // Only return once the source has ANY coordinates — the first poll after
+      // setData will see the full 65 because we never write a shorter array
+      // under reduced motion.
+      return g.coordinates.length > 0 ? g.coordinates.length : null
+    }, null, { timeout: 5_000 })
     const count = await handle.jsonValue() as number
     expect(count).toBe(65)
   })
