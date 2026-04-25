@@ -451,6 +451,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
 
     return () => {
       if (frameId !== null) window.cancelAnimationFrame(frameId)
+      // Halt any in-flight fitBounds — without this, the camera keeps animating
+      // into the next round if the user (or test) advances before the reveal
+      // settles, creating timing flakes on slow renderers.
+      try { map.stop() } catch { /* no-op */ }
       if (reveal.kind === 'country') {
         try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
       }

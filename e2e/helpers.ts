@@ -163,10 +163,14 @@ export async function gotoAndWaitForMap(page: Page, path = '/'): Promise<void> {
  * Poll the `game-reveal-line` source until it carries a LineString feature
  * with at least `minPoints` coordinates. Returns the coordinate array as a
  * JSHandle — call `.jsonValue()` on it to read the values.
+ *
+ * Default timeout is generous (15 s) because the animation alone takes
+ * up to 1.2 s and CI's software-ANGLE Chromium adds significant render-time
+ * overhead on top.
  */
 export async function waitForRevealLineCoords(
   page: Page,
-  { minPoints = 1, timeout = 5_000 }: { minPoints?: number; timeout?: number } = {},
+  { minPoints = 1, timeout = 15_000 }: { minPoints?: number; timeout?: number } = {},
 ): Promise<JSHandle<Array<[number, number]>>> {
   const handle = await page.waitForFunction(
     ({ src, min }) => {
