@@ -18,15 +18,13 @@ test.describe('first-session tutorial', () => {
     await waitForMap(page)
     await expect(page.getByTestId('game-tutorial')).toBeVisible({ timeout: 10_000 })
 
-    // First guess via the test seam — counts as a wrong guess (USA is unlikely
-    // to be the random round target; even if it is, the tutorial still dismisses
-    // because currentAttempts.length goes 0→1 either way).
+    // USA is unlikely to be the round target; even if it is, the tutorial
+    // still dismisses because the dismiss signal flips on any guess.
     await page.evaluate(() => window.__funworldmap_game?.submitCountryGuess?.('USA'))
 
     await expect(page.getByTestId('game-tutorial')).toBeHidden()
-    // country-pinning uses attemptsPerRound=1, so the guess goes straight to
-    // submitGuess and currentAttempts stays [] (no recordAttempt accumulation).
-    // Verify the guess was processed by checking lastOutcome is non-null.
+    // country-pinning uses attemptsPerRound=1, so the guess bypasses
+    // recordAttempt and currentAttempts stays []. Use lastOutcome instead.
     const guessProcessed = await page.evaluate(
       () => window.__funworldmap_game?.getSession?.().lastOutcome !== null,
     )
