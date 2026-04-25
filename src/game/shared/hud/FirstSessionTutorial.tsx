@@ -16,7 +16,7 @@ const COPY: Record<ModeId, { title: string; body: string }> = {
 
 interface Props {
   modeId: ModeId
-  firstAttemptMade?: boolean
+  firstAttemptMade: boolean
 }
 
 export function FirstSessionTutorial({ modeId, firstAttemptMade }: Props) {
