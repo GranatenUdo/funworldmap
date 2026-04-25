@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
-const slow = !!process.env.CI
+const isCi = !!process.env.CI
 
 export default defineConfig({
   testDir: './e2e',
@@ -10,12 +10,12 @@ export default defineConfig({
   reporter: 'html',
   // Per-project overrides take precedence; chromium-gpu bumps these on CI.
   timeout: 60_000,
-  expect: { timeout: slow ? 10_000 : 5_000 },
+  expect: { timeout: isCi ? 10_000 : 5_000 },
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'on-first-retry',
     permissions: ['clipboard-read', 'clipboard-write'],
-    actionTimeout: slow ? 15_000 : 5_000,
+    actionTimeout: isCi ? 15_000 : 5_000,
   },
   projects: [
     {
@@ -51,11 +51,11 @@ export default defineConfig({
     {
       name: 'chromium-gpu',
       // Software ANGLE renderer is ~3-5x slower than hardware GPU on CI.
-      timeout: slow ? 120_000 : 60_000,
-      expect: { timeout: slow ? 15_000 : 5_000 },
+      timeout: isCi ? 120_000 : 60_000,
+      expect: { timeout: isCi ? 15_000 : 5_000 },
       use: {
         ...devices['Desktop Chrome'],
-        actionTimeout: slow ? 20_000 : 5_000,
+        actionTimeout: isCi ? 20_000 : 5_000,
         // No SwiftShader — uses real GPU for WebGL2
         launchOptions: {
           args: ['--use-gl=angle', '--use-angle=default'],
