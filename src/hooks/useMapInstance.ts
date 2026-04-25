@@ -93,8 +93,10 @@ export function useMapInstance({
     containerRef.current!.parentElement!.appendChild(tooltip)
     tooltipRef.current = tooltip
 
-    // Test seam — exposed in production too so e2e can introspect MapLibre state.
-    ;(window as unknown as Record<string, unknown>).__funworldmap_map = map
+    // Test seam — only exposed under VITE_TEST_HOOKS so production bundles ship clean.
+    if (import.meta.env.VITE_TEST_HOOKS) {
+      ;(window as unknown as Record<string, unknown>).__funworldmap_map = map
+    }
 
     const watchdog = window.setTimeout(() => {
       setMapErrorState((prev) => prev ?? 'timeout')
@@ -156,7 +158,9 @@ export function useMapInstance({
       setLoadedBoth(false)
       map.remove()
       mapRef.current = null
-      delete (window as unknown as Record<string, unknown>).__funworldmap_map
+      if (import.meta.env.VITE_TEST_HOOKS) {
+        delete (window as unknown as Record<string, unknown>).__funworldmap_map
+      }
     }
     // onLoad intentionally not in deps — it must be stable from caller.
     // setLoadedBoth is stable (useCallback with empty deps).

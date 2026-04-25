@@ -102,7 +102,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm run preview -- --port 5173 --strictPort',
+    command: 'npm run build:e2e && npm run preview -- --port 5173 --strictPort',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
