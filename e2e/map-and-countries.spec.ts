@@ -3,7 +3,9 @@ import { dismissLauncher } from './helpers'
 
 // Map interaction tests need the map to FULLY load.
 // If these fail, that's a real bug — not silently skipped.
-test.setTimeout(60000)
+// Budget: 45 s for waitForMapReady on slow chromium-gpu (software ANGLE),
+// plus jumpTo/idle/click sequences in the deselect test below.
+test.setTimeout(120000)
 
 /** Wait for the map to be fully loaded with country layers */
 async function waitForMapReady(page: import('@playwright/test').Page) {
@@ -176,9 +178,10 @@ test.describe('Country click interaction', () => {
     await expect(page.getByTestId('country-panel')).toBeVisible()
 
     // Jump camera to mid-Pacific (guaranteed ocean) without changing hash.
-    // Resolve on `idle` but also on a 5 s timeout — under headless Chrome
-    // without a GPU, `idle` can be delayed indefinitely if tile fetches
-    // stall, and the subsequent click is what matters (not bytes arriving).
+    // Resolve on `idle` but also on a generous timeout — under headless
+    // chromium-gpu (software ANGLE), `idle` can be delayed by 10+ s while
+    // tile fetches stall, and the subsequent click is what matters (not
+    // bytes arriving).
     await page.evaluate(() => {
       return new Promise<void>((resolve) => {
         const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
@@ -188,10 +191,10 @@ test.describe('Country click interaction', () => {
         const done = (): void => resolve()
         map.jumpTo({ center: [-170, 0], zoom: 4 })
         map.once('idle', done)
-        setTimeout(done, 5000)
+        setTimeout(done, 15000)
       })
     })
-    await page.waitForTimeout(500)
+    await page.waitForTimeout(1000)
 
     // Click center of viewport — should be ocean
     const canvas = page.locator('.maplibregl-canvas')
@@ -204,8 +207,11 @@ test.describe('Country click interaction', () => {
     const hash = await page.evaluate(() => window.location.hash)
     expect(hash).toBe('')
 
-    // Panel should be gone
-    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+    // Panel should be gone. Slow chromium-gpu CI can need >5 s for the React
+    // re-render to flush after deselect — the failure mode in past CI runs.
+    await expect(page.getByTestId('country-panel')).not.toBeAttached({
+      timeout: 15_000,
+    })
   })
 })
 
