@@ -1,6 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 
-test.setTimeout(60_000)
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -132,19 +131,17 @@ test.describe('City Guessing game', () => {
   })
 
   test('ten rounds end the game', async ({ page }) => {
-    // Ten iterations of setRoundAndWait + hook-skip take longer on CI
-    // (~6 s each under headless Chrome without GPU); double the budget.
-    test.setTimeout(120_000)
+    // Reduced-motion bypasses the per-round reveal animation. The test
+    // verifies game-flow termination, not animation behaviour. Without
+    // this, 10 × ~600-1200 ms × 5x slower CI = up to 60 s of pure
+    // animation tax, which together with setup blew the test budget.
+    await page.emulateMedia({ reducedMotion: 'reduce' })
     await openCityGuessing(page)
-    // Between iterations, setRoundAndWait() + overrideRound forces status
-    // back to 'playing' and increments roundIndex. Skip via the hook bypasses
-    // the DOM click entirely — the skip button's bounding box is unstable on
-    // slow CI as the HUD re-renders each reveal cycle.
     for (let i = 0; i < 10; i++) {
       await setRoundAndWait(page, 'FRA-paris', 'Paris')
       await skipViaHook(page)
     }
-    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('game-over')).toBeVisible()
     await expect(page.getByTestId('game-over-score')).toHaveText('0')
   })
 

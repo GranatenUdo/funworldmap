@@ -1,7 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 
-test.setTimeout(60_000)
-
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }
@@ -147,13 +145,16 @@ test.describe('Country Pinning game', () => {
 
     const mapContainer = page.locator('.maplibregl-canvas').first()
     await mapContainer.hover({ position: { x: 400, y: 300 } })
-    await page.waitForTimeout(500)
 
-    const tooltipVisible = await page.evaluate(() => {
-      const t = document.querySelector('.country-tooltip')
-      return t?.classList.contains('visible') ?? false
-    })
-    expect(tooltipVisible).toBe(false)
+    // Poll: tooltip must be hidden after hovering on ocean (no country layer
+    // hit). Polling absorbs any late mousemove processing on slow CI.
+    await expect.poll(
+      () => page.evaluate(() => {
+        const t = document.querySelector('.country-tooltip')
+        return t?.classList.contains('visible') ?? false
+      }),
+      { timeout: 2_000 },
+    ).toBe(false)
   })
 
   test('round-end on wrong guess opens target panel; Continue advances', async ({ page }) => {

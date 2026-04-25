@@ -1,7 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { waitForRevealLineCoords } from './helpers'
 
-test.setTimeout(60_000)
 test.use({ colorScheme: 'dark', reducedMotion: 'reduce' })
 
 async function waitForMap(page: Page) {
