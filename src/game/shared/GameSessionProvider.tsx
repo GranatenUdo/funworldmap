@@ -67,6 +67,7 @@ export function GameSessionProvider({ pools, children }: Props) {
   apiRef.current = api
 
   useEffect(() => {
+    if (!import.meta.env.VITE_TEST_HOOKS) return
     const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
     if (!w.__funworldmap_game) w.__funworldmap_game = {}
     w.__funworldmap_game.getSession = () => apiRef.current.session

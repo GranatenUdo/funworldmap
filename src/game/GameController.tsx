@@ -7,6 +7,7 @@ import { getMode } from './modes'
 import { HudShell } from './shared/hud/HudShell'
 import { GameOverOverlay } from './shared/hud/GameOverOverlay'
 import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
+import { useMap } from '../hooks/useMap'
 import { parseHash } from '../lib/hashState'
 import { LAYER } from '../lib/mapLayers'
 import { centroidFromLatLng, tessellateArc } from './shared/distance'
@@ -100,6 +101,7 @@ interface Props {
 }
 
 export function GameController({ countries, cities, byCca3 }: Props) {
+  const { mapRef } = useMap()
   const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
@@ -341,7 +343,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // dashed line growing along the geodesic arc from guess to target.
   useEffect(() => {
     if (session.status !== 'round-ended' || !session.lastOutcome) return
-    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    const map = mapRef.current
     if (!map) return
 
     const reveal = session.lastOutcome.reveal
@@ -463,7 +465,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     if (session.attemptsPerRound <= 1) return
     if (session.currentAttempts.length === 0) return
     const last = session.currentAttempts[session.currentAttempts.length - 1]
-    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    const map = mapRef.current
     if (!map) return
 
     if (last.reveal.kind === 'country') {
@@ -507,7 +509,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   useEffect(() => {
     if (session.status !== 'playing' || !mode) return
     if (mode.initialCameraView !== 'world') return
-    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    const map = mapRef.current
     if (!map) return
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: reduced ? 0 : 700 })
@@ -517,7 +519,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   useEffect(() => {
     if (session.status !== 'playing') return
     if (session.modeId !== 'city-guessing') return
-    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    const map = mapRef.current
     if (!map) return
     const onClick = (e: maplibregl.MapMouseEvent) => {
       submitGuessInput({ kind: 'point', lngLat: [e.lngLat.lng, e.lngLat.lat] })
@@ -529,12 +531,13 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // Clear reveal geometry on every transition into idle.
   useEffect(() => {
     if (session.status !== 'idle') return
-    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
+    const map = mapRef.current
     if (map) clearRevealSources(map)
   }, [session.status])
 
   // Expose submitGuess + setRound on window for tests.
   useEffect(() => {
+    if (!import.meta.env.VITE_TEST_HOOKS) return
     const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
     if (!w.__funworldmap_game) w.__funworldmap_game = {}
     w.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
