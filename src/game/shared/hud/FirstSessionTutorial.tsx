@@ -16,9 +16,10 @@ const COPY: Record<ModeId, { title: string; body: string }> = {
 
 interface Props {
   modeId: ModeId
+  firstAttemptMade?: boolean
 }
 
-export function FirstSessionTutorial({ modeId }: Props) {
+export function FirstSessionTutorial({ modeId, firstAttemptMade }: Props) {
   const [open, setOpen] = useState(false)
   const key = KEY_PREFIX + modeId
 
@@ -27,6 +28,10 @@ export function FirstSessionTutorial({ modeId }: Props) {
     setOpen(true)
     sessionStorage.setItem(key, '1')
   }, [key])
+
+  useEffect(() => {
+    if (firstAttemptMade) setOpen(false)
+  }, [firstAttemptMade])
 
   if (!open) return null
   const copy = COPY[modeId]
