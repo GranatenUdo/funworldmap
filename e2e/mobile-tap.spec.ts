@@ -1,12 +1,10 @@
 import { test, expect, type Page } from '@playwright/test'
-import { routeMapTiles } from './helpers'
+import { gotoAndWaitForMap } from './helpers'
 
 test.setTimeout(60_000)
 
 async function setupWithCountryPinning(page: Page) {
-  await routeMapTiles(page)
-  await page.goto('/')
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+  await gotoAndWaitForMap(page)
   // Clicking a launcher card auto-dismisses the launcher; no separate dismiss
   // call needed (see e2e/game-country-pinning.spec.ts for the canonical flow).
   await page.getByTestId('launcher-card-country-pinning-free-link').click()
@@ -18,25 +16,21 @@ async function setupWithCountryPinning(page: Page) {
 // so the handler is subscribed when the click fires.
 async function installClickCounter(page: Page): Promise<void> {
   await page.evaluate(() => {
-    ;(window as unknown as { __mapClickCount?: number }).__mapClickCount = 0
-    const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
-    if (!map) return
-    map.on('click', () => {
-      const w = window as unknown as { __mapClickCount?: number }
-      w.__mapClickCount = (w.__mapClickCount ?? 0) + 1
+    window.__mapClickCount = 0
+    window.__funworldmap_map?.on('click', () => {
+      window.__mapClickCount = (window.__mapClickCount ?? 0) + 1
     })
   })
 }
 
 async function mapClickCount(page: Page): Promise<number> {
-  return page.evaluate(() => (window as unknown as { __mapClickCount?: number }).__mapClickCount ?? 0)
+  return page.evaluate(() => window.__mapClickCount ?? 0)
 }
 
 // Dispatch a "finger-roll tap" directly as DOM events on the canvas so we
 // exercise MapLibre's MapEventHandler.click tolerance gate deterministically,
 // independent of each browser's own click-vs-drag synthesis (which varies
 // widely — Chromium drops clicks at ~4px, WebKit tolerates ~10px+, etc.).
-// This is what we need to regression-test the clickTolerance config.
 async function fingerRollTap(page: Page, deltaPx: number): Promise<void> {
   await page.evaluate((delta) => {
     const canvas = document.querySelector('.maplibregl-canvas') as HTMLCanvasElement | null

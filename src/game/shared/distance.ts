@@ -26,10 +26,7 @@ export function centroidFromLatLng(
   return [latlng[1], latlng[0]]
 }
 
-/**
- * Spherical linear interpolation between two [lng, lat] points. t ∈ [0, 1].
- * Used to render geodesic arcs on the globe projection.
- */
+/** Slerp on the unit sphere — used for geodesic arc rendering on the globe. */
 export function slerpLngLat(
   from: [number, number],
   to: [number, number],
@@ -64,10 +61,7 @@ export function slerpLngLat(
   return [toDeg(lng), toDeg(lat)]
 }
 
-/**
- * Sample slerpLngLat at (n + 1) evenly-spaced t values; returns a polyline
- * that follows the geodesic arc between from and to.
- */
+/** Polyline approximating the geodesic arc from `from` to `to`, with n+1 points. */
 export function tessellateArc(
   from: [number, number],
   to: [number, number],

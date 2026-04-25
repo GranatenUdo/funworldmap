@@ -11,6 +11,7 @@ import { parseHash } from '../lib/hashState'
 import { LAYER } from '../lib/mapLayers'
 import { centroidFromLatLng, tessellateArc } from './shared/distance'
 import { computeRevealAnimationPlan } from './shared/revealAnimation'
+import { prefersReducedMotion } from '../lib/motion'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
 import { CityGuessingHudActionsContext } from './modes/city-guessing'
 import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
@@ -19,12 +20,15 @@ import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './daily/useDailyHistory'
 import { track } from '../lib/analytics'
 
+import {
+  REVEAL_MARKER_SOURCE,
+  REVEAL_LINE_SOURCE,
+  REVEAL_MARKER_LAYER,
+  REVEAL_LINE_LAYER,
+} from './shared/revealLayers'
+
 const REVEAL_MS_COUNTRY = 1200
 const REVEAL_MS_CITY = 2000
-const REVEAL_MARKER_SOURCE = 'game-reveal-marker'
-const REVEAL_LINE_SOURCE = 'game-reveal-line'
-const REVEAL_MARKER_LAYER = 'game-reveal-marker-layer'
-const REVEAL_LINE_LAYER = 'game-reveal-line-layer'
 
 function dispatchAnnouncement(text: string): void {
   window.dispatchEvent(new CustomEvent('funworldmap:announce', { detail: text }))
@@ -102,7 +106,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
   const recordedRef = useRef(false)
   const pendingStartRef = useRef<ModeId | null>(null)
-  const animatedRevealFrameRef = useRef<number | null>(null)
 
   // Pool derivation for the hash-bootstrap path (which needs `getMode` for
   // the first round ahead of the reducer running).
@@ -237,22 +240,18 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         advance(next)
       }
 
-      // Compute reveal duration from the animation plan, falling back to the
-      // current mode-specific constants when there is no animated line.
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      // Auto-advance timing: derived from the animation duration when a line
+      // animation is firing; otherwise the existing per-mode constant.
       const plan = session.lastOutcome
-        ? computeRevealAnimationPlan(session.lastOutcome.reveal, byCca3, reduced)
+        ? computeRevealAnimationPlan(session.lastOutcome.reveal, byCca3, prefersReducedMotion())
         : null
       const animatedMs = plan ? Math.max(plan.durationMs + 300, 1800) : null
 
-      // Country-pinning intermediate daily attempt → animated if plan exists, otherwise existing REVEAL_MS_COUNTRY.
       if (isCountryPinning && !isFinalOutcome) {
         const ms = animatedMs ?? REVEAL_MS_COUNTRY
         const t = window.setTimeout(advanceNow, ms)
         return () => window.clearTimeout(t)
       }
-
-      // City-guessing → animated if plan exists, otherwise REVEAL_MS_CITY.
       if (!isCountryPinning) {
         const ms = animatedMs ?? REVEAL_MS_CITY
         const t = window.setTimeout(advanceNow, ms)
@@ -346,10 +345,8 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     if (!map) return
 
     const reveal = session.lastOutcome.reveal
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduced = prefersReducedMotion()
 
-    // Border-pulse path for country reveals (correct or wrong). Orange for
-    // wrong (and a line is also drawn below); green for correct (no line).
     if (reveal.kind === 'country') {
       try {
         map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], reveal.targetCca3])
@@ -361,9 +358,8 @@ export function GameController({ countries, cities, byCca3 }: Props) {
 
     const plan = computeRevealAnimationPlan(reveal, byCca3, reduced)
 
-    // No animation plan: for city reveals with a target but no guess (skip),
-    // render only the target marker. For country reveals with no guess, do
-    // nothing beyond the border pulse.
+    // No animation plan: city skip renders the target marker only; country
+    // skip falls through to border pulse (already done above).
     if (!plan) {
       if (reveal.kind === 'point') {
         try {
@@ -388,9 +384,9 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       }
     }
 
-    // Animated line-draw path.
     const arc = tessellateArc(plan.from, plan.to, 64)
     const totalPoints = arc.length
+    let frameId: number | null = null
 
     try {
       ensureRevealSources(map)
@@ -407,7 +403,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         }],
       })
 
-      // fitBounds runs in parallel with the line draw.
       const lngs = [plan.from[0], plan.to[0]]
       const lats = [plan.from[1], plan.to[1]]
       map.fitBounds(
@@ -416,7 +411,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       )
 
       if (plan.durationMs === 0) {
-        // Reduced motion: draw the full arc immediately.
         lineSrc.setData({
           type: 'FeatureCollection',
           features: [{
@@ -426,39 +420,37 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           }],
         })
       } else {
-        // rAF loop: grow the line from point 0 → point (totalPoints - 1).
         const start = performance.now()
+        let lastIdx = -1
         const step = (now: number) => {
           const progress = Math.min(1, (now - start) / plan.durationMs)
           const idx = Math.max(1, Math.ceil(progress * (totalPoints - 1)))
-          const visible = arc.slice(0, idx + 1)
-          try {
-            lineSrc.setData({
-              type: 'FeatureCollection',
-              features: [{
-                type: 'Feature',
-                geometry: { type: 'LineString', coordinates: visible },
-                properties: {},
-              }],
-            })
-          } catch { /* source may have been torn down */ }
-          if (progress < 1) {
-            animatedRevealFrameRef.current = window.requestAnimationFrame(step)
-          } else {
-            animatedRevealFrameRef.current = null
+          // Skip setData when the visible slice hasn't changed since the last
+          // frame — saves a MapLibre tile rebuild on the final frame and on
+          // any frames where rAF fires faster than the per-point step.
+          if (idx !== lastIdx) {
+            lastIdx = idx
+            try {
+              lineSrc.setData({
+                type: 'FeatureCollection',
+                features: [{
+                  type: 'Feature',
+                  geometry: { type: 'LineString', coordinates: arc.slice(0, idx + 1) },
+                  properties: {},
+                }],
+              })
+            } catch { /* source may have been torn down */ }
           }
+          frameId = progress < 1 ? window.requestAnimationFrame(step) : null
         }
-        animatedRevealFrameRef.current = window.requestAnimationFrame(step)
+        frameId = window.requestAnimationFrame(step)
       }
     } catch (err) {
       console.warn('reveal geometry skipped:', err)
     }
 
     return () => {
-      if (animatedRevealFrameRef.current !== null) {
-        window.cancelAnimationFrame(animatedRevealFrameRef.current)
-        animatedRevealFrameRef.current = null
-      }
+      if (frameId !== null) window.cancelAnimationFrame(frameId)
       if (reveal.kind === 'country') {
         try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
       }
