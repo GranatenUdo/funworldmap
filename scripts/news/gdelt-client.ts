@@ -76,12 +76,42 @@ export async function gdeltSearch(params: GdeltSearchParams): Promise<GdeltArtic
   const raw = data.articles ?? []
   return raw
     .filter((a) => a.language === 'English')
-    .map((a) => ({
-      id: a.url,
-      title: sanitise(a.title),
-      url: a.url,
-      publishedAt: seendateToIso(a.seendate),
-      domain: a.domain,
-      thumbnail: a.socialimage && a.socialimage.length > 0 ? a.socialimage : null,
-    }))
+    .map((a): GdeltArticle | null => {
+      let articleUrl: string
+      try {
+        const u = new URL(a.url)
+        if (u.protocol !== 'http:' && u.protocol !== 'https:') {
+          console.warn(`[news] dropping article: non-http(s) URL ${a.url}`)
+          return null
+        }
+        articleUrl = a.url
+      } catch {
+        console.warn(`[news] dropping article: malformed URL ${a.url}`)
+        return null
+      }
+
+      let thumbnail: string | null = null
+      if (a.socialimage && a.socialimage.length > 0) {
+        try {
+          const u = new URL(a.socialimage)
+          if (u.protocol === 'http:' || u.protocol === 'https:') {
+            thumbnail = a.socialimage
+          } else {
+            console.warn(`[news] nulling thumbnail: non-http(s) ${a.socialimage}`)
+          }
+        } catch {
+          console.warn(`[news] nulling thumbnail: malformed ${a.socialimage}`)
+        }
+      }
+
+      return {
+        id: articleUrl,
+        title: sanitise(a.title),
+        url: articleUrl,
+        publishedAt: seendateToIso(a.seendate),
+        domain: a.domain,
+        thumbnail,
+      }
+    })
+    .filter((x): x is GdeltArticle => x !== null)
 }
