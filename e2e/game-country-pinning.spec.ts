@@ -176,7 +176,11 @@ test.describe('Country Pinning game', () => {
 
     const continueBtn = page.getByTestId('game-continue')
     await expect(continueBtn).toBeVisible()
-    await continueBtn.click()
+    // DOM-direct click — Playwright's locator.click waits for post-click
+    // stability/navigation that never settles on slow chromium-gpu CI
+    // (camera-follow rAF loop runs while round-end panel is up). The button
+    // itself is already enabled and visible per the assertion above.
+    await continueBtn.evaluate((el: HTMLButtonElement) => el.click())
 
     await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 5_000 })
   })
