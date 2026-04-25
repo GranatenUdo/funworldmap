@@ -28,6 +28,16 @@ test.describe('reveal animation', () => {
     expect(coords[0][1]).toBeCloseTo(51, 0)
     expect(coords[64][0]).toBeCloseTo(2, 0)
     expect(coords[64][1]).toBeCloseTo(46, 0)
+
+    // Camera ends near the target centroid (FRA = [2, 46]). 2° tolerance
+    // accommodates the final-frame quantisation of arc[idx].
+    const center = await page.evaluate(() => {
+      const c = window.__funworldmap_map?.getCenter()
+      return c ? { lng: c.lng, lat: c.lat } : null
+    })
+    expect(center).not.toBeNull()
+    expect(center!.lng).toBeCloseTo(2, 0)
+    expect(center!.lat).toBeCloseTo(46, 0)
   })
 
   test('city-guessing wrong guess renders a tessellated line from point → target', async ({ page }) => {

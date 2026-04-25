@@ -42,12 +42,6 @@ function writeIdleHash(): void {
   }
 }
 
-function fitPadding(): number {
-  const vw = window.innerWidth
-  const vh = window.innerHeight
-  return Math.max(40, Math.min(120, Math.min(vw, vh) * 0.1))
-}
-
 function ensureRevealSources(map: maplibregl.Map): void {
   if (!map.getSource(REVEAL_MARKER_SOURCE)) {
     map.addSource(REVEAL_MARKER_SOURCE, {
@@ -338,9 +332,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     lastAttemptCountRef.current = cur
   }, [session.status, session.currentAttempts, session.attemptsPerRound, session.modeId])
 
-  // Reveal geometry: on round-ended, update marker + line sources, fitBounds,
-  // and (for non-correct reveals with a known guess location) animate the
-  // dashed line growing along the geodesic arc from guess to target.
+  // Reveal geometry: on round-ended, update marker + line sources, snap the
+  // camera to the guess centroid, and (for non-correct reveals with a known
+  // guess location) animate the dashed line growing along the geodesic arc
+  // while the camera tracks the line head to the target.
   useEffect(() => {
     if (session.status !== 'round-ended' || !session.lastOutcome) return
     const map = mapRef.current
@@ -405,12 +400,8 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         }],
       })
 
-      const lngs = [plan.from[0], plan.to[0]]
-      const lats = [plan.from[1], plan.to[1]]
-      map.fitBounds(
-        [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
-        { duration: plan.durationMs, padding: fitPadding(), maxZoom: 6 },
-      )
+      // Snap camera to the wrong-guess centroid; rAF loop will track the line head.
+      map.jumpTo({ center: plan.from })
 
       if (plan.durationMs === 0) {
         lineSrc.setData({
@@ -421,6 +412,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
             properties: {},
           }],
         })
+        map.jumpTo({ center: plan.to })
       } else {
         const start = performance.now()
         let lastIdx = -1
@@ -441,6 +433,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
                   properties: {},
                 }],
               })
+              map.jumpTo({ center: arc[idx] })
             } catch { /* source may have been torn down */ }
           }
           frameId = progress < 1 ? window.requestAnimationFrame(step) : null
