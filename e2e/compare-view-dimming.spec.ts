@@ -1,7 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 
-test.setTimeout(60_000)
-
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }
@@ -21,21 +19,14 @@ test.describe('compare view dimming interacts with satellite mode', () => {
     // Satellite is ON by default.
     await page.goto('/#FRA,DEU')
     await waitForMap(page)
-    // Allow one animation frame for filter + paint to settle.
-    await page.waitForTimeout(500)
-
-    // In compare view, dimming pins borders at 0.15.
-    const dimmedOpacity = await getBorderOpacity(page)
-    expect(dimmedOpacity).toBeCloseTo(0.15, 2)
+    // Poll until dimming animation settles to the compare-view value (0.15).
+    await expect.poll(() => getBorderOpacity(page), { timeout: 5_000 }).toBeCloseTo(0.15, 2)
 
     // Exit compare.
     await page.evaluate(() => {
       window.location.hash = '#FRA'
     })
-    await page.waitForTimeout(500)
-
-    // Satellite-default opacity is 0.6, not the dimmed value.
-    const restoredOpacity = await getBorderOpacity(page)
-    expect(restoredOpacity).toBeCloseTo(0.6, 2)
+    // Poll until dimming releases back to the satellite-default value (0.6).
+    await expect.poll(() => getBorderOpacity(page), { timeout: 5_000 }).toBeCloseTo(0.6, 2)
   })
 })

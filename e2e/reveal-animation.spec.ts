@@ -1,8 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { waitForRevealLineCoords } from './helpers'
 
-test.setTimeout(60_000)
-
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }

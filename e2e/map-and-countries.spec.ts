@@ -3,7 +3,6 @@ import { dismissLauncher } from './helpers'
 
 // Map interaction tests need the map to FULLY load.
 // If these fail, that's a real bug — not silently skipped.
-test.setTimeout(60000)
 
 /** Wait for the map to be fully loaded with country layers */
 async function waitForMapReady(page: import('@playwright/test').Page) {
@@ -40,8 +39,22 @@ test.describe('Map rendering', () => {
     await dismissLauncher(page)
     await waitForMapReady(page)
 
-    // Wait for tiles to render
-    await page.waitForTimeout(2000)
+    // Poll until at least one country-fill feature is rendered (tiles loaded).
+    await expect.poll(
+      () => page.evaluate(() => {
+        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
+          getCanvas: () => HTMLCanvasElement
+          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
+        } | undefined
+        if (!map) return 0
+        const canvas = map.getCanvas()
+        return map.queryRenderedFeatures(
+          [canvas.clientWidth / 2, canvas.clientHeight / 2],
+          { layers: ['country-fill'] },
+        ).length
+      }),
+      { timeout: 10_000 },
+    ).toBeGreaterThan(0)
 
     const result = await page.evaluate(() => {
       const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
@@ -88,10 +101,24 @@ test.describe('Country click interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
-    // GPU compositor settle after launcher's backdrop-filter teardown
-    // before queryRenderedFeatures runs. Matches the sibling Hover test's
-    // handling; without this, features occasionally don't query cleanly.
-    await page.waitForTimeout(750)
+    // Poll until queryRenderedFeatures returns data — the GPU compositor
+    // settle from launcher teardown is what we're really waiting on, and
+    // a state-based poll is more reliable than a fixed 750 ms wait on slow CI.
+    await expect.poll(
+      () => page.evaluate(() => {
+        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
+          getCanvas: () => HTMLCanvasElement
+          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
+        } | undefined
+        if (!map) return 0
+        const canvas = map.getCanvas()
+        return map.queryRenderedFeatures(
+          [canvas.clientWidth / 2, canvas.clientHeight / 2],
+          { layers: ['country-fill'] },
+        ).length
+      }),
+      { timeout: 10_000 },
+    ).toBeGreaterThan(0)
 
     // Find a country feature at the center of the viewport and click it
     const clicked = await page.evaluate(() => {
@@ -124,11 +151,12 @@ test.describe('Country click interaction', () => {
 
     // Click at the found coordinates
     await page.mouse.click(clicked!.x, clicked!.y)
-    await page.waitForTimeout(1000)
 
-    // Hash should be set (some 3-letter country code)
-    const hash = await page.evaluate(() => window.location.hash)
-    expect(hash).toMatch(/^#[A-Z]{3}$/)
+    // Poll until the hash reflects the country selection.
+    await expect.poll(
+      () => page.evaluate(() => window.location.hash),
+      { timeout: 5_000 },
+    ).toMatch(/^#[A-Z]{3}$/)
 
     // Panel should be open
     await expect(page.getByTestId('country-panel')).toBeVisible()
@@ -139,8 +167,23 @@ test.describe('Country click interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
-    // GPU compositor settle after launcher teardown.
-    await page.waitForTimeout(750)
+    // Poll until queryRenderedFeatures returns data — GPU compositor settle
+    // after launcher's backdrop-filter teardown.
+    await expect.poll(
+      () => page.evaluate(() => {
+        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
+          getCanvas: () => HTMLCanvasElement
+          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
+        } | undefined
+        if (!map) return 0
+        const canvas = map.getCanvas()
+        return map.queryRenderedFeatures(
+          [canvas.clientWidth / 2, canvas.clientHeight / 2],
+          { layers: ['country-fill'] },
+        ).length
+      }),
+      { timeout: 10_000 },
+    ).toBeGreaterThan(0)
 
     // First, click a country to select it
     const countryPoint = await page.evaluate(() => {
@@ -168,11 +211,12 @@ test.describe('Country click interaction', () => {
 
     expect(countryPoint).not.toBeNull()
     await page.mouse.click(countryPoint!.x, countryPoint!.y)
-    await page.waitForTimeout(1500)
 
-    // Verify a country is now selected
-    const hashAfterSelect = await page.evaluate(() => window.location.hash)
-    expect(hashAfterSelect).toMatch(/^#[A-Z]{3}$/)
+    // Poll until the hash reflects the country selection.
+    await expect.poll(
+      () => page.evaluate(() => window.location.hash),
+      { timeout: 5_000 },
+    ).toMatch(/^#[A-Z]{3}$/)
     await expect(page.getByTestId('country-panel')).toBeVisible()
 
     // Jump camera to mid-Pacific (guaranteed ocean) without changing hash.
@@ -188,24 +232,25 @@ test.describe('Country click interaction', () => {
         const done = (): void => resolve()
         map.jumpTo({ center: [-170, 0], zoom: 4 })
         map.once('idle', done)
-        setTimeout(done, 5000)
+        // Slow ANGLE CI can stall idle for 10+ s. The fallback is a safety
+        // net; we want to give idle a fair chance first.
+        setTimeout(done, 15000)
       })
     })
-    await page.waitForTimeout(500)
 
     // Click center of viewport — should be ocean
     const canvas = page.locator('.maplibregl-canvas')
     const box = await canvas.boundingBox()
     expect(box).not.toBeNull()
     await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2)
-    await page.waitForTimeout(1000)
 
-    // Hash should be cleared
-    const hash = await page.evaluate(() => window.location.hash)
-    expect(hash).toBe('')
-
-    // Panel should be gone
+    // Poll until deselect propagates: hash clears AND panel unmounts.
+    await expect.poll(
+      () => page.evaluate(() => window.location.hash),
+      { timeout: 10_000 },
+    ).toBe('')
     await expect(page.getByTestId('country-panel')).not.toBeAttached()
+    // expect.timeout (15 s on chromium-gpu CI) covers the React re-render flush.
   })
 })
 
@@ -235,10 +280,12 @@ test.describe('Country selection via hash', () => {
 
   test('invalid hash is cleared and no panel shown', async ({ page }) => {
     await page.goto('/#INVALID')
-    await page.waitForTimeout(1000)
 
-    const hash = await page.evaluate(() => window.location.hash)
-    expect(hash).toBe('')
+    // Poll until the invalid-hash redirect logic clears the hash.
+    await expect.poll(
+      () => page.evaluate(() => window.location.hash),
+      { timeout: 5_000 },
+    ).toBe('')
     await expect(page.getByTestId('country-panel')).not.toBeAttached()
   })
 })
@@ -248,9 +295,23 @@ test.describe('Hover interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
-    // Give the GPU compositor a beat to recover from the launcher's
-    // backdrop-filter layer being torn down before querying features.
-    await page.waitForTimeout(750)
+    // Poll until the GPU has rendered a country-fill feature at the canvas
+    // center — backdrop-filter teardown can leave the compositor briefly empty.
+    await expect.poll(
+      () => page.evaluate(() => {
+        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
+          getCanvas: () => HTMLCanvasElement
+          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
+        } | undefined
+        if (!map) return 0
+        const canvas = map.getCanvas()
+        return map.queryRenderedFeatures(
+          [canvas.clientWidth / 2, canvas.clientHeight / 2],
+          { layers: ['country-fill'] },
+        ).length
+      }),
+      { timeout: 10_000 },
+    ).toBeGreaterThan(0)
 
     // Find a country feature
     const point = await page.evaluate(() => {
@@ -280,13 +341,16 @@ test.describe('Hover interaction', () => {
 
     // Move mouse to the country
     await page.mouse.move(point!.x, point!.y)
-    await page.waitForTimeout(500)
 
-    // Canvas cursor should be 'pointer'
-    const cursor = await page.evaluate(() => {
-      const canvas = document.querySelector('.maplibregl-canvas') as HTMLCanvasElement
-      return canvas?.style.cursor
-    })
-    expect(cursor).toBe('pointer')
+    // Poll until the canvas cursor flips to 'pointer' — the mousemove handler
+    // sets it via map.getCanvas().style.cursor = 'pointer' after the hover
+    // event fires, which on slow CI can lag the move event.
+    await expect.poll(
+      () => page.evaluate(() => {
+        const c = document.querySelector('.maplibregl-canvas') as HTMLElement | null
+        return c?.style.cursor ?? ''
+      }),
+      { timeout: 5_000 },
+    ).toBe('pointer')
   })
 })
