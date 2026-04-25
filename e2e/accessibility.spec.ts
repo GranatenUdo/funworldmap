@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 import { dismissLauncher, waitForAppReady, seedDailyHistory, stubDailyIndex, submitAndWait } from './helpers'
+import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
 
-const TODAY = new Date().toISOString().slice(0, 10)
+const TODAY = toLocalDateString(new Date())
 
 test.describe('Accessibility', () => {
   test('skip to search link works', async ({ page }) => {
