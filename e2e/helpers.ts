@@ -150,6 +150,39 @@ export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<v
 }
 
 /**
+ * Poll until at least one country-fill feature is rendered at the canvas
+ * centre. Replaces the chromium-gpu specs' `waitForTimeout(750-2000)` waits
+ * that were really waiting for the GPU compositor to settle (post-launcher
+ * teardown, post-jumpTo, etc.) before queryRenderedFeatures returns data.
+ *
+ * Spread polling intervals avoid hammering the cross-process IPC + GPU
+ * readback path on slow software-ANGLE CI.
+ */
+export async function waitForCountryTilesRendered(
+  page: Page,
+  timeout = 10_000,
+): Promise<void> {
+  await expect.poll(
+    () => page.evaluate(() => {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
+        getCanvas: () => HTMLCanvasElement
+        queryRenderedFeatures: (
+          point: [number, number],
+          opts: { layers: string[] },
+        ) => unknown[]
+      } | undefined
+      if (!map) return 0
+      const canvas = map.getCanvas()
+      return map.queryRenderedFeatures(
+        [canvas.clientWidth / 2, canvas.clientHeight / 2],
+        { layers: ['country-fill'] },
+      ).length
+    }),
+    { timeout, intervals: [250, 500, 1000, 1000] },
+  ).toBeGreaterThan(0)
+}
+
+/**
  * Stub tiles, navigate to `path`, and wait for `[data-map-loaded]`. The bundled
  * three-step preamble used by every mobile spec.
  */

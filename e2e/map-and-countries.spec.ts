@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { dismissLauncher, waitForCountryTilesRendered } from './helpers'
 
 // Map interaction tests need the map to FULLY load.
 // If these fail, that's a real bug — not silently skipped.
@@ -39,22 +39,7 @@ test.describe('Map rendering', () => {
     await dismissLauncher(page)
     await waitForMapReady(page)
 
-    // Poll until at least one country-fill feature is rendered (tiles loaded).
-    await expect.poll(
-      () => page.evaluate(() => {
-        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
-          getCanvas: () => HTMLCanvasElement
-          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
-        } | undefined
-        if (!map) return 0
-        const canvas = map.getCanvas()
-        return map.queryRenderedFeatures(
-          [canvas.clientWidth / 2, canvas.clientHeight / 2],
-          { layers: ['country-fill'] },
-        ).length
-      }),
-      { timeout: 10_000 },
-    ).toBeGreaterThan(0)
+    await waitForCountryTilesRendered(page)
 
     const result = await page.evaluate(() => {
       const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
@@ -101,24 +86,7 @@ test.describe('Country click interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
-    // Poll until queryRenderedFeatures returns data — the GPU compositor
-    // settle from launcher teardown is what we're really waiting on, and
-    // a state-based poll is more reliable than a fixed 750 ms wait on slow CI.
-    await expect.poll(
-      () => page.evaluate(() => {
-        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
-          getCanvas: () => HTMLCanvasElement
-          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
-        } | undefined
-        if (!map) return 0
-        const canvas = map.getCanvas()
-        return map.queryRenderedFeatures(
-          [canvas.clientWidth / 2, canvas.clientHeight / 2],
-          { layers: ['country-fill'] },
-        ).length
-      }),
-      { timeout: 10_000 },
-    ).toBeGreaterThan(0)
+    await waitForCountryTilesRendered(page)
 
     // Find a country feature at the center of the viewport and click it
     const clicked = await page.evaluate(() => {
@@ -167,23 +135,7 @@ test.describe('Country click interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
-    // Poll until queryRenderedFeatures returns data — GPU compositor settle
-    // after launcher's backdrop-filter teardown.
-    await expect.poll(
-      () => page.evaluate(() => {
-        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
-          getCanvas: () => HTMLCanvasElement
-          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
-        } | undefined
-        if (!map) return 0
-        const canvas = map.getCanvas()
-        return map.queryRenderedFeatures(
-          [canvas.clientWidth / 2, canvas.clientHeight / 2],
-          { layers: ['country-fill'] },
-        ).length
-      }),
-      { timeout: 10_000 },
-    ).toBeGreaterThan(0)
+    await waitForCountryTilesRendered(page)
 
     // First, click a country to select it
     const countryPoint = await page.evaluate(() => {
@@ -250,7 +202,6 @@ test.describe('Country click interaction', () => {
       { timeout: 10_000 },
     ).toBe('')
     await expect(page.getByTestId('country-panel')).not.toBeAttached()
-    // expect.timeout (15 s on chromium-gpu CI) covers the React re-render flush.
   })
 })
 
@@ -295,23 +246,7 @@ test.describe('Hover interaction', () => {
     await page.goto('/')
     await dismissLauncher(page)
     await waitForMapReady(page)
-    // Poll until the GPU has rendered a country-fill feature at the canvas
-    // center — backdrop-filter teardown can leave the compositor briefly empty.
-    await expect.poll(
-      () => page.evaluate(() => {
-        const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
-          getCanvas: () => HTMLCanvasElement
-          queryRenderedFeatures: (point: [number, number], opts: { layers: string[] }) => unknown[]
-        } | undefined
-        if (!map) return 0
-        const canvas = map.getCanvas()
-        return map.queryRenderedFeatures(
-          [canvas.clientWidth / 2, canvas.clientHeight / 2],
-          { layers: ['country-fill'] },
-        ).length
-      }),
-      { timeout: 10_000 },
-    ).toBeGreaterThan(0)
+    await waitForCountryTilesRendered(page)
 
     // Find a country feature
     const point = await page.evaluate(() => {
