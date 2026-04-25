@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { waitForAppReady } from './helpers'
+import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
 
@@ -27,7 +28,7 @@ async function seedIndex(page: Page, dates: string[]): Promise<void> {
 
 test.describe('Daily deep link — no-mode launcher anchor', () => {
   test('#daily/<today> (no mode) lands on launcher with anchorDate', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await seedIndex(page, [today])
     await page.goto(`/#daily/${today}`)
     await waitForAppReady(page)
@@ -39,8 +40,8 @@ test.describe('Daily deep link — no-mode launcher anchor', () => {
     const today = new Date()
     const past = new Date(today)
     past.setDate(past.getDate() - 3)
-    const pastStr = past.toISOString().slice(0, 10)
-    const todayStr = today.toISOString().slice(0, 10)
+    const pastStr = toLocalDateString(past)
+    const todayStr = toLocalDateString(today)
     await seedIndex(page, [pastStr, todayStr])
     await page.goto(`/#daily/${pastStr}`)
     await waitForAppReady(page)
@@ -51,7 +52,7 @@ test.describe('Daily deep link — no-mode launcher anchor', () => {
   // #daily/not-a-date does not match the isDailyRoot regex (/^daily\/\d{4}-\d{2}-\d{2}$/)
   // and is not a bare root, so the launcher is NOT shown at all.
   test('#daily/<garbage> does not open launcher', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await seedIndex(page, [today])
     await page.goto('/#daily/not-a-date')
     await waitForAppReady(page)

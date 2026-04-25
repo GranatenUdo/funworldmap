@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
 
@@ -129,7 +130,7 @@ test.describe('Launcher — header behaviour', () => {
 
 test.describe('Launcher — daily state', () => {
   test('unplayed daily state renders the daily CTA', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await page.route('**/daily/index.json', async (route) => {
       await route.fulfill({
         status: 200,
@@ -148,7 +149,7 @@ test.describe('Launcher — daily state', () => {
   })
 
   test('played daily state renders the result line', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await page.addInitScript(({ today }) => {
       localStorage.setItem('funworldmap-daily-history', JSON.stringify({
         version: 1,

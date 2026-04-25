@@ -1,8 +1,9 @@
 import { test, expect, type Page } from '@playwright/test'
+import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(120_000)
 
-const TODAY = new Date().toISOString().slice(0, 10)
+const TODAY = toLocalDateString(new Date())
 
 async function withDailyStub(page: Page): Promise<void> {
   await page.route('**/daily/index.json', async (route) => {

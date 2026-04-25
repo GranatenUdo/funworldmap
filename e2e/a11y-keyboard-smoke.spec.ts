@@ -1,9 +1,10 @@
 import { test, expect, Page } from '@playwright/test'
 import { waitForAppReady, seedDailyHistory, stubDailyIndex } from './helpers'
+import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
 
-const TODAY = new Date().toISOString().slice(0, 10)
+const TODAY = toLocalDateString(new Date())
 
 // ---------------------------------------------------------------------------
 // Shared helpers

@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { waitForAppReady } from './helpers'
+import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
 
@@ -55,7 +56,7 @@ async function installNavigatorShareMock(page: Page): Promise<void> {
 
 test.describe('Daily share block', () => {
   test('share block visible in DailyRevealOverlay with played country', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await seedPlayedDaily(page, today)
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
@@ -68,7 +69,7 @@ test.describe('Daily share block', () => {
   })
 
   test('clicking Share uses navigator.share when present', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await seedPlayedDaily(page, today)
     await installNavigatorShareMock(page)
     await page.goto(`/#daily/${today}/reveal`)
@@ -83,7 +84,7 @@ test.describe('Daily share block', () => {
   })
 
   test('clicking Copy link only writes the URL to clipboard', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await seedPlayedDaily(page, today)
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
@@ -94,7 +95,7 @@ test.describe('Daily share block', () => {
   })
 
   test('share block absent when no mode has been played', async ({ page }) => {
-    const today = new Date().toISOString().slice(0, 10)
+    const today = toLocalDateString(new Date())
     await page.addInitScript(
       ({ d }) => {
         localStorage.removeItem('funworldmap-daily-history')

@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
+import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(120_000)
-const TODAY = new Date().toISOString().slice(0, 10)
+const TODAY = toLocalDateString(new Date())
 
 test.describe('Daily streak', () => {
   test('streak pill shows current streak when localStorage has a streak', async ({ page }) => {
