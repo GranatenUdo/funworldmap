@@ -71,6 +71,10 @@ export function useMapInstance({
         maxZoom: MAX_ZOOM,
         maxPitch: MAX_PITCH,
         attributionControl: false,
+        // Touch-synthesised click events land several px from mousedown on
+        // mobile browsers; MapLibre's default clickTolerance=3 drops them.
+        // See docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md.
+        clickTolerance: 8,
       })
     } catch {
       setSupported(false)

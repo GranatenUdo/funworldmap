@@ -1,6 +1,7 @@
-import { expect, type Page } from '@playwright/test'
+import { expect, type Page, type JSHandle } from '@playwright/test'
 import { Buffer } from 'node:buffer'
 import type { ModeId } from '../src/game/shared/types'
+import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
 
 export interface SeedHistoryOptions {
   date: string
@@ -146,6 +147,48 @@ export async function dismissLauncher(page: Page): Promise<void> {
  */
 export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<void> {
   await page.locator('main[data-app-ready="true"]').waitFor({ state: 'attached', timeout: timeoutMs })
+}
+
+/**
+ * Stub tiles, navigate to `path`, and wait for `[data-map-loaded]`. The bundled
+ * three-step preamble used by every mobile spec.
+ */
+export async function gotoAndWaitForMap(page: Page, path = '/'): Promise<void> {
+  await routeMapTiles(page)
+  await page.goto(path)
+  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+}
+
+/**
+ * Poll the `game-reveal-line` source until it carries a LineString feature
+ * with at least `minPoints` coordinates. Returns the coordinate array as a
+ * JSHandle — call `.jsonValue()` on it to read the values.
+ *
+ * Default timeout is generous (15 s) because the animation alone takes
+ * up to 1.2 s and CI's software-ANGLE Chromium adds significant render-time
+ * overhead on top.
+ */
+export async function waitForRevealLineCoords(
+  page: Page,
+  { minPoints = 1, timeout = 15_000 }: { minPoints?: number; timeout?: number } = {},
+): Promise<JSHandle<Array<[number, number]>>> {
+  const handle = await page.waitForFunction(
+    ({ src, min }) => {
+      const map = window.__funworldmap_map
+      if (!map) return null
+      const source = map.getSource(src) as maplibregl.GeoJSONSource | undefined
+      if (!source) return null
+      const data = (source as unknown as { serialize: () => { data: GeoJSON.FeatureCollection } }).serialize().data
+      if (!data?.features?.length) return null
+      const g = data.features[0].geometry as GeoJSON.LineString
+      if (!g || g.type !== 'LineString') return null
+      if (g.coordinates.length < min) return null
+      return g.coordinates as Array<[number, number]>
+    },
+    { src: REVEAL_LINE_SOURCE, min: minPoints },
+    { timeout },
+  )
+  return handle as JSHandle<Array<[number, number]>>
 }
 
 /**

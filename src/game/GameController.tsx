@@ -9,7 +9,9 @@ import { GameOverOverlay } from './shared/hud/GameOverOverlay'
 import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
 import { parseHash } from '../lib/hashState'
 import { LAYER } from '../lib/mapLayers'
-import { centroidFromLatLng } from './shared/distance'
+import { centroidFromLatLng, tessellateArc } from './shared/distance'
+import { computeRevealAnimationPlan } from './shared/revealAnimation'
+import { prefersReducedMotion } from '../lib/motion'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
 import { CityGuessingHudActionsContext } from './modes/city-guessing'
 import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
@@ -18,12 +20,15 @@ import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './daily/useDailyHistory'
 import { track } from '../lib/analytics'
 
+import {
+  REVEAL_MARKER_SOURCE,
+  REVEAL_LINE_SOURCE,
+  REVEAL_MARKER_LAYER,
+  REVEAL_LINE_LAYER,
+} from './shared/revealLayers'
+
 const REVEAL_MS_COUNTRY = 1200
 const REVEAL_MS_CITY = 2000
-const REVEAL_MARKER_SOURCE = 'game-reveal-marker'
-const REVEAL_LINE_SOURCE = 'game-reveal-line'
-const REVEAL_MARKER_LAYER = 'game-reveal-marker-layer'
-const REVEAL_LINE_LAYER = 'game-reveal-line-layer'
 
 function dispatchAnnouncement(text: string): void {
   window.dispatchEvent(new CustomEvent('funworldmap:announce', { detail: text }))
@@ -235,16 +240,21 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         advance(next)
       }
 
-      // Country-pinning intermediate daily attempt → existing behavior (no panel, auto-advance via timer).
+      // Auto-advance timing: derived from the animation duration when a line
+      // animation is firing; otherwise the existing per-mode constant.
+      const plan = session.lastOutcome
+        ? computeRevealAnimationPlan(session.lastOutcome.reveal, byCca3, prefersReducedMotion())
+        : null
+      const animatedMs = plan ? Math.max(plan.durationMs + 300, 1800) : null
+
       if (isCountryPinning && !isFinalOutcome) {
-        const t = window.setTimeout(advanceNow, REVEAL_MS_COUNTRY)
+        const ms = animatedMs ?? REVEAL_MS_COUNTRY
+        const t = window.setTimeout(advanceNow, ms)
         return () => window.clearTimeout(t)
       }
-
-      // City-guessing → unchanged existing behavior (current timer values preserved).
       if (!isCountryPinning) {
-        const revealMs = session.modeId === 'city-guessing' ? REVEAL_MS_CITY : REVEAL_MS_COUNTRY
-        const t = window.setTimeout(advanceNow, revealMs)
+        const ms = animatedMs ?? REVEAL_MS_CITY
+        const t = window.setTimeout(advanceNow, ms)
         return () => window.clearTimeout(t)
       }
 
@@ -301,7 +311,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     session.status, session.roundIndex, session.lastOutcome, session.score,
     session.bestStreak, session.lives, session.used, session.currentRound, session.modeId,
     session.currentAttempts,
-    advance, mode, record, recordDailyResult,
+    advance, mode, record, recordDailyResult, byCca3,
   ])
 
   // Fire daily_attempted per intermediate attempt (only when attemptsPerRound > 1).
@@ -326,66 +336,126 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     lastAttemptCountRef.current = cur
   }, [session.status, session.currentAttempts, session.attemptsPerRound, session.modeId])
 
-  // Reveal geometry: when round-ended, update marker + line sources and fitBounds.
+  // Reveal geometry: on round-ended, update marker + line sources, fitBounds,
+  // and (for non-correct reveals with a known guess location) animate the
+  // dashed line growing along the geodesic arc from guess to target.
   useEffect(() => {
     if (session.status !== 'round-ended' || !session.lastOutcome) return
     const map = (window as unknown as { __funworldmap_map?: maplibregl.Map }).__funworldmap_map
     if (!map) return
 
     const reveal = session.lastOutcome.reveal
+    const reduced = prefersReducedMotion()
 
     if (reveal.kind === 'country') {
-      // Country Pinning: pulse target border as before.
-      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       try {
         map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], reveal.targetCca3])
         const colour = reveal.correct ? '#22c55e' : '#f59e0b'
         map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
         map.setPaintProperty(LAYER.hoverBorder, 'line-width', reduced ? 3 : 4)
       } catch { /* layer may not exist */ }
+    }
+
+    const plan = computeRevealAnimationPlan(reveal, byCca3, reduced)
+
+    // No animation plan: city skip renders the target marker only; country
+    // skip falls through to border pulse (already done above).
+    if (!plan) {
+      if (reveal.kind === 'point') {
+        try {
+          ensureRevealSources(map)
+          const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
+          markerSrc.setData({
+            type: 'FeatureCollection',
+            features: [{
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: reveal.targetCentroid },
+              properties: {},
+            }],
+          })
+        } catch (err) {
+          console.warn('reveal marker skipped:', err)
+        }
+      }
       return () => {
-        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+        if (reveal.kind === 'country') {
+          try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+        }
       }
     }
 
-    // City Guessing: marker + line + fitBounds. Wrapped in try/catch because
-    // map style may still be resolving on slow CI when the first reveal
-    // fires — a throw here shouldn't stall the React tree.
+    const arc = tessellateArc(plan.from, plan.to, 64)
+    const totalPoints = arc.length
+    let frameId: number | null = null
+
     try {
       ensureRevealSources(map)
       const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
       const lineSrc = map.getSource(REVEAL_LINE_SOURCE) as maplibregl.GeoJSONSource
-      const target = reveal.targetCentroid
+
+      // Target marker goes in first so it is visible from t=0.
       markerSrc.setData({
         type: 'FeatureCollection',
-        features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: target }, properties: {} }],
+        features: [{
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: plan.to },
+          properties: {},
+        }],
       })
-      if (reveal.clickedPoint) {
+
+      const lngs = [plan.from[0], plan.to[0]]
+      const lats = [plan.from[1], plan.to[1]]
+      map.fitBounds(
+        [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
+        { duration: plan.durationMs, padding: fitPadding(), maxZoom: 6 },
+      )
+
+      if (plan.durationMs === 0) {
         lineSrc.setData({
           type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'LineString', coordinates: [reveal.clickedPoint, target] },
-              properties: {},
-            },
-          ],
+          features: [{
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: arc },
+            properties: {},
+          }],
         })
-        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        const lngs = [reveal.clickedPoint[0], target[0]]
-        const lats = [reveal.clickedPoint[1], target[1]]
-        map.fitBounds(
-          [[Math.min(...lngs), Math.min(...lats)], [Math.max(...lngs), Math.max(...lats)]],
-          { duration: reduced ? 0 : 1000, padding: fitPadding(), maxZoom: 6 },
-        )
       } else {
-        lineSrc.setData({ type: 'FeatureCollection', features: [] })
+        const start = performance.now()
+        let lastIdx = -1
+        const step = (now: number) => {
+          const progress = Math.min(1, (now - start) / plan.durationMs)
+          const idx = Math.max(1, Math.ceil(progress * (totalPoints - 1)))
+          // Skip setData when the visible slice hasn't changed since the last
+          // frame — saves a MapLibre tile rebuild on the final frame and on
+          // any frames where rAF fires faster than the per-point step.
+          if (idx !== lastIdx) {
+            lastIdx = idx
+            try {
+              lineSrc.setData({
+                type: 'FeatureCollection',
+                features: [{
+                  type: 'Feature',
+                  geometry: { type: 'LineString', coordinates: arc.slice(0, idx + 1) },
+                  properties: {},
+                }],
+              })
+            } catch { /* source may have been torn down */ }
+          }
+          frameId = progress < 1 ? window.requestAnimationFrame(step) : null
+        }
+        frameId = window.requestAnimationFrame(step)
       }
     } catch (err) {
-      /* Map not fully ready; reveal text in HUD is still the authoritative feedback */
       console.warn('reveal geometry skipped:', err)
     }
-  }, [session.status, session.lastOutcome])
+
+    return () => {
+      if (frameId !== null) window.cancelAnimationFrame(frameId)
+      if (reveal.kind === 'country') {
+        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+      }
+    }
+  }, [session.status, session.lastOutcome, byCca3])
 
   // Intermediate reveal between attempts (daily only): brief guess-highlight, no target.
   useEffect(() => {

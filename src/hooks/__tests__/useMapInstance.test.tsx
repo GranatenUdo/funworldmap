@@ -5,9 +5,12 @@ import { MapProvider } from '../useMap'
 import { useMapInstance } from '../useMapInstance'
 
 vi.mock('maplibre-gl', () => {
+  const constructorArgs: unknown[] = []
   class FakeMap {
     _handlers: Record<string, ((e: unknown) => void)[]> = {}
-    constructor() {}
+    constructor(options: unknown) {
+      constructorArgs.push(options)
+    }
     addControl() {}
     on(evt: string, h: (e: unknown) => void) {
       ;(this._handlers[evt] ??= []).push(h)
@@ -32,6 +35,7 @@ vi.mock('maplibre-gl', () => {
     Map: FakeMap,
     NavigationControl: FakeControl,
     AttributionControl: FakeControl,
+    __constructorArgs: constructorArgs,
   }
 })
 
@@ -98,5 +102,21 @@ describe('useMapInstance', () => {
       { wrapper: Wrapper },
     )
     await vi.waitFor(() => expect(result.current.basemapDegraded).toBe(true))
+  })
+
+  it('passes clickTolerance: 8 to the MapLibre constructor', async () => {
+    const maplibre = await import('maplibre-gl') as unknown as { __constructorArgs: Array<Record<string, unknown>> }
+    maplibre.__constructorArgs.length = 0
+
+    renderHook(
+      () => {
+        const ref = useRef<HTMLDivElement | null>(document.getElementById('c') as HTMLDivElement)
+        useMapInstance({ containerRef: ref, onLoad: () => {} })
+      },
+      { wrapper: Wrapper },
+    )
+    const args = maplibre.__constructorArgs
+    expect(args.length).toBe(1)
+    expect(args[0].clickTolerance).toBe(8)
   })
 })
