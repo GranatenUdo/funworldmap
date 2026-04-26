@@ -77,4 +77,16 @@ describe('track', () => {
     expect(sendBeaconMock).not.toHaveBeenCalled()
     expect(fetchMock).not.toHaveBeenCalled()
   })
+
+  it('emits deep_link_opened with all four outcome values', () => {
+    ;(window as Window).__PLAYWRIGHT__ = true
+    track('deep_link_opened', { dateKind: 'today', outcome: 'start' })
+    track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
+    track('deep_link_opened', { dateKind: 'past', outcome: 'reveal' })
+    track('deep_link_opened', { dateKind: 'future', outcome: 'redirect' })
+    const outcomes = ((window as unknown as { __testAnalytics?: Array<{ name: string; props: { outcome?: string } }> }).__testAnalytics ?? [])
+      .filter((e) => e.name === 'deep_link_opened')
+      .map((e) => e.props.outcome)
+    expect(outcomes).toEqual(['start', 'resume', 'reveal', 'redirect'])
+  })
 })

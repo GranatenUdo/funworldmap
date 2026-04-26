@@ -1,8 +1,6 @@
 import { useEffect } from 'react'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
-import { track } from '../lib/analytics'
-import { toLocalDateString } from '../game/daily/dates'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
 import { DailyShareBlock } from './DailyShareBlock'
 import type { ShareResults } from '../game/daily/shareText'
@@ -23,22 +21,10 @@ function scoreDot(score: number): { emoji: string; label: string } {
   return { emoji: '⬛', label: `${score}/100` }
 }
 
-function dateKindOf(date: string): 'today' | 'past' | 'future' | 'invalid' {
-  const todayStr = toLocalDateString(new Date())
-  if (date === todayStr) return 'today'
-  if (date < todayStr) return 'past'
-  if (date > todayStr) return 'future'
-  return 'invalid'
-}
-
 export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }: Props) {
   const { byDate } = useDailyPuzzlesContext()
   const { get, streak } = useDailyHistory()
   const puzzle = byDate(date)
-
-  useEffect(() => {
-    track('deep_link_opened', { dateKind: dateKindOf(date), outcome: 'reveal' })
-  }, [date])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
