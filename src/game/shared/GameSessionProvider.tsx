@@ -1,17 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { useGameSession } from './useGameSession'
-import type { AttemptRecord, CityLike, CountryLike, GameMode, GameSession, GuessInput, GuessOutcome, ModeId, RoundSpec } from './types'
+import type { AttemptRecord, CityLike, CountryLike, GameMode, GameSession, GuessInput, ModeId, RoundSpec } from './types'
 import { getMode } from '../modes'
 
 export type GameSessionApi = {
   session: GameSession
   mode: GameMode | null
   start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number) => void
-  submitGuess: (input: GuessInput, outcome: GuessOutcome) => void
   submitGuessInput: (input: GuessInput) => void
-  recordAttempt: (attempt: AttemptRecord) => void
-  revealEarly: () => void
+  completeNow: () => void
+  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
@@ -26,7 +25,7 @@ interface Props {
 }
 
 export function GameSessionProvider({ pools, children }: Props) {
-  const { session, start, submitGuess, recordAttempt, revealEarly, advance, overrideRound, endGame } = useGameSession()
+  const { session, start, attempt, completeNow, resume, advance, overrideRound, endGame } = useGameSession()
 
   const mode = useMemo<GameMode | null>(() => {
     if (session.modeId === 'country-pinning' && pools.countries.length === 0) return null
@@ -42,25 +41,14 @@ export function GameSessionProvider({ pools, children }: Props) {
     (input: GuessInput) => {
       if (!mode || session.status !== 'playing' || !session.currentRound) return
       const result = mode.onGuess(input, session.currentRound)
-
-      if (session.attemptsPerRound > 1 && session.attemptsRemaining > 1) {
-        recordAttempt({ pointsEarned: result.pointsEarned, input, reveal: result.reveal })
-        return
-      }
-
-      const endsGame =
-        session.maxRounds !== null
-          ? session.roundIndex + 1 >= session.maxRounds
-          : session.lives + result.livesDelta <= 0
-      const outcome: GuessOutcome = { ...result, endsGame }
-      submitGuess(input, outcome)
+      attempt(input, result)
     },
-    [mode, session.status, session.currentRound, session.maxRounds, session.roundIndex, session.lives, session.attemptsPerRound, session.attemptsRemaining, submitGuess, recordAttempt],
+    [mode, session.status, session.currentRound, attempt],
   )
 
   const api = useMemo<GameSessionApi>(
-    () => ({ session, mode, start, submitGuess, submitGuessInput, recordAttempt, revealEarly, advance, overrideRound, endGame }),
-    [session, mode, start, submitGuess, submitGuessInput, recordAttempt, revealEarly, advance, overrideRound, endGame],
+    () => ({ session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame }),
+    [session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame],
   )
 
   const apiRef = useRef(api)
@@ -72,10 +60,12 @@ export function GameSessionProvider({ pools, children }: Props) {
     if (!w.__funworldmap_game) w.__funworldmap_game = {}
     w.__funworldmap_game.getSession = () => apiRef.current.session
     w.__funworldmap_game.endGame = () => apiRef.current.endGame()
+    w.__funworldmap_game.completeNow = () => apiRef.current.completeNow()
     return () => {
       if (w.__funworldmap_game) {
         delete w.__funworldmap_game.getSession
         delete w.__funworldmap_game.endGame
+        delete w.__funworldmap_game.completeNow
       }
     }
   }, [])
