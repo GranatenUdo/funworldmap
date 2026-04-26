@@ -29,19 +29,19 @@ describe('parseHash', () => {
 
   it('game hash without /play', () => {
     expect(parseHash('#game/country-pinning')).toEqual({
-      kind: 'game', modeId: 'country-pinning', playing: false,
+      kind: 'game', modeId: 'country-pinning',
     })
   })
 
-  it('game hash with /play', () => {
+  it('game hash with /play (forward-compat)', () => {
     expect(parseHash('#game/country-pinning/play')).toEqual({
-      kind: 'game', modeId: 'country-pinning', playing: true,
+      kind: 'game', modeId: 'country-pinning',
     })
   })
 
   it('unknown game modeId preserves the segment', () => {
     expect(parseHash('#game/mystery-mode')).toEqual({
-      kind: 'game', modeId: 'mystery-mode', playing: false,
+      kind: 'game', modeId: 'mystery-mode',
     })
   })
 
@@ -94,12 +94,8 @@ describe('writeHash', () => {
     expect(writeHash({ kind: 'country', cca3: 'FRA', compareWith: 'DEU' })).toBe('FRA,DEU')
   })
 
-  it('game not playing', () => {
-    expect(writeHash({ kind: 'game', modeId: 'country-pinning', playing: false })).toBe('game/country-pinning')
-  })
-
-  it('game playing', () => {
-    expect(writeHash({ kind: 'game', modeId: 'country-pinning', playing: true })).toBe('game/country-pinning/play')
+  it('game', () => {
+    expect(writeHash({ kind: 'game', modeId: 'country-pinning' })).toBe('game/country-pinning')
   })
 
   it('daily date only', () => {
