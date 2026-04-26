@@ -21,7 +21,6 @@ import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { parseHash } from './lib/hashState'
 import { track } from './lib/analytics'
-import { toLocalDateString } from './game/daily/dates'
 
 export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
@@ -259,22 +258,6 @@ function AppInner({
     }, 1500)
     return () => clearTimeout(timer)
   }, [mapReady, selected, hintDismissed, gameActive])
-
-  useEffect(() => {
-    const fireIfDaily = () => {
-      const state = parseHash(window.location.hash)
-      if (state.kind !== 'daily') return
-      const todayStr = toLocalDateString(new Date())
-      let dateKind: 'today' | 'past' | 'future' | 'invalid' = 'invalid'
-      if (state.date === todayStr) dateKind = 'today'
-      else if (state.date < todayStr) dateKind = 'past'
-      else if (state.date > todayStr) dateKind = 'future'
-      track('deep_link_opened', { dateKind, outcome: 'played' })
-    }
-    fireIfDaily()
-    window.addEventListener('hashchange', fireIfDaily)
-    return () => window.removeEventListener('hashchange', fireIfDaily)
-  }, [])
 
   useEffect(() => {
     if ((selected || gameActive) && showHint) {

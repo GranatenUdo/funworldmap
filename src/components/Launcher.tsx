@@ -96,7 +96,6 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   const startDaily = useCallback(
     (id: ModeId) => {
       track('launcher_dismissed', { path: 'card' })
-      track('daily_started', { mode: id })
       writeLastMode(id)
       onDismiss()
       window.location.hash = writeHash({ kind: 'daily', date, modeId: id, reveal: false })
@@ -107,7 +106,6 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   const startFree = useCallback(
     (id: ModeId) => {
       track('launcher_dismissed', { path: 'card' })
-      track('free_started', { mode: id })
       writeLastMode(id)
       onDismiss()
       window.location.hash = writeHash({ kind: 'game', modeId: id })
