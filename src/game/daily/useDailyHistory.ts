@@ -6,6 +6,7 @@ import {
   writeHistory,
   mergeDay,
   updateStreak,
+  pruneOlderThan,
   pendingMilestone as derivePendingMilestone,
   withMilestoneShown,
 } from './storage'
@@ -20,7 +21,12 @@ export interface UseDailyHistory {
 }
 
 export function useDailyHistory(): UseDailyHistory {
-  const [history, setHistory] = useState<DailyHistoryV1>(() => readHistory())
+  const [history, setHistory] = useState<DailyHistoryV1>(() => {
+    const raw = readHistory()
+    const pruned = pruneOlderThan(raw, 90)
+    if (pruned !== raw) writeHistory(pruned)
+    return pruned
+  })
 
   const get = useCallback(
     (date: string, modeId: ModeId): DailyDayResult | null =>
@@ -34,6 +40,9 @@ export function useDailyHistory(): UseDailyHistory {
         const merged = mergeDay(prev, date, modeId, result)
         const streaked = updateStreak(merged, date)
         writeHistory(streaked)
+        // Clear resume only after writeHistory returns — a quota-failed write
+        // must not orphan a completed day with no record.
+        try { localStorage.removeItem('funworldmap-daily-resume') } catch { /* no-op */ }
         return streaked
       })
     },
