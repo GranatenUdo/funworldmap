@@ -13,7 +13,9 @@ function dayNumber(date: string): string {
 }
 
 function ariaLabel(date: string, status: CalendarCellStatus, played: ReadonlySet<ModeId>): string {
-  const parts: string[] = [new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })]
+  const [y, m, d] = date.split('-').map(Number)
+  const local = new Date(y, m - 1, d)
+  const parts: string[] = [local.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })]
   if (status === 'today') parts.push('today')
   if (played.has('country-pinning')) parts.push('played country pinning')
   if (played.has('city-guessing')) parts.push('played city guessing')

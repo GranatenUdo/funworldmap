@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
 import { DailyShareBlock } from './DailyShareBlock'
 import type { ShareResults } from '../game/daily/shareText'
+import { installFocusTrap } from '../lib/focusTrap'
 
 interface Props {
   date: string
@@ -26,10 +27,26 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
   const { get, streak } = useDailyHistory()
   const puzzle = byDate(date)
 
+  const rootRef = useRef<HTMLDivElement>(null)
+  const previousFocusRef = useRef<HTMLElement | null>(null)
+
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    previousFocusRef.current = document.activeElement as HTMLElement | null
+    const root = rootRef.current
+    if (!root) return
+    const close = root.querySelector<HTMLButtonElement>('[data-testid="daily-reveal-close"]')
+    close?.focus()
+    const cleanup = installFocusTrap(root)
+    const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onEsc)
+    return () => {
+      cleanup()
+      window.removeEventListener('keydown', onEsc)
+      const prev = previousFocusRef.current
+      if (prev && document.body.contains(prev) && typeof prev.focus === 'function') {
+        prev.focus()
+      }
+    }
   }, [onClose])
 
   const showCountry = modeId === null || modeId === 'country-pinning'
@@ -49,6 +66,7 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
 
   return (
     <div
+      ref={rootRef}
       role="dialog"
       aria-modal="true"
       aria-label={`Daily reveal for ${date}`}
