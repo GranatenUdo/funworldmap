@@ -24,26 +24,19 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
       try {
         await navigator.share({ title: 'funworldmap daily', text, url })
         track('daily_shared', { date, modesPlayed: modesPlayed as 1 | 2, method: 'share-api' })
+        return
       } catch (err) {
         const name = (err as { name?: string }).name
-        if (name !== 'AbortError') {
-          try {
-            await navigator.clipboard.writeText(`${text}\n${url}`)
-            dispatchToast('Copied!')
-            track('daily_shared', { date, modesPlayed: modesPlayed as 1 | 2, method: 'clipboard-text' })
-          } catch {
-            /* silent */
-          }
-        }
+        if (name === 'AbortError') return
+        // fall through to clipboard
       }
-      return
     }
     try {
       await navigator.clipboard.writeText(`${text}\n${url}`)
       dispatchToast('Copied!')
       track('daily_shared', { date, modesPlayed: modesPlayed as 1 | 2, method: 'clipboard-text' })
     } catch {
-      /* silent */
+      dispatchToast("Couldn't copy — select and copy manually.")
     }
   }, [date, text, url, modesPlayed])
 
@@ -53,7 +46,7 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
       dispatchToast('Link copied')
       track('daily_shared', { date, modesPlayed: modesPlayed as 1 | 2, method: 'clipboard-link' })
     } catch {
-      /* silent */
+      dispatchToast("Couldn't copy — select and copy manually.")
     }
   }, [date, url, modesPlayed])
 

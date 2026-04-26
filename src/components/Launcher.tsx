@@ -4,6 +4,7 @@ import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
+import { installFocusTrap } from '../lib/focusTrap'
 import { usePersonalBests } from '../game/shared/usePersonalBests'
 import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
@@ -159,26 +160,19 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
+    const cleanup = installFocusTrap(root)
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && historyOpen) {
         e.preventDefault()
         e.stopPropagation()
         setHistoryOpen(false)
-        return
       }
-      if (e.key !== 'Tab') return
-      const focusables = Array.from(
-        root.querySelectorAll<HTMLElement>('button[data-testid^="launcher-"]'),
-      )
-      if (focusables.length === 0) return
-      const first = focusables[0]
-      const last = focusables[focusables.length - 1]
-      const active = document.activeElement as HTMLElement | null
-      if (!e.shiftKey && active === last) { e.preventDefault(); first.focus() }
-      else if (e.shiftKey && active === first) { e.preventDefault(); last.focus() }
     }
     root.addEventListener('keydown', onKey)
-    return () => root.removeEventListener('keydown', onKey)
+    return () => {
+      cleanup()
+      root.removeEventListener('keydown', onKey)
+    }
   }, [historyOpen])
 
   return (
