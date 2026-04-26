@@ -90,6 +90,7 @@ export function pruneOlderThan(
   for (const [date, entry] of Object.entries(h.days)) {
     if (date >= cutoffStr) kept[date] = entry
   }
+  if (Object.keys(kept).length === Object.keys(h.days).length) return h
   return { ...h, days: kept }
 }
 
