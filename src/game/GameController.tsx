@@ -452,7 +452,8 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     }
   }, [session.status, session.lastOutcome, byCca3])
 
-  // Intermediate reveal between attempts (daily only): brief guess-highlight, no target.
+  // Intermediate reveal between attempts (daily only): correctness-coloured
+  // guess highlight + score toast.
   useEffect(() => {
     if (session.status !== 'playing') return
     if (session.attemptsPerRound <= 1) return
@@ -460,20 +461,28 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     const last = session.currentAttempts[session.currentAttempts.length - 1]
     const map = mapRef.current
     if (!map) return
+    const reduced = prefersReducedMotion()
+    const holdMs = reduced ? 0 : 600
 
     if (last.reveal.kind === 'country') {
+      const colour = last.reveal.correct ? '#22c55e' : '#f59e0b'
       try {
         map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], last.reveal.clickedCca3 ?? ''])
-        map.setPaintProperty(LAYER.hoverBorder, 'line-color', '#f59e0b')
+        map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
         map.setPaintProperty(LAYER.hoverBorder, 'line-width', 3)
       } catch { /* layer may not exist */ }
       const t = window.setTimeout(() => {
         try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
-      }, 600)
-      return () => { window.clearTimeout(t); try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ } }
+      }, holdMs)
+      return () => {
+        window.clearTimeout(t)
+        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+      }
     }
 
-    // City mode: render a single grey marker at the guess point; no line, no target.
+    // City mode: distance-banded marker color.
+    const d = last.reveal.distanceKm
+    const colour = d < 50 ? '#22c55e' : d < 500 ? '#f59e0b' : '#ef4444'
     try {
       ensureRevealSources(map)
       const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
@@ -483,12 +492,15 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           type: 'FeatureCollection',
           features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: point }, properties: { intermediate: true } }],
         })
-        try { map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#94a3b8') } catch { /* no-op */ }
+        try { map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', colour) } catch { /* no-op */ }
       }
     } catch { /* style may still be resolving */ }
     const t = window.setTimeout(() => {
-      try { clearRevealSources(map); map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b') } catch { /* no-op */ }
-    }, 600)
+      try {
+        clearRevealSources(map)
+        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b')
+      } catch { /* no-op */ }
+    }, holdMs)
     return () => {
       window.clearTimeout(t)
       try {
