@@ -4,10 +4,16 @@ import type { PersonalBest } from './types'
 const ZERO: PersonalBest = { bestScore: 0, bestStreak: 0, gamesPlayed: 0 }
 
 function keyFor(modeId: string): string {
+  return `funworldmap-game-${modeId}-bests-v2`
+}
+
+function legacyKeyFor(modeId: string): string {
   return `funworldmap-game-${modeId}-bests`
 }
 
 function readSafely(modeId: string): PersonalBest {
+  // One-time cleanup of v1 (polluted by daily plays). Idempotent.
+  try { localStorage.removeItem(legacyKeyFor(modeId)) } catch { /* no-op */ }
   try {
     const raw = localStorage.getItem(keyFor(modeId))
     if (!raw) return ZERO
