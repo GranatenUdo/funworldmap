@@ -48,7 +48,6 @@ funworldmap is for everyone, but these users inform design decisions:
 
 - Not a GIS tool — no custom layers, projections, or spatial analysis
 - Not a news platform — no real-time data, events, or editorial content
-- Not a comparison tool — no side-by-side country comparisons (yet)
 - Not a historical atlas — shows current political boundaries only
 - Not opinionated — disputed territories displayed neutrally using de facto boundaries
 

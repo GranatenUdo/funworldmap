@@ -20,6 +20,10 @@ Start with the purpose, then read the system overview for architecture context, 
 - [Testing](systems/testing.md) — Playwright two-tier strategy, WebGL2 headless, fixtures
 - [Build & Deploy](systems/build.md) — Vite, Tailwind 4, build output, deployment
 
+### Game
+- [Game System Overview](systems/overview.md#game-system) — reducer model, modes, daily layer
+- [Daily Puzzle](systems/daily-puzzle.md) — content generation, storage, telemetry
+
 ### Operations
 - [Runbook](ops/runbook.md) — bandwidth watch, data freshness, basemap degradation, incident response
 
