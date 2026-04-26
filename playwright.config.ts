@@ -41,6 +41,7 @@ export default defineConfig({
         'country-news.spec.ts',
         'launcher.spec.ts',
         'daily-puzzle.spec.ts',
+        'daily-best-of-3.spec.ts',
         'daily-streak.spec.ts',
         'daily-reveal.spec.ts',
         'daily-share.spec.ts',

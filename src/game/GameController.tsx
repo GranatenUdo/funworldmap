@@ -96,7 +96,7 @@ interface Props {
 
 export function GameController({ countries, cities, byCca3 }: Props) {
   const { mapRef } = useMap()
-  const { session, mode, start, submitGuessInput, advance, overrideRound, endGame } = useGameSessionContext()
+  const { session, mode, start, submitGuessInput, completeNow, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
@@ -627,7 +627,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           firstAttemptMade={session.currentAttempts.length > 0 || session.lastOutcome !== null}
         />
       )}
-      <HudShell session={session} onEndGame={onEndGame}>
+      <HudShell session={session} onEndGame={onEndGame} onDone={completeNow}>
         <Hud session={session} />
       </HudShell>
       {session.status === 'game-over' && (
