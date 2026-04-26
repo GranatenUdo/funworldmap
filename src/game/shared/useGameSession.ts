@@ -1,11 +1,21 @@
 import { useCallback, useReducer } from 'react'
-import type { AttemptRecord, GameSession, GuessInput, GuessOutcome, ModeId, RoundSpec } from './types'
+import type { AttemptRecord, GameSession, GuessInput, ModeGuessResult, ModeId, RoundSpec } from './types'
 
+/**
+ * Reducer action set. The collapsed `attempt` action subsumes the old
+ * `recordAttempt` / `submitGuess` split. `completeNow` is the user-driven
+ * early-end for best-of-N rounds. `resume` rehydrates a daily session from
+ * persisted state.
+ *
+ * Configuration guard: the combination `attemptsPerRound > 1 && maxRounds === null`
+ * is structurally unsupported (lives never decrement; endsGame falls through
+ * to a permanently-false condition). The `start` action rejects this combo.
+ */
 type Action =
   | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number }
-  | { type: 'attempt'; attempt: AttemptRecord }
-  | { type: 'guess'; input: GuessInput; outcome: GuessOutcome }
-  | { type: 'revealEarly' }
+  | { type: 'attempt'; input: GuessInput; result: ModeGuessResult }
+  | { type: 'completeNow' }
+  | { type: 'resume'; modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
   | { type: 'endGame' }
@@ -31,13 +41,46 @@ function roundKey(round: RoundSpec): string {
   return round.kind === 'country-pinning' ? round.targetCca3 : round.targetId
 }
 
-function bestPoints(attempts: AttemptRecord[]): number {
-  return attempts.reduce((m, a) => Math.max(m, a.pointsEarned), 0)
+function deriveBest(attempts: AttemptRecord[]): AttemptRecord {
+  return attempts.reduce((best, a) => (a.pointsEarned > best.pointsEarned ? a : best), attempts[0])
+}
+
+function endOfRound(state: GameSession, attempts: AttemptRecord[], finalResult: ModeGuessResult | null): GameSession {
+  const best = deriveBest(attempts)
+  const livesDelta = state.attemptsPerRound === 1 && finalResult ? finalResult.livesDelta : 0
+  const nextLives = Math.max(0, state.lives + livesDelta) as GameSession['lives']
+  const nextStreak = best.pointsEarned >= 100 ? state.streak + 1 : 0
+  const endsGame =
+    state.maxRounds !== null
+      ? state.roundIndex + 1 >= state.maxRounds
+      : nextLives <= 0
+  return {
+    ...state,
+    status: endsGame ? 'game-over' : 'round-ended',
+    lives: nextLives,
+    score: state.score + best.pointsEarned,
+    streak: nextStreak,
+    bestStreak: Math.max(state.bestStreak, nextStreak),
+    attemptsRemaining: 0,
+    currentAttempts: attempts,
+    lastOutcome: {
+      pointsEarned: best.pointsEarned,
+      livesDelta,
+      endsGame,
+      reveal: best.reveal,
+    },
+  }
 }
 
 function reducer(state: GameSession, action: Action): GameSession {
   switch (action.type) {
     case 'start': {
+      if (action.attemptsPerRound > 1 && action.maxRounds === null) {
+        if (typeof console !== 'undefined') {
+          console.error('useGameSession: attemptsPerRound>1 with maxRounds=null is unsupported')
+        }
+        return state
+      }
       return {
         ...EMPTY,
         modeId: action.modeId,
@@ -49,66 +92,51 @@ function reducer(state: GameSession, action: Action): GameSession {
         used: new Set([roundKey(action.firstRound)]),
       }
     }
-    case 'attempt': {
-      if (state.status !== 'playing') return state
-      if (state.attemptsRemaining <= 0) return state
-      return {
-        ...state,
-        attemptsRemaining: state.attemptsRemaining - 1,
-        currentAttempts: [...state.currentAttempts, action.attempt],
-      }
-    }
-    case 'guess': {
-      if (state.attemptsPerRound > 1 && state.attemptsRemaining > 1) return state
 
-      const finalAttempt: AttemptRecord = {
-        pointsEarned: action.outcome.pointsEarned,
+    case 'attempt': {
+      if (state.status !== 'playing' || !state.currentRound) return state
+      if (state.attemptsRemaining <= 0) return state
+      const newAttempt: AttemptRecord = {
+        pointsEarned: action.result.pointsEarned,
         input: action.input,
-        reveal: action.outcome.reveal,
+        reveal: action.result.reveal,
       }
-      const attemptsWithFinal =
-        state.attemptsPerRound > 1
-          ? [...state.currentAttempts, finalAttempt]
-          : state.currentAttempts
-      const points = state.attemptsPerRound > 1 ? bestPoints(attemptsWithFinal) : action.outcome.pointsEarned
-      const nextLives = Math.max(0, state.lives + action.outcome.livesDelta) as GameSession['lives']
-      const nextStreak = action.outcome.pointsEarned >= 100 ? state.streak + 1 : 0
-      return {
-        ...state,
-        status: action.outcome.endsGame ? 'game-over' : 'round-ended',
-        lives: nextLives,
-        score: state.score + points,
-        streak: nextStreak,
-        bestStreak: Math.max(state.bestStreak, nextStreak),
-        attemptsRemaining: 0,
-        currentAttempts: attemptsWithFinal,
-        lastOutcome: { ...action.outcome, pointsEarned: points },
+      const attemptsAfter = [...state.currentAttempts, newAttempt]
+      const remaining = state.attemptsRemaining - 1
+      const roundEnds = state.attemptsPerRound === 1 || remaining === 0
+      if (!roundEnds) {
+        return {
+          ...state,
+          currentAttempts: attemptsAfter,
+          attemptsRemaining: remaining,
+        }
       }
+      return endOfRound(state, attemptsAfter, action.result)
     }
-    case 'revealEarly': {
-      // Daily-only semantics (v1): the user initiates reveal to end the current
-      // puzzle early. We keep streak/bestStreak unchanged (the streak is tracked
-      // by useDailyHistory against local-date completion, not by round-end points
-      // here), and transition directly to 'game-over' because daily sessions are
-      // single-round. If a future mode uses attemptsPerRound > 1 AND maxRounds > 1,
-      // this branch must compute endsGame from state.maxRounds / state.roundIndex
-      // the way the 'guess' case does, not hard-code 'game-over'.
+
+    case 'completeNow': {
       if (state.status !== 'playing') return state
+      if (state.attemptsPerRound <= 1) return state
       if (state.currentAttempts.length === 0) return state
-      const points = bestPoints(state.currentAttempts)
+      return endOfRound(state, state.currentAttempts, null)
+    }
+
+    case 'resume': {
+      if (action.attemptsPerRound <= 1) return state
+      if (action.attempts.length >= action.attemptsPerRound) return state
       return {
-        ...state,
-        status: 'game-over',
-        score: state.score + points,
-        attemptsRemaining: 0,
-        lastOutcome: {
-          pointsEarned: points,
-          livesDelta: 0,
-          endsGame: true,
-          reveal: state.currentAttempts[state.currentAttempts.length - 1].reveal,
-        },
+        ...EMPTY,
+        modeId: action.modeId,
+        status: 'playing',
+        maxRounds: 1,
+        attemptsPerRound: action.attemptsPerRound,
+        attemptsRemaining: action.attemptsPerRound - action.attempts.length,
+        currentAttempts: action.attempts,
+        currentRound: action.round,
+        used: new Set([roundKey(action.round)]),
       }
     }
+
     case 'advance': {
       if (state.status !== 'round-ended') return state
       return {
@@ -122,11 +150,9 @@ function reducer(state: GameSession, action: Action): GameSession {
         lastOutcome: null,
       }
     }
+
     case 'overrideRound': {
       if (state.status === 'idle') return state
-      // From 'round-ended' we're effectively advancing to a new round;
-      // increment roundIndex so endsGame checks based on round count
-      // (city-guessing) work correctly under test-override paths.
       const isAdvancing = state.status === 'round-ended'
       return {
         ...state,
@@ -139,6 +165,7 @@ function reducer(state: GameSession, action: Action): GameSession {
         lastOutcome: null,
       }
     }
+
     case 'endGame': {
       return { ...EMPTY, used: new Set() }
     }
@@ -148,9 +175,9 @@ function reducer(state: GameSession, action: Action): GameSession {
 export function useGameSession(): {
   session: GameSession
   start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number) => void
-  recordAttempt: (attempt: AttemptRecord) => void
-  submitGuess: (input: GuessInput, outcome: GuessOutcome) => void
-  revealEarly: () => void
+  attempt: (input: GuessInput, result: ModeGuessResult) => void
+  completeNow: () => void
+  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
@@ -161,14 +188,18 @@ export function useGameSession(): {
       dispatch({ type: 'start', modeId, firstRound, maxRounds, attemptsPerRound }),
     [],
   )
-  const recordAttempt = useCallback((attempt: AttemptRecord) => dispatch({ type: 'attempt', attempt }), [])
-  const submitGuess = useCallback(
-    (input: GuessInput, outcome: GuessOutcome) => dispatch({ type: 'guess', input, outcome }),
+  const attempt = useCallback(
+    (input: GuessInput, result: ModeGuessResult) => dispatch({ type: 'attempt', input, result }),
     [],
   )
-  const revealEarly = useCallback(() => dispatch({ type: 'revealEarly' }), [])
+  const completeNow = useCallback(() => dispatch({ type: 'completeNow' }), [])
+  const resume = useCallback(
+    (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) =>
+      dispatch({ type: 'resume', ...payload }),
+    [],
+  )
   const advance = useCallback((nextRound: RoundSpec) => dispatch({ type: 'advance', nextRound }), [])
   const overrideRound = useCallback((round: RoundSpec) => dispatch({ type: 'overrideRound', round }), [])
   const endGame = useCallback(() => dispatch({ type: 'endGame' }), [])
-  return { session, start, recordAttempt, submitGuess, revealEarly, advance, overrideRound, endGame }
+  return { session, start, attempt, completeNow, resume, advance, overrideRound, endGame }
 }
