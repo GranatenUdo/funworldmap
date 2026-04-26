@@ -103,6 +103,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
   const recordedRef = useRef(false)
   const pendingStartRef = useRef<ModeId | null>(null)
+  // Guard the reveal-route deep_link_opened emit against re-fires when deps
+  // change (e.g. byDate reference update after index load). Stores the last
+  // hash string for which the event was emitted — reset on hashchange.
+  const lastRevealEmitHashRef = useRef<string | null>(null)
 
   // Pool derivation for the hash-bootstrap path (which needs `getMode` for
   // the first round ahead of the reducer running).
@@ -116,11 +120,17 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       const state = parseHash(window.location.hash)
       // Early reveal-route emit: fires before modeId check since reveal-only routes
       // may have modeId null (e.g. /#daily/<date>/reveal).
+      // Deduped by hash string so re-runs triggered by deps changes (e.g. byDate
+      // reference update when the daily index loads) don't double-count.
       if (state.kind === 'daily' && state.reveal) {
-        const todayStr = toLocalDateString(new Date())
-        const dateKind: 'today' | 'past' | 'future' =
-          state.date === todayStr ? 'today' : state.date < todayStr ? 'past' : 'future'
-        track('deep_link_opened', { dateKind, outcome: 'reveal' })
+        const currentHash = window.location.hash
+        if (lastRevealEmitHashRef.current !== currentHash) {
+          lastRevealEmitHashRef.current = currentHash
+          const todayStr = toLocalDateString(new Date())
+          const dateKind: 'today' | 'past' | 'future' =
+            state.date === todayStr ? 'today' : state.date < todayStr ? 'past' : 'future'
+          track('deep_link_opened', { dateKind, outcome: 'reveal' })
+        }
         return
       }
       // Daily routes (Phase 2 handles /#daily/<date>/<modeId> for TODAY only;
@@ -169,7 +179,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         if (resumed && resumed.date === state.date && resumed.modeId === id && resumed.attempts.length > 0) {
           resume({ modeId: id, round: firstRound, attemptsPerRound: 3, attempts: resumed.attempts })
           track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
-          track('daily_started', { mode: id })
           return
         }
         start(id, firstRound, 1, 3)
@@ -226,7 +235,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       if (resumed && resumed.date === state.date && resumed.modeId === pending && resumed.attempts.length > 0) {
         resume({ modeId: pending, round: firstRound, attemptsPerRound: 3, attempts: resumed.attempts })
         track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
-        track('daily_started', { mode: pending })
         return
       }
       start(pending, firstRound, 1, 3)

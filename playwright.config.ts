@@ -47,6 +47,7 @@ export default defineConfig({
         'daily-share.spec.ts',
         'daily-deep-link.spec.ts',
         'launcher-history.spec.ts',
+        'telemetry-deep-link.spec.ts',
       ],
     },
     {
