@@ -10,7 +10,6 @@ import {
   pendingMilestone as derivePendingMilestone,
   withMilestoneShown,
 } from './storage'
-import { clearResume } from './resume'
 
 export interface UseDailyHistory {
   history: DailyHistoryV1
@@ -43,7 +42,6 @@ export function useDailyHistory(): UseDailyHistory {
         writeHistory(streaked)
         return streaked
       })
-      clearResume()
     },
     [],
   )

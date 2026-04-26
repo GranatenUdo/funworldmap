@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { calendarGrid } from '../game/daily/calendarGrid'
+import { parseLocalDate } from '../game/daily/dates'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import type { ModeId } from '../game/shared/types'
 import { LauncherCalendarCell } from './LauncherCalendarCell'
@@ -17,10 +18,7 @@ const DOW_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 
 export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) {
   const { history } = useDailyHistory()
-  const cells = useMemo(() => {
-    const [y, m, d] = today.split('-').map(Number)
-    return calendarGrid(new Date(y, m - 1, d), 30)
-  }, [today])
+  const cells = useMemo(() => calendarGrid(parseLocalDate(today), 30), [today])
   const rootRef = useRef<HTMLDivElement>(null)
 
   const playedByDate = useMemo(() => {

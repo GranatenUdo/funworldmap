@@ -2,16 +2,13 @@ import { useCallback } from 'react'
 import { buildShareText, modesPlayed as countModesPlayed, type ShareResults } from '../game/daily/shareText'
 import type { StreakState } from '../game/daily/types'
 import { track } from '../lib/analytics'
+import { dispatchToast } from '../lib/toast'
 
 interface Props {
   date: string
   results: ShareResults
   streak: StreakState
   originUrl: string
-}
-
-function dispatchToast(message: string): void {
-  window.dispatchEvent(new CustomEvent('funworldmap:toast', { detail: message }))
 }
 
 export function DailyShareBlock({ date, results, streak, originUrl }: Props) {

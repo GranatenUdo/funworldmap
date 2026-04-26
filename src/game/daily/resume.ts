@@ -8,17 +8,17 @@ export interface DailyResumeV1 {
   attempts: AttemptRecord[]
 }
 
-const KEY = 'funworldmap-daily-resume'
+export const RESUME_KEY = 'funworldmap-daily-resume'
 
 export function readResume(): DailyResumeV1 | null {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(RESUME_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as Partial<DailyResumeV1>
     if (parsed.version !== 1) return null
     if (typeof parsed.date !== 'string') return null
     if (parsed.date !== toLocalDateString(new Date())) {
-      try { localStorage.removeItem(KEY) } catch { /* no-op */ }
+      try { localStorage.removeItem(RESUME_KEY) } catch { /* no-op */ }
       return null
     }
     if (parsed.modeId !== 'country-pinning' && parsed.modeId !== 'city-guessing') return null
@@ -31,7 +31,7 @@ export function readResume(): DailyResumeV1 | null {
 
 export function writeResume(value: DailyResumeV1): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify(value))
+    localStorage.setItem(RESUME_KEY, JSON.stringify(value))
   } catch {
     /* quota / private mode — best-effort */
   }
@@ -39,7 +39,7 @@ export function writeResume(value: DailyResumeV1): void {
 
 export function clearResume(): void {
   try {
-    localStorage.removeItem(KEY)
+    localStorage.removeItem(RESUME_KEY)
   } catch {
     /* no-op */
   }

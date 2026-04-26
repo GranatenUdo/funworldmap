@@ -3,6 +3,7 @@ import type { CountryData, CountriesFile } from '../lib/types'
 import { CloseButton } from './CloseButton'
 import { FieldLabel } from './FieldLabel'
 import { CountryNewsSection } from './CountryNewsSection'
+import { dispatchToast } from '../lib/toast'
 
 interface Props {
   country: CountryData
@@ -77,12 +78,10 @@ export function SingleCountryPanel({
     const base = `${window.location.origin}${window.location.pathname}`
     const hash = `#${country.cca3}`
     const url = base + hash
-    const dispatchToast = () =>
-      window.dispatchEvent(new CustomEvent('funworldmap:toast', { detail: 'Link copied' }))
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard
         .writeText(url)
-        .then(dispatchToast)
+        .then(() => dispatchToast('Link copied'))
         .catch(() => window.prompt('Copy this link:', url))
     } else {
       window.prompt('Copy this link:', url)

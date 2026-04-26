@@ -1,4 +1,5 @@
 import type { ModeId, PersonalBest } from '../game/shared/types'
+import { parseLocalDate } from '../game/daily/dates'
 
 export type LauncherCardState = 'unplayed' | 'played' | 'unavailable'
 
@@ -25,9 +26,7 @@ const TITLE: Record<ModeId, string> = {
 function headerLabel(modeId: ModeId, anchorDate: string | undefined, today: string): string {
   const isToday = !anchorDate || anchorDate === today
   if (isToday) return modeId === 'country-pinning' ? 'TODAY · COUNTRY' : 'TODAY · CITY'
-  const [y, m, d] = anchorDate.split('-').map(Number)
-  const local = new Date(y, m - 1, d)
-  const md = local.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const md = parseLocalDate(anchorDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   return `${md.toUpperCase()} · ${modeId === 'country-pinning' ? 'COUNTRY' : 'CITY'}`
 }
 

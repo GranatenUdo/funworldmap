@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { AttemptRecord, CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
@@ -16,11 +16,12 @@ import { prefersReducedMotion } from '../lib/motion'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
 import { CityGuessingHudActionsContext } from './modes/city-guessing'
 import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
-import { toLocalDateString } from './daily/dates'
+import { toLocalDateString, classifyDate } from './daily/dates'
 import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './daily/useDailyHistory'
 import { readResume, writeResume, clearResume } from './daily/resume'
 import { track } from '../lib/analytics'
+import { dispatchToast } from '../lib/toast'
 
 import {
   REVEAL_MARKER_SOURCE,
@@ -31,6 +32,7 @@ import {
 
 const REVEAL_MS_COUNTRY = 1200
 const REVEAL_MS_CITY = 2000
+const DAILY_ATTEMPTS_PER_ROUND = 3
 
 function dispatchAnnouncement(text: string): void {
   window.dispatchEvent(new CustomEvent('funworldmap:announce', { detail: text }))
@@ -114,6 +116,23 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // the first round ahead of the reducer running).
   const pools = useMemo(() => ({ countries, cities }), [countries, cities])
 
+  // Start a daily round, resuming from a saved blob if the date+mode match.
+  // Used by both the immediate hash-bootstrap and the deferred-pool drain path.
+  const startOrResumeDaily = useCallback(
+    (id: ModeId, date: string, firstRound: RoundSpec): void => {
+      const resumed = readResume()
+      if (resumed && resumed.date === date && resumed.modeId === id && resumed.attempts.length > 0) {
+        resume({ modeId: id, round: firstRound, attemptsPerRound: DAILY_ATTEMPTS_PER_ROUND, attempts: resumed.attempts })
+        track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
+        return
+      }
+      start(id, firstRound, 1, DAILY_ATTEMPTS_PER_ROUND)
+      track('deep_link_opened', { dateKind: 'today', outcome: 'start' })
+      track('daily_started', { mode: id })
+    },
+    [start, resume],
+  )
+
   // Hash → session bootstrap. Read status via ref (hashchange closure-staleness fix).
   const statusRef = useRef(session.status)
   statusRef.current = session.status
@@ -128,15 +147,14 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         const currentHash = window.location.hash
         if (lastRevealEmitHashRef.current !== currentHash) {
           lastRevealEmitHashRef.current = currentHash
-          const todayStr = toLocalDateString(new Date())
-          const dateKind: 'today' | 'past' | 'future' =
-            state.date === todayStr ? 'today' : state.date < todayStr ? 'past' : 'future'
-          track('deep_link_opened', { dateKind, outcome: 'reveal' })
+          track('deep_link_opened', {
+            dateKind: classifyDate(state.date, toLocalDateString(new Date())),
+            outcome: 'reveal',
+          })
         }
         return
       }
-      // Daily routes (Phase 2 handles /#daily/<date>/<modeId> for TODAY only;
-      // /#daily/<date> is launcher-anchored; past/future are Phase 3 reveal territory).
+      // Today-only playable routes: past/future redirect to /reveal or root.
       if (state.kind === 'daily' && state.modeId && !state.reveal && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
         if (id !== 'country-pinning' && id !== 'city-guessing') return
@@ -153,8 +171,11 @@ export function GameController({ countries, cities, byCca3 }: Props) {
 
         const alreadyPlayed = dailyHistoryGet(state.date, id) !== null
         if (state.date < todayStr || alreadyPlayed) {
-          const dateKind: 'today' | 'past' = state.date < todayStr ? 'past' : 'today'
-          track('deep_link_opened', { dateKind, outcome: 'redirect' })
+          // alreadyPlayed implies state.date <= todayStr; classifyDate yields today or past, never future.
+          track('deep_link_opened', {
+            dateKind: classifyDate(state.date, todayStr) as 'today' | 'past',
+            outcome: 'redirect',
+          })
           window.location.hash = `daily/${state.date}/${id}/reveal`
           return
         }
@@ -171,21 +192,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
             ? buildCountryDailyRound(puzzle.country.cca3, countries)
             : buildCityDailyRound(puzzle.city.id, cities)
         if (!firstRound) {
-          window.dispatchEvent(new CustomEvent('funworldmap:toast', {
-            detail: 'Daily content unavailable — try again shortly.',
-          }))
+          dispatchToast('Daily content unavailable — try again shortly.')
           return
         }
-
-        const resumed = readResume()
-        if (resumed && resumed.date === state.date && resumed.modeId === id && resumed.attempts.length > 0) {
-          resume({ modeId: id, round: firstRound, attemptsPerRound: 3, attempts: resumed.attempts })
-          track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
-          return
-        }
-        start(id, firstRound, 1, 3)
-        track('deep_link_opened', { dateKind: 'today', outcome: 'start' })
-        track('daily_started', { mode: id })
+        startOrResumeDaily(id, state.date, firstRound)
         return
       }
       if (state.kind === 'game' && statusRef.current === 'idle') {
@@ -228,20 +238,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           ? buildCountryDailyRound(puzzle.country.cca3, countries)
           : buildCityDailyRound(puzzle.city.id, cities)
       if (!firstRound) {
-        window.dispatchEvent(new CustomEvent('funworldmap:toast', {
-          detail: 'Daily content unavailable — try again shortly.',
-        }))
+        dispatchToast('Daily content unavailable — try again shortly.')
         return
       }
-      const resumed = readResume()
-      if (resumed && resumed.date === state.date && resumed.modeId === pending && resumed.attempts.length > 0) {
-        resume({ modeId: pending, round: firstRound, attemptsPerRound: 3, attempts: resumed.attempts })
-        track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
-        return
-      }
-      start(pending, firstRound, 1, 3)
-      track('deep_link_opened', { dateKind: 'today', outcome: 'start' })
-      track('daily_started', { mode: pending })
+      startOrResumeDaily(pending, state.date, firstRound)
       return
     }
     pendingStartRef.current = null
@@ -249,7 +249,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     const firstRound = m.nextRound(new Set())
     start(pending, firstRound, m.maxRounds)
     track('free_started', { mode: pending })
-  }, [countries, cities, session.status, pools, start, resume, dailyPuzzles])
+  }, [countries, cities, session.status, pools, start, startOrResumeDaily, dailyPuzzles])
 
   // Persist daily best-of-N progress to localStorage so refresh resumes.
   useEffect(() => {
@@ -367,6 +367,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           })),
           completedAt: Date.now(),
         })
+        clearResume()
         track('daily_completed', {
           mode: session.modeId,
           bestScoreBucket: Math.min(4, Math.floor(session.score / 20)),
@@ -610,7 +611,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     if (mode.initialCameraView !== 'world') return
     const map = mapRef.current
     if (!map) return
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const reduced = prefersReducedMotion()
     map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: reduced ? 0 : 700 })
   }, [session.status, session.roundIndex, mode])
 
