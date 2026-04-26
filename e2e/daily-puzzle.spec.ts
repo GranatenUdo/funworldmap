@@ -23,11 +23,9 @@ async function withDailyStub(page: Page): Promise<void> {
 
 /**
  * Submit a country guess and wait for the reducer to reflect it.
- * Rapid back-to-back page.evaluate calls race React's re-render —
- * successive calls read stale `session.attemptsRemaining` from
- * submitGuessInput's useCallback closure, causing all 3 submits to
- * go through `recordAttempt` and never reach the final `submitGuess`.
- * Poll currentAttempts.length to ensure the reducer has processed.
+ * The test seam dispatches `attempt` synchronously, but rapid back-to-back
+ * page.evaluate calls race React's re-render — this helper polls until React
+ * commits the resulting state change (currentAttempts.length) before continuing.
  */
 async function submitAndWait(page: Page, cca3: string, expectAfter: number): Promise<void> {
   await page.evaluate((id) => {

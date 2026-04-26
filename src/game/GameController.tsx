@@ -104,8 +104,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const recordedRef = useRef(false)
   const pendingStartRef = useRef<ModeId | null>(null)
   // Guard the reveal-route deep_link_opened emit against re-fires when deps
-  // change (e.g. byDate reference update after index load). Stores the last
-  // hash string for which the event was emitted — reset on hashchange.
+  // change (e.g. byDate reference update after index load). Set once per unique
+  // hash for the lifetime of this GameController mount. Re-visiting the same
+  // /reveal hash within one mount won't re-emit; this matches funnel-counting
+  // semantics (deep-link arrival, not view-count).
   const lastRevealEmitHashRef = useRef<string | null>(null)
 
   // Pool derivation for the hash-bootstrap path (which needs `getMode` for
@@ -632,7 +634,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     if (map) clearRevealSources(map)
   }, [session.status])
 
-  // Expose submitGuess + setRound on window for tests.
+  // Test seams. submitGuess/submitCountryGuess names are kept for e2e backward-compat; both dispatch the collapsed 'attempt' action.
   useEffect(() => {
     if (!import.meta.env.VITE_TEST_HOOKS) return
     const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
