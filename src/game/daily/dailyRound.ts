@@ -1,9 +1,9 @@
 import type { CountryLike, CityLike, RoundSpec } from '../shared/types'
 import { centroidFromLatLng } from '../shared/distance'
 
-export function buildCountryDailyRound(cca3: string, pool: CountryLike[]): RoundSpec {
+export function buildCountryDailyRound(cca3: string, pool: CountryLike[]): RoundSpec | null {
   const c = pool.find((x) => x.cca3 === cca3)
-  if (!c) throw new Error(`country not found in pool: ${cca3}`)
+  if (!c) return null
   return {
     kind: 'country-pinning',
     targetCca3: c.cca3,
@@ -13,9 +13,9 @@ export function buildCountryDailyRound(cca3: string, pool: CountryLike[]): Round
   }
 }
 
-export function buildCityDailyRound(id: string, pool: CityLike[]): RoundSpec {
+export function buildCityDailyRound(id: string, pool: CityLike[]): RoundSpec | null {
   const c = pool.find((x) => x.id === id)
-  if (!c) throw new Error(`city not found in pool: ${id}`)
+  if (!c) return null
   return {
     kind: 'city-guessing',
     targetId: c.id,

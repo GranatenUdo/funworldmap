@@ -110,7 +110,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
       track('free_started', { mode: id })
       writeLastMode(id)
       onDismiss()
-      window.location.hash = writeHash({ kind: 'game', modeId: id, playing: true })
+      window.location.hash = writeHash({ kind: 'game', modeId: id })
     },
     [onDismiss],
   )

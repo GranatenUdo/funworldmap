@@ -32,8 +32,8 @@ describe('buildCountryDailyRound', () => {
     })
   })
 
-  it('throws when cca3 is not in the pool', () => {
-    expect(() => buildCountryDailyRound('XXX', [FRA])).toThrow(/not found/i)
+  it('returns null when cca3 is not in the pool', () => {
+    expect(buildCountryDailyRound('XXX', [FRA])).toBeNull()
   })
 })
 
@@ -50,7 +50,7 @@ describe('buildCityDailyRound', () => {
     })
   })
 
-  it('throws when id is not in the pool', () => {
-    expect(() => buildCityDailyRound('nope', [PARIS])).toThrow(/not found/i)
+  it('returns null when id is not in the pool', () => {
+    expect(buildCityDailyRound('nope', [PARIS])).toBeNull()
   })
 })

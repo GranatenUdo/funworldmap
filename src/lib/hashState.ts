@@ -1,7 +1,7 @@
 export type HashState =
   | { kind: 'empty' }
   | { kind: 'country'; cca3: string; compareWith: string | null }
-  | { kind: 'game'; modeId: string; playing: boolean }
+  | { kind: 'game'; modeId: string }
   | { kind: 'daily'; date: string; modeId: string | null; reveal: boolean }
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
@@ -34,11 +34,8 @@ export function parseHash(hash: string): HashState {
   if (clean.startsWith('game/')) {
     const rest = clean.slice('game/'.length)
     if (!rest) return { kind: 'empty' }
-    if (rest.endsWith('/play')) {
-      const modeId = rest.slice(0, -'/play'.length)
-      return { kind: 'game', modeId, playing: true }
-    }
-    return { kind: 'game', modeId: rest, playing: false }
+    const modeId = rest.endsWith('/play') ? rest.slice(0, -'/play'.length) : rest
+    return { kind: 'game', modeId }
   }
 
   const parts = clean.split(',').map((s) => s.trim().toUpperCase())
@@ -55,7 +52,7 @@ export function writeHash(state: HashState): string {
     case 'country':
       return state.compareWith ? `${state.cca3},${state.compareWith}` : state.cca3
     case 'game':
-      return state.playing ? `game/${state.modeId}/play` : `game/${state.modeId}`
+      return `game/${state.modeId}`
     case 'daily': {
       let out = `daily/${state.date}`
       if (state.modeId) out += `/${state.modeId}`
