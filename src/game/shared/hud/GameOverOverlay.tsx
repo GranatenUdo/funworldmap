@@ -103,14 +103,16 @@ export function GameOverOverlay({
         </div>
 
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={onPlayAgain}
-            className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-medium hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50"
-            data-testid="game-over-play-again"
-          >
-            Play again
-          </button>
+          {!isDaily && (
+            <button
+              type="button"
+              onClick={onPlayAgain}
+              className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-medium hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50"
+              data-testid="game-over-play-again"
+            >
+              Play again
+            </button>
+          )}
           <button
             type="button"
             onClick={onBackToMap}

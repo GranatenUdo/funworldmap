@@ -148,9 +148,14 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   }, [markMilestoneShown])
 
   useEffect(() => {
-    const selector = `[data-testid="launcher-card-${lastMode}-daily-cta"], [data-testid="launcher-card-${lastMode}-free-link"]`
-    const target = rootRef.current?.querySelector<HTMLButtonElement>(selector)
-    target?.focus()
+    const root = rootRef.current
+    if (!root) return
+    const lastModeBtn = root.querySelector<HTMLButtonElement>(
+      `[data-testid="launcher-card-${lastMode}-daily-cta"], [data-testid="launcher-card-${lastMode}-free-link"], [data-testid="launcher-card-${lastMode}-see-reveal"]`,
+    )
+    const firstFocusable = root.querySelector<HTMLButtonElement>('button:not([disabled])')
+    const target = lastModeBtn ?? firstFocusable ?? root
+    target.focus()
   }, [lastMode])
 
   useEffect(() => {
@@ -228,6 +233,8 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
               >
                 <LauncherModeCard
                   modeId={m.id}
+                  anchorDate={anchorDate ?? undefined}
+                  todayDate={today}
                   state={cardState(m.id)}
                   played={playedFor(m.id)}
                   freeBest={bestFor(m.id)}

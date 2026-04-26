@@ -22,9 +22,13 @@ const TITLE: Record<ModeId, string> = {
   'city-guessing': 'City Guessing',
 }
 
-const HEADER_LABEL: Record<ModeId, string> = {
-  'country-pinning': 'TODAY · COUNTRY',
-  'city-guessing': 'TODAY · CITY',
+function headerLabel(modeId: ModeId, anchorDate: string | undefined, today: string): string {
+  const isToday = !anchorDate || anchorDate === today
+  if (isToday) return modeId === 'country-pinning' ? 'TODAY · COUNTRY' : 'TODAY · CITY'
+  const [y, m, d] = anchorDate.split('-').map(Number)
+  const local = new Date(y, m - 1, d)
+  const md = local.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  return `${md.toUpperCase()} · ${modeId === 'country-pinning' ? 'COUNTRY' : 'CITY'}`
 }
 
 interface PlayedResult {
@@ -34,6 +38,8 @@ interface PlayedResult {
 
 interface Props {
   modeId: ModeId
+  anchorDate?: string  // 'YYYY-MM-DD'; absent = today
+  todayDate: string    // 'YYYY-MM-DD'
   state: LauncherCardState
   played?: PlayedResult
   freeBest: PersonalBest
@@ -42,7 +48,7 @@ interface Props {
   onSeeReveal?: () => void
 }
 
-export function LauncherModeCard({ modeId, state, played, freeBest, onStartDaily, onStartFree, onSeeReveal }: Props) {
+export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played, freeBest, onStartDaily, onStartFree, onSeeReveal }: Props) {
   const testIdBase = `launcher-card-${modeId}`
   return (
     <div
@@ -58,7 +64,7 @@ export function LauncherModeCard({ modeId, state, played, freeBest, onStartDaily
         {ICONS[modeId]}
         <div className="min-w-0 flex-1">
           <div className="text-[10px] font-semibold uppercase tracking-widest text-teal dark:text-teal-light">
-            {HEADER_LABEL[modeId]}
+            {headerLabel(modeId, anchorDate, todayDate)}
           </div>
           <div className="text-lg font-bold text-sand-900 dark:text-dark-50 leading-tight">
             {TITLE[modeId]}
