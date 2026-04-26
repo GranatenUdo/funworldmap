@@ -349,10 +349,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     }
     if (session.status === 'game-over' && !recordedRef.current) {
       recordedRef.current = true
-      const isDaily = parseHash(window.location.hash).kind === 'daily'
+      const hash = parseHash(window.location.hash)
+      const isDaily = hash.kind === 'daily'
       if (!isDaily) record(session.score, session.bestStreak)
       // Daily-specific recording:
-      const hash = parseHash(window.location.hash)
       if (hash.kind === 'daily' && hash.modeId) {
         const attempts: AttemptRecord[] = session.currentAttempts
         recordDailyResult(hash.date, hash.modeId as ModeId, {

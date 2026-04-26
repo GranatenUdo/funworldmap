@@ -10,6 +10,7 @@ import {
   pendingMilestone as derivePendingMilestone,
   withMilestoneShown,
 } from './storage'
+import { clearResume } from './resume'
 
 export interface UseDailyHistory {
   history: DailyHistoryV1
@@ -40,11 +41,9 @@ export function useDailyHistory(): UseDailyHistory {
         const merged = mergeDay(prev, date, modeId, result)
         const streaked = updateStreak(merged, date)
         writeHistory(streaked)
-        // Clear resume only after writeHistory returns — a quota-failed write
-        // must not orphan a completed day with no record.
-        try { localStorage.removeItem('funworldmap-daily-resume') } catch { /* no-op */ }
         return streaked
       })
+      clearResume()
     },
     [],
   )
