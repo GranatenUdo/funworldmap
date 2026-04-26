@@ -21,6 +21,7 @@ import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { parseHash } from './lib/hashState'
 import { track } from './lib/analytics'
+import { dispatchToast } from './lib/toast'
 
 export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
@@ -158,9 +159,7 @@ function AppInner({
         if (session.modeId === 'country-pinning') {
           const country = poolByCca3.get(cca3.toUpperCase())
           if (!country) {
-            window.dispatchEvent(new CustomEvent('funworldmap:toast', {
-              detail: "That territory isn't in the country pool.",
-            }))
+            dispatchToast("That territory isn't in the country pool.")
             return
           }
           submitGuessInput({

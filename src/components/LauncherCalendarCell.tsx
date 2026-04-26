@@ -1,4 +1,5 @@
 import type { CalendarCellStatus } from '../game/daily/calendarGrid'
+import { parseLocalDate } from '../game/daily/dates'
 import type { ModeId } from '../game/shared/types'
 
 interface Props {
@@ -13,8 +14,7 @@ function dayNumber(date: string): string {
 }
 
 function ariaLabel(date: string, status: CalendarCellStatus, played: ReadonlySet<ModeId>): string {
-  const [y, m, d] = date.split('-').map(Number)
-  const local = new Date(y, m - 1, d)
+  const local = parseLocalDate(date)
   const parts: string[] = [local.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })]
   if (status === 'today') parts.push('today')
   if (played.has('country-pinning')) parts.push('played country pinning')
