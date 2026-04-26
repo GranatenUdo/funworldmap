@@ -3,16 +3,20 @@ import { LivesIndicator } from './LivesIndicator'
 import { ScoreBadge } from './ScoreBadge'
 import { StreakBadge } from './StreakBadge'
 import { RoundCounter } from './RoundCounter'
+import { AttemptsIndicator } from './AttemptsIndicator'
 import type { GameSession } from '../types'
 
 interface Props {
   session: GameSession
   onEndGame: () => void
+  onDone: () => void
   children: ReactNode
 }
 
-export function HudShell({ session, onEndGame, children }: Props) {
-  const fixedRounds = session.maxRounds !== null
+export function HudShell({ session, onEndGame, onDone, children }: Props) {
+  const bestOfN = session.attemptsPerRound > 1
+  const fixedRounds = session.maxRounds !== null && session.maxRounds > 1
+  const showDone = bestOfN && session.status === 'playing' && session.currentAttempts.length > 0
   return (
     <div
       role="region"
@@ -23,27 +27,41 @@ export function HudShell({ session, onEndGame, children }: Props) {
       data-game-mode={session.modeId}
     >
       <div className="flex flex-col gap-2 px-4 py-3 rounded-2xl bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl border border-sand-300/50 dark:border-dark-200/30 shadow-2xl">
-        <div className="flex items-center justify-between gap-4">
-          {fixedRounds && session.maxRounds ? (
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          {bestOfN ? (
+            <AttemptsIndicator session={session} />
+          ) : fixedRounds ? (
             <RoundCounter
-              current={Math.min(session.roundIndex + 1, session.maxRounds)}
-              total={session.maxRounds}
+              current={Math.min(session.roundIndex + 1, session.maxRounds!)}
+              total={session.maxRounds!}
             />
           ) : (
             <LivesIndicator lives={session.lives} />
           )}
           <div className="flex items-center gap-2">
             <ScoreBadge score={session.score} />
-            {fixedRounds ? null : <StreakBadge streak={session.streak} />}
+            {bestOfN || fixedRounds ? null : <StreakBadge streak={session.streak} />}
           </div>
-          <button
-            type="button"
-            onClick={onEndGame}
-            className="text-xs text-sand-500 dark:text-dark-100 hover:text-sand-700 dark:hover:text-dark-50 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 rounded px-1"
-            data-testid="game-end"
-          >
-            End game
-          </button>
+          <div className="flex items-center gap-2">
+            {showDone && (
+              <button
+                type="button"
+                onClick={onDone}
+                className="px-3 py-1.5 rounded-lg bg-teal-accessible text-white text-sm font-semibold hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50"
+                data-testid="game-done"
+              >
+                Done
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={onEndGame}
+              className="text-xs text-sand-500 dark:text-dark-100 hover:text-sand-700 dark:hover:text-dark-50 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 rounded px-1"
+              data-testid="game-end"
+            >
+              End game
+            </button>
+          </div>
         </div>
         {children}
       </div>
