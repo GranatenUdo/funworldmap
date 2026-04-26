@@ -137,3 +137,20 @@ Measured against the 2026-04-19 build:
 | **Total with async data (measured)** | **~710 KB** |
 
 The per-component figures are estimates summing to the measured totals. MapLibre dominates. The geo data loads asynchronously after the map initializes, so the user sees the basemap first. The original <700 KB target predates Sentry and `cities.json`; re-baselining against a measured CI build is tracked as a roadmap item (bundle-size budgets in CI).
+
+## Game system
+
+The game runs on a single `useGameSession` reducer with a small action set
+(`start | attempt | completeNow | resume | advance | overrideRound | endGame`).
+Best-of-N rounds (daily mode) are supported via `attemptsPerRound > 1`; the
+reducer derives the round-end outcome from the best of all attempts so score
+and reveal animation always agree. Modes plug in via the `GameMode` contract
+(`src/game/modes/{country-pinning,city-guessing}/index.tsx`); the daily layer
+adds session resume (`src/game/daily/resume.ts`) and history persistence
+(`src/game/daily/storage.ts`).
+
+Key files:
+- `src/game/shared/useGameSession.ts` — reducer
+- `src/game/shared/GameSessionProvider.tsx` — context API + computed mode
+- `src/game/GameController.tsx` — hash bootstrap, reveal effects, telemetry
+- `src/game/daily/` — daily-specific puzzle, history, resume, share

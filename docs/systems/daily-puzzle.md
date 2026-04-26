@@ -42,9 +42,28 @@ See `src/game/daily/types.ts`. Top-level:
 - `days: Record<YYYY-MM-DD, Partial<Record<ModeId, DailyDayResult>>>` —
   per-mode result.
 
-`DailyDayResult.attempts[]` is always length 3 in steady-state play (session
-auto-advances until exhausted). Each attempt records `pointsEarned`,
-`distanceKm`, and optionally `guessCca3` / `guessLngLat`.
+`DailyDayResult.attempts[]` has length 1, 2, or 3 — depending on whether the
+player pressed Done early or used all attempts. Each attempt records
+`pointsEarned`, `distanceKm`, and optionally `guessCca3` / `guessLngLat`.
+
+### Resume key
+
+`localStorage` key `funworldmap-daily-resume` (v1) holds in-progress best-of-N
+attempts so a refresh restores the same round.
+
+Shape:
+
+```ts
+{ version: 1, date: 'YYYY-MM-DD', modeId: ModeId, attempts: AttemptRecord[] }
+```
+
+Lifecycle:
+- *Write:* on every `attempt` action while `status === 'playing'` and
+  `attemptsPerRound > 1`.
+- *Read:* on hash bootstrap when route is `daily/<date>/<mode>` and the
+  history has no entry for that day.
+- *Clear:* after `writeHistory` returns successfully on completion; on
+  `endGame` dispatch (Escape, End-game button); on stale-date mismatch.
 
 ## Routing matrix
 
@@ -54,7 +73,7 @@ All hash-based, fully static:
 |---|---|
 | `/` | Launcher on bare root. |
 | `/#daily/YYYY-MM-DD` | Launcher anchored to that date (header copy: "Daily · …"). |
-| `/#daily/YYYY-MM-DD/<mode>` | If today + unplayed → start daily. Else → redirect to `.../reveal`. |
+| `/#daily/YYYY-MM-DD/<mode>` | Today + unplayed → start daily; today + in-progress resume blob → resume; past or already-played → redirect to `.../reveal`; future → redirect to root. |
 | `/#daily/YYYY-MM-DD/reveal` | Both-mode reveal (text-only — no game). |
 | `/#daily/YYYY-MM-DD/<mode>/reveal` | Single-mode reveal. |
 | `/#<cca3>` | Country panel deep link (pre-retention-v1 behaviour). |
@@ -80,7 +99,7 @@ Analytics Engine dataset `funworldmap_events`.
 | `history_cell_clicked` | `cellKind: 'played'\|'unplayed-in-window'\|'rolled-off'` | |
 | `streak_reached_milestone` | `days: 3\|7\|14\|30\|100` | Fires at most once per milestone per user (dedupe via `lastMilestoneShown`). |
 | `launcher_dismissed` | `path: 'link'\|'card'\|'escape'` | |
-| `deep_link_opened` | `dateKind: 'today'\|'past'\|'future'\|'invalid'`, `outcome: 'reveal'\|'start'\|'redirect'` | |
+| `deep_link_opened` | `dateKind: 'today'\|'past'\|'future'`, `outcome: 'start'\|'resume'\|'reveal'\|'redirect'` | |
 
 Worker blob/double slot mapping: see
 [`cloudflare-worker/queries/README.md`](../../cloudflare-worker/queries/README.md).
