@@ -48,7 +48,7 @@ function CityGuessingHud({ session, onSkip }: Props) {
         </div>
       </div>
 
-      {session.status === 'playing' && (
+      {session.status === 'playing' && session.attemptsPerRound === 1 && (
         <button
           type="button"
           onClick={onSkip}

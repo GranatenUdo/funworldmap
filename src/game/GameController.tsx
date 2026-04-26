@@ -698,6 +698,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       {(session.status === 'playing' || session.status === 'round-ended') && (
         <FirstSessionTutorial
           modeId={session.modeId}
+          attemptsPerRound={session.attemptsPerRound}
           firstAttemptMade={session.currentAttempts.length > 0 || session.lastOutcome !== null}
         />
       )}

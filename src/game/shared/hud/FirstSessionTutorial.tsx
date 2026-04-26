@@ -3,25 +3,35 @@ import type { ModeId } from '../types'
 
 const KEY_PREFIX = 'funworldmap-game-tutorial-shown-'
 
-const COPY: Record<ModeId, { title: string; body: string }> = {
-  'country-pinning': {
+const COPY = {
+  'country-pinning-free': {
     title: 'How to play',
-    body: 'Click the country that matches the flag and name above. Three wrong countries end the game. Ocean clicks don\u2019t count.',
+    body: 'Click the country that matches the flag and name above. Three wrong countries end the game. Ocean clicks don’t count.',
   },
-  'city-guessing': {
+  'country-pinning-daily': {
+    title: 'Daily — best of 3',
+    body: 'You have 3 attempts. Your highest-scoring guess wins. Press Done when you’re happy with your best so far.',
+  },
+  'city-guessing-free': {
     title: 'How to play',
-    body: 'Click anywhere on the map \u2014 including ocean \u2014 to guess the city\u2019s location. Ten rounds per game.',
+    body: 'Click anywhere on the map — including ocean — to guess the city’s location. Ten rounds per game.',
   },
-}
+  'city-guessing-daily': {
+    title: 'Daily — best of 3',
+    body: 'You have 3 attempts to pin the city. Your closest guess wins. Press Done when you’re happy with your best so far.',
+  },
+} as const
 
 interface Props {
   modeId: ModeId
+  attemptsPerRound: number
   firstAttemptMade: boolean
 }
 
-export function FirstSessionTutorial({ modeId, firstAttemptMade }: Props) {
+export function FirstSessionTutorial({ modeId, attemptsPerRound, firstAttemptMade }: Props) {
+  const variant = (attemptsPerRound > 1 ? `${modeId}-daily` : `${modeId}-free`) as keyof typeof COPY
   const [open, setOpen] = useState(false)
-  const key = KEY_PREFIX + modeId
+  const key = KEY_PREFIX + variant
 
   useEffect(() => {
     if (sessionStorage.getItem(key)) return
@@ -34,7 +44,7 @@ export function FirstSessionTutorial({ modeId, firstAttemptMade }: Props) {
   }, [firstAttemptMade])
 
   if (!open) return null
-  const copy = COPY[modeId]
+  const copy = COPY[variant]
 
   return (
     <div
