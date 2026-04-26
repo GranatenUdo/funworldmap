@@ -19,6 +19,7 @@ import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
 import { toLocalDateString } from './daily/dates'
 import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './daily/useDailyHistory'
+import { readResume, writeResume, clearResume } from './daily/resume'
 import { track } from '../lib/analytics'
 
 import {
@@ -96,7 +97,7 @@ interface Props {
 
 export function GameController({ countries, cities, byCca3 }: Props) {
   const { mapRef } = useMap()
-  const { session, mode, start, submitGuessInput, completeNow, advance, overrideRound, endGame } = useGameSessionContext()
+  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
@@ -145,6 +146,18 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           id === 'country-pinning'
             ? buildCountryDailyRound(puzzle.country.cca3, countries)
             : buildCityDailyRound(puzzle.city.id, cities)
+        if (!firstRound) {
+          window.dispatchEvent(new CustomEvent('funworldmap:toast', {
+            detail: 'Daily content unavailable — try again shortly.',
+          }))
+          return
+        }
+
+        const resumed = readResume()
+        if (resumed && resumed.date === state.date && resumed.modeId === id && resumed.attempts.length > 0) {
+          resume({ modeId: id, round: firstRound, attemptsPerRound: 3, attempts: resumed.attempts })
+          return
+        }
         start(id, firstRound, 1, 3)
         return
       }
@@ -186,6 +199,17 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         pending === 'country-pinning'
           ? buildCountryDailyRound(puzzle.country.cca3, countries)
           : buildCityDailyRound(puzzle.city.id, cities)
+      if (!firstRound) {
+        window.dispatchEvent(new CustomEvent('funworldmap:toast', {
+          detail: 'Daily content unavailable — try again shortly.',
+        }))
+        return
+      }
+      const resumed = readResume()
+      if (resumed && resumed.date === state.date && resumed.modeId === pending && resumed.attempts.length > 0) {
+        resume({ modeId: pending, round: firstRound, attemptsPerRound: 3, attempts: resumed.attempts })
+        return
+      }
       start(pending, firstRound, 1, 3)
       return
     }
@@ -193,7 +217,22 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     const m = getMode(pending, pools)
     const firstRound = m.nextRound(new Set())
     start(pending, firstRound, m.maxRounds)
-  }, [countries, cities, session.status, pools, start, dailyPuzzles])
+  }, [countries, cities, session.status, pools, start, resume, dailyPuzzles])
+
+  // Persist daily best-of-N progress to localStorage so refresh resumes.
+  useEffect(() => {
+    if (session.status !== 'playing') return
+    if (session.attemptsPerRound <= 1) return
+    if (session.currentAttempts.length === 0) return
+    const state = parseHash(window.location.hash)
+    if (state.kind !== 'daily' || !state.modeId) return
+    writeResume({
+      version: 1,
+      date: state.date,
+      modeId: state.modeId as ModeId,
+      attempts: session.currentAttempts,
+    })
+  }, [session.status, session.attemptsPerRound, session.currentAttempts])
 
   // Side effects on status change.
   useEffect(() => {
@@ -311,10 +350,21 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   ])
 
   // Fire daily_attempted per intermediate attempt (only when attemptsPerRound > 1).
+  // Tracks per-effect "previous status" so a transition into 'playing' anchors
+  // the count to currentAttempts.length — fresh starts begin at 0; resumes
+  // begin at the resumed attempts count, so replayed attempts don't fire.
   const lastAttemptCountRef = useRef(0)
+  const prevStatusForTelemetryRef = useRef<typeof session.status>('idle')
+  // Same anchor for the intermediate-reveal effect.
+  const lastIntermediateAttemptCountRef = useRef(0)
+  const prevStatusForIntermediateRef = useRef<typeof session.status>('idle')
   useEffect(() => {
+    const enteringPlaying = prevStatusForTelemetryRef.current !== 'playing' && session.status === 'playing'
+    prevStatusForTelemetryRef.current = session.status
+    if (enteringPlaying) {
+      lastAttemptCountRef.current = session.currentAttempts.length
+    }
     if (session.status !== 'playing' && session.status !== 'round-ended' && session.status !== 'game-over') {
-      lastAttemptCountRef.current = 0
       return
     }
     const prev = lastAttemptCountRef.current
@@ -455,10 +505,21 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // Intermediate reveal between attempts (daily only): correctness-coloured
   // guess highlight + score toast.
   useEffect(() => {
+    const enteringPlaying = prevStatusForIntermediateRef.current !== 'playing' && session.status === 'playing'
+    prevStatusForIntermediateRef.current = session.status
+    if (enteringPlaying) {
+      // On fresh start: 0. On resume: the resumed attempts count, so the
+      // already-recorded latest attempt does not paint a phantom flash.
+      lastIntermediateAttemptCountRef.current = session.currentAttempts.length
+    }
     if (session.status !== 'playing') return
     if (session.attemptsPerRound <= 1) return
-    if (session.currentAttempts.length === 0) return
-    const last = session.currentAttempts[session.currentAttempts.length - 1]
+    const cur = session.currentAttempts.length
+    const prev = lastIntermediateAttemptCountRef.current
+    lastIntermediateAttemptCountRef.current = cur
+    if (cur === 0) return
+    if (cur <= prev) return
+    const last = session.currentAttempts[cur - 1]
     const map = mapRef.current
     if (!map) return
     const reduced = prefersReducedMotion()
@@ -610,6 +671,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       const tgt = e.target as HTMLElement | null
       if (tgt && tgt.matches('input, textarea, [contenteditable]')) return
       e.preventDefault()
+      clearResume()
       endGame()
       writeIdleHash()
     }
@@ -617,7 +679,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   }, [session.status, session.modeId, endGame])
 
-  const onEndGame = () => { endGame(); writeIdleHash() }
+  const onEndGame = () => { clearResume(); endGame(); writeIdleHash() }
   const onPlayAgain = () => {
     if (!mode) return
     const firstRound = mode.nextRound(new Set())
