@@ -25,10 +25,10 @@ export function GameOverOverlay({
 
   useEffect(() => {
     previousFocusRef.current = document.activeElement as HTMLElement | null
-    const playAgain = document.querySelector<HTMLButtonElement>(
-      '[data-testid="game-over-play-again"]',
-    )
-    playAgain?.focus({ preventScroll: true })
+    const target =
+      document.querySelector<HTMLButtonElement>('[data-testid="game-over-play-again"]') ??
+      document.querySelector<HTMLButtonElement>('[data-testid="game-over-back"]')
+    target?.focus({ preventScroll: true })
     return () => {
       const target = previousFocusRef.current
       const canRestore =
