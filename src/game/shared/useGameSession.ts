@@ -41,7 +41,7 @@ function roundKey(round: RoundSpec): string {
   return round.kind === 'country-pinning' ? round.targetCca3 : round.targetId
 }
 
-function deriveBest(attempts: AttemptRecord[]): AttemptRecord {
+export function deriveBest(attempts: AttemptRecord[]): AttemptRecord {
   return attempts.reduce((best, a) => (a.pointsEarned > best.pointsEarned ? a : best), attempts[0])
 }
 

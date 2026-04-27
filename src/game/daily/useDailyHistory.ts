@@ -21,6 +21,8 @@ export interface UseDailyHistory {
 export function useDailyHistory(): UseDailyHistory {
   const history = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 
+  // Read via getSnapshot() directly so the callback identity stays stable
+  // across store updates — consumers passing `get` as a dep don't churn.
   const get = useCallback(
     (date: string, modeId: ModeId): DailyDayResult | null =>
       getSnapshot().days[date]?.[modeId] ?? null,

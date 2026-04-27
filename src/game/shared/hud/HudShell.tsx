@@ -4,6 +4,7 @@ import { ScoreBadge } from './ScoreBadge'
 import { StreakBadge } from './StreakBadge'
 import { RoundCounter } from './RoundCounter'
 import { AttemptsIndicator } from './AttemptsIndicator'
+import { deriveBest } from '../useGameSession'
 import type { GameSession } from '../types'
 
 interface Props {
@@ -23,7 +24,7 @@ export function HudShell({ session, onEndGame, onDone, children }: Props) {
   // best instead — and tag it so the badge can style it as provisional.
   const runningBest =
     bestOfN && session.status === 'playing' && session.currentAttempts.length > 0
-      ? Math.max(...session.currentAttempts.map((a) => a.pointsEarned))
+      ? deriveBest(session.currentAttempts).pointsEarned
       : null
   const displayScore = runningBest ?? session.score
   const scorePending = runningBest !== null

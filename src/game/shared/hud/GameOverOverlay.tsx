@@ -15,10 +15,8 @@ interface Props {
 export function GameOverOverlay({
   session, personalBest, beatPersonalBest, onPlayAgain, onBackToMap,
 }: Props) {
-  // Freeze the prop at first paint. GameController recomputes beatPB from a
-  // live store value that updates immediately after game-over (when record()
-  // fires), which would flip "New personal best!" to "Best: N pts" on the
-  // very next render. Capturing once preserves the message for the user.
+  // Freeze at first paint — record() updates the store synchronously after
+  // game-over, which would otherwise flip "New personal best!" to "Best: N pts".
   const [stableBeatPB] = useState(beatPersonalBest)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const { history, streak } = useDailyHistory()
