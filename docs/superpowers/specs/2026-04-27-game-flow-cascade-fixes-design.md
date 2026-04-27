@@ -19,10 +19,10 @@ This spec stops treating the URL hash as the source of truth for session-state d
 | 1 | CRITICAL | Off-target map clicks during a country-pinning game clear the URL hash via `clickMap → deselect → history.replaceState(null, '', pathname)`. Cascade: 1a daily history not saved · 1b resume blob not cleared at game-over · 1c resume blob stops updating mid-game · 1d free PB contaminated for daily plays · 1e daily game-over UI degenerates to free game-over UI · 1f Play Again button starts a fresh free game | PR 1: stash `dailyDate` on `GameSession`; gate `clickMap`'s deselect on `session.status !== 'idle'` |
 | 2 | CRITICAL | Play Again on daily switches to free mode | Dissolves with #1 — Play Again is rendered behind `!isDaily`, and `isDaily` is now session-driven |
 | 3 | HIGH | "End game" in free mode silently abandons without game-over UI or PB write | PR 2: new reducer action `finishFree`; `onEndGame` branches on `session.dailyDate === null` |
-| 7 | LOW | "Plus 1 points" pluralization in screen-reader announcements | PR 2: `pts(n)` helper in `GameController`, applied at lines 302/303/310 |
-| 8 | LOW | Triple announcement on country-pinning round-end (App live region + inline `[role="status"]` + AttemptsIndicator toast) | PR 2: drop the App-level `dispatchAnnouncement` for country-pinning round-end; the visible inline status auto-announces and is more informative |
+| 7 | LOW | "Plus 1 points" pluralization in screen-reader announcements | **Auto-resolved by #8** — all three "Plus N points" strings live inside the round-ended block that #8 deletes |
+| 8 | LOW | Round-end announcement on the App-level live region duplicates the inline `[role="status"]` content rendered by both mode HUDs (`CountryPinningHud.tsx:42-50`, `CityGuessingHud.tsx:62-70`), and the inline version is richer ("Wrong — that was United States. The answer was Botswana.") | PR 2: delete the entire `if (session.status === 'round-ended' && session.lastOutcome)` block in `GameController.tsx:297-313`. Each mode's inline `role="status"` (implicit `aria-live="polite"` + `aria-atomic="true"`) auto-announces on mount. AttemptsIndicator's `+N` toast is daily best-of-N specific and stays. |
 | 9 | LOW | App live region keeps stale "Game over. Final score N." after navigation away | PR 2: per-announcement clear timer in `App.tsx` |
-| 10 | LOW | `prefersReducedMotion()` value captured-once in `useMapInstance.ts:60` doesn't react to OS-toggle mid-session | PR 2: `subscribeReducedMotion(cb)` API in `lib/motion.ts`; `useMapInstance` re-applies map config on change |
+| 10 | LOW | `prefersReducedMotion()` value captured-once in `useMapInstance.ts:60` (initial `pitch`) doesn't react to OS-toggle mid-session. The other four call sites (`flyToCountry.ts:15`, `resetViewControl.ts:7`, `GameController.tsx:329/445/575/630`) read fresh on each invocation and pick up the change automatically. | PR 2: add `subscribeReducedMotion(cb)` to `lib/motion.ts`; in `useMapInstance` init effect, subscribe and call `map.setPitch(reduced ? 0 : DEFAULT_PITCH)` on change. No other knobs need re-applying. |
 
 Findings demoted from the original report (calendar dot size, zero-score-first-game PB labeling, calendar visual differentiation) are explicitly **out of scope**.
 
@@ -44,7 +44,7 @@ Findings demoted from the original report (calendar dot size, zero-score-first-g
 
 ## Architectural decision: session-state, not URL, as the daily oracle
 
-`GameController.tsx:368-392`, `GameController.tsx:271-283`, and `GameOverOverlay.tsx:23-27` all answer "is this a daily, and if so, for what date?" by re-parsing `window.location.hash`. That works exactly as long as nothing else mutates the hash mid-game — but `useMapInteractions.clickMap` *does* mutate it on every off-target click. PR #24 already had to add a `statusRef.current === 'game-over'` recovery branch to the bootstrap effect to work around hash mutations done elsewhere; this is the same anti-pattern at a different call site.
+`GameController.tsx:368-392`, `GameController.tsx:271-283`, and `GameOverOverlay.tsx:23-27` all answer "is this a daily, and if so, for what date?" by re-parsing `window.location.hash`. That works exactly as long as nothing else mutates the hash mid-game — but `useMapInteractions.clickMap` *does* mutate it on every off-target click. The underlying problem is the coupling between routing state and session state; this spec attacks the coupling at the three sites where it's load-bearing for end-of-game correctness.
 
 **The fix is to make the session itself carry the daily date.**
 
@@ -171,19 +171,13 @@ const onEndGame = () => {
 
 `onBackToMap` keeps `= onEndGame` (after game-over, this is the dismissal path; both branches end up at the launcher).
 
-**Bug 7 — pluralization.**
+**Bugs 7 + 8 — drop the redundant round-end announcement block.**
 
-`src/game/GameController.tsx`: small helper near other local fns.
+`src/game/GameController.tsx:297-313`: delete the entire `if (session.status === 'round-ended' && session.lastOutcome) { ... }` block. Both mode HUDs already render an inline `role="status"` element with their own `revealLine` content (`CountryPinningHud.tsx:42-50`, `CityGuessingHud.tsx:62-70`), and that content is *richer* than what the App-level `dispatchAnnouncement` produces — country-pinning's HUD says "Wrong — that was United States. The answer was Botswana. −1 life." while the App version says "Wrong. Plus 1 points. 2 lives remaining." The inline element is conditionally rendered (mounts when `revealLine` is truthy, unmounts on next round), so screen readers announce the new content on each round-end via the implicit `aria-live="polite"` + `aria-atomic="true"` semantics of `role="status"`.
 
-```ts
-const pts = (n: number) => (n === 1 ? 'point' : 'points')
-```
+Game-over (`Game over. Final score N.`) and round-start (`Pin: Spain` / `Where is X, Y?`) announcements are kept — those *don't* have an inline equivalent. AttemptsIndicator's `+N` toast is daily-best-of-N specific and is unchanged.
 
-Apply at the three string-template sites (lines ~302, ~303, ~310). Existing `lives === 1 ? 'One life remaining.'` ternary is left untouched.
-
-**Bug 8 — drop redundant country-pinning round-end announcement.**
-
-`src/game/GameController.tsx:297-303`: the round-ended `dispatchAnnouncement` for `country` reveal is removed. The visible inline `[role="status"]` under the HUD already auto-announces and contains richer info ("Wrong — that was United States. The answer was Botswana. −1 life."). Game-over (`Game over. Final score N.`), round-start (`Pin: Spain` / `Where is X, Y?`), and the `kilometres off` city round-end announcement at line ~310 are kept — those have no inline status equivalent. The AttemptsIndicator `+N` toast is daily-best-of-N specific and stays untouched.
+This change auto-resolves Bug 7 — the three "Plus N points" strings (correct/wrong/kilometres-off) all live inside the deleted block. No `pts(n)` helper is needed.
 
 **Bug 9 — clear stale announcement.**
 
@@ -211,16 +205,13 @@ useEffect(() => {
 
 8 s is enough for a screen reader to read any current announcement (the longest is ~80 chars). Each new announcement cancels the prior timer.
 
-**Bug 10 — reduced-motion OS-toggle.**
+**Bug 10 — reduced-motion OS-toggle (initial map pitch).**
 
-`src/lib/motion.ts`: add a subscribe API. The function `prefersReducedMotion()` is already correct — `matchMedia(q).matches` returns the live value on every call. The actual issue is `useMapInstance.ts:60`, which captures the value at map-init time and uses the captured value in subsequent `flyTo` calls.
+The function `prefersReducedMotion()` is already correct — `matchMedia(q).matches` returns the live value on every call. Three of the four call sites (`flyToCountry.ts:15`, `resetViewControl.ts:7`, `GameController.tsx:329/445/575/630`) read it fresh inside callbacks/effects and pick up OS-toggles automatically. The exception is `useMapInstance.ts:60`, which reads `prefersReducedMotion()` once at map construction to set the initial `pitch: reduced ? 0 : DEFAULT_PITCH` — and never references it again.
+
+`src/lib/motion.ts` gains a subscribe API:
 
 ```ts
-// motion.ts
-export function prefersReducedMotion(): boolean {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
 export function subscribeReducedMotion(cb: (reduced: boolean) => void): () => void {
   const mql = window.matchMedia('(prefers-reduced-motion: reduce)')
   const handler = (e: MediaQueryListEvent) => cb(e.matches)
@@ -229,7 +220,15 @@ export function subscribeReducedMotion(cb: (reduced: boolean) => void): () => vo
 }
 ```
 
-`src/hooks/useMapInstance.ts`: capture-once → subscribe-and-re-apply. The exact knob to re-apply depends on what the captured value gates (likely `map.flyTo({ duration })` baseline or `easing`). Implementation will inspect and either (a) apply per-call by reading fresh, or (b) subscribe and re-set a stored config var. Plan-time decision.
+`src/hooks/useMapInstance.ts` init effect subscribes and re-applies pitch on change:
+
+```ts
+const unsubscribe = subscribeReducedMotion((reduced) => {
+  map.setPitch(reduced ? 0 : DEFAULT_PITCH, { duration: 0 })
+})
+```
+
+Returned in the effect cleanup alongside the existing teardown. `{ duration: 0 }` ensures the pitch transition itself isn't animated — flipping reduce-motion shouldn't trigger an animation. No other knobs need re-applying; the four other usages already poll fresh.
 
 ## Files touched
 
@@ -245,13 +244,13 @@ export function subscribeReducedMotion(cb: (reduced: boolean) => void): () => vo
 - `docs/systems/daily-puzzle.md` — one-line note that session carries `dailyDate`
 
 **PR 2 (4 files + tests)**
-- `src/game/shared/useGameSession.ts` — `finishFree` action
-- `src/game/GameController.tsx` — Bug 3 branching, Bug 7 pluralization, Bug 8 announcement drop
-- `src/App.tsx` — Bug 9 clear timer
-- `src/lib/motion.ts` — Bug 10 subscribe API
-- `src/hooks/useMapInstance.ts` — Bug 10 re-apply
+- `src/game/shared/useGameSession.ts` — `finishFree` action (Bug 3)
+- `src/game/GameController.tsx` — `onEndGame` branching (Bug 3), delete round-ended `dispatchAnnouncement` block (Bugs 7 + 8)
+- `src/App.tsx` — clear-timer for stale announcements (Bug 9)
+- `src/lib/motion.ts` — `subscribeReducedMotion` API (Bug 10)
+- `src/hooks/useMapInstance.ts` — subscribe + `map.setPitch` re-apply (Bug 10)
 - `src/game/shared/__tests__/useGameSession.test.ts` — `finishFree` action tests
-- (Bug 7/8/9/10 are mechanical; tests added at plan time as the implementation specifies them.)
+- (Bugs 8/9/10 are mechanical; tests added at plan time as the implementation specifies them.)
 
 ## Test strategy
 
@@ -284,11 +283,10 @@ Sequenced commits (bisectable):
 **PR 2: Branch `game-flow-polish-fixes`** (after PR 1 merges)
 
 Sequenced commits:
-1. `feat(game): finishFree reducer action; End game in free mode shows game-over`
-2. `fix(game): pluralize "1 point" in round-end announcements`
-3. `fix(game): drop redundant country-pinning round-end announcement`
-4. `fix(a11y): clear stale aria-live region 8s after each announcement`
-5. `feat(motion): subscribe API for reduced-motion changes; useMapInstance re-applies`
+1. `feat(game): finishFree reducer action; End game in free mode shows game-over` (Bug 3)
+2. `fix(a11y): drop redundant round-end App-level announcement; inline role=status auto-announces` (Bugs 7 + 8 together)
+3. `fix(a11y): clear stale aria-live region 8s after each announcement` (Bug 9)
+4. `feat(motion): subscribe API for reduced-motion changes; useMapInstance re-applies pitch on toggle` (Bug 10)
 
 ## Rollback
 
@@ -308,7 +306,9 @@ Both PRs are pure code changes; no schema migration, no data migration, no telem
 
 ## Self-review
 
-- **Placeholder scan:** The Bug 10 implementation note says "Plan-time decision" for whether to read fresh or store-and-resubscribe in `useMapInstance`. This is a real degree of freedom that depends on inspecting the existing capture site; deferring to the plan is correct, not vague. No `TBD` / `TODO` / `???` strings.
-- **Internal consistency:** `dailyDate` is added in `types.ts`, threaded through reducer, consumed by 3 call sites — covered. `finishFree` is gated on `dailyDate !== null` — consistent with PR 1 architecture. `useMapInteractions` ref pattern matches existing code.
-- **Scope:** Two PRs, sized for one-week and three-day landings respectively. Each PR is bisectable and reverts cleanly.
-- **Ambiguity:** "is this a daily?" is now answered exactly one way (`session.dailyDate !== null`) at exactly three sites. The hash is no longer queried for that question.
+- **Placeholder scan:** No `TBD` / `TODO` / `???`. Bug 10's exact `setPitch` re-apply is fully specified after the second-pass review collapsed the ambiguity; only one knob needs subscribing.
+- **Internal consistency:** `dailyDate` is added in `types.ts`, threaded through `start` / `resume` reducer actions, preserved by `attempt` / `completeNow` / `advance` / `overrideRound` via `...state` spread, reset to `null` by `endGame` via `...EMPTY`, consumed by exactly the three sites named. `finishFree` is gated on `dailyDate !== null` — consistent. `useMapInteractions` ref pattern matches the existing `onSelectRef` / `onDeselectRef` / `byNumericRef` style.
+- **Scope:** Two PRs. PR 1 is bisectable across six sequenced commits; PR 2 across four. Each PR reverts cleanly.
+- **Ambiguity:** "Is this a daily?" is now answered exactly one way (`session.dailyDate !== null`) at exactly three sites. The hash is no longer queried for that question. The only design knob deferred to the plan is the e2e click coordinate for the ocean-click regression — that's a fixture detail, not a design ambiguity.
+- **Bug 7 / Bug 8 overlap:** Reviewed and collapsed — Bug 7's mechanism is a strict subset of Bug 8's deletion. Findings table notes Bug 7 as auto-resolved by Bug 8.
+- **Bug 10 scope:** Reviewed and narrowed — only `useMapInstance.ts:60` (initial pitch) is a captured value. All other reduced-motion usages read fresh and pick up OS-toggles automatically. The fix subscribes for that one knob.
