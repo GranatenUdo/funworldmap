@@ -99,7 +99,7 @@ interface Props {
 
 export function GameController({ countries, cities, byCca3 }: Props) {
   const { mapRef } = useMap()
-  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame } = useGameSessionContext()
+  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
@@ -732,7 +732,18 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   }, [session.status, session.modeId, endGame])
 
-  const onEndGame = () => { clearResume(); endGame(); writeIdleHash() }
+  const onEndGame = () => {
+    // Free games: route through game-over so the user sees their score and
+    // PB is recorded. Daily plays keep abandon-semantic (Done is the
+    // explicit save action there); idle / already game-over no-ops.
+    if (session.dailyDate === null && session.status !== 'idle' && session.status !== 'game-over') {
+      finishFree()
+      return
+    }
+    clearResume()
+    endGame()
+    writeIdleHash()
+  }
   const onPlayAgain = () => {
     if (!mode) return
     const firstRound = mode.nextRound(new Set())
