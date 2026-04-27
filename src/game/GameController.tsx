@@ -122,11 +122,17 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     (id: ModeId, date: string, firstRound: RoundSpec): void => {
       const resumed = readResume()
       if (resumed && resumed.date === date && resumed.modeId === id && resumed.attempts.length > 0) {
-        resume({ modeId: id, round: firstRound, attemptsPerRound: DAILY_ATTEMPTS_PER_ROUND, attempts: resumed.attempts })
+        resume({
+          modeId: id,
+          round: firstRound,
+          attemptsPerRound: DAILY_ATTEMPTS_PER_ROUND,
+          attempts: resumed.attempts,
+          dailyDate: date,
+        })
         track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
         return
       }
-      start(id, firstRound, 1, DAILY_ATTEMPTS_PER_ROUND)
+      start(id, firstRound, 1, DAILY_ATTEMPTS_PER_ROUND, date)
       track('deep_link_opened', { dateKind: 'today', outcome: 'start' })
       track('daily_started', { mode: id })
     },
