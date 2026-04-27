@@ -34,6 +34,7 @@ const EMPTY: GameSession = {
   currentAttempts: [],
   currentRound: null,
   lastOutcome: null,
+  dailyDate: null,
   used: new Set(),
 }
 

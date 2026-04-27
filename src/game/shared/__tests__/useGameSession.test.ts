@@ -54,6 +54,11 @@ describe('useGameSession (post-collapse)', () => {
     expect(result.current.session.maxRounds).toBeNull()
   })
 
+  it('starts with dailyDate null (free / idle has no daily date)', () => {
+    const { result } = renderHook(() => useGameSession())
+    expect(result.current.session.dailyDate).toBeNull()
+  })
+
   describe('start', () => {
     it('enters playing with attemptsPerRound default 1', () => {
       const { result } = renderHook(() => useGameSession())
