@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { GameSession, PersonalBest } from '../types'
 import { DailyShareBlock } from '../../../components/DailyShareBlock'
 import { useDailyHistory } from '../../daily/useDailyHistory'
@@ -15,6 +15,11 @@ interface Props {
 export function GameOverOverlay({
   session, personalBest, beatPersonalBest, onPlayAgain, onBackToMap,
 }: Props) {
+  // Freeze the prop at first paint. GameController recomputes beatPB from a
+  // live store value that updates immediately after game-over (when record()
+  // fires), which would flip "New personal best!" to "Best: N pts" on the
+  // very next render. Capturing once preserves the message for the user.
+  const [stableBeatPB] = useState(beatPersonalBest)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const { history, streak } = useDailyHistory()
   const hashState = parseHash(window.location.hash)
@@ -64,7 +69,9 @@ export function GameOverOverlay({
         <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">
           {session.maxRounds === null
             ? 'Three wrong guesses.'
-            : `${session.maxRounds} rounds complete.`}
+            : session.maxRounds === 1
+              ? '1 round complete.'
+              : `${session.maxRounds} rounds complete.`}
         </p>
 
         <dl
@@ -94,13 +101,15 @@ export function GameOverOverlay({
           )}
         </dl>
 
-        <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
-          {beatPersonalBest ? (
-            <span className="font-semibold text-teal-accessible dark:text-teal-light">New personal best!</span>
-          ) : (
-            <>Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak</>
-          )}
-        </div>
+        {!isDaily && (
+          <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
+            {stableBeatPB ? (
+              <span className="font-semibold text-teal-accessible dark:text-teal-light">New personal best!</span>
+            ) : (
+              <>Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak</>
+            )}
+          </div>
+        )}
 
         <div className="flex gap-2">
           {!isDaily && (
