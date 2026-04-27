@@ -154,18 +154,49 @@ npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "dailyDate nu
 
 Expected: PASS.
 
-- [ ] **Step 6: Run typecheck — anything else broken?**
+- [ ] **Step 6: Update other `GameSession` literals in test fixtures**
+
+Two test fixtures construct `GameSession` literals and will fail typecheck after the field is added:
+
+(a) `src/game/shared/hud/__tests__/GameOverOverlay.test.tsx:6-21` — `baseSession`. Add `dailyDate: null` between `lastOutcome` and `used`. (Task 9 will further refactor these tests; this is just the field-add to keep the file compiling now.)
+
+(b) `src/hooks/__tests__/useLauncherVisibility.test.tsx:9-27` — `makeSession`. Add `dailyDate: null` between `lastOutcome` and `used`:
+
+```typescript
+function makeSession(overrides: Partial<GameSession> = {}): GameSession {
+  return {
+    modeId: 'country-pinning',
+    status: 'idle',
+    lives: 3,
+    score: 0,
+    streak: 0,
+    bestStreak: 0,
+    roundIndex: 0,
+    maxRounds: null,
+    attemptsPerRound: 1,
+    attemptsRemaining: 1,
+    currentAttempts: [],
+    currentRound: null,
+    lastOutcome: null,
+    dailyDate: null,
+    used: new Set(),
+    ...overrides,
+  }
+}
+```
+
+- [ ] **Step 7: Run typecheck**
 
 ```bash
 npx tsc -b --noEmit
 ```
 
-Expected: PASS. The new field is optional-feeling because all reducer actions spread `...state` or `...EMPTY`. If you see a type error for an explicit `GameSession` literal somewhere (e.g. test fixtures), add `dailyDate: null` to that literal. Search for `GameSession =` and check each.
+Expected: PASS — all `GameSession` literals now have `dailyDate`.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
-git add src/game/shared/types.ts src/game/shared/useGameSession.ts src/game/shared/__tests__/useGameSession.test.ts
+git add src/game/shared/types.ts src/game/shared/useGameSession.ts src/game/shared/__tests__/useGameSession.test.ts src/game/shared/hud/__tests__/GameOverOverlay.test.tsx src/hooks/__tests__/useLauncherVisibility.test.tsx
 git commit -m "feat(game): add dailyDate field to GameSession and EMPTY"
 ```
 
@@ -1327,7 +1358,28 @@ const api = useMemo<GameSessionApi>(
 )
 ```
 
-- [ ] **Step 7: Run the new tests**
+- [ ] **Step 7: Update `makeApi` test fixture**
+
+`src/hooks/__tests__/useLauncherVisibility.test.tsx:29-41` constructs a `GameSessionApi` literal and will fail typecheck without the new field. Add `finishFree: () => {}`:
+
+```typescript
+function makeApi(session: GameSession): GameSessionApi {
+  return {
+    session,
+    mode: null,
+    start: () => {},
+    submitGuessInput: () => {},
+    completeNow: () => {},
+    resume: () => {},
+    advance: () => {},
+    overrideRound: () => {},
+    endGame: () => {},
+    finishFree: () => {},
+  }
+}
+```
+
+- [ ] **Step 8: Run the new tests**
 
 ```bash
 npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "finishFree" --no-coverage
@@ -1335,7 +1387,7 @@ npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "finishFree" 
 
 Expected: PASS — all four tests.
 
-- [ ] **Step 8: Run the full suite + typecheck**
+- [ ] **Step 9: Run the full suite + typecheck**
 
 ```bash
 npx vitest run --no-coverage
@@ -1344,10 +1396,10 @@ npx tsc -b --noEmit
 
 Expected: PASS.
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
-git add src/game/shared/useGameSession.ts src/game/shared/GameSessionProvider.tsx src/game/shared/__tests__/useGameSession.test.ts
+git add src/game/shared/useGameSession.ts src/game/shared/GameSessionProvider.tsx src/game/shared/__tests__/useGameSession.test.ts src/hooks/__tests__/useLauncherVisibility.test.tsx
 git commit -m "feat(game): finishFree reducer action"
 ```
 
@@ -1561,44 +1613,48 @@ git commit -m "fix(a11y): clear stale aria-live region 8s after each announcemen
 
 - [ ] **Step 1: Write the failing test**
 
-Create `src/lib/__tests__/motion.test.ts` (or append if it exists):
+Create `src/lib/__tests__/motion.test.ts` (or append if it exists). Use `Object.defineProperty(window, 'matchMedia', ...)` — jsdom doesn't ship `matchMedia`, so this is the established pattern in this repo (see `src/hooks/__tests__/useTheme.test.ts:5-19` and `src/hooks/__tests__/useMapInstance.test.tsx:54-58`).
 
 ```typescript
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { prefersReducedMotion, subscribeReducedMotion } from '../motion'
 
-describe('motion', () => {
-  let mediaQueryListeners: Array<(e: MediaQueryListEvent) => void>
-  let matchesValue: boolean
+let listeners: Array<(e: MediaQueryListEvent) => void>
+let matchesValue: boolean
 
+function mockMatchMedia() {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: vi.fn().mockImplementation((query: string) => ({
+      get matches() { return matchesValue },
+      media: query,
+      onchange: null,
+      addEventListener: (type: string, listener: (e: MediaQueryListEvent) => void) => {
+        if (type === 'change') listeners.push(listener)
+      },
+      removeEventListener: (type: string, listener: (e: MediaQueryListEvent) => void) => {
+        if (type === 'change') {
+          const idx = listeners.indexOf(listener)
+          if (idx >= 0) listeners.splice(idx, 1)
+        }
+      },
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => true,
+    })),
+  })
+}
+
+describe('motion', () => {
   beforeEach(() => {
-    mediaQueryListeners = []
+    listeners = []
     matchesValue = false
-    vi.spyOn(window, 'matchMedia').mockImplementation((q: string) => {
-      const mql = {
-        matches: matchesValue,
-        media: q,
-        onchange: null,
-        addEventListener: (type: string, listener: (e: MediaQueryListEvent) => void) => {
-          if (type === 'change') mediaQueryListeners.push(listener)
-        },
-        removeEventListener: (type: string, listener: (e: MediaQueryListEvent) => void) => {
-          if (type === 'change') {
-            mediaQueryListeners = mediaQueryListeners.filter((l) => l !== listener)
-          }
-        },
-        addListener: () => {},
-        removeListener: () => {},
-        dispatchEvent: () => true,
-      } as unknown as MediaQueryList
-      return mql
-    })
+    mockMatchMedia()
   })
 
-  afterEach(() => { vi.restoreAllMocks() })
-
   describe('prefersReducedMotion', () => {
-    it('reads matchMedia each call (live)', () => {
+    it('reflects matchMedia.matches', () => {
       matchesValue = false
       expect(prefersReducedMotion()).toBe(false)
       matchesValue = true
@@ -1607,16 +1663,16 @@ describe('motion', () => {
   })
 
   describe('subscribeReducedMotion', () => {
-    it('invokes the callback when the media query changes', () => {
+    it('invokes the callback with the new value when the media query changes', () => {
       const cb = vi.fn()
       const unsubscribe = subscribeReducedMotion(cb)
-      expect(mediaQueryListeners).toHaveLength(1)
-      mediaQueryListeners[0]!({ matches: true } as MediaQueryListEvent)
+      expect(listeners).toHaveLength(1)
+      listeners[0]!({ matches: true } as MediaQueryListEvent)
       expect(cb).toHaveBeenCalledWith(true)
-      mediaQueryListeners[0]!({ matches: false } as MediaQueryListEvent)
+      listeners[0]!({ matches: false } as MediaQueryListEvent)
       expect(cb).toHaveBeenCalledWith(false)
       unsubscribe()
-      expect(mediaQueryListeners).toHaveLength(0)
+      expect(listeners).toHaveLength(0)
     })
   })
 })
@@ -1845,8 +1901,13 @@ EOF
 - **Type consistency:** `dailyDate: string | null` on `start`, `dailyDate: string` (required) on `resume`. Hook callbacks match. **`GameSessionApi` interface in `GameSessionProvider.tsx` is updated alongside the hook in Tasks 2 and 3** — the spec critical-review (2026-04-27) caught that the public-API type would otherwise reject the new arg. Reducer cases write the field consistently. `finishFree` is `() => void` everywhere it appears, including in `GameSessionApi` (Task 14 step 6).
 - **Task isolation:** Tasks 1-12 are sequenced because each builds on the prior reducer/state changes. Tasks 14-19 are independent after Task 14 plumbs `finishFree` through the provider. Each task ends with a commit; each PR ends with a verification gate.
 - **Cross-task references:** Tasks 8 and 9 are paired (the source change in Task 8 breaks tests that Task 9 fixes; the commit at Task 9 step 6 covers both). Task 10 covers the gate via the e2e in Task 11 (no separate unit test). Task 19 has a fall-back to `map.jumpTo` if `setPitch`'s second arg isn't supported by the installed MapLibre version.
-- **Critical-review revisions applied (2026-04-27):**
-  - Tasks 2 and 3 each got an explicit step to update `GameSessionApi` in `GameSessionProvider.tsx` — without this, Task 5's 5-arg `start` call would fail typecheck against the unmodified API interface.
-  - Task 4 dropped the malformed "advance preserves dailyDate" test (a daily best-of-3 with `maxRounds=1` transitions straight to game-over after `completeNow`, so `advance` can't legitimately fire on a daily session). The three remaining preservation tests cover the spread invariant adequately.
-  - Task 14 step 6 spells out the three Provider edits (interface, destructure, useMemo + deps) instead of vaguely "mirror the pattern for endGame".
-  - Task 9 keeps the `beforeEach` hash reset intact (defensive against test-order leaks) instead of conditionally deleting it.
+- **Critical-review revisions applied (2026-04-27, two passes):**
+  - **Pass 1:**
+    - Tasks 2 and 3 each got an explicit step to update `GameSessionApi` in `GameSessionProvider.tsx` — without this, Task 5's 5-arg `start` call would fail typecheck against the unmodified API interface.
+    - Task 4 dropped the malformed "advance preserves dailyDate" test (a daily best-of-3 with `maxRounds=1` transitions straight to game-over after `completeNow`, so `advance` can't legitimately fire on a daily session). The three remaining preservation tests cover the spread invariant adequately.
+    - Task 14 step 6 spells out the three Provider edits (interface, destructure, useMemo + deps) instead of vaguely "mirror the pattern for endGame".
+    - Task 9 keeps the `beforeEach` hash reset intact (defensive against test-order leaks) instead of conditionally deleting it.
+  - **Pass 2:**
+    - Task 1 step 6 explicitly updates *both* `GameSession` literal test fixtures (`baseSession` in `GameOverOverlay.test.tsx` and `makeSession` in `useLauncherVisibility.test.tsx`). Without this, the field-add at Task 1 fails typecheck on the second fixture.
+    - Task 14 step 7 explicitly updates the `makeApi` `GameSessionApi` literal in `useLauncherVisibility.test.tsx`. Without this, adding `finishFree` to the interface fails typecheck on that fixture.
+    - Task 18's `motion.test.ts` rewritten to use the `Object.defineProperty(window, 'matchMedia', ...)` pattern. The original `vi.spyOn(window, 'matchMedia')` form fails because jsdom doesn't ship `matchMedia` and `vi.spyOn` requires the property to exist (verified at `useTheme.test.ts:5-19` and `useMapInstance.test.tsx:54-58`).
