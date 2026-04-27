@@ -17,6 +17,17 @@ export function HudShell({ session, onEndGame, onDone, children }: Props) {
   const bestOfN = session.attemptsPerRound > 1
   const fixedRounds = session.maxRounds !== null && session.maxRounds > 1
   const showDone = bestOfN && session.status === 'playing' && session.currentAttempts.length > 0
+
+  // For best-of-N rounds the cumulative `session.score` is updated only on
+  // round-end, so it stays at 0 throughout the round. Surface the running
+  // best instead — and tag it so the badge can style it as provisional.
+  const runningBest =
+    bestOfN && session.status === 'playing' && session.currentAttempts.length > 0
+      ? Math.max(...session.currentAttempts.map((a) => a.pointsEarned))
+      : null
+  const displayScore = runningBest ?? session.score
+  const scorePending = runningBest !== null
+
   return (
     <div
       role="region"
@@ -39,7 +50,7 @@ export function HudShell({ session, onEndGame, onDone, children }: Props) {
             <LivesIndicator lives={session.lives} />
           )}
           <div className="flex items-center gap-2">
-            <ScoreBadge score={session.score} />
+            <ScoreBadge score={displayScore} pending={scorePending} />
             {bestOfN || fixedRounds ? null : <StreakBadge streak={session.streak} />}
           </div>
           <div className="flex items-center gap-2">
