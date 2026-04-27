@@ -300,21 +300,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       }
     }
     if (session.status === 'round-ended' && session.lastOutcome) {
-      const o = session.lastOutcome
-      if (o.reveal.kind === 'country') {
-        dispatchAnnouncement(
-          o.reveal.correct
-            ? `Correct. Plus ${o.pointsEarned} points.`
-            : `Wrong. Plus ${o.pointsEarned} points. ${session.lives === 1 ? 'One life remaining.' : `${session.lives} lives remaining.`}`,
-        )
-      } else {
-        const d = o.reveal.distanceKm
-        if (o.reveal.clickedPoint === null) {
-          dispatchAnnouncement(`Skipped round.`)
-        } else {
-          dispatchAnnouncement(`${Math.round(d)} kilometres off. Plus ${o.pointsEarned} points.`)
-        }
-      }
       const isFinalOutcome =
         session.attemptsPerRound === 1 || session.attemptsRemaining === 0
       const isCountryPinning = session.modeId === 'country-pinning'
