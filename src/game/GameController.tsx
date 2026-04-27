@@ -372,13 +372,12 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     }
     if (session.status === 'game-over' && !recordedRef.current) {
       recordedRef.current = true
-      const hash = parseHash(window.location.hash)
-      const isDaily = hash.kind === 'daily'
+      const isDaily = session.dailyDate !== null
       if (!isDaily) record(session.score, session.bestStreak)
       // Daily-specific recording:
-      if (hash.kind === 'daily' && hash.modeId) {
+      if (session.dailyDate !== null && session.modeId) {
         const attempts: AttemptRecord[] = session.currentAttempts
-        recordDailyResult(hash.date, hash.modeId as ModeId, {
+        recordDailyResult(session.dailyDate, session.modeId, {
           score: session.score,
           attempts: attempts.map((a) => ({
             pointsEarned: a.pointsEarned,
@@ -400,7 +399,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   }, [
     session.status, session.roundIndex, session.lastOutcome, session.score,
     session.bestStreak, session.lives, session.used, session.currentRound, session.modeId,
-    session.currentAttempts,
+    session.currentAttempts, session.dailyDate,
     advance, mode, record, recordDailyResult, byCca3,
   ])
 
