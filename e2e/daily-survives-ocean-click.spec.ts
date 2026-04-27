@@ -1,21 +1,8 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForAppReady } from './helpers'
+import { waitForAppReady, waitForGameTestHook } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
-
-async function waitForGameTestHook(page: Page) {
-  await expect.poll(
-    () => page.evaluate(() => {
-      const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
-      return g
-        && typeof g.submitCountryGuess === 'function'
-        && typeof g.completeNow === 'function'
-        ? 'ready' : 'not-ready'
-    }),
-    { timeout: 15_000 },
-  ).toBe('ready')
-}
 
 async function seedTodayPuzzle(page: Page, date: string): Promise<void> {
   await page.addInitScript(
@@ -50,8 +37,6 @@ test.describe('daily survives ocean clicks', () => {
     await waitForGameTestHook(page)
 
     // Three country attempts with one ocean click in between.
-    // Test hooks expose submitCountryGuess and the map ref — see
-    // src/game/GameController.tsx:661 and src/hooks/useMapInstance.ts:98.
     await page.evaluate(async () => {
       // @ts-expect-error — test seam
       window.__funworldmap_game.submitCountryGuess('USA')
@@ -87,7 +72,6 @@ test.describe('daily survives ocean clicks', () => {
       await new Promise((r) => setTimeout(r, 600))
       // @ts-expect-error — test seam
       window.__funworldmap_game.completeNow()
-      await new Promise((r) => setTimeout(r, 400))
     })
 
     // Game-over reached — verify daily UI, not free UI:

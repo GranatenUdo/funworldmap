@@ -1,20 +1,11 @@
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
+import { waitForGameTestHook } from './helpers'
 
 test.setTimeout(60_000)
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-}
-
-async function waitForGameTestHook(page: Page) {
-  await expect.poll(
-    () => page.evaluate(() => {
-      const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
-      return g && typeof g.submitCountryGuess === 'function' && typeof g.completeNow === 'function' ? 'ready' : 'not-ready'
-    }),
-    { timeout: 15_000 },
-  ).toBe('ready')
 }
 
 async function seedTodayPuzzle(page: Page, date: string): Promise<void> {

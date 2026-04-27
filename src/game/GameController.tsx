@@ -372,12 +372,11 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     }
     if (session.status === 'game-over' && !recordedRef.current) {
       recordedRef.current = true
-      const isDaily = session.dailyDate !== null
-      if (!isDaily) record(session.score, session.bestStreak)
-      // Daily-specific recording:
-      if (session.dailyDate !== null && session.modeId) {
+      const dailyDate = session.dailyDate
+      if (dailyDate === null) record(session.score, session.bestStreak)
+      else {
         const attempts: AttemptRecord[] = session.currentAttempts
-        recordDailyResult(session.dailyDate, session.modeId, {
+        recordDailyResult(dailyDate, session.modeId, {
           score: session.score,
           attempts: attempts.map((a) => ({
             pointsEarned: a.pointsEarned,
