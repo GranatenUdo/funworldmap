@@ -35,6 +35,8 @@ export function useMapInteractions({
   byNumericRef.current = byNumeric
 
   const { session } = useGameSessionContext()
+  const sessionRef = useRef(session)
+  sessionRef.current = session
   const tooltipsEnabled = !(session.modeId === 'country-pinning' && session.status === 'playing')
 
   useEffect(() => {
@@ -121,6 +123,9 @@ export function useMapInteractions({
     }
 
     const clickMap = (e: maplibregl.MapMouseEvent) => {
+      // Don't deselect during active gameplay — clearing the URL hash mid-game
+      // strips routing state and was the root of the 2026-04-27 cascade.
+      if (sessionRef.current.status !== 'idle') return
       const features = map.queryRenderedFeatures(e.point, { layers: [LAYER.fill] })
       if (features.length === 0) onDeselectRef.current()
     }

@@ -17,6 +17,7 @@ const baseSession: GameSession = {
   currentAttempts: [],
   currentRound: null,
   lastOutcome: null,
+  dailyDate: null,
   used: new Set(),
 }
 
@@ -29,10 +30,9 @@ describe('GameOverOverlay', () => {
   })
 
   it('says "1 round complete." when maxRounds is 1', () => {
-    window.location.hash = '#daily/2026-04-27/country-pinning'
     render(
       <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 1 }}
+        session={{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }}
         personalBest={zeroBest}
         beatPersonalBest={false}
         onPlayAgain={() => {}}
@@ -56,10 +56,9 @@ describe('GameOverOverlay', () => {
   })
 
   it('hides the personal-best block on daily plays', () => {
-    window.location.hash = '#daily/2026-04-27/country-pinning'
     render(
       <GameOverOverlay
-        session={baseSession}
+        session={{ ...baseSession, dailyDate: '2026-04-27' }}
         personalBest={zeroBest}
         beatPersonalBest={true}
         onPlayAgain={() => {}}
@@ -71,7 +70,6 @@ describe('GameOverOverlay', () => {
   })
 
   it('shows the personal-best block on free plays', () => {
-    window.location.hash = '#game/country-pinning'
     render(
       <GameOverOverlay
         session={{ ...baseSession, maxRounds: null, attemptsPerRound: 1 }}
@@ -86,7 +84,6 @@ describe('GameOverOverlay', () => {
   })
 
   it('keeps "New personal best!" when beatPersonalBest later flips to false (post-record re-render)', () => {
-    window.location.hash = '#game/country-pinning'
     const session = { ...baseSession, maxRounds: null, attemptsPerRound: 1 }
     const { rerender } = render(
       <GameOverOverlay
@@ -114,7 +111,6 @@ describe('GameOverOverlay', () => {
   })
 
   it('shows "Best: N pts" stably when beatPersonalBest started false', () => {
-    window.location.hash = '#game/country-pinning'
     const session = { ...baseSession, maxRounds: null, attemptsPerRound: 1, score: 14 }
     render(
       <GameOverOverlay

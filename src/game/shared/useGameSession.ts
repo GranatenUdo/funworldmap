@@ -12,10 +12,10 @@ import type { AttemptRecord, GameSession, GuessInput, ModeGuessResult, ModeId, R
  * to a permanently-false condition). The `start` action rejects this combo.
  */
 type Action =
-  | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number }
+  | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number; dailyDate: string | null }
   | { type: 'attempt'; input: GuessInput; result: ModeGuessResult }
   | { type: 'completeNow' }
-  | { type: 'resume'; modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }
+  | { type: 'resume'; modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
   | { type: 'endGame' }
@@ -34,6 +34,7 @@ const EMPTY: GameSession = {
   currentAttempts: [],
   currentRound: null,
   lastOutcome: null,
+  dailyDate: null,
   used: new Set(),
 }
 
@@ -89,6 +90,7 @@ function reducer(state: GameSession, action: Action): GameSession {
         attemptsPerRound: action.attemptsPerRound,
         attemptsRemaining: action.attemptsPerRound,
         currentRound: action.firstRound,
+        dailyDate: action.dailyDate,
         used: new Set([roundKey(action.firstRound)]),
       }
     }
@@ -133,6 +135,7 @@ function reducer(state: GameSession, action: Action): GameSession {
         attemptsRemaining: action.attemptsPerRound - action.attempts.length,
         currentAttempts: action.attempts,
         currentRound: action.round,
+        dailyDate: action.dailyDate,
         used: new Set([roundKey(action.round)]),
       }
     }
@@ -174,18 +177,18 @@ function reducer(state: GameSession, action: Action): GameSession {
 
 export function useGameSession(): {
   session: GameSession
-  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number) => void
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
   attempt: (input: GuessInput, result: ModeGuessResult) => void
   completeNow: () => void
-  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) => void
+  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
 } {
   const [session, dispatch] = useReducer(reducer, EMPTY)
   const start = useCallback(
-    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound = 1) =>
-      dispatch({ type: 'start', modeId, firstRound, maxRounds, attemptsPerRound }),
+    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound = 1, dailyDate: string | null = null) =>
+      dispatch({ type: 'start', modeId, firstRound, maxRounds, attemptsPerRound, dailyDate }),
     [],
   )
   const attempt = useCallback(
@@ -194,7 +197,7 @@ export function useGameSession(): {
   )
   const completeNow = useCallback(() => dispatch({ type: 'completeNow' }), [])
   const resume = useCallback(
-    (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) =>
+    (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) =>
       dispatch({ type: 'resume', ...payload }),
     [],
   )

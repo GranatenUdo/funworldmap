@@ -54,6 +54,11 @@ describe('useGameSession (post-collapse)', () => {
     expect(result.current.session.maxRounds).toBeNull()
   })
 
+  it('starts with dailyDate null (free / idle has no daily date)', () => {
+    const { result } = renderHook(() => useGameSession())
+    expect(result.current.session.dailyDate).toBeNull()
+  })
+
   describe('start', () => {
     it('enters playing with attemptsPerRound default 1', () => {
       const { result } = renderHook(() => useGameSession())
@@ -74,6 +79,18 @@ describe('useGameSession (post-collapse)', () => {
       const { result } = renderHook(() => useGameSession())
       act(() => { result.current.start('country-pinning', round('FRA'), null, 3) })
       expect(result.current.session.status).toBe('idle')
+    })
+
+    it('stores dailyDate when passed (daily play)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
+      expect(result.current.session.dailyDate).toBe('2026-04-27')
+    })
+
+    it('defaults dailyDate to null when not passed (free play)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), null) })
+      expect(result.current.session.dailyDate).toBeNull()
     })
   })
 
@@ -193,6 +210,29 @@ describe('useGameSession (post-collapse)', () => {
   })
 
   describe('resume', () => {
+    it('stores dailyDate from the resume payload', () => {
+      const { result } = renderHook(() => useGameSession())
+      const r = round('ESP')
+      const attemptInput: AttemptRecord = {
+        pointsEarned: 50,
+        input: countryInput('USA'),
+        reveal: { kind: 'country', correct: false, targetCca3: 'ESP', clickedCca3: 'USA', clickedName: 'USA', distanceKm: 9000 },
+      }
+      act(() => {
+        result.current.resume({
+          modeId: 'country-pinning',
+          round: r,
+          attemptsPerRound: 3,
+          attempts: [attemptInput],
+          dailyDate: '2026-04-27',
+        })
+      })
+      expect(result.current.session.dailyDate).toBe('2026-04-27')
+      expect(result.current.session.status).toBe('playing')
+      expect(result.current.session.currentAttempts).toHaveLength(1)
+      expect(result.current.session.attemptsRemaining).toBe(2)
+    })
+
     it('reconstructs mid-attempt state from saved attempts', () => {
       const { result } = renderHook(() => useGameSession())
       const priorAttempt: AttemptRecord = {
@@ -213,6 +253,7 @@ describe('useGameSession (post-collapse)', () => {
           round: round('FRA'),
           attemptsPerRound: 3,
           attempts: [priorAttempt],
+          dailyDate: '2026-04-27',
         })
       })
       expect(result.current.session.status).toBe('playing')
@@ -228,6 +269,7 @@ describe('useGameSession (post-collapse)', () => {
           round: round('FRA'),
           attemptsPerRound: 1,
           attempts: [],
+          dailyDate: '2026-04-27',
         })
       })
       expect(result.current.session.status).toBe('idle')
@@ -253,6 +295,7 @@ describe('useGameSession (post-collapse)', () => {
           round: round('FRA'),
           attemptsPerRound: 3,
           attempts: [a('CHN'), a('IND'), a('AUS')],
+          dailyDate: '2026-04-27',
         })
       })
       expect(result.current.session.status).toBe('idle')
@@ -278,6 +321,31 @@ describe('useGameSession (post-collapse)', () => {
       act(() => { result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU', 20)) })
       act(() => { result.current.endGame() })
       expect(result.current.session.status).toBe('idle')
+    })
+  })
+
+  describe('dailyDate preservation', () => {
+    it('attempt preserves dailyDate', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
+      expect(result.current.session.dailyDate).toBe('2026-04-27')
+    })
+
+    it('completeNow preserves dailyDate', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
+      act(() => { result.current.completeNow() })
+      expect(result.current.session.dailyDate).toBe('2026-04-27')
+    })
+
+    it('endGame resets dailyDate to null', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
+      expect(result.current.session.dailyDate).toBe('2026-04-27')
+      act(() => { result.current.endGame() })
+      expect(result.current.session.dailyDate).toBeNull()
     })
   })
 })

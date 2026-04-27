@@ -98,6 +98,7 @@ export type GameSession = {
   currentAttempts: AttemptRecord[]
   currentRound: RoundSpec | null
   lastOutcome: GuessOutcome | null
+  dailyDate: string | null           // YYYY-MM-DD when this is a daily; null for free/idle
   used: Set<string>
 }
 

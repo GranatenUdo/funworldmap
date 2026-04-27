@@ -150,6 +150,23 @@ export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<v
 }
 
 /**
+ * Poll until the game test hook (`window.__funworldmap_game`) is mounted with
+ * the seams the daily/free specs use (`submitCountryGuess`, `completeNow`).
+ * The hook is registered inside a `useEffect` in `GameSessionProvider` /
+ * `GameController` after first render, so deep-link specs can race past it
+ * without this wait.
+ */
+export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promise<void> {
+  await expect.poll(
+    () => page.evaluate(() => {
+      const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
+      return g && typeof g.submitCountryGuess === 'function' && typeof g.completeNow === 'function' ? 'ready' : 'not-ready'
+    }),
+    { timeout: timeoutMs },
+  ).toBe('ready')
+}
+
+/**
  * Poll until at least one country-fill feature is rendered at the canvas
  * centre. Replaces the chromium-gpu specs' `waitForTimeout(750-2000)` waits
  * that were really waiting for the GPU compositor to settle (post-launcher
