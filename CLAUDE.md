@@ -1,0 +1,148 @@
+# CLAUDE.md — funworldmap repository conventions
+
+This file is read automatically at the start of any Claude Code session in this repo. It captures load-bearing conventions whose violation has historically caused regressions.
+
+If you find yourself wanting to do something this file forbids, **stop and ask** — the rule probably exists because someone burned a day debugging the failure mode it prevents.
+
+## Project documentation
+
+| Doc | What it covers |
+|---|---|
+| [`docs/purpose.md`](docs/purpose.md) | What funworldmap is, audience, scope |
+| [`docs/systems/overview.md`](docs/systems/overview.md) | Architecture, data flow, error handling |
+| [`docs/systems/daily-puzzle.md`](docs/systems/daily-puzzle.md) | Retention layer (daily, streak, share, history) |
+| [`docs/systems/testing.md`](docs/systems/testing.md) | Two-tier test strategy (DOM + map-via-page.evaluate) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/) | Design docs (per-feature, dated) |
+| [`docs/superpowers/plans/`](docs/superpowers/plans/) | Implementation plans (per-feature, dated) |
+
+When you start a non-trivial change, write the spec/plan first; commit before code. See `docs/superpowers/README.md` for the workflow.
+
+## Writing e2e tests that don't flake on CI
+
+`e2e/` runs against four Playwright projects: `chromium` (Linux Software ANGLE — slow), `chromium-gpu` (Linux real GPU), `mobile-chromium`, `mobile-webkit`, `desktop-firefox-touch`. The `chromium` project on Software ANGLE has historically been the flake source — it's ~10× slower than local. The rules below exist because every test that violates them has caused a CI flake.
+
+### Forbidden patterns
+
+**❌ `page.waitForTimeout(N)`** — sleeping for a magic number of milliseconds. Symptoms: tests pass locally, fail intermittently in CI, comments like `// debounce + render` or `// give the dropdown a render cycle`. Replace with explicit state waits:
+
+```ts
+// ❌ Don't
+await searchInput.fill('France')
+await page.waitForTimeout(300) // wait for dropdown
+await page.keyboard.press('Enter')
+
+// ✅ Do
+await searchInput.fill('France')
+await expect(page.getByTestId('search-results').getByRole('option').first()).toBeVisible()
+await page.keyboard.press('Enter')
+```
+
+**❌ `click({ force: true })`** as a band-aid for actionability errors. Symptoms: a comment near the click saying "force-click because dropdown was intercepting", or the test passing only when re-run. `force: true` skips Playwright's "element is visible, enabled, stable" checks — it papers over the real problem (an overlay, an animation, a portal still in transition). When `force: true` is needed, the timing of the underlying overlay/animation is the bug.
+
+```ts
+// ❌ Don't
+await page.getByTestId('panel-close').click({ force: true })
+
+// ✅ Do
+await expect(page.getByTestId('search-results')).not.toBeAttached() // the overlay
+await page.getByTestId('panel-close').click()                        // now safe
+```
+
+**❌ Sleeping through CSS transitions.** A `transition: opacity 300ms` or `animation: fade-in 260ms` is wallclock-non-deterministic on slow CI. Don't `waitForTimeout(400)` to ride out an animation:
+
+```ts
+// ❌ Don't
+await page.getByTestId('launcher-dismiss').click()
+await page.waitForTimeout(500) // wait for fade-out
+
+// ✅ Do — wait for the element to actually leave the DOM
+await page.getByTestId('launcher-dismiss').click()
+await expect(page.getByTestId('launcher')).not.toBeAttached()
+```
+
+If the component conditionally renders during animation (e.g. `<AnimatePresence>`), `not.toBeAttached` works. If the component stays mounted during animation, add a `data-animation-state="entering|idle|exiting"` to the component and wait on the attribute:
+
+```tsx
+// in component
+<div data-testid="my-modal" data-animation-state={state}>...</div>
+
+// in test
+await expect(page.getByTestId('my-modal')).toHaveAttribute('data-animation-state', 'idle')
+```
+
+**❌ Asserting Fuse.js result order with `.first()`** (or any other ordering that depends on scoring/data). Use the explicit option:
+
+```ts
+// ❌ Don't (assumes France is the first match)
+await page.getByTestId('search-results').getByRole('option').first().click()
+
+// ✅ Do
+await page.getByTestId('search-results').getByRole('option', { name: /^France\s/ }).click()
+```
+
+**❌ Asserting focus position after N Tab presses** without an intermediate check. Tab order can change when you add a focusable element (e.g. a Daily CTA), and the failure mode is silent:
+
+```ts
+// ❌ Don't (depends on counting focusable elements correctly)
+await page.keyboard.press('Tab')
+await page.keyboard.press('Tab')
+await expect(page.getByTestId('expected-second')).toBeFocused()
+
+// ✅ Do — assert each step
+await page.keyboard.press('Tab')
+await expect(page.getByTestId('expected-first')).toBeFocused()
+await page.keyboard.press('Tab')
+await expect(page.getByTestId('expected-second')).toBeFocused()
+```
+
+### Required patterns
+
+**✅ Use the readiness helpers in `e2e/helpers.ts`:**
+
+| Helper | Use when |
+|---|---|
+| `waitForAppReady(page)` | After every `page.goto('/')` — ensures bundled `countries` + `cities` are present and the first React commit happened |
+| `waitForGameTestHook(page)` | After landing on a game/daily route, before calling `__funworldmap_game.*` test seams — ensures the seam is registered |
+| `waitForCountryTilesRendered(page)` | After map-loaded, before `queryRenderedFeatures` — ensures the GPU has actually rasterised the tiles |
+| `dismissLauncher(page)` | When the test runs against `/` (which now shows the launcher by default) and you need a clean map state |
+| `gotoAndWaitForMap(page, path)` | Combined: navigates, waits for `data-map-loaded`. Prefer over manual `goto + waitForSelector('[data-map-loaded]')` |
+| `stubDailyIndex(page, date)` / `seedDailyHistory(page, opts)` | When the test depends on daily content or play history. Avoids hitting the real `/daily/index.json` and avoids cross-test localStorage leaks |
+| `routeMapTiles(page)` | When the test doesn't need real basemap tiles — stubs them to avoid network flake |
+
+**✅ Auto-retrying assertions over manual polls.** `expect(locator).toBeVisible()`, `expect(locator).toHaveCount(N)`, `expect.poll(...)` all retry up to a timeout. Reach for these instead of writing your own polling loops.
+
+**✅ Pair every "click overlay-occluded element" with a "wait for occluder to be gone" step.** The dropdown / modal / portal that was over your target needs to actually unmount before the click. `expect(occluder).not.toBeAttached()` is the deterministic signal.
+
+**✅ Test seams over UI driving for game/daily flows.** Use `__funworldmap_game.submitCountryGuess(cca3)`, `completeNow()`, etc. (exposed in `src/game/GameController.tsx` under `VITE_TEST_HOOKS`). They dispatch the same reducer actions a real click would, but skip the click-actionability dance.
+
+**✅ Synthetic map clicks via `__funworldmap_map.fire('click', ...)` for ocean/off-globe paths.** Real `page.mouse.click(x, y)` depends on viewport-specific water coordinates that change with camera state. The synthetic form is camera-agnostic. Always pair with a `queryRenderedFeatures` precondition assertion to fail loudly if the canvas point ever lands on a country (see `e2e/daily-survives-ocean-click.spec.ts`).
+
+### Before adding a new e2e test
+
+1. **Does it need to run against `chromium`** (Software ANGLE), or is `chromium-gpu` enough? Map-rendering and GPU-dependent tests go in `chromium-gpu` (registered in `playwright.config.ts`'s `testMatch`). Pure DOM tests can live in `chromium` (faster, but more flake-prone).
+2. **Does an existing helper cover the readiness wait?** Check `e2e/helpers.ts` first. If you're tempted to write `await page.waitForTimeout(...)`, look for the helper. If none exists for your case, *add* one to `helpers.ts` rather than inlining the wait.
+3. **Are you about to use `force: true`?** Stop. Find what's blocking the click and wait for it to be gone instead.
+4. **Does the test depend on animations?** If yes, the component needs an `data-animation-state` (or similar) signal — don't guess durations.
+
+### When CI flakes
+
+1. **Don't re-run blindly.** Read the trace (`test-results/<test>/trace.zip` → `npx playwright show-trace <file>`).
+2. **Check whether the test follows the rules above.** If `waitForTimeout` is in the failure path, that's the bug.
+3. **Reproduce locally with `--workers=2`** (matches CI parallelism). Single-worker local runs hide most flakes.
+4. **The escalation rule from `docs/superpowers/plans/2026-04-22-deflake-chromium-e2e.md`:** if local 10× green but CI red, the test is making an assumption your local env happens to satisfy. Don't paper over with retries — fix the assumption.
+
+### Reference: the 2026-04-28 flake regression
+
+`docs/superpowers/notes/2026-04-28-flake-regression-analysis.md` documents how this codebase's chromium e2e suite regressed to a flaky state after the 2026-04-22 deflake fix. TL;DR: the original deflake fix was load-time-only (added `data-app-ready`); per-test `waitForTimeout` calls and `force: true` clicks were never removed; subsequent PRs added more tests following the same patterns; cumulative flake rate eventually exceeded CI tolerance. The rules above are the rules whose violation caused that regression.
+
+## Project memory
+
+This project carries cross-session conventions in `~/.claude/projects/E--polworldmap/memory/MEMORY.md` (the user's auto-memory). Don't conflict with those — current entries:
+
+- Documentation before code
+- Critical plan review before presenting (don't draft once)
+- Remove obsolete code and tests in the same change
+
+## When in doubt
+
+Ask. The cost of pausing to confirm is low; the cost of an unwanted change can be high (an admin-merged CI failure, a polluted PB store, a daily that doesn't save). Match the scope of your action to what was asked.
