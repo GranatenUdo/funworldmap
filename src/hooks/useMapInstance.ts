@@ -13,7 +13,7 @@ import {
 } from '../lib/mapStyles'
 import { probeBasemap } from '../lib/probeBasemap'
 import { ResetViewControl, flyToHome } from '../lib/resetViewControl'
-import { prefersReducedMotion } from '../lib/motion'
+import { prefersReducedMotion, subscribeReducedMotion } from '../lib/motion'
 import { useMap } from './useMap'
 
 export type MapErrorReason = 'timeout' | 'style' | 'country-data'
@@ -84,6 +84,13 @@ export function useMapInstance({
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right')
     map.addControl(new ResetViewControl(), 'bottom-right')
     map.addControl(new maplibregl.AttributionControl({ compact: true }), 'bottom-left')
+
+    const unsubscribeReducedMotion = subscribeReducedMotion((reduced) => {
+      // The initial pitch was set from prefersReducedMotion() at construction;
+      // re-apply on OS-toggle so the map flattens / restores tilt without a
+      // page refresh.
+      map.setPitch(reduced ? 0 : DEFAULT_PITCH)
+    })
 
     mapRef.current = map
 
@@ -156,6 +163,7 @@ export function useMapInstance({
       // Reset loadedRef in cleanup — matters for React StrictMode dev-only
       // double-invocation, where this effect tears down then re-runs.
       setLoadedBoth(false)
+      unsubscribeReducedMotion()
       map.remove()
       mapRef.current = null
       if (import.meta.env.VITE_TEST_HOOKS) {
