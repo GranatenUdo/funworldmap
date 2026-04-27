@@ -19,6 +19,7 @@ type Action =
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
   | { type: 'endGame' }
+  | { type: 'finishFree' }
 
 const EMPTY: GameSession = {
   modeId: 'country-pinning',
@@ -172,6 +173,12 @@ function reducer(state: GameSession, action: Action): GameSession {
     case 'endGame': {
       return { ...EMPTY, used: new Set() }
     }
+
+    case 'finishFree': {
+      if (state.status === 'idle' || state.status === 'game-over') return state
+      if (state.dailyDate !== null) return state
+      return { ...state, status: 'game-over' }
+    }
   }
 }
 
@@ -184,6 +191,7 @@ export function useGameSession(): {
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
+  finishFree: () => void
 } {
   const [session, dispatch] = useReducer(reducer, EMPTY)
   const start = useCallback(
@@ -204,5 +212,6 @@ export function useGameSession(): {
   const advance = useCallback((nextRound: RoundSpec) => dispatch({ type: 'advance', nextRound }), [])
   const overrideRound = useCallback((round: RoundSpec) => dispatch({ type: 'overrideRound', round }), [])
   const endGame = useCallback(() => dispatch({ type: 'endGame' }), [])
-  return { session, start, attempt, completeNow, resume, advance, overrideRound, endGame }
+  const finishFree = useCallback(() => dispatch({ type: 'finishFree' }), [])
+  return { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree }
 }

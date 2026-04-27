@@ -14,6 +14,7 @@ export type GameSessionApi = {
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
+  finishFree: () => void
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -25,7 +26,7 @@ interface Props {
 }
 
 export function GameSessionProvider({ pools, children }: Props) {
-  const { session, start, attempt, completeNow, resume, advance, overrideRound, endGame } = useGameSession()
+  const { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree } = useGameSession()
 
   const mode = useMemo<GameMode | null>(() => {
     if (session.modeId === 'country-pinning' && pools.countries.length === 0) return null
@@ -47,8 +48,8 @@ export function GameSessionProvider({ pools, children }: Props) {
   )
 
   const api = useMemo<GameSessionApi>(
-    () => ({ session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame }),
-    [session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame],
+    () => ({ session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree }),
+    [session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree],
   )
 
   const apiRef = useRef(api)
