@@ -278,15 +278,14 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     if (session.status !== 'playing') return
     if (session.attemptsPerRound <= 1) return
     if (session.currentAttempts.length === 0) return
-    const state = parseHash(window.location.hash)
-    if (state.kind !== 'daily' || !state.modeId) return
+    if (session.dailyDate === null) return
     writeResume({
       version: 1,
-      date: state.date,
-      modeId: state.modeId as ModeId,
+      date: session.dailyDate,
+      modeId: session.modeId,
       attempts: session.currentAttempts,
     })
-  }, [session.status, session.attemptsPerRound, session.currentAttempts])
+  }, [session.status, session.attemptsPerRound, session.currentAttempts, session.dailyDate, session.modeId])
 
   // Side effects on status change.
   useEffect(() => {
