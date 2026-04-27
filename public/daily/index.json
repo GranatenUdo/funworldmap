@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-04-26T19:14:26.106Z",
+  "generatedAt": "2026-04-27T04:01:15.035Z",
   "window": {
-    "start": "2026-03-28",
-    "end": "2026-04-26"
+    "start": "2026-03-29",
+    "end": "2026-04-27"
   },
   "days": {
-    "2026-03-28": {
-      "country": {
-        "cca3": "ZAF"
-      },
-      "city": {
-        "id": "USA-los-angeles"
-      }
-    },
     "2026-03-29": {
       "country": {
         "cca3": "MEX"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "IND-kolkata"
+      }
+    },
+    "2026-04-27": {
+      "country": {
+        "cca3": "ESP"
+      },
+      "city": {
+        "id": "CHN-beijing"
       }
     }
   }
