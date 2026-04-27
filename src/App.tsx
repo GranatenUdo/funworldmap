@@ -89,6 +89,7 @@ function AppInner({
   const { session, submitGuessInput, advance, mode } = useGameSessionContext()
   const { visible: launcherVisible, anchorDate, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
+  const clearTimerRef = useRef<number | null>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const [mapReady, setMapReady] = useState(false)
   const [showHint, setShowHint] = useState(false)
@@ -206,10 +207,18 @@ function AppInner({
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<string>).detail
-      if (liveRegionRef.current && detail) liveRegionRef.current.textContent = detail
+      if (!liveRegionRef.current || !detail) return
+      liveRegionRef.current.textContent = detail
+      if (clearTimerRef.current !== null) window.clearTimeout(clearTimerRef.current)
+      clearTimerRef.current = window.setTimeout(() => {
+        if (liveRegionRef.current) liveRegionRef.current.textContent = ''
+      }, 8000)
     }
     window.addEventListener('funworldmap:announce', handler)
-    return () => window.removeEventListener('funworldmap:announce', handler)
+    return () => {
+      window.removeEventListener('funworldmap:announce', handler)
+      if (clearTimerRef.current !== null) window.clearTimeout(clearTimerRef.current)
+    }
   }, [])
 
   const focusReturnRef = useRef<HTMLElement | null>(null)
