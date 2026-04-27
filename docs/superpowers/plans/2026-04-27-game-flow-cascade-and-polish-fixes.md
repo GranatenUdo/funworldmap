@@ -25,6 +25,7 @@ This plan covers two PRs. **Phase 1** (Tasks 1–13) ships the cascade fix on it
 **Modified**
 - `src/game/shared/types.ts` — add `dailyDate: string | null` field to `GameSession`
 - `src/game/shared/useGameSession.ts` — add `dailyDate: null` to `EMPTY`; update `start` and `resume` reducer cases and hook callbacks to thread `dailyDate`
+- `src/game/shared/GameSessionProvider.tsx` — extend `GameSessionApi` interface with the new `start` / `resume` signatures (this type is what `GameController` and other consumers see via `useGameSessionContext()`)
 - `src/game/GameController.tsx` — pass `state.date` to `start` / `resume` from bootstrap; replace `parseHash` reads at the per-attempt resume-write effect and the game-over recording effect with `session.dailyDate`
 - `src/game/shared/hud/GameOverOverlay.tsx` — replace `parseHash(window.location.hash)` with `session.dailyDate`; drop the `parseHash` import
 - `src/hooks/useMapInteractions.ts` — add `sessionRef` (mirrors existing `onSelectRef` pattern); gate `clickMap`'s `onDeselect` on `sessionRef.current.status === 'idle'`
@@ -39,7 +40,8 @@ This plan covers two PRs. **Phase 1** (Tasks 1–13) ships the cascade fix on it
 
 **Modified**
 - `src/game/shared/useGameSession.ts` — add `finishFree` action and hook callback
-- `src/game/GameController.tsx` — branch `onEndGame` on `session.dailyDate`; delete the round-ended `dispatchAnnouncement` block (lines ~297-313)
+- `src/game/shared/GameSessionProvider.tsx` — add `finishFree: () => void` to `GameSessionApi`, destructure it from `useGameSession()`, include in `api` `useMemo`
+- `src/game/GameController.tsx` — pull `finishFree` from context; branch `onEndGame` on `session.dailyDate`; delete the round-ended `dispatchAnnouncement` block (lines ~297-313)
 - `src/App.tsx` — replace announce handler with one that schedules an 8 s clear timer
 - `src/lib/motion.ts` — add `subscribeReducedMotion(cb)` API
 - `src/hooks/useMapInstance.ts` — subscribe to reduced-motion changes; re-apply `map.setPitch` on toggle
@@ -246,7 +248,7 @@ In the same file, find `case 'start': { … }` (around line 77-94). Add `dailyDa
 
 In the same file, find the `useGameSession` return type and the `start` callback (around line 175-190). Update both:
 
-Type signature:
+Type signature in the return object of `useGameSession`:
 
 ```typescript
   start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
@@ -264,7 +266,19 @@ Implementation:
 
 `dailyDate` is optional with default `null` — every existing call site (free play) keeps working without changes.
 
-- [ ] **Step 6: Run the new tests to verify they pass**
+- [ ] **Step 6: Update `GameSessionApi.start` in `GameSessionProvider.tsx`**
+
+The `useGameSessionContext()` consumers (notably `GameController.tsx`) read `start` through this interface. If you don't update it, Task 5's 5-arg `start` call won't typecheck against the unmodified `GameSessionApi`.
+
+Open `src/game/shared/GameSessionProvider.tsx`. Find the `GameSessionApi` type (around line 7-17). Update the `start` line:
+
+```typescript
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
+```
+
+(No other lines change — the destructuring at line 28 and the `api` `useMemo` are signature-agnostic.)
+
+- [ ] **Step 7: Run the new tests to verify they pass**
 
 ```bash
 npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "stores dailyDate|defaults dailyDate" --no-coverage
@@ -272,7 +286,7 @@ npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "stores daily
 
 Expected: PASS.
 
-- [ ] **Step 7: Run the entire `useGameSession` suite to confirm no regressions**
+- [ ] **Step 8: Run the entire `useGameSession` suite to confirm no regressions**
 
 ```bash
 npx vitest run src/game/shared/__tests__/useGameSession.test.ts --no-coverage
@@ -280,7 +294,7 @@ npx vitest run src/game/shared/__tests__/useGameSession.test.ts --no-coverage
 
 Expected: PASS — all existing tests still green (the `dailyDate` parameter is optional).
 
-- [ ] **Step 8: Run typecheck**
+- [ ] **Step 9: Run typecheck**
 
 ```bash
 npx tsc -b --noEmit
@@ -288,10 +302,10 @@ npx tsc -b --noEmit
 
 Expected: PASS.
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 10: Commit**
 
 ```bash
-git add src/game/shared/useGameSession.ts src/game/shared/__tests__/useGameSession.test.ts
+git add src/game/shared/useGameSession.ts src/game/shared/GameSessionProvider.tsx src/game/shared/__tests__/useGameSession.test.ts
 git commit -m "feat(game): thread dailyDate through start action"
 ```
 
@@ -383,7 +397,7 @@ Find `case 'resume': { … }` (around line 124-138). Add `dailyDate: action.dail
 
 Find the `resume` callback (around line 196-200). Update both type and implementation:
 
-Return-type signature:
+Return-type signature in the `useGameSession` return object:
 
 ```typescript
   resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) => void
@@ -399,7 +413,15 @@ Implementation (already takes `payload` and spreads — just verify it forwards 
   )
 ```
 
-- [ ] **Step 6: Run the new test to verify it passes**
+- [ ] **Step 6: Update `GameSessionApi.resume` in `GameSessionProvider.tsx`**
+
+Open `src/game/shared/GameSessionProvider.tsx`. Update the `resume` line in `GameSessionApi`:
+
+```typescript
+  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) => void
+```
+
+- [ ] **Step 7: Run the new test to verify it passes**
 
 ```bash
 npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "stores dailyDate from the resume" --no-coverage
@@ -407,19 +429,19 @@ npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "stores daily
 
 Expected: PASS.
 
-- [ ] **Step 7: Run the full `useGameSession` suite + typecheck**
+- [ ] **Step 8: Run the full `useGameSession` suite + typecheck**
 
 ```bash
 npx vitest run src/game/shared/__tests__/useGameSession.test.ts --no-coverage
 npx tsc -b --noEmit
 ```
 
-Expected: vitest PASS. tsc may fail at the `GameController.tsx:125` resume call site — leave that for Task 5 (it's the next task to fix). To unblock vitest meanwhile, run with `--mode test` if needed; otherwise proceed straight to Task 4 and 5.
+Expected: vitest PASS. tsc may fail at the `GameController.tsx:125` resume call site — leave that for Task 5 (it's the next task to fix).
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
-git add src/game/shared/useGameSession.ts src/game/shared/__tests__/useGameSession.test.ts
+git add src/game/shared/useGameSession.ts src/game/shared/GameSessionProvider.tsx src/game/shared/__tests__/useGameSession.test.ts
 git commit -m "feat(game): thread dailyDate through resume action"
 ```
 
@@ -450,20 +472,6 @@ Add at the bottom of the top-level `describe('useGameSession (post-collapse)', �
       act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
       act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
       act(() => { result.current.completeNow() })
-      expect(result.current.session.dailyDate).toBe('2026-04-27')
-    })
-
-    it('advance preserves dailyDate', () => {
-      const { result } = renderHook(() => useGameSession())
-      // free game — advance applies after round-ended in maxRounds!=null modes; but dailyDate is null here
-      act(() => { result.current.start('city-guessing', { kind: 'city-guessing', targetId: 'a', targetName: 'A', targetCountryName: 'X', targetCountryFlag: '', targetCentroid: [0,0] }, 10) })
-      // a daily-style start with dailyDate set is the relevant case:
-      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
-      // advance is round-ended only; for best-of-N we need to push to round-ended via attempt+completeNow first:
-      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
-      act(() => { result.current.completeNow() })
-      // session.status is now 'game-over' (best-of-3 + maxRounds=1), so advance is a no-op for THIS shape;
-      // the assertion is therefore on the post-completeNow state:
       expect(result.current.session.dailyDate).toBe('2026-04-27')
     })
 
@@ -839,13 +847,14 @@ After:
   })
 ```
 
-Apply the same pattern to:
-- `'shows the personal-best block on free plays'` → already free; just remove the `window.location.hash = '#game/country-pinning'` line.
-- `'keeps "New personal best!" when beatPersonalBest later flips to false'` → remove the hash line.
-- `'shows "Best: N pts" stably when beatPersonalBest started false'` → remove the hash line.
-- `'says "1 round complete." when maxRounds is 1'` → previously set `window.location.hash = '#daily/...'`; replace with session override `{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }`.
+Apply the same pattern to each test that currently sets `window.location.hash`:
+- `'says "1 round complete." when maxRounds is 1'` (line ~31) — replace `window.location.hash = '#daily/...'` with session override `{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }`.
+- `'hides the personal-best block on daily plays'` (line ~58) — replace with `dailyDate: '2026-04-27'`.
+- `'shows the personal-best block on free plays'` (line ~73) — already free; just delete the `window.location.hash = '#game/country-pinning'` line.
+- `'keeps "New personal best!" when beatPersonalBest later flips to false'` (line ~88) — delete the hash line.
+- `'shows "Best: N pts" stably when beatPersonalBest started false'` (line ~116) — delete the hash line.
 
-Remove the now-empty `beforeEach(() => { window.location.hash = '' })` if present, *unless* other tests still need it.
+Keep the `beforeEach(() => { localStorage.clear(); window.location.hash = '' })` block intact — `window.location.hash = ''` in `beforeEach` is a defensive reset that doesn't hurt and protects against test order leaks.
 
 - [ ] **Step 4: Run the GameOverOverlay tests**
 
@@ -1293,7 +1302,32 @@ Update the return-type signature of `useGameSession` to include:
 
 …and include `finishFree` in the returned object.
 
-- [ ] **Step 6: Run the new tests**
+- [ ] **Step 6: Plumb `finishFree` through `GameSessionProvider`**
+
+Open `src/game/shared/GameSessionProvider.tsx`. Three edits:
+
+(a) Add to `GameSessionApi` (around line 7-17):
+
+```typescript
+  finishFree: () => void
+```
+
+(b) Add `finishFree` to the destructure of `useGameSession()` at line 28:
+
+```typescript
+const { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree } = useGameSession()
+```
+
+(c) Add `finishFree` to the `api` `useMemo` value AND its dep array (lines 49-52):
+
+```typescript
+const api = useMemo<GameSessionApi>(
+  () => ({ session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree }),
+  [session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree],
+)
+```
+
+- [ ] **Step 7: Run the new tests**
 
 ```bash
 npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "finishFree" --no-coverage
@@ -1301,7 +1335,7 @@ npx vitest run src/game/shared/__tests__/useGameSession.test.ts -t "finishFree" 
 
 Expected: PASS — all four tests.
 
-- [ ] **Step 7: Run the full suite + typecheck**
+- [ ] **Step 8: Run the full suite + typecheck**
 
 ```bash
 npx vitest run --no-coverage
@@ -1310,10 +1344,10 @@ npx tsc -b --noEmit
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
-git add src/game/shared/useGameSession.ts src/game/shared/__tests__/useGameSession.test.ts
+git add src/game/shared/useGameSession.ts src/game/shared/GameSessionProvider.tsx src/game/shared/__tests__/useGameSession.test.ts
 git commit -m "feat(game): finishFree reducer action"
 ```
 
@@ -1326,7 +1360,7 @@ git commit -m "feat(game): finishFree reducer action"
 
 - [ ] **Step 1: Pull `finishFree` from the context**
 
-In `GameController.tsx:102`, find:
+`GameSessionApi` was already extended in Task 14 step 6; `finishFree` is on the context. In `GameController.tsx:102`, find:
 
 ```typescript
 const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame } = useGameSessionContext()
@@ -1337,8 +1371,6 @@ Add `finishFree`:
 ```typescript
 const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree } = useGameSessionContext()
 ```
-
-If `useGameSessionContext` doesn't already expose `finishFree`, also update `GameSessionProvider.tsx` to include it in the context value (mirror the existing pattern for `endGame`).
 
 - [ ] **Step 2: Replace `onEndGame`**
 
@@ -1392,7 +1424,7 @@ In a fresh Incognito session:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/game/GameController.tsx src/game/shared/GameSessionProvider.tsx
+git add src/game/GameController.tsx
 git commit -m "feat(game): End game in free mode shows game-over and records PB"
 ```
 
@@ -1808,8 +1840,13 @@ EOF
 
 ## Plan self-review
 
-- **Spec coverage:** Every finding in the spec has at least one task. The architectural decision (`dailyDate` on session) is implemented across Tasks 1-3 (reducer) and consumed in Tasks 5-9 (call sites). The defense-in-depth gate is Task 10. Bug 7 has no separate task — it's marked `auto-fixed by Bug 8` per the spec's findings table, and the verification matrix flags Task 16's manual pass as the verification.
-- **Placeholder scan:** No `TBD` / `TODO` / `???` strings. The "may need adjustment" note in Task 19 step 5 (`If a test mocks subscribeReducedMotion …`) is conditional guidance, not a placeholder. The Step 2 note in Task 19 about `setPitch` signature is a verify-against-version step with a concrete fallback (`map.jumpTo`) — also not a placeholder.
-- **Type consistency:** `dailyDate: string | null` on `start`, `dailyDate: string` (required) on `resume`. Hook callbacks match. Reducer cases write the field consistently. `finishFree` is `() => void` everywhere it appears.
-- **Task isolation:** Tasks 1-12 are sequenced because each builds on the prior reducer/state changes. Tasks 14-19 are independent after Task 14. Each task ends with a commit; each PR ends with a verification gate.
-- **Cross-task references:** Tasks 8 and 9 are paired (the spec change in Task 8 breaks tests that Task 9 fixes; commit at Task 9 step 6 covers both). Task 10 has a fall-back-to-e2e note for the unit test if the existing infrastructure can't synthesise map clicks. Task 19 has a fall-back to `map.jumpTo` if `setPitch`'s second arg isn't supported by the installed MapLibre version.
+- **Spec coverage:** Every finding in the spec has at least one task. The architectural decision (`dailyDate` on session) is implemented across Tasks 1-3 (reducer + provider type) and consumed in Tasks 5-9 (call sites). The defense-in-depth gate is Task 10. Bug 7 has no separate task — it's marked `auto-fixed by Bug 8` per the spec's findings table, with Task 16 as the verification.
+- **Placeholder scan:** No `TBD` / `TODO` / `???` strings. The "may need adjustment" note in Task 19 step 5 is conditional guidance about a possible test-mock interaction, not a placeholder. The Step 2 note in Task 19 about `setPitch` signature is a verify-against-version step with a concrete fallback (`map.jumpTo`) — also not a placeholder.
+- **Type consistency:** `dailyDate: string | null` on `start`, `dailyDate: string` (required) on `resume`. Hook callbacks match. **`GameSessionApi` interface in `GameSessionProvider.tsx` is updated alongside the hook in Tasks 2 and 3** — the spec critical-review (2026-04-27) caught that the public-API type would otherwise reject the new arg. Reducer cases write the field consistently. `finishFree` is `() => void` everywhere it appears, including in `GameSessionApi` (Task 14 step 6).
+- **Task isolation:** Tasks 1-12 are sequenced because each builds on the prior reducer/state changes. Tasks 14-19 are independent after Task 14 plumbs `finishFree` through the provider. Each task ends with a commit; each PR ends with a verification gate.
+- **Cross-task references:** Tasks 8 and 9 are paired (the source change in Task 8 breaks tests that Task 9 fixes; the commit at Task 9 step 6 covers both). Task 10 covers the gate via the e2e in Task 11 (no separate unit test). Task 19 has a fall-back to `map.jumpTo` if `setPitch`'s second arg isn't supported by the installed MapLibre version.
+- **Critical-review revisions applied (2026-04-27):**
+  - Tasks 2 and 3 each got an explicit step to update `GameSessionApi` in `GameSessionProvider.tsx` — without this, Task 5's 5-arg `start` call would fail typecheck against the unmodified API interface.
+  - Task 4 dropped the malformed "advance preserves dailyDate" test (a daily best-of-3 with `maxRounds=1` transitions straight to game-over after `completeNow`, so `advance` can't legitimately fire on a daily session). The three remaining preservation tests cover the spread invariant adequately.
+  - Task 14 step 6 spells out the three Provider edits (interface, destructure, useMemo + deps) instead of vaguely "mirror the pattern for endGame".
+  - Task 9 keeps the `beforeEach` hash reset intact (defensive against test-order leaks) instead of conditionally deleting it.
