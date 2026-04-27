@@ -2,9 +2,10 @@ import { renderHook, act } from '@testing-library/react'
 import { beforeEach, afterEach, describe, expect, it } from 'vitest'
 import { useDailyHistory } from '../useDailyHistory'
 import { MILESTONES } from '../types'
+import { __resetForTests as resetHistoryStore } from '../historyStore'
 
 describe('useDailyHistory', () => {
-  beforeEach(() => { localStorage.clear() })
+  beforeEach(() => { localStorage.clear(); resetHistoryStore() })
   afterEach(() => { localStorage.clear() })
 
   it('starts empty when no prior storage', () => {
@@ -65,10 +66,25 @@ describe('useDailyHistory', () => {
     expect(result.current.streak.current).toBe(1)
     expect(result.current.streak.longest).toBe(4)
   })
+  it('two hook instances stay in sync — recording in one updates the other', () => {
+    const writer = renderHook(() => useDailyHistory())
+    const reader = renderHook(() => useDailyHistory())
+
+    expect(reader.result.current.get('2026-04-21', 'country-pinning')).toBeNull()
+
+    act(() => {
+      writer.result.current.record('2026-04-21', 'country-pinning', {
+        score: 87, attempts: [], completedAt: 1,
+      })
+    })
+
+    expect(reader.result.current.get('2026-04-21', 'country-pinning')?.score).toBe(87)
+    expect(reader.result.current.streak.current).toBe(1)
+  })
 })
 
 describe('useDailyHistory — milestones', () => {
-  beforeEach(() => { localStorage.clear() })
+  beforeEach(() => { localStorage.clear(); resetHistoryStore() })
   afterEach(() => { localStorage.clear() })
 
   it('pendingMilestone is null when streak is not at a threshold', () => {
@@ -87,6 +103,7 @@ describe('useDailyHistory — milestones', () => {
       streak: { current: 3, longest: 3, lastActiveDate: '2026-04-22', lastMilestoneShown: 0 },
       days: {},
     }))
+    resetHistoryStore()
     const { result } = renderHook(() => useDailyHistory())
     expect(result.current.pendingMilestone).toBe(3)
   })
@@ -97,6 +114,7 @@ describe('useDailyHistory — milestones', () => {
       streak: { current: 3, longest: 3, lastActiveDate: '2026-04-22', lastMilestoneShown: 0 },
       days: {},
     }))
+    resetHistoryStore()
     const { result } = renderHook(() => useDailyHistory())
     expect(result.current.pendingMilestone).toBe(3)
     act(() => { result.current.markMilestoneShown() })
@@ -109,6 +127,7 @@ describe('useDailyHistory — milestones', () => {
       streak: { current: 7, longest: 7, lastActiveDate: '2026-04-22', lastMilestoneShown: 3 },
       days: {},
     }))
+    resetHistoryStore()
     const { result } = renderHook(() => useDailyHistory())
     expect(result.current.pendingMilestone).toBe(7)
     act(() => { result.current.markMilestoneShown() })

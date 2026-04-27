@@ -1,15 +1,13 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useSyncExternalStore } from 'react'
 import type { ModeId } from '../shared/types'
 import type { DailyHistoryV1, DailyDayResult, Milestone, StreakState } from './types'
 import {
-  readHistory,
-  writeHistory,
   mergeDay,
   updateStreak,
-  pruneOlderThan,
   pendingMilestone as derivePendingMilestone,
   withMilestoneShown,
 } from './storage'
+import { subscribe, getSnapshot, setHistory } from './historyStore'
 
 export interface UseDailyHistory {
   history: DailyHistoryV1
@@ -21,26 +19,19 @@ export interface UseDailyHistory {
 }
 
 export function useDailyHistory(): UseDailyHistory {
-  const [history, setHistory] = useState<DailyHistoryV1>(() => {
-    const raw = readHistory()
-    const pruned = pruneOlderThan(raw, 90)
-    if (pruned !== raw) writeHistory(pruned)
-    return pruned
-  })
+  const history = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 
   const get = useCallback(
     (date: string, modeId: ModeId): DailyDayResult | null =>
-      history.days[date]?.[modeId] ?? null,
-    [history],
+      getSnapshot().days[date]?.[modeId] ?? null,
+    [],
   )
 
   const record = useCallback(
     (date: string, modeId: ModeId, result: DailyDayResult) => {
       setHistory((prev) => {
         const merged = mergeDay(prev, date, modeId, result)
-        const streaked = updateStreak(merged, date)
-        writeHistory(streaked)
-        return streaked
+        return updateStreak(merged, date)
       })
     },
     [],
@@ -52,9 +43,7 @@ export function useDailyHistory(): UseDailyHistory {
     setHistory((prev) => {
       const m = derivePendingMilestone(prev)
       if (!m) return prev
-      const next = withMilestoneShown(prev, m)
-      writeHistory(next)
-      return next
+      return withMilestoneShown(prev, m)
     })
   }, [])
 
