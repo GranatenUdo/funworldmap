@@ -46,6 +46,15 @@ See `src/game/daily/types.ts`. Top-level:
 player pressed Done early or used all attempts. Each attempt records
 `pointsEarned`, `distanceKm`, and optionally `guessCca3` / `guessLngLat`.
 
+### State sharing
+
+Daily history and personal-best state live in module-level stores
+(`src/game/daily/historyStore.ts`, `src/game/shared/personalBestsStore.ts`)
+exposed to React via `useSyncExternalStore`. A single write is visible to
+every consumer (`<GameOverOverlay>`, `<DailyShareBlock>`, `<Launcher>`,
+etc.) on the same render. The `useDailyHistory()` and `usePersonalBests()`
+hooks have not changed shape — only their backing storage.
+
 ### Resume key
 
 `localStorage` key `funworldmap-daily-resume` (v1) holds in-progress best-of-N
