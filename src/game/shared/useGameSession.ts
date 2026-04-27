@@ -15,7 +15,7 @@ type Action =
   | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number; dailyDate: string | null }
   | { type: 'attempt'; input: GuessInput; result: ModeGuessResult }
   | { type: 'completeNow' }
-  | { type: 'resume'; modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }
+  | { type: 'resume'; modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
   | { type: 'endGame' }
@@ -135,6 +135,7 @@ function reducer(state: GameSession, action: Action): GameSession {
         attemptsRemaining: action.attemptsPerRound - action.attempts.length,
         currentAttempts: action.attempts,
         currentRound: action.round,
+        dailyDate: action.dailyDate,
         used: new Set([roundKey(action.round)]),
       }
     }
@@ -179,7 +180,7 @@ export function useGameSession(): {
   start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
   attempt: (input: GuessInput, result: ModeGuessResult) => void
   completeNow: () => void
-  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) => void
+  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
@@ -196,7 +197,7 @@ export function useGameSession(): {
   )
   const completeNow = useCallback(() => dispatch({ type: 'completeNow' }), [])
   const resume = useCallback(
-    (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) =>
+    (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) =>
       dispatch({ type: 'resume', ...payload }),
     [],
   )
