@@ -324,6 +324,49 @@ describe('useGameSession (post-collapse)', () => {
     })
   })
 
+  describe('finishFree', () => {
+    it('transitions playing → game-over for a free game, preserving score', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), null) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA', 14)) })
+      // After one wrong attempt in free play (attemptsPerRound=1), status is round-ended, score 14.
+      expect(result.current.session.status).toBe('round-ended')
+      expect(result.current.session.score).toBe(14)
+      act(() => { result.current.finishFree() })
+      expect(result.current.session.status).toBe('game-over')
+      expect(result.current.session.score).toBe(14)
+    })
+
+    it('refuses on idle (no-op)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.finishFree() })
+      expect(result.current.session.status).toBe('idle')
+    })
+
+    it('refuses on a daily play (preserves abandon-semantic)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
+      act(() => { result.current.finishFree() })
+      expect(result.current.session.status).toBe('playing')
+      expect(result.current.session.dailyDate).toBe('2026-04-27')
+    })
+
+    it('refuses on game-over (no-op)', () => {
+      const { result } = renderHook(() => useGameSession())
+      // Drive to game-over by losing 3 lives in free play
+      act(() => { result.current.start('country-pinning', round('FRA'), null) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
+      act(() => { result.current.advance(round('ESP')) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('ESP', 'USA')) })
+      act(() => { result.current.advance(round('DEU')) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('DEU', 'USA')) })
+      expect(result.current.session.status).toBe('game-over')
+      const before = result.current.session
+      act(() => { result.current.finishFree() })
+      expect(result.current.session).toBe(before)
+    })
+  })
+
   describe('dailyDate preservation', () => {
     it('attempt preserves dailyDate', () => {
       const { result } = renderHook(() => useGameSession())

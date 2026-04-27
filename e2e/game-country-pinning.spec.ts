@@ -108,10 +108,14 @@ test.describe('Country Pinning game', () => {
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
   })
 
-  test('Back to map exits cleanly and clears hash', async ({ page }) => {
+  test('End game opens game-over; Back to map exits cleanly and clears hash', async ({ page }) => {
     await page.goto('/#game/country-pinning/play')
     await waitForMap(page)
     await page.getByTestId('game-end').click()
+    // End game in free mode now routes through finishFree → game-over UI shows
+    // (Bug 3 fix); user must click Back to map to fully exit.
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
+    await page.getByTestId('game-over-back').click()
     await expect(page.getByTestId('game-hud')).toHaveCount(0)
     expect(page.url().endsWith('/')).toBe(true)
   })

@@ -38,6 +38,7 @@ function makeApi(session: GameSession): GameSessionApi {
     advance: () => {},
     overrideRound: () => {},
     endGame: () => {},
+    finishFree: () => {},
   }
 }
 
