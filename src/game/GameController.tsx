@@ -154,6 +154,22 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         }
         return
       }
+      // If a game/daily route arrives while the previous session is still in
+      // game-over (e.g. user pasted a different mode URL or used browser
+      // back/forward), end the previous session synchronously so the start
+      // branches below proceed. statusRef is a mutable ref, so we mirror the
+      // dispatch locally to keep the `=== 'idle'` guards consistent within
+      // this same check() invocation.
+      if (
+        statusRef.current === 'game-over' &&
+        ((state.kind === 'game' && state.modeId) ||
+          (state.kind === 'daily' && state.modeId && !state.reveal))
+      ) {
+        clearResume()
+        endGame()
+        statusRef.current = 'idle'
+      }
+
       // Today-only playable routes: past/future redirect to /reveal or root.
       if (state.kind === 'daily' && state.modeId && !state.reveal && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
