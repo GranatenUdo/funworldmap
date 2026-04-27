@@ -55,6 +55,13 @@ every consumer (`<GameOverOverlay>`, `<DailyShareBlock>`, `<Launcher>`,
 etc.) on the same render. The `useDailyHistory()` and `usePersonalBests()`
 hooks have not changed shape — only their backing storage.
 
+The session itself carries the daily date as `session.dailyDate: string |
+null`, set at `start()` / `resume()` time. Game-over recording, the
+per-attempt resume write, and `GameOverOverlay` read this field instead
+of re-parsing `window.location.hash`. The hash is the routing input;
+session state is the source of truth for "is this a daily, and if so,
+for what date?". See `docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md`.
+
 ### Resume key
 
 `localStorage` key `funworldmap-daily-resume` (v1) holds in-progress best-of-N
