@@ -80,6 +80,18 @@ describe('useGameSession (post-collapse)', () => {
       act(() => { result.current.start('country-pinning', round('FRA'), null, 3) })
       expect(result.current.session.status).toBe('idle')
     })
+
+    it('stores dailyDate when passed (daily play)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-04-27') })
+      expect(result.current.session.dailyDate).toBe('2026-04-27')
+    })
+
+    it('defaults dailyDate to null when not passed (free play)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), null) })
+      expect(result.current.session.dailyDate).toBeNull()
+    })
   })
 
   describe('attempt — free-play (attemptsPerRound=1)', () => {

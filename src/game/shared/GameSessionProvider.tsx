@@ -7,7 +7,7 @@ import { getMode } from '../modes'
 export type GameSessionApi = {
   session: GameSession
   mode: GameMode | null
-  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number) => void
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
   submitGuessInput: (input: GuessInput) => void
   completeNow: () => void
   resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[] }) => void
