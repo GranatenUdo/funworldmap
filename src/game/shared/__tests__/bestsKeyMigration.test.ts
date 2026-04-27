@@ -1,9 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { usePersonalBests } from '../usePersonalBests'
+import { __resetForTests as resetPbStore } from '../personalBestsStore'
 
 describe('usePersonalBests v1→v2 migration', () => {
-  beforeEach(() => { localStorage.clear() })
+  beforeEach(() => {
+    localStorage.clear()
+    resetPbStore()
+  })
 
   it('removes v1 key and returns ZERO when v2 is absent', () => {
     localStorage.setItem(

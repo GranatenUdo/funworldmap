@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LauncherHistoryPanel } from '../LauncherHistoryPanel'
+import { __resetForTests as resetHistoryStore } from '../../game/daily/historyStore'
 
 function seedHistory(today: string) {
   localStorage.setItem('funworldmap-daily-history', JSON.stringify({
@@ -8,14 +9,17 @@ function seedHistory(today: string) {
     streak: { current: 1, longest: 1, lastActiveDate: today, lastMilestoneShown: 0 },
     days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
   }))
+  resetHistoryStore()
 }
 
 describe('LauncherHistoryPanel', () => {
   beforeEach(() => {
     localStorage.clear()
+    resetHistoryStore()
   })
   afterEach(() => {
     localStorage.clear()
+    resetHistoryStore()
   })
 
   it('renders a grid of 35 cells', () => {
