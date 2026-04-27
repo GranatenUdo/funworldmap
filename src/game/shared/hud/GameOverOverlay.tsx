@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import type { GameSession, PersonalBest } from '../types'
 import { DailyShareBlock } from '../../../components/DailyShareBlock'
 import { useDailyHistory } from '../../daily/useDailyHistory'
-import { parseHash } from '../../../lib/hashState'
 
 interface Props {
   session: GameSession
@@ -20,9 +19,8 @@ export function GameOverOverlay({
   const [stableBeatPB] = useState(beatPersonalBest)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const { history, streak } = useDailyHistory()
-  const hashState = parseHash(window.location.hash)
-  const isDaily = hashState.kind === 'daily'
-  const dailyDate = isDaily ? hashState.date : null
+  const isDaily = session.dailyDate !== null
+  const dailyDate = session.dailyDate
   const dailyResults = dailyDate ? (history.days[dailyDate] ?? {}) : {}
   const hasAnyMode = isDaily && (!!dailyResults['country-pinning'] || !!dailyResults['city-guessing'])
 
