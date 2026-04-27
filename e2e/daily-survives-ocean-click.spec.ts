@@ -61,7 +61,15 @@ test.describe('daily survives ocean clicks', () => {
       // @ts-expect-error — test seam
       const map = window.__funworldmap_map
       if (!map) throw new Error('map not exposed via test hook')
-      // Atlantic — far from any country fill polygon
+      // Synthetic click at canvas (50, 50). The lngLat is decorative — clickMap
+      // does its own queryRenderedFeatures using only the point. Verify (50, 50)
+      // is over no country fill so the test exercises the gate, not a country
+      // hit. If this assertion ever fires, recompute a safe canvas coord (see
+      // e2e/map-and-countries.spec.ts:46-60 for a dynamic-coord pattern).
+      const featuresAtPoint = map.queryRenderedFeatures([50, 50], { layers: ['country-fill'] })
+      if (featuresAtPoint.length > 0) {
+        throw new Error(`Test precondition broken: canvas (50, 50) hits a country (${featuresAtPoint[0]?.properties?.name ?? 'unknown'}); pick a different ocean coord.`)
+      }
       map.fire('click', { point: { x: 50, y: 50 }, lngLat: { lng: -40, lat: 0 } })
       await new Promise((r) => setTimeout(r, 200))
     })
