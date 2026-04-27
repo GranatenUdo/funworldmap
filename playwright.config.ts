@@ -64,7 +64,7 @@ export default defineConfig({
         },
       },
       // Map interaction tests need real GPU
-      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts', 'keyboard-map-nav.spec.ts', 'game-country-pinning.spec.ts', 'game-city-guessing.spec.ts', 'compare-view-dimming.spec.ts', 'reveal-animation.spec.ts', 'reveal-animation-reduced-motion.spec.ts', 'tutorial-first-click.spec.ts'],
+      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts', 'keyboard-map-nav.spec.ts', 'game-country-pinning.spec.ts', 'game-city-guessing.spec.ts', 'game-over-mode-switch.spec.ts', 'compare-view-dimming.spec.ts', 'reveal-animation.spec.ts', 'reveal-animation-reduced-motion.spec.ts', 'tutorial-first-click.spec.ts'],
     },
     {
       name: 'mobile-chromium',
