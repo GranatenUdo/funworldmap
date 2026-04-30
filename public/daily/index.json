@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-04-29T19:54:44.616Z",
+  "generatedAt": "2026-04-30T04:05:27.115Z",
   "window": {
-    "start": "2026-03-31",
-    "end": "2026-04-29"
+    "start": "2026-04-01",
+    "end": "2026-04-30"
   },
   "days": {
-    "2026-03-31": {
-      "country": {
-        "cca3": "AUS"
-      },
-      "city": {
-        "id": "TUR-istanbul"
-      }
-    },
     "2026-04-01": {
       "country": {
         "cca3": "USA"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "CHN-shanghai"
+      }
+    },
+    "2026-04-30": {
+      "country": {
+        "cca3": "BRA"
+      },
+      "city": {
+        "id": "IDN-jakarta"
       }
     }
   }
