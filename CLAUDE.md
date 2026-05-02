@@ -60,15 +60,14 @@ await page.getByTestId('launcher-dismiss').click()
 await expect(page.getByTestId('launcher')).not.toBeAttached()
 ```
 
-If the component conditionally renders during animation (e.g. `<AnimatePresence>`), `not.toBeAttached` works. If the component stays mounted during animation, add a `data-animation-state="entering|idle|exiting"` to the component and wait on the attribute:
+If the component conditionally renders during animation (e.g. `<AnimatePresence>`), `not.toBeAttached` works. **If the component stays mounted during animation, use the `data-animation-state` attribute** that the launcher (`Launcher.tsx`), country-panel (`SingleCountryPanel.tsx`), and milestone-overlay (`LauncherMilestoneOverlay.tsx`) components expose. Wait on it via the helper:
 
-```tsx
-// in component
-<div data-testid="my-modal" data-animation-state={state}>...</div>
-
-// in test
-await expect(page.getByTestId('my-modal')).toHaveAttribute('data-animation-state', 'idle')
+```ts
+import { waitForAnimationIdle } from './helpers'
+await waitForAnimationIdle(page.getByTestId('country-panel'))
 ```
+
+Driven by `Element.getAnimations({ subtree: true })` so it tracks every CSS animation on the element and its descendants — no hand-typed durations on either the component or test side. New components that animate should expose the same attribute the same way.
 
 **❌ Asserting Fuse.js result order with `.first()`** (or any other ordering that depends on scoring/data). Use the explicit option:
 
@@ -104,6 +103,7 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 | `waitForAppReady(page)` | After every `page.goto('/')` — ensures bundled `countries` + `cities` are present and the first React commit happened |
 | `waitForGameTestHook(page)` | After landing on a game/daily route, before calling `__funworldmap_game.*` test seams — ensures the seam is registered |
 | `waitForCountryTilesRendered(page)` | After map-loaded, before `queryRenderedFeatures` — ensures the GPU has actually rasterised the tiles |
+| `waitForAnimationIdle(locator)` | After an animated component enters or before clicking through it — replaces `waitForTimeout(N)` for CSS-transition timing. Component must expose `data-animation-state="idle"` when its animations complete. |
 | `dismissLauncher(page)` | When the test runs against `/` (which now shows the launcher by default) and you need a clean map state |
 | `gotoAndWaitForMap(page, path)` | Combined: navigates, waits for `data-map-loaded`. Prefer over manual `goto + waitForSelector('[data-map-loaded]')` |
 | `stubDailyIndex(page, date)` / `seedDailyHistory(page, opts)` | When the test depends on daily content or play history. Avoids hitting the real `/daily/index.json` and avoids cross-test localStorage leaks |
