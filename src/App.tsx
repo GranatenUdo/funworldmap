@@ -86,7 +86,7 @@ function AppInner({
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
-  const { session, submitGuessInput, advance, mode } = useGameSessionContext()
+  const { session, submitGuessInput, advance, mode, finalize } = useGameSessionContext()
   const { visible: launcherVisible, anchorDate, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const clearTimerRef = useRef<number | null>(null)
@@ -150,9 +150,13 @@ function AppInner({
 
   const advanceRoundEndPanel = useCallback(() => {
     if (session.status !== 'round-ended' || !mode) return
+    if (session.lastOutcome?.endsGame) {
+      finalize()
+      return
+    }
     const next = mode.nextRound(session.used)
     advance(next)
-  }, [session.status, session.used, advance, mode])
+  }, [session.status, session.lastOutcome, session.used, advance, finalize, mode])
 
   const onMapSelect = useCallback(
     (cca3: string) => {
