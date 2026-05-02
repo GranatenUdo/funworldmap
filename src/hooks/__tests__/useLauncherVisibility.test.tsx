@@ -4,28 +4,8 @@ import type { ReactNode } from 'react'
 import { GameSessionContext } from '../../game/shared/GameSessionProvider'
 import type { GameSessionApi } from '../../game/shared/GameSessionProvider'
 import type { GameSession } from '../../game/shared/types'
+import { makeSession } from '../../game/shared/__tests__/factories'
 import { useLauncherVisibility } from '../useLauncherVisibility'
-
-function makeSession(overrides: Partial<GameSession> = {}): GameSession {
-  return {
-    modeId: 'country-pinning',
-    status: 'idle',
-    lives: 3,
-    score: 0,
-    streak: 0,
-    bestStreak: 0,
-    roundIndex: 0,
-    maxRounds: null,
-    attemptsPerRound: 1,
-    attemptsRemaining: 1,
-    currentAttempts: [],
-    currentRound: null,
-    lastOutcome: null,
-    dailyDate: null,
-    used: new Set(),
-    ...overrides,
-  }
-}
 
 function makeApi(session: GameSession): GameSessionApi {
   return {
@@ -39,6 +19,7 @@ function makeApi(session: GameSession): GameSessionApi {
     overrideRound: () => {},
     endGame: () => {},
     finishFree: () => {},
+    finalize: () => {},
   }
 }
 

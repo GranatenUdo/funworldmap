@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { finalizeGame } from './helpers'
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -105,6 +106,7 @@ test.describe('Country Pinning game', () => {
     await setRoundAndWait(page, 'FRA', 'France')
     await clickCountryPolygon(page, 'AUS')
 
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
   })
 
@@ -131,6 +133,7 @@ test.describe('Country Pinning game', () => {
     await setRoundAndWait(page, 'FRA', 'France')
     await clickCountryPolygon(page, 'AUS')
 
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
     // Effect focuses the Play again button on mount.
     await expect

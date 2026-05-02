@@ -13,7 +13,8 @@ import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
-import { DailyPuzzlesProvider } from './game/daily/DailyPuzzlesProvider'
+import { DailyPuzzlesProvider, useDailyPuzzlesContext } from './game/daily/DailyPuzzlesProvider'
+import { toLocalDateString } from './game/daily/dates'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike, ModeId } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
@@ -86,7 +87,8 @@ function AppInner({
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
-  const { session, submitGuessInput, advance, mode } = useGameSessionContext()
+  const { session, submitGuessInput, advance, mode, finalize } = useGameSessionContext()
+  const { byDate } = useDailyPuzzlesContext()
   const { visible: launcherVisible, anchorDate, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const clearTimerRef = useRef<number | null>(null)
@@ -150,9 +152,13 @@ function AppInner({
 
   const advanceRoundEndPanel = useCallback(() => {
     if (session.status !== 'round-ended' || !mode) return
+    if (session.lastOutcome?.endsGame) {
+      finalize()
+      return
+    }
     const next = mode.nextRound(session.used)
     advance(next)
-  }, [session.status, session.used, advance, mode])
+  }, [session.status, session.lastOutcome, session.used, advance, finalize, mode])
 
   const onMapSelect = useCallback(
     (cca3: string) => {
@@ -415,6 +421,8 @@ function AppInner({
         <DailyRevealOverlay
           date={revealState.date}
           modeId={revealState.modeId}
+          puzzle={byDate(revealState.date) ?? null}
+          today={toLocalDateString(new Date())}
           countries={pool}
           cities={cities}
           onClose={() => {

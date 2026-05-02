@@ -11,6 +11,13 @@ interface Props {
   onBackToMap: () => void
 }
 
+function describeGameEnd(session: GameSession): string {
+  if (session.endedEarly) return 'Game ended early.'
+  if (session.maxRounds === null) return 'Three wrong guesses.'
+  if (session.maxRounds === 1) return '1 round complete.'
+  return `${session.maxRounds} rounds complete.`
+}
+
 export function GameOverOverlay({
   session, personalBest, beatPersonalBest, onPlayAgain, onBackToMap,
 }: Props) {
@@ -62,13 +69,7 @@ export function GameOverOverlay({
         >
           Game over
         </h2>
-        <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">
-          {session.maxRounds === null
-            ? 'Three wrong guesses.'
-            : session.maxRounds === 1
-              ? '1 round complete.'
-              : `${session.maxRounds} rounds complete.`}
-        </p>
+        <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">{describeGameEnd(session)}</p>
 
         <dl
           className={`grid ${

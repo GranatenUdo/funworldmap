@@ -1,14 +1,16 @@
 import { useEffect, useRef } from 'react'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
-import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
 import { DailyShareBlock } from './DailyShareBlock'
 import type { ShareResults } from '../game/daily/shareText'
 import { installFocusTrap } from '../lib/focusTrap'
+import type { DailyPuzzleRef } from '../game/daily/types'
 
 interface Props {
   date: string
   modeId: ModeId | null
+  puzzle: DailyPuzzleRef | null
+  today: string
   countries: CountryLike[]
   cities: CityLike[]
   onClose: () => void
@@ -22,10 +24,8 @@ function scoreDot(score: number): { emoji: string; label: string } {
   return { emoji: '⬛', label: `${score}/100` }
 }
 
-export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }: Props) {
-  const { byDate } = useDailyPuzzlesContext()
+export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cities, onClose }: Props) {
   const { get, streak } = useDailyHistory()
-  const puzzle = byDate(date)
 
   const rootRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -57,6 +57,10 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
 
   const cpRecord = get(date, 'country-pinning')
   const cgRecord = get(date, 'city-guessing')
+
+  const isToday = date === today
+  const hideCountryHeadline = isToday && !cpRecord
+  const hideCityHeadline = isToday && !cgRecord
 
   const shareResults: ShareResults = {
     'country-pinning': get(date, 'country-pinning'),
@@ -103,20 +107,25 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
         {puzzle && showCountry && country && (
           <div data-testid="daily-reveal-country" className="mb-4 pb-4 border-b border-sand-200 dark:border-dark-300">
             <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">Country</div>
-            <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{country.name.common}</div>
-            {cpRecord && (
-              <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">
-                Your attempts:{' '}
-                <span className="tabular-nums">
-                  {cpRecord.attempts.map((a, i) => (
-                    <span key={i} aria-label={scoreDot(a.pointsEarned).label}>{scoreDot(a.pointsEarned).emoji}</span>
-                  ))}
-                </span>{' '}
-                <span className="font-semibold">{cpRecord.score}/100</span>
-              </div>
-            )}
-            {!cpRecord && (
-              <div className="mt-2 text-sm text-sand-600 dark:text-dark-100">Not played.</div>
+            {hideCountryHeadline ? (
+              <div className="text-sand-700 dark:text-dark-100">Finish today's daily first.</div>
+            ) : (
+              <>
+                <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{country.name.common}</div>
+                {cpRecord ? (
+                  <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">
+                    Your attempts:{' '}
+                    <span className="tabular-nums">
+                      {cpRecord.attempts.map((a, i) => (
+                        <span key={i} aria-label={scoreDot(a.pointsEarned).label}>{scoreDot(a.pointsEarned).emoji}</span>
+                      ))}
+                    </span>{' '}
+                    <span className="font-semibold">{cpRecord.score}/100</span>
+                  </div>
+                ) : (
+                  <div className="mt-2 text-sm text-sand-600 dark:text-dark-100">Not played.</div>
+                )}
+              </>
             )}
           </div>
         )}
@@ -124,20 +133,25 @@ export function DailyRevealOverlay({ date, modeId, countries, cities, onClose }:
         {puzzle && showCity && city && (
           <div data-testid="daily-reveal-city">
             <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">City</div>
-            <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{city.name}, {city.countryName}</div>
-            {cgRecord && (
-              <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">
-                Your attempts:{' '}
-                <span className="tabular-nums">
-                  {cgRecord.attempts.map((a, i) => (
-                    <span key={i} aria-label={scoreDot(a.pointsEarned).label}>{scoreDot(a.pointsEarned).emoji}</span>
-                  ))}
-                </span>{' '}
-                <span className="font-semibold">{cgRecord.score}/100</span>
-              </div>
-            )}
-            {!cgRecord && (
-              <div className="mt-2 text-sm text-sand-600 dark:text-dark-100">Not played.</div>
+            {hideCityHeadline ? (
+              <div className="text-sand-700 dark:text-dark-100">Finish today's daily first.</div>
+            ) : (
+              <>
+                <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{city.name}, {city.countryName}</div>
+                {cgRecord ? (
+                  <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">
+                    Your attempts:{' '}
+                    <span className="tabular-nums">
+                      {cgRecord.attempts.map((a, i) => (
+                        <span key={i} aria-label={scoreDot(a.pointsEarned).label}>{scoreDot(a.pointsEarned).emoji}</span>
+                      ))}
+                    </span>{' '}
+                    <span className="font-semibold">{cgRecord.score}/100</span>
+                  </div>
+                ) : (
+                  <div className="mt-2 text-sm text-sand-600 dark:text-dark-100">Not played.</div>
+                )}
+              </>
             )}
           </div>
         )}

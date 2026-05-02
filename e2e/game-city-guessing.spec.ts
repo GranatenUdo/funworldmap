@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { finalizeGame } from './helpers'
 
 
 async function waitForMap(page: Page) {
@@ -141,6 +142,7 @@ test.describe('City Guessing game', () => {
       await setRoundAndWait(page, 'FRA-paris', 'Paris')
       await skipViaHook(page)
     }
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible()
     await expect(page.getByTestId('game-over-score')).toHaveText('0')
   })

@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import { waitForGameTestHook } from './helpers'
+import { waitForGameTestHook, finalizeGame } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -47,6 +47,7 @@ test.describe('daily share block on game-over', () => {
       window.__funworldmap_game.completeNow()
     })
 
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
     await expect(page.getByTestId('daily-share-block')).toBeVisible({ timeout: 5_000 })
     const preview = page.getByTestId('daily-share-preview')
@@ -83,6 +84,7 @@ test.describe('daily share block on game-over', () => {
       window.__funworldmap_game.completeNow()
     })
 
+    await finalizeGame(page)
     await expect(page.getByTestId('daily-share-block')).toBeVisible({ timeout: 5_000 })
     const preview = page.getByTestId('daily-share-preview')
     const text = (await preview.textContent()) ?? ''

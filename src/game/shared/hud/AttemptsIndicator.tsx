@@ -7,7 +7,7 @@ export function AttemptsIndicator({ session }: { session: GameSession }) {
   const last = session.currentAttempts[used - 1]
   const [toast, setToast] = useState<{ pts: number; key: number } | null>(null)
   useEffect(() => {
-    if (!last || session.status !== 'playing') {
+    if (!last || session.status !== 'playing' || last.pointsEarned <= 0) {
       setToast(null)
       return
     }

@@ -45,6 +45,24 @@ function writeIdleHash(): void {
   }
 }
 
+// Used by the country-pinning round-end branches (correct + wrong-endsGame) which
+// share an identical "wait for reveal, advance on timer or Enter/Esc/Space" shape.
+function holdThenAdvance(durationMs: number, advanceNow: () => void): () => void {
+  const t = window.setTimeout(advanceNow, durationMs)
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+      window.clearTimeout(t)
+      window.removeEventListener('keydown', onKey)
+      advanceNow()
+    }
+  }
+  window.addEventListener('keydown', onKey)
+  return () => {
+    window.clearTimeout(t)
+    window.removeEventListener('keydown', onKey)
+  }
+}
+
 function ensureRevealSources(map: maplibregl.Map): void {
   if (!map.getSource(REVEAL_MARKER_SOURCE)) {
     map.addSource(REVEAL_MARKER_SOURCE, {
@@ -99,7 +117,7 @@ interface Props {
 
 export function GameController({ countries, cities, byCca3 }: Props) {
   const { mapRef } = useMap()
-  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree } = useGameSessionContext()
+  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
@@ -111,6 +129,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // /reveal hash within one mount won't re-emit; this matches funnel-counting
   // semantics (deep-link arrival, not view-count).
   const lastRevealEmitHashRef = useRef<string | null>(null)
+  const lastAnnouncedRoundKeyRef = useRef<string | null>(null)
 
   // Pool derivation for the hash-bootstrap path (which needs `getMode` for
   // the first round ahead of the reducer running).
@@ -292,11 +311,17 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     if (!mode) return
     if (session.status === 'playing' && session.currentRound) {
       if (session.roundIndex === 0) recordedRef.current = false
-      if (session.currentRound.kind === 'country-pinning') {
-        dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
-      } else {
-        const r = session.currentRound
-        dispatchAnnouncement(`Round ${session.roundIndex + 1}. Where is ${r.targetName}, ${r.targetCountryName}? Click anywhere on the map.`)
+      const key = session.currentRound.kind === 'country-pinning'
+        ? session.currentRound.targetCca3
+        : session.currentRound.targetId
+      if (lastAnnouncedRoundKeyRef.current !== key) {
+        lastAnnouncedRoundKeyRef.current = key
+        if (session.currentRound.kind === 'country-pinning') {
+          dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
+        } else {
+          const r = session.currentRound
+          dispatchAnnouncement(`Round ${session.roundIndex + 1}. Where is ${r.targetName}, ${r.targetCountryName}? Click anywhere on the map.`)
+        }
       }
     }
     if (session.status === 'round-ended' && session.lastOutcome) {
@@ -309,6 +334,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           : false
 
       const advanceNow = () => {
+        if (session.lastOutcome?.endsGame) {
+          finalize()
+          return
+        }
         const next = mode.nextRound(session.used)
         advance(next)
       }
@@ -333,22 +362,15 @@ export function GameController({ countries, cities, byCca3 }: Props) {
 
       // Country-pinning final outcome + correct → 3000ms auto-advance, scoped keyboard early-skip.
       if (isCorrect) {
-        const t = window.setTimeout(advanceNow, 3000)
-        const onKey = (e: KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
-            window.clearTimeout(t)
-            window.removeEventListener('keydown', onKey)
-            advanceNow()
-          }
-        }
-        window.addEventListener('keydown', onKey)
-        return () => {
-          window.clearTimeout(t)
-          window.removeEventListener('keydown', onKey)
-        }
+        return holdThenAdvance(3000, advanceNow)
       }
 
-      // Country-pinning final outcome + wrong → no timer; Escape advances (Continue button is the primary click path).
+      // Country-pinning final outcome + wrong:
+      // - intra-game (free, lives>0): no timer; Esc advances (Continue button is the primary path).
+      // - end-of-game: auto-advance after the reveal animation finishes; Esc / Enter / Space skip early.
+      if (session.lastOutcome.endsGame) {
+        return holdThenAdvance(Math.max(animatedMs ?? 0, 3000), advanceNow)
+      }
       const onKey = (e: KeyboardEvent) => {
         if (e.key === 'Escape') advanceNow()
       }
@@ -378,13 +400,14 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           attemptsUsed: attempts.length,
         })
       }
+      lastAnnouncedRoundKeyRef.current = null
       dispatchAnnouncement(`Game over. Final score ${session.score}.`)
     }
   }, [
     session.status, session.roundIndex, session.lastOutcome, session.score,
     session.bestStreak, session.lives, session.used, session.currentRound, session.modeId,
     session.currentAttempts, session.dailyDate,
-    advance, mode, record, recordDailyResult, byCca3,
+    advance, mode, record, recordDailyResult, byCca3, finalize,
   ])
 
   // Fire daily_attempted per intermediate attempt (only when attemptsPerRound > 1).
@@ -412,7 +435,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       if (session.attemptsPerRound > 1) {
         track('daily_attempted', {
           mode: session.modeId,
-          attemptIndex: prev,
+          attemptIndex: prev + 1,
           scoreBucket: Math.min(4, Math.floor(a.pointsEarned / 20)),
         })
       }

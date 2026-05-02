@@ -59,7 +59,9 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     const puzzle = byDate(date)
     if (!puzzle) return 'unavailable'
     const prior = getDay(date, modeId)
-    return prior ? 'played' : 'unplayed'
+    if (prior) return 'played'
+    if (date < today) return 'past-unplayed'
+    return 'unplayed'
   }
 
   const bestFor = (id: ModeId) => (id === 'country-pinning' ? cpBest : cgBest)

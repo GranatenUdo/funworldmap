@@ -126,6 +126,8 @@ describe('useGameSession (post-collapse)', () => {
       act(() => { result.current.attempt(countryInput('ESP'), miss('GBR', 'ESP', 0)) })
       act(() => { result.current.advance(round('ITA')) })
       act(() => { result.current.attempt(countryInput('PRT'), miss('ITA', 'PRT', 0)) })
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => { result.current.finalize() })
       expect(result.current.session.status).toBe('game-over')
     })
   })
@@ -147,6 +149,8 @@ describe('useGameSession (post-collapse)', () => {
       act(() => { result.current.attempt(countryInput('ESP'), miss('FRA', 'ESP', 50)) })
       act(() => { result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU', 30)) })
       act(() => { result.current.attempt(countryInput('CHN'), miss('FRA', 'CHN', 5)) })
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => { result.current.finalize() })
       expect(result.current.session.status).toBe('game-over')
       expect(result.current.session.score).toBe(50)
       expect(result.current.session.lastOutcome?.pointsEarned).toBe(50)
@@ -164,6 +168,8 @@ describe('useGameSession (post-collapse)', () => {
       act(() => { result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU', 30)) })
       expect(result.current.session.status).toBe('playing')
       act(() => { result.current.attempt(countryInput('CHN'), miss('FRA', 'CHN', 5)) })
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => { result.current.finalize() })
       expect(result.current.session.status).toBe('game-over')
       expect(result.current.session.score).toBe(100)
       if (result.current.session.lastOutcome?.reveal.kind === 'country') {
@@ -188,6 +194,8 @@ describe('useGameSession (post-collapse)', () => {
       act(() => { result.current.start('country-pinning', round('FRA'), 1, 3) })
       act(() => { result.current.attempt(countryInput('FRA'), exact('FRA')) })
       act(() => { result.current.completeNow() })
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => { result.current.finalize() })
       expect(result.current.session.status).toBe('game-over')
       expect(result.current.session.score).toBe(100)
       expect(result.current.session.currentAttempts).toHaveLength(1)
@@ -360,6 +368,8 @@ describe('useGameSession (post-collapse)', () => {
       act(() => { result.current.attempt(countryInput('USA'), miss('ESP', 'USA')) })
       act(() => { result.current.advance(round('DEU')) })
       act(() => { result.current.attempt(countryInput('USA'), miss('DEU', 'USA')) })
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => { result.current.finalize() })
       expect(result.current.session.status).toBe('game-over')
       const before = result.current.session
       act(() => { result.current.finishFree() })
@@ -389,6 +399,96 @@ describe('useGameSession (post-collapse)', () => {
       expect(result.current.session.dailyDate).toBe('2026-04-27')
       act(() => { result.current.endGame() })
       expect(result.current.session.dailyDate).toBeNull()
+    })
+  })
+
+  describe('endOfRound transitions to round-ended (even when endsGame=true)', () => {
+    it('best-of-3 final attempt sets status round-ended with endsGame=true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), 1, 3, '2026-05-02'))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU', 20)))
+      act(() => result.current.attempt(countryInput('ESP'), miss('FRA', 'ESP', 30)))
+      act(() => result.current.attempt(countryInput('ITA'), miss('FRA', 'ITA', 40)))
+      expect(result.current.session.status).toBe('round-ended')
+      expect(result.current.session.lastOutcome?.endsGame).toBe(true)
+    })
+
+    it('free country lives-out attempt sets status round-ended with endsGame=true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      act(() => result.current.advance(round('ITA')))
+      act(() => result.current.attempt(countryInput('ESP'), miss('ITA', 'ESP')))
+      act(() => result.current.advance(round('PRT')))
+      act(() => result.current.attempt(countryInput('GBR'), miss('PRT', 'GBR')))
+      expect(result.current.session.status).toBe('round-ended')
+      expect(result.current.session.lives).toBe(0)
+      expect(result.current.session.lastOutcome?.endsGame).toBe(true)
+    })
+
+    it('non-final round still returns round-ended (regression)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      expect(result.current.session.status).toBe('round-ended')
+      expect(result.current.session.lastOutcome?.endsGame).toBe(false)
+    })
+  })
+
+  describe("finalize action", () => {
+    it('transitions round-ended → game-over when lastOutcome.endsGame is true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), 1, 3, '2026-05-02'))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      act(() => result.current.attempt(countryInput('ESP'), miss('FRA', 'ESP')))
+      act(() => result.current.attempt(countryInput('ITA'), miss('FRA', 'ITA')))
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => result.current.finalize())
+      expect(result.current.session.status).toBe('game-over')
+    })
+
+    it('is a no-op when lastOutcome.endsGame is false', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => result.current.finalize())
+      expect(result.current.session.status).toBe('round-ended')
+    })
+
+    it('is a no-op when status !== round-ended', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      expect(result.current.session.status).toBe('playing')
+      act(() => result.current.finalize())
+      expect(result.current.session.status).toBe('playing')
+    })
+  })
+
+  describe('endedEarly flag', () => {
+    it('start sets endedEarly false', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      expect(result.current.session.endedEarly).toBe(false)
+    })
+
+    it('finishFree sets endedEarly true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.finishFree())
+      expect(result.current.session.endedEarly).toBe(true)
+    })
+
+    it('endOfRound natural ending leaves endedEarly false', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      act(() => result.current.advance(round('ITA')))
+      act(() => result.current.attempt(countryInput('ESP'), miss('ITA', 'ESP')))
+      act(() => result.current.advance(round('PRT')))
+      act(() => result.current.attempt(countryInput('GBR'), miss('PRT', 'GBR')))
+      expect(result.current.session.lives).toBe(0)
+      expect(result.current.session.endedEarly).toBe(false)
     })
   })
 })

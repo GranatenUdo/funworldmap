@@ -32,6 +32,8 @@ the same calendar day.
    and `DailyRevealOverlay` (reveal view). Uses `navigator.share` with a
    clipboard fallback. Fires the `daily_shared` analytics event.
 
+**Round-end pause.** Daily and free games transition `playing → round-ended → game-over` via a `finalize` reducer action. The intermediate `round-ended` status is the window in which the existing reveal-animation effects fire (border highlight, dashed-arc geodesic, country-panel slide). The controller schedules `finalize` after the reveal animation completes (≥ 3 s for country, ≥ 2 s for city); a key press (Enter / Esc / Space) skips the hold. E2E specs use `__funworldmap_game.finalize()` to bypass the wall-clock wait.
+
 ## Storage shape
 
 See `src/game/daily/types.ts`. Top-level:

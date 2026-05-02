@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { routeMapTiles, seedDailyHistory, stubDailyIndex } from './helpers'
+import { routeMapTiles, seedDailyHistory, stubDailyIndex, finalizeGame } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -33,6 +33,7 @@ test.describe('mobile — daily city flow', () => {
         .toBeGreaterThanOrEqual(expectedAttempts)
     }
 
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 15_000 })
   })
 })

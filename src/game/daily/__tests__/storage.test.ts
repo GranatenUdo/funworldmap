@@ -129,3 +129,38 @@ describe('pruneOlderThan', () => {
     expect(h.days['2026-04-20']).toBeDefined()
   })
 })
+
+describe('updateStreak resets lastMilestoneShown on break', () => {
+  it('streak break (gap > 1 day) resets lastMilestoneShown to 0', () => {
+    const h: DailyHistoryV1 = {
+      version: 1,
+      streak: { current: 30, longest: 30, lastActiveDate: '2026-04-01', lastMilestoneShown: 30 },
+      days: {},
+    }
+    const next = updateStreak(h, '2026-05-01') // 30 days later
+    expect(next.streak.current).toBe(1)
+    expect(next.streak.lastMilestoneShown).toBe(0)
+  })
+
+  it('streak continue preserves lastMilestoneShown', () => {
+    const h: DailyHistoryV1 = {
+      version: 1,
+      streak: { current: 5, longest: 5, lastActiveDate: '2026-05-01', lastMilestoneShown: 3 },
+      days: {},
+    }
+    const next = updateStreak(h, '2026-05-02')
+    expect(next.streak.current).toBe(6)
+    expect(next.streak.lastMilestoneShown).toBe(3)
+  })
+
+  it('first ever play (last=null) leaves lastMilestoneShown at 0', () => {
+    const h: DailyHistoryV1 = {
+      version: 1,
+      streak: { current: 0, longest: 0, lastActiveDate: null, lastMilestoneShown: 0 },
+      days: {},
+    }
+    const next = updateStreak(h, '2026-05-02')
+    expect(next.streak.current).toBe(1)
+    expect(next.streak.lastMilestoneShown).toBe(0)
+  })
+})

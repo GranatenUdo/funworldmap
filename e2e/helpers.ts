@@ -103,6 +103,19 @@ export async function submitAndWait(page: Page, cca3: string, expectAfter: numbe
 }
 
 /**
+ * Drive the `round-ended → game-over` transition via the test seam, bypassing
+ * the controller's wall-clock reveal hold (≥ 3 s for country, ≥ 2 s for city).
+ * No-op when the session isn't in `round-ended` with `lastOutcome.endsGame`,
+ * so safe to call unconditionally where the test path is "final attempt → modal".
+ */
+export async function finalizeGame(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const game = (window as unknown as { __funworldmap_game?: { finalize: () => void } }).__funworldmap_game
+    game?.finalize()
+  })
+}
+
+/**
  * Dismiss the launcher if it is visible. No-op if the test uses a deep-link
  * URL (e.g. /#FRA) that bypasses the launcher.
  *
@@ -151,16 +164,21 @@ export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<v
 
 /**
  * Poll until the game test hook (`window.__funworldmap_game`) is mounted with
- * the seams the daily/free specs use (`submitCountryGuess`, `completeNow`).
- * The hook is registered inside a `useEffect` in `GameSessionProvider` /
- * `GameController` after first render, so deep-link specs can race past it
- * without this wait.
+ * the seams the daily/free specs use (`submitCountryGuess`, `completeNow`,
+ * `finalize`). The hook is registered inside a `useEffect` in
+ * `GameSessionProvider` / `GameController` after first render, so deep-link
+ * specs can race past it without this wait.
  */
 export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promise<void> {
   await expect.poll(
     () => page.evaluate(() => {
       const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
-      return g && typeof g.submitCountryGuess === 'function' && typeof g.completeNow === 'function' ? 'ready' : 'not-ready'
+      return g
+        && typeof g.submitCountryGuess === 'function'
+        && typeof g.completeNow === 'function'
+        && typeof g.finalize === 'function'
+        ? 'ready'
+        : 'not-ready'
     }),
     { timeout: timeoutMs },
   ).toBe('ready')
