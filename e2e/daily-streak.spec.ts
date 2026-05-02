@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
+import { waitForAnimationIdle } from './helpers'
 
 test.setTimeout(120_000)
 const TODAY = toLocalDateString(new Date())
@@ -57,8 +58,13 @@ test.describe('Daily streak', () => {
       }))
     }, TODAY)
     await page.goto('/')
-    await expect(page.getByTestId('launcher-milestone')).toBeVisible({ timeout: 5_000 })
-    await expect(page.getByTestId('launcher-milestone')).not.toBeVisible({ timeout: 5_000 })
+    const milestone = page.getByTestId('launcher-milestone')
+    await expect(milestone).toBeVisible({ timeout: 5_000 })
+    // Wait for the 260ms entrance animation to complete before starting the
+    // auto-dismiss clock — avoids the race where the 5_000ms window is eaten
+    // up by slow-CI animation + 2500ms dismiss timer together.
+    await waitForAnimationIdle(milestone)
+    await expect(milestone).not.toBeAttached({ timeout: 5_000 })
     const stored = await page.evaluate(() => {
       const raw = localStorage.getItem('funworldmap-daily-history')
       return raw ? (JSON.parse(raw) as { streak: { lastMilestoneShown: number } }).streak.lastMilestoneShown : null

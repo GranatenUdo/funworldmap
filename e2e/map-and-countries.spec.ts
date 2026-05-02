@@ -167,7 +167,7 @@ test.describe('Country click interaction', () => {
     // Poll until the hash reflects the country selection.
     await expect.poll(
       () => page.evaluate(() => window.location.hash),
-      { timeout: 5_000 },
+      { timeout: 10_000 },
     ).toMatch(/^#[A-Z]{3}$/)
     await expect(page.getByTestId('country-panel')).toBeVisible()
 

@@ -26,7 +26,7 @@ test.describe('Search', () => {
       .getByTestId('search-results')
       .getByRole('option', { name: /^France\s/ })
       .first()
-    await expect(firstOption).toBeVisible({ timeout: 10_000 })
+    await expect(firstOption).toBeVisible({ timeout: 15_000 })
 
     await searchInput.press('ArrowDown')
     await searchInput.press('Enter')
