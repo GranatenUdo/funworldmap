@@ -99,7 +99,7 @@ interface Props {
 
 export function GameController({ countries, cities, byCca3 }: Props) {
   const { mapRef } = useMap()
-  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree } = useGameSessionContext()
+  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
@@ -309,6 +309,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           : false
 
       const advanceNow = () => {
+        if (session.lastOutcome?.endsGame) {
+          finalize()
+          return
+        }
         const next = mode.nextRound(session.used)
         advance(next)
       }
@@ -348,7 +352,26 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         }
       }
 
-      // Country-pinning final outcome + wrong → no timer; Escape advances (Continue button is the primary click path).
+      // Country-pinning final outcome + wrong:
+      // - intra-game (free, lives>0): no timer; Esc advances (Continue button is the primary path).
+      // - end-of-game: auto-advance after the reveal animation finishes; Esc / Enter / Space skip early.
+      //   `holdMs` honours the existing per-mode `animatedMs` so long-distance arcs aren't truncated; floor at 3000 ms.
+      if (session.lastOutcome.endsGame) {
+        const holdMs = Math.max(animatedMs ?? 0, 3000)
+        const t = window.setTimeout(advanceNow, holdMs)
+        const onKey = (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+            window.clearTimeout(t)
+            window.removeEventListener('keydown', onKey)
+            advanceNow()
+          }
+        }
+        window.addEventListener('keydown', onKey)
+        return () => {
+          window.clearTimeout(t)
+          window.removeEventListener('keydown', onKey)
+        }
+      }
       const onKey = (e: KeyboardEvent) => {
         if (e.key === 'Escape') advanceNow()
       }
@@ -384,7 +407,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     session.status, session.roundIndex, session.lastOutcome, session.score,
     session.bestStreak, session.lives, session.used, session.currentRound, session.modeId,
     session.currentAttempts, session.dailyDate,
-    advance, mode, record, recordDailyResult, byCca3,
+    advance, mode, record, recordDailyResult, byCca3, finalize,
   ])
 
   // Fire daily_attempted per intermediate attempt (only when attemptsPerRound > 1).
