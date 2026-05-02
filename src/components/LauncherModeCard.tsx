@@ -1,7 +1,7 @@
 import type { ModeId, PersonalBest } from '../game/shared/types'
 import { parseLocalDate } from '../game/daily/dates'
 
-export type LauncherCardState = 'unplayed' | 'played' | 'unavailable'
+export type LauncherCardState = 'unplayed' | 'played' | 'past-unplayed' | 'unavailable'
 
 const ICONS: Record<ModeId, React.ReactNode> = {
   'country-pinning': (
@@ -82,6 +82,17 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
         </button>
       )}
 
+      {state === 'past-unplayed' && onSeeReveal && (
+        <button
+          type="button"
+          onClick={onSeeReveal}
+          data-testid={`${testIdBase}-see-reveal`}
+          className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 dark:focus-visible:ring-teal-light/60"
+        >
+          See reveal
+        </button>
+      )}
+
       {state === 'played' && (
         <div data-testid={`${testIdBase}-played-result`}>
           <div className="text-sand-900 dark:text-dark-50 text-sm mb-2">
@@ -118,7 +129,9 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
       <div className="mt-4 pt-3 border-t border-sand-200/70 dark:border-dark-200/30 text-[11px] text-sand-600 dark:text-dark-100">
         <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">Best (free)</span>{' '}
         <span data-testid={`${testIdBase}-free-best`} className="tabular-nums">
-          {freeBest.gamesPlayed > 0 ? `${freeBest.bestScore} / 1000` : '— / 1000'}
+          {freeBest.gamesPlayed > 0
+            ? (modeId === 'country-pinning' ? `${freeBest.bestScore} pts` : `${freeBest.bestScore} / 1000`)
+            : (modeId === 'country-pinning' ? '— pts' : '— / 1000')}
         </span>
       </div>
     </div>
