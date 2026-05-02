@@ -391,4 +391,37 @@ describe('useGameSession (post-collapse)', () => {
       expect(result.current.session.dailyDate).toBeNull()
     })
   })
+
+  describe('endOfRound transitions to round-ended (even when endsGame=true)', () => {
+    it('best-of-3 final attempt sets status round-ended with endsGame=true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), 1, 3, '2026-05-02'))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU', 20)))
+      act(() => result.current.attempt(countryInput('ESP'), miss('FRA', 'ESP', 30)))
+      act(() => result.current.attempt(countryInput('ITA'), miss('FRA', 'ITA', 40)))
+      expect(result.current.session.status).toBe('round-ended')
+      expect(result.current.session.lastOutcome?.endsGame).toBe(true)
+    })
+
+    it('free country lives-out attempt sets status round-ended with endsGame=true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      act(() => result.current.advance(round('ITA')))
+      act(() => result.current.attempt(countryInput('ESP'), miss('ITA', 'ESP')))
+      act(() => result.current.advance(round('PRT')))
+      act(() => result.current.attempt(countryInput('GBR'), miss('PRT', 'GBR')))
+      expect(result.current.session.status).toBe('round-ended')
+      expect(result.current.session.lives).toBe(0)
+      expect(result.current.session.lastOutcome?.endsGame).toBe(true)
+    })
+
+    it('non-final round still returns round-ended (regression)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      expect(result.current.session.status).toBe('round-ended')
+      expect(result.current.session.lastOutcome?.endsGame).toBe(false)
+    })
+  })
 })

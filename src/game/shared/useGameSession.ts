@@ -58,7 +58,7 @@ function endOfRound(state: GameSession, attempts: AttemptRecord[], finalResult: 
       : nextLives <= 0
   return {
     ...state,
-    status: endsGame ? 'game-over' : 'round-ended',
+    status: 'round-ended',
     lives: nextLives,
     score: state.score + best.pointsEarned,
     streak: nextStreak,
