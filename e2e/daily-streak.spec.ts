@@ -58,8 +58,7 @@ test.describe('Daily streak', () => {
     }, TODAY)
     await page.goto('/')
     await expect(page.getByTestId('launcher-milestone')).toBeVisible({ timeout: 5_000 })
-    await page.waitForTimeout(3_000) // auto-dismiss + state persist
-    await expect(page.getByTestId('launcher-milestone')).not.toBeVisible()
+    await expect(page.getByTestId('launcher-milestone')).not.toBeVisible({ timeout: 5_000 })
     const stored = await page.evaluate(() => {
       const raw = localStorage.getItem('funworldmap-daily-history')
       return raw ? (JSON.parse(raw) as { streak: { lastMilestoneShown: number } }).streak.lastMilestoneShown : null
