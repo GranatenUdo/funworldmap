@@ -1,26 +1,17 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { GameOverOverlay } from '../GameOverOverlay'
-import type { GameSession, PersonalBest } from '../../types'
+import type { PersonalBest } from '../../types'
+import { makeSession } from '../../__tests__/factories'
 
-const baseSession: GameSession = {
-  modeId: 'country-pinning',
+const baseSession = makeSession({
   status: 'game-over',
   lives: 0,
   score: 100,
-  streak: 0,
-  bestStreak: 0,
-  roundIndex: 0,
   maxRounds: 1,
   attemptsPerRound: 3,
   attemptsRemaining: 0,
-  currentAttempts: [],
-  currentRound: null,
-  lastOutcome: null,
-  dailyDate: null,
-  endedEarly: false,
-  used: new Set(),
-}
+})
 
 const zeroBest: PersonalBest = { bestScore: 0, bestStreak: 0, gamesPlayed: 0 }
 

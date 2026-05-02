@@ -2,13 +2,15 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { AttemptsIndicator } from '../AttemptsIndicator'
 import type { GameSession } from '../../types'
+import { makeSession } from '../../__tests__/factories'
 
-const baseSession: GameSession = {
-  modeId: 'country-pinning', status: 'playing', lives: 3, score: 0, streak: 0, bestStreak: 0,
-  roundIndex: 0, maxRounds: 1, attemptsPerRound: 3, attemptsRemaining: 2,
-  currentAttempts: [], currentRound: null, lastOutcome: null, dailyDate: '2026-05-02',
-  used: new Set(), endedEarly: false,
-}
+const baseSession = makeSession({
+  status: 'playing',
+  maxRounds: 1,
+  attemptsPerRound: 3,
+  attemptsRemaining: 2,
+  dailyDate: '2026-05-02',
+})
 
 describe('AttemptsIndicator', () => {
   it('renders +pts toast when last attempt scored > 0', () => {

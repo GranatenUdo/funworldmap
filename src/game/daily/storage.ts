@@ -68,8 +68,7 @@ export function updateStreak(h: DailyHistoryV1, date: string): DailyHistoryV1 {
   const continued = !!last && daysBetween(last, date) === 1
   const current = continued ? h.streak.current + 1 : 1
   const longest = Math.max(h.streak.longest, current)
-  // On streak break (had a previous active date but gap > 1 day), reset
-  // milestone-shown so the user can re-celebrate 3/7/14/30 on rebuild.
+  // Reset milestone-shown on streak break so the user can re-celebrate 3/7/14/30 on rebuild.
   const broke = !!last && !continued
   const lastMilestoneShown = broke ? 0 : h.streak.lastMilestoneShown
   return {

@@ -435,7 +435,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       if (session.attemptsPerRound > 1) {
         track('daily_attempted', {
           mode: session.modeId,
-          attemptIndex: (prev + 1) as 1 | 2 | 3,
+          attemptIndex: prev + 1,
           scoreBucket: Math.min(4, Math.floor(a.pointsEarned / 20)),
         })
       }
