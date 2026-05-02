@@ -10,7 +10,7 @@ async function searchAndOpenPanel(page: Page, query: string) {
   await page.getByTestId('search-input').fill(query)
   const firstOption = page.getByTestId('search-results').getByRole('option').first()
   await expect(firstOption).toBeVisible({ timeout: 15_000 })
-  await firstOption.click({ force: true })
+  await firstOption.click()
   const panel = page.getByTestId('country-panel')
   await expect(panel).toBeVisible({ timeout: 15_000 })
   return panel
