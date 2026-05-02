@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { waitForAppReady, waitForGameTestHook, stubDailyIndex, routeMapTiles } from './helpers'
+import { waitForAppReady, waitForGameTestHook, stubDailyIndex, routeMapTiles, submitAndWait, finalizeGame } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.describe('daily best-of-3 final attempt holds before game-over', () => {
@@ -11,51 +11,20 @@ test.describe('daily best-of-3 final attempt holds before game-over', () => {
     await waitForAppReady(page)
     await waitForGameTestHook(page)
 
-    // submitAndWait pattern: dispatch a guess then poll until the attempt is
-    // recorded before issuing the next one (avoids reducer races on slow CI).
-    await page.evaluate(() => {
-      const hooks = (window as unknown as { __funworldmap_game?: { submitCountryGuess?: (cca3: string) => boolean } }).__funworldmap_game
-      hooks?.submitCountryGuess?.('DEU')
-    })
-    await expect.poll(
-      () => page.evaluate(() => {
-        const hooks = (window as unknown as { __funworldmap_game?: { getSession?: () => { currentAttempts?: unknown[] } } }).__funworldmap_game
-        return hooks?.getSession?.()?.currentAttempts?.length ?? 0
-      }),
-      { timeout: 5_000 },
-    ).toBeGreaterThanOrEqual(1)
-    await page.evaluate(() => {
-      const hooks = (window as unknown as { __funworldmap_game?: { submitCountryGuess?: (cca3: string) => boolean } }).__funworldmap_game
-      hooks?.submitCountryGuess?.('ESP')
-    })
-    await expect.poll(
-      () => page.evaluate(() => {
-        const hooks = (window as unknown as { __funworldmap_game?: { getSession?: () => { currentAttempts?: unknown[] } } }).__funworldmap_game
-        return hooks?.getSession?.()?.currentAttempts?.length ?? 0
-      }),
-      { timeout: 5_000 },
-    ).toBeGreaterThanOrEqual(2)
-    await page.evaluate(() => {
-      const hooks = (window as unknown as { __funworldmap_game?: { submitCountryGuess?: (cca3: string) => boolean } }).__funworldmap_game
-      hooks?.submitCountryGuess?.('ITA')
-    })
+    await submitAndWait(page, 'DEU', 1)
+    await submitAndWait(page, 'ESP', 2)
+    await submitAndWait(page, 'ITA', 3)
 
-    // After the third attempt the session holds at round-ended (game-over modal
-    // is NOT yet attached — the reveal animation must play first in production).
     await expect.poll(
       () => page.evaluate(() => {
-        const hooks = (window as unknown as { __funworldmap_game?: { getSession?: () => { status?: string } } }).__funworldmap_game
-        return hooks?.getSession?.()?.status
+        const game = (window as unknown as { __funworldmap_game?: { getSession: () => { status: string } } }).__funworldmap_game
+        return game?.getSession().status
       }),
       { timeout: 10_000 },
     ).toBe('round-ended')
     await expect(page.getByTestId('game-over')).not.toBeAttached()
 
-    // finalize() drives round-ended → game-over.
-    await page.evaluate(() => {
-      const hooks = (window as unknown as { __funworldmap_game?: { finalize?: () => void } }).__funworldmap_game
-      hooks?.finalize?.()
-    })
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible()
   })
 })

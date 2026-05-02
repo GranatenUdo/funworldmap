@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForAppReady, waitForGameTestHook } from './helpers'
+import { waitForAppReady, waitForGameTestHook, finalizeGame } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
@@ -74,8 +74,7 @@ test.describe('daily survives ocean clicks', () => {
       window.__funworldmap_game.completeNow()
     })
 
-    // completeNow() transitions to round-ended; finalize() advances to game-over.
-    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
+    await finalizeGame(page)
     // Game-over reached — verify daily UI, not free UI:
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
     await expect(page.getByTestId('daily-share-block')).toBeVisible()

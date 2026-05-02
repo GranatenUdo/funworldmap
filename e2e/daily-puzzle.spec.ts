@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
+import { finalizeGame } from './helpers'
 
 test.setTimeout(120_000)
 
@@ -64,9 +65,7 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
     await submitAndWait(page, 'ESP', 2)
     await submitAndWait(page, 'FRA', 3)
 
-    // Three attempts exhaust the daily best-of-3, landing in round-ended.
-    // finalize() drives the round-ended → game-over transition.
-    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
     await expect(page.getByTestId('game-over-score')).toContainText('100')
   })
@@ -89,9 +88,7 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
     await submitAndWait(page, 'FRA', 1)
     await submitAndWait(page, 'FRA', 2)
     await submitAndWait(page, 'FRA', 3)
-    // Three attempts exhaust the daily best-of-3, landing in round-ended.
-    // finalize() drives the round-ended → game-over transition.
-    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
     // recordDailyResult runs inside the status-change useEffect, AFTER the
     // game-over overlay is rendered. Wait for the localStorage write to

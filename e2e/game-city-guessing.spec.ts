@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
+import { finalizeGame } from './helpers'
 
 
 async function waitForMap(page: Page) {
@@ -141,9 +142,7 @@ test.describe('City Guessing game', () => {
       await setRoundAndWait(page, 'FRA-paris', 'Paris')
       await skipViaHook(page)
     }
-    // Ten rounds exhausted → round-ended with endsGame=true.
-    // finalize() drives the round-ended → game-over transition.
-    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible()
     await expect(page.getByTestId('game-over-score')).toHaveText('0')
   })

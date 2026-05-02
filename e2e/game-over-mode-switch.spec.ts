@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { submitAndWait } from './helpers'
+import { submitAndWait, finalizeGame } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -59,9 +59,7 @@ test.describe('game-over → new mode', () => {
     }
     await submitAndWait(page, 'USA', 1)
 
-    // Three lives exhausted → round-ended with endsGame=true.
-    // finalize() drives the round-ended → game-over transition.
-    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
+    await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
 
     // Hash-only nav — does NOT reload the page, so the in-memory game-over

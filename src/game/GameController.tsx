@@ -45,6 +45,24 @@ function writeIdleHash(): void {
   }
 }
 
+// Used by the country-pinning round-end branches (correct + wrong-endsGame) which
+// share an identical "wait for reveal, advance on timer or Enter/Esc/Space" shape.
+function holdThenAdvance(durationMs: number, advanceNow: () => void): () => void {
+  const t = window.setTimeout(advanceNow, durationMs)
+  const onKey = (e: KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
+      window.clearTimeout(t)
+      window.removeEventListener('keydown', onKey)
+      advanceNow()
+    }
+  }
+  window.addEventListener('keydown', onKey)
+  return () => {
+    window.clearTimeout(t)
+    window.removeEventListener('keydown', onKey)
+  }
+}
+
 function ensureRevealSources(map: maplibregl.Map): void {
   if (!map.getSource(REVEAL_MARKER_SOURCE)) {
     map.addSource(REVEAL_MARKER_SOURCE, {
@@ -337,40 +355,14 @@ export function GameController({ countries, cities, byCca3 }: Props) {
 
       // Country-pinning final outcome + correct → 3000ms auto-advance, scoped keyboard early-skip.
       if (isCorrect) {
-        const t = window.setTimeout(advanceNow, 3000)
-        const onKey = (e: KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
-            window.clearTimeout(t)
-            window.removeEventListener('keydown', onKey)
-            advanceNow()
-          }
-        }
-        window.addEventListener('keydown', onKey)
-        return () => {
-          window.clearTimeout(t)
-          window.removeEventListener('keydown', onKey)
-        }
+        return holdThenAdvance(3000, advanceNow)
       }
 
       // Country-pinning final outcome + wrong:
       // - intra-game (free, lives>0): no timer; Esc advances (Continue button is the primary path).
       // - end-of-game: auto-advance after the reveal animation finishes; Esc / Enter / Space skip early.
-      //   `holdMs` honours the existing per-mode `animatedMs` so long-distance arcs aren't truncated; floor at 3000 ms.
       if (session.lastOutcome.endsGame) {
-        const holdMs = Math.max(animatedMs ?? 0, 3000)
-        const t = window.setTimeout(advanceNow, holdMs)
-        const onKey = (e: KeyboardEvent) => {
-          if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') {
-            window.clearTimeout(t)
-            window.removeEventListener('keydown', onKey)
-            advanceNow()
-          }
-        }
-        window.addEventListener('keydown', onKey)
-        return () => {
-          window.clearTimeout(t)
-          window.removeEventListener('keydown', onKey)
-        }
+        return holdThenAdvance(Math.max(animatedMs ?? 0, 3000), advanceNow)
       }
       const onKey = (e: KeyboardEvent) => {
         if (e.key === 'Escape') advanceNow()
