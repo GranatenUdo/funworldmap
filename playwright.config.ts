@@ -8,7 +8,7 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 2 : undefined,
   reporter: 'html',
-  // Per-project overrides take precedence; chromium-gpu bumps these on CI.
+  // Per-project overrides take precedence; the chromium project bumps these on CI.
   timeout: 60_000,
   expect: { timeout: isCi ? 10_000 : 5_000 },
   use: {
@@ -20,14 +20,36 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
+      // Real-GPU-backed ANGLE renderer. Software ANGLE was dropped 2026-05-02
+      // per docs/superpowers/notes/2026-04-28-flake-regression-analysis.md
+      // recommendation D: it was the documented largest single contributor
+      // to the flake rate and ran ~8 min for tests that don't need GPU at all.
+      timeout: isCi ? 120_000 : 60_000,
+      expect: { timeout: isCi ? 15_000 : 5_000 },
       use: {
         ...devices['Desktop Chrome'],
+        actionTimeout: isCi ? 20_000 : 5_000,
         launchOptions: {
-          args: ['--use-gl=swiftshader'],
+          args: ['--use-gl=angle', '--use-angle=default'],
         },
       },
-      // DOM-only tests work fine with SwiftShader
+      // Combined testMatch: every spec previously in chromium + chromium-gpu.
       testMatch: [
+        // formerly chromium-gpu (real-GPU-needing):
+        'map-and-countries.spec.ts',
+        'map-reliability.spec.ts',
+        'keyboard-map-nav.spec.ts',
+        'game-country-pinning.spec.ts',
+        'game-city-guessing.spec.ts',
+        'game-over-mode-switch.spec.ts',
+        'compare-view-dimming.spec.ts',
+        'reveal-animation.spec.ts',
+        'reveal-animation-reduced-motion.spec.ts',
+        'tutorial-first-click.spec.ts',
+        'daily-share-block-immediate.spec.ts',
+        'daily-survives-ocean-click.spec.ts',
+        'daily-reveal-on-final-attempt.spec.ts',
+        // formerly chromium (DOM-only, run on real-GPU now to consolidate):
         'scaffold.spec.ts',
         'search.spec.ts',
         'theme-and-responsive.spec.ts',
@@ -49,22 +71,6 @@ export default defineConfig({
         'launcher-history.spec.ts',
         'telemetry-deep-link.spec.ts',
       ],
-    },
-    {
-      name: 'chromium-gpu',
-      // Software ANGLE renderer is ~3-5x slower than hardware GPU on CI.
-      timeout: isCi ? 120_000 : 60_000,
-      expect: { timeout: isCi ? 15_000 : 5_000 },
-      use: {
-        ...devices['Desktop Chrome'],
-        actionTimeout: isCi ? 20_000 : 5_000,
-        // No SwiftShader — uses real GPU for WebGL2
-        launchOptions: {
-          args: ['--use-gl=angle', '--use-angle=default'],
-        },
-      },
-      // Map interaction tests need real GPU
-      testMatch: ['map-and-countries.spec.ts', 'map-reliability.spec.ts', 'keyboard-map-nav.spec.ts', 'game-country-pinning.spec.ts', 'game-city-guessing.spec.ts', 'game-over-mode-switch.spec.ts', 'compare-view-dimming.spec.ts', 'reveal-animation.spec.ts', 'reveal-animation-reduced-motion.spec.ts', 'tutorial-first-click.spec.ts', 'daily-share-block-immediate.spec.ts', 'daily-survives-ocean-click.spec.ts'],
     },
     {
       name: 'mobile-chromium',

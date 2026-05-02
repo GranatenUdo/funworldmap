@@ -9,7 +9,6 @@ test.describe('Theme System', () => {
     await page.goto('/')
     await page.evaluate(() => localStorage.removeItem('funworldmap-theme'))
     await page.reload()
-    await page.waitForTimeout(500)
     await dismissLauncher(page)
   })
 
@@ -32,10 +31,11 @@ test.describe('Theme System', () => {
     // Cycle to dark: system → light → dark
     await toggle.click() // → light
     await toggle.click() // → dark
-    await page.waitForTimeout(200)
 
-    const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
-    expect(hasDark).toBe(true)
+    await expect.poll(
+      () => page.evaluate(() => document.documentElement.classList.contains('dark')),
+      { timeout: 15_000 },
+    ).toBe(true)
   })
 
   // Dropped: "theme persists across page reload"
@@ -47,9 +47,10 @@ test.describe('Theme System', () => {
     // Emulate dark system preference
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.reload()
-    await page.waitForTimeout(500)
 
-    const hasDark = await page.evaluate(() => document.documentElement.classList.contains('dark'))
-    expect(hasDark).toBe(true)
+    await expect.poll(
+      () => page.evaluate(() => document.documentElement.classList.contains('dark')),
+      { timeout: 5_000 },
+    ).toBe(true)
   })
 })

@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
+import { waitForAnimationIdle } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -46,7 +47,7 @@ test.describe('Launcher — dismiss paths', () => {
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     await page.getByTestId('search-input').focus()
-    await page.waitForTimeout(500)
+    await expect(page.getByTestId('search-input')).toBeFocused()
     await expect(page.getByTestId('launcher')).toBeVisible()
   })
 
@@ -64,10 +65,8 @@ test.describe('Launcher — dismiss paths', () => {
     await expect(launcher).toBeVisible({ timeout: 10_000 })
     const viewport = page.viewportSize() || { width: 1280, height: 720 }
     await page.mouse.click(10, 10)
-    await page.waitForTimeout(400)
     await expect(launcher).toBeVisible()
     await page.mouse.click(viewport.width - 10, viewport.height - 10)
-    await page.waitForTimeout(400)
     await expect(launcher).toBeVisible()
   })
 })
@@ -92,15 +91,17 @@ test.describe('Launcher — session scope', () => {
       .getByRole('option', { name: /^France\s/ })
       .first()
     await expect(franceOption).toBeVisible({ timeout: 10_000 })
-    await franceOption.click({ force: true })
+    await franceOption.click()
     await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
     // Wait for the search results dropdown to be fully gone before clicking
-    // panel-close. Even with the SearchBar fix, give the dropdown one clear
-    // render cycle to unmount so it cannot intercept the click at z-50.
+    // panel-close, so the dropdown cannot intercept the click at z-50.
     await expect(page.getByTestId('search-results')).not.toBeAttached({ timeout: 5_000 })
-    await page.getByTestId('panel-close').click({ force: true, timeout: 15_000 })
-    await page.waitForTimeout(500)
-    await expect(page.getByTestId('launcher')).not.toBeVisible()
+    // Wait for the panel slide-in animation to finish before clicking
+    // panel-close — on slow Software ANGLE CI the animation is still running
+    // when the next line executes, causing the click to miss / be intercepted.
+    await waitForAnimationIdle(page.getByTestId('country-panel'))
+    await page.getByTestId('panel-close').click()
+    await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 3_000 })
   })
 })
 

@@ -38,7 +38,7 @@ test.describe('keyboard map navigation', () => {
       if (await app.evaluate((el) => el === document.activeElement).catch(() => false)) break
       attempts++
     }
-    await expect(app).toBeFocused()
+    await expect(app).toBeFocused({ timeout: 10_000 })
     const hasOutline = await app.evaluate((el) => {
       const style = getComputedStyle(el)
       return style.outlineStyle !== 'none' && style.outlineWidth !== '0px'

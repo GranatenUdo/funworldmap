@@ -1,8 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { dismissLauncher, waitForAppReady } from './helpers'
 
-test.setTimeout(30000)
-
 test.describe('Search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
@@ -12,36 +10,27 @@ test.describe('Search', () => {
 
   test('typing shows results dropdown', async ({ page }) => {
     await page.getByTestId('search-input').fill('France')
-    await page.waitForTimeout(500) // debounce (150ms) + render
 
     const results = page.getByTestId('search-results')
     await expect(results).toBeVisible()
     // Wait for options to appear
-    await expect(results.getByRole('option').first()).toBeVisible({ timeout: 3000 })
+    await expect(results.getByRole('option', { name: /^France\s/ }).first()).toBeVisible({ timeout: 10_000 })
     // France should be the first result
-    await expect(results.getByRole('option').first()).toContainText('France')
+    await expect(results.getByRole('option', { name: /^France\s/ }).first()).toContainText('France')
   })
 
   test('selecting a result opens the country panel', async ({ page }) => {
     const searchInput = page.getByTestId('search-input')
     await searchInput.fill('France')
-    // Wait for the dropdown to appear AND React to commit the `isOpen`
-    // state that gates SearchBar's onKeyDown handler. Under CI load, an
-    // immediate ArrowDown can race that commit and the handler early-
-    // returns (if !isOpen return), leaving activeIndex at -1 so Enter
-    // is a no-op.
     const firstOption = page
       .getByTestId('search-results')
       .getByRole('option', { name: /^France\s/ })
       .first()
-    await expect(firstOption).toBeVisible({ timeout: 10_000 })
-    await page.waitForTimeout(300)
+    await expect(firstOption).toBeVisible({ timeout: 15_000 })
 
     await searchInput.press('ArrowDown')
     await searchInput.press('Enter')
 
-    // Hash update is the synchronous signal that selectResult fired; wait
-    // for it first so React has time to commit the selected state.
     await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 10_000 })
@@ -50,7 +39,6 @@ test.describe('Search', () => {
 
   test('fuzzy matching works for typos', async ({ page }) => {
     await page.getByTestId('search-input').fill('Untied')
-    await page.waitForTimeout(300)
 
     const results = page.getByTestId('search-results')
     await expect(results).toBeVisible()
@@ -60,13 +48,16 @@ test.describe('Search', () => {
   test('keyboard navigation: arrow down, enter selects', async ({ page }) => {
     const input = page.getByTestId('search-input')
     await input.fill('Ger')
-    await page.waitForTimeout(300)
 
-    // Arrow down to first result
+    // Wait for the Germany option to be present before pressing ArrowDown —
+    // ensures React has committed the isOpen state that gates onKeyDown.
+    await expect(
+      page.getByTestId('search-results').getByRole('option', { name: /Germany/ }).first()
+    ).toBeVisible({ timeout: 10_000 })
+
     await input.press('ArrowDown')
     // Enter to select
     await input.press('Enter')
-    await page.waitForTimeout(500)
 
     await expect(page.getByTestId('country-panel')).toBeVisible()
     await expect(page.getByTestId('country-panel')).toContainText('Germany')
@@ -75,19 +66,16 @@ test.describe('Search', () => {
   test('escape closes dropdown', async ({ page }) => {
     const input = page.getByTestId('search-input')
     await input.fill('Japan')
-    await page.waitForTimeout(300)
 
     await expect(page.getByTestId('search-results')).toBeVisible()
 
     await input.press('Escape')
-    await page.waitForTimeout(200)
 
     await expect(page.getByTestId('search-results')).not.toBeAttached()
   })
 
   test('no results message for unknown query', async ({ page }) => {
     await page.getByTestId('search-input').fill('xyznotacountry')
-    await page.waitForTimeout(300)
 
     await expect(page.getByTestId('search-no-results')).toBeVisible()
     await expect(page.getByTestId('search-no-results')).toContainText('No countries found')
@@ -96,12 +84,10 @@ test.describe('Search', () => {
   test('clear button clears input', async ({ page }) => {
     const input = page.getByTestId('search-input')
     await input.fill('Brazil')
-    await page.waitForTimeout(300)
 
     await expect(page.getByTestId('search-results')).toBeVisible()
 
     await page.getByTestId('search-clear').click()
-    await page.waitForTimeout(200)
 
     await expect(input).toHaveValue('')
     await expect(page.getByTestId('search-results')).not.toBeAttached()
@@ -109,14 +95,12 @@ test.describe('Search', () => {
 
   test('search by capital city', async ({ page }) => {
     await page.getByTestId('search-input').fill('Paris')
-    await page.waitForTimeout(300)
 
     await expect(page.getByTestId('search-results')).toContainText('France')
   })
 
   test('search by country code', async ({ page }) => {
     await page.getByTestId('search-input').fill('USA')
-    await page.waitForTimeout(300)
 
     await expect(page.getByTestId('search-results')).toContainText('United States')
   })

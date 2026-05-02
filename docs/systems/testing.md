@@ -73,18 +73,15 @@ The instance is exposed in production builds as well as development. This is a d
 
 MapLibre needs WebGL2, which requires GPU access. Headless Chromium doesn't have a GPU by default.
 
-**Solution**: Launch Chromium with `--use-gl=swiftshader`.
+**Solution**: Launch Chromium with `--use-gl=angle --use-angle=default` to use ANGLE backed by the real GPU when available, with software fallback as a last resort.
 
-SwiftShader is a software-based GPU emulator bundled with Chromium. It makes WebGL2 work in headless mode but:
-- Renders 5-10x slower than a real GPU
-- May produce slightly different pixel output (antialiasing differences)
-- Is reliable on Windows, Linux, and macOS CI environments
+The previous backend was Software ANGLE (`--use-gl=swiftshader` / SwiftShader), dropped 2026-05-02 — it ran 5–10× slower than real-GPU ANGLE and was the documented largest contributor to the chromium e2e flake regression (see `docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`).
 
 **Playwright config:**
 ```ts
 use: {
   launchOptions: {
-    args: ['--use-gl=swiftshader'],
+    args: ['--use-gl=angle', '--use-angle=default'],
   },
 }
 ```

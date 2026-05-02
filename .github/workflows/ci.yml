@@ -42,11 +42,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Shard by Playwright project instead of by file: chromium (DOM-only,
-        # fast) and chromium-gpu (angle software-render, slow + flake-prone)
-        # have very different per-file durations. File-sharding put all the
-        # slow tests on one shard; project-sharding balances by kind.
-        project: [chromium, chromium-gpu]
+        # Single project after the 2026-05-02 Software-ANGLE drop. Kept as a
+        # matrix entry for now to avoid restructuring the job name; can be
+        # flattened to a non-matrix job in a follow-up.
+        project: [chromium]
     steps:
       - uses: actions/checkout@v4
 

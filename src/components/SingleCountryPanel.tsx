@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
 import { CloseButton } from './CloseButton'
 import { FieldLabel } from './FieldLabel'
@@ -73,6 +73,40 @@ export function SingleCountryPanel({
 }: Props) {
   const [expanded, setExpanded] = useState(false)
   const showSecondary = isDesktop || expanded
+  const panelRootRef = useRef<HTMLDivElement>(null)
+  const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
+
+  useEffect(() => {
+    const root = panelRootRef.current
+    if (!root) {
+      setAnimationState('idle')
+      return
+    }
+    let cancelled = false
+    let resolved = false
+    const flipToIdle = () => {
+      if (cancelled || resolved) return
+      resolved = true
+      setAnimationState('idle')
+    }
+    // Primary: wait for animations to finish (precise on local).
+    // Fallback: 1s cap (covers CI cases where getAnimations doesn't observe
+    // CSS transitions, or .finished promises don't resolve).
+    const rafId = window.requestAnimationFrame(() => {
+      if (cancelled) return
+      const animations = root.getAnimations({ subtree: true })
+      if (animations.length === 0) { flipToIdle(); return }
+      Promise.all(animations.map((a) => a.finished))
+        .then(flipToIdle)
+        .catch(flipToIdle)
+    })
+    const timeoutId = window.setTimeout(flipToIdle, 1000)
+    return () => {
+      cancelled = true
+      window.cancelAnimationFrame(rafId)
+      window.clearTimeout(timeoutId)
+    }
+  }, [])
 
   const onShareLink = () => {
     const base = `${window.location.origin}${window.location.pathname}`
@@ -96,10 +130,12 @@ export function SingleCountryPanel({
 
   return (
     <div
+      ref={panelRootRef}
       className={panelClasses}
       role="complementary"
       aria-label="Country information"
       data-testid="country-panel"
+      data-animation-state={animationState}
       style={isDesktop ? { animation: 'panel-card-in 250ms ease-out' } : undefined}
     >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">

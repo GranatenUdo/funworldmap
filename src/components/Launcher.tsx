@@ -35,6 +35,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   const { status: puzzlesStatus, byDate, index } = useDailyPuzzlesContext()
   const { history, get: getDay, streak, pendingMilestone, markMilestoneShown } = useDailyHistory()
   const [historyOpen, setHistoryOpen] = useState(false)
+  const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   const totalDays = useMemo(() => Object.keys(history.days).length, [history])
 
@@ -87,6 +88,38 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
       track('daily_opened', { mode: m.id, dateAge })
     }
   }, [puzzlesStatus, index, byDate, date, today, modes])
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) {
+      setAnimationState('idle')
+      return
+    }
+    let cancelled = false
+    let resolved = false
+    const flipToIdle = () => {
+      if (cancelled || resolved) return
+      resolved = true
+      setAnimationState('idle')
+    }
+    // Primary: wait for animations to finish (precise on local).
+    // Fallback: 1s cap (covers CI cases where getAnimations doesn't observe
+    // CSS transitions, or .finished promises don't resolve).
+    const rafId = window.requestAnimationFrame(() => {
+      if (cancelled) return
+      const animations = root.getAnimations({ subtree: true })
+      if (animations.length === 0) { flipToIdle(); return }
+      Promise.all(animations.map((a) => a.finished))
+        .then(flipToIdle)
+        .catch(flipToIdle)
+    })
+    const timeoutId = window.setTimeout(flipToIdle, 1000)
+    return () => {
+      cancelled = true
+      window.cancelAnimationFrame(rafId)
+      window.clearTimeout(timeoutId)
+    }
+  }, [])
 
   const dismissWithFocus = useCallback(() => {
     track('launcher_dismissed', { path: 'link' })
@@ -186,6 +219,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
         aria-modal="true"
         aria-label="Choose how to play"
         data-testid="launcher"
+        data-animation-state={animationState}
         className="fixed inset-0 z-[210] flex items-center justify-center p-6"
       >
         <div

@@ -423,3 +423,16 @@ export async function routeMapTiles(page: Page): Promise<void> {
     return route.continue()
   })
 }
+
+/**
+ * Wait until an animated element's `data-animation-state` attribute equals
+ * 'idle'. The component is responsible for setting this attribute after its
+ * entrance / exit animation completes. Replaces brittle `waitForTimeout(N)`
+ * patterns that sleep through CSS transitions.
+ */
+export async function waitForAnimationIdle(
+  locator: ReturnType<Page['locator']>,
+  timeout = 5_000,
+): Promise<void> {
+  await expect(locator).toHaveAttribute('data-animation-state', 'idle', { timeout })
+}

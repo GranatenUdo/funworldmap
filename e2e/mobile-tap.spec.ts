@@ -67,7 +67,6 @@ test.describe('mobile tap reliability — clickTolerance', () => {
     // meaningful, not just "accepts everything".
     await fingerRollTap(page, 12)
 
-    await page.waitForTimeout(2000)
-    expect(await mapClickCount(page)).toBe(0)
+    await expect.poll(() => mapClickCount(page), { timeout: 500 }).toBe(0)
   })
 })

@@ -20,13 +20,13 @@ test.describe('compare view dimming interacts with satellite mode', () => {
     await page.goto('/#FRA,DEU')
     await waitForMap(page)
     // Poll until dimming animation settles to the compare-view value (0.15).
-    await expect.poll(() => getBorderOpacity(page), { timeout: 5_000 }).toBeCloseTo(0.15, 2)
+    await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.15, 2)
 
     // Exit compare.
     await page.evaluate(() => {
       window.location.hash = '#FRA'
     })
     // Poll until dimming releases back to the satellite-default value (0.6).
-    await expect.poll(() => getBorderOpacity(page), { timeout: 5_000 }).toBeCloseTo(0.6, 2)
+    await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.6, 2)
   })
 })

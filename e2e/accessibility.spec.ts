@@ -21,7 +21,6 @@ test.describe('Accessibility', () => {
     await expect(skipLink).toBeFocused()
 
     await page.keyboard.press('Enter')
-    await page.waitForTimeout(200)
 
     // Search input should be focused
     await expect(page.getByTestId('search-input')).toBeFocused()
@@ -36,7 +35,6 @@ test.describe('Accessibility', () => {
 
     // Activate it
     await page.keyboard.press('Enter')
-    await page.waitForTimeout(200)
 
     // Map container should be focused
     await expect(page.locator('[role="application"]')).toBeFocused()
@@ -45,13 +43,11 @@ test.describe('Accessibility', () => {
   test('ARIA live region announces country selection', async ({ page }) => {
     await page.goto('/')
     await dismissLauncher(page)
-    await page.waitForTimeout(500)
 
     // Navigate to a country via hash
     await page.evaluate(() => {
       window.location.hash = 'FRA'
     })
-    await page.waitForTimeout(1000)
 
     const liveRegion = page.locator('[aria-live="polite"]').first()
     await expect(liveRegion).toContainText('France selected')
@@ -59,11 +55,10 @@ test.describe('Accessibility', () => {
 
   test('ARIA live region announces panel close', async ({ page }) => {
     await page.goto('/#FRA')
-    await page.waitForTimeout(1500)
+    await expect(page.getByTestId('country-panel')).toBeVisible()
 
     // Close the panel
     await page.getByTestId('panel-close').click()
-    await page.waitForTimeout(500)
 
     const liveRegion = page.locator('[aria-live="polite"]').first()
     await expect(liveRegion).toContainText('Country panel closed')
@@ -72,7 +67,6 @@ test.describe('Accessibility', () => {
   test('search combobox has correct ARIA attributes', async ({ page }) => {
     await page.goto('/')
     await dismissLauncher(page)
-    await page.waitForTimeout(500)
 
     const input = page.getByTestId('search-input')
     await expect(input).toHaveRole('combobox')
@@ -83,7 +77,7 @@ test.describe('Accessibility', () => {
 
   test('panel has correct ARIA role and label', async ({ page }) => {
     await page.goto('/#FRA')
-    await page.waitForTimeout(1500)
+    await expect(page.getByTestId('country-panel')).toBeVisible()
 
     const panel = page.getByTestId('country-panel')
     await expect(panel).toHaveAttribute('role', 'complementary')
@@ -93,7 +87,6 @@ test.describe('Accessibility', () => {
   test('theme toggle has descriptive aria-label', async ({ page }) => {
     await page.goto('/')
     await dismissLauncher(page)
-    await page.waitForTimeout(500)
 
     const toggle = page.getByTestId('theme-toggle')
     const label = await toggle.getAttribute('aria-label')
@@ -200,7 +193,7 @@ test.describe('Accessibility', () => {
     await expect(page.getByTestId('launcher-milestone')).toBeVisible({ timeout: 5_000 })
     // Wait for the entrance animation (260ms) to complete so axe computes
     // contrast against the final fully-opaque state, not a mid-animation frame.
-    await page.waitForTimeout(400)
+    await expect(page.getByTestId('launcher-milestone')).toHaveAttribute('data-animation-state', 'idle')
     const results = await new AxeBuilder({ page })
       .include('[data-testid="launcher-milestone"]')
       .exclude('.maplibregl-canvas')
