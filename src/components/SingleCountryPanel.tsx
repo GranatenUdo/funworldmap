@@ -82,16 +82,30 @@ export function SingleCountryPanel({
       setAnimationState('idle')
       return
     }
-    const animations = root.getAnimations({ subtree: true })
-    if (animations.length === 0) {
-      setAnimationState('idle')
-      return
-    }
     let cancelled = false
-    Promise.all(animations.map((a) => a.finished))
-      .then(() => { if (!cancelled) setAnimationState('idle') })
-      .catch(() => { /* animation cancelled (component unmounted); ignore */ })
-    return () => { cancelled = true }
+    let resolved = false
+    const flipToIdle = () => {
+      if (cancelled || resolved) return
+      resolved = true
+      setAnimationState('idle')
+    }
+    // Primary: wait for animations to finish (precise on local).
+    // Fallback: 1s cap (covers CI cases where getAnimations doesn't observe
+    // CSS transitions, or .finished promises don't resolve).
+    const rafId = window.requestAnimationFrame(() => {
+      if (cancelled) return
+      const animations = root.getAnimations({ subtree: true })
+      if (animations.length === 0) { flipToIdle(); return }
+      Promise.all(animations.map((a) => a.finished))
+        .then(flipToIdle)
+        .catch(flipToIdle)
+    })
+    const timeoutId = window.setTimeout(flipToIdle, 1000)
+    return () => {
+      cancelled = true
+      window.cancelAnimationFrame(rafId)
+      window.clearTimeout(timeoutId)
+    }
   }, [])
 
   const onShareLink = () => {
