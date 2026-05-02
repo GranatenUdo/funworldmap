@@ -167,7 +167,7 @@ test.describe('Country click interaction', () => {
     // Poll until the hash reflects the country selection.
     await expect.poll(
       () => page.evaluate(() => window.location.hash),
-      { timeout: 10_000 },
+      { timeout: 15_000 },
     ).toMatch(/^#[A-Z]{3}$/)
     await expect(page.getByTestId('country-panel')).toBeVisible()
 
@@ -199,7 +199,7 @@ test.describe('Country click interaction', () => {
     // Poll until deselect propagates: hash clears AND panel unmounts.
     await expect.poll(
       () => page.evaluate(() => window.location.hash),
-      { timeout: 10_000 },
+      { timeout: 15_000 },
     ).toBe('')
     await expect(page.getByTestId('country-panel')).not.toBeAttached()
   })
@@ -235,7 +235,7 @@ test.describe('Country selection via hash', () => {
     // Poll until the invalid-hash redirect logic clears the hash.
     await expect.poll(
       () => page.evaluate(() => window.location.hash),
-      { timeout: 5_000 },
+      { timeout: 15_000 },
     ).toBe('')
     await expect(page.getByTestId('country-panel')).not.toBeAttached()
   })

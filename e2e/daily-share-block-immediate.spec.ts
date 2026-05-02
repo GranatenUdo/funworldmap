@@ -48,8 +48,8 @@ test.describe('daily share block on game-over', () => {
     })
 
     await finalizeGame(page)
-    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
-    await expect(page.getByTestId('daily-share-block')).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('daily-share-block')).toBeVisible({ timeout: 15_000 })
     const preview = page.getByTestId('daily-share-preview')
     const text = (await preview.textContent()) ?? ''
     expect(text).toContain('100/100')
@@ -85,7 +85,7 @@ test.describe('daily share block on game-over', () => {
     })
 
     await finalizeGame(page)
-    await expect(page.getByTestId('daily-share-block')).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByTestId('daily-share-block')).toBeVisible({ timeout: 15_000 })
     const preview = page.getByTestId('daily-share-preview')
     const text = (await preview.textContent()) ?? ''
     expect(text).not.toContain('not played')

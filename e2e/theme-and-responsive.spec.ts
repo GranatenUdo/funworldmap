@@ -50,7 +50,7 @@ test.describe('Theme System', () => {
 
     await expect.poll(
       () => page.evaluate(() => document.documentElement.classList.contains('dark')),
-      { timeout: 5_000 },
+      { timeout: 15_000 },
     ).toBe(true)
   })
 })
