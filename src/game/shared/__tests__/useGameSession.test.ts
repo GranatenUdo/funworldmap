@@ -424,4 +424,34 @@ describe('useGameSession (post-collapse)', () => {
       expect(result.current.session.lastOutcome?.endsGame).toBe(false)
     })
   })
+
+  describe("finalize action", () => {
+    it('transitions round-ended → game-over when lastOutcome.endsGame is true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), 1, 3, '2026-05-02'))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      act(() => result.current.attempt(countryInput('ESP'), miss('FRA', 'ESP')))
+      act(() => result.current.attempt(countryInput('ITA'), miss('FRA', 'ITA')))
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => result.current.finalize())
+      expect(result.current.session.status).toBe('game-over')
+    })
+
+    it('is a no-op when lastOutcome.endsGame is false', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => result.current.finalize())
+      expect(result.current.session.status).toBe('round-ended')
+    })
+
+    it('is a no-op when status !== round-ended', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      expect(result.current.session.status).toBe('playing')
+      act(() => result.current.finalize())
+      expect(result.current.session.status).toBe('playing')
+    })
+  })
 })
