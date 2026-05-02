@@ -124,8 +124,7 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
       }).__funworldmap_game
       game?.submitCountryGuess('USA')
     })
-    await page.waitForTimeout(1500)
-    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+    await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 2_000 })
 
     // Attempt 2: wrong guess. Same expectation — no panel between attempts.
     await page.evaluate(() => {
@@ -134,8 +133,7 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
       }).__funworldmap_game
       game?.submitCountryGuess('CHN')
     })
-    await page.waitForTimeout(1500)
-    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+    await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 2_000 })
 
     // Note: attempt 3 transitions directly to `status: 'game-over'` (not
     // `round-ended`), so the new round-end panel does not open. The existing
