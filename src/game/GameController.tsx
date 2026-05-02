@@ -129,6 +129,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // /reveal hash within one mount won't re-emit; this matches funnel-counting
   // semantics (deep-link arrival, not view-count).
   const lastRevealEmitHashRef = useRef<string | null>(null)
+  const lastAnnouncedRoundKeyRef = useRef<string | null>(null)
 
   // Pool derivation for the hash-bootstrap path (which needs `getMode` for
   // the first round ahead of the reducer running).
@@ -310,11 +311,17 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     if (!mode) return
     if (session.status === 'playing' && session.currentRound) {
       if (session.roundIndex === 0) recordedRef.current = false
-      if (session.currentRound.kind === 'country-pinning') {
-        dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
-      } else {
-        const r = session.currentRound
-        dispatchAnnouncement(`Round ${session.roundIndex + 1}. Where is ${r.targetName}, ${r.targetCountryName}? Click anywhere on the map.`)
+      const key = session.currentRound.kind === 'country-pinning'
+        ? session.currentRound.targetCca3
+        : session.currentRound.targetId
+      if (lastAnnouncedRoundKeyRef.current !== key) {
+        lastAnnouncedRoundKeyRef.current = key
+        if (session.currentRound.kind === 'country-pinning') {
+          dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
+        } else {
+          const r = session.currentRound
+          dispatchAnnouncement(`Round ${session.roundIndex + 1}. Where is ${r.targetName}, ${r.targetCountryName}? Click anywhere on the map.`)
+        }
       }
     }
     if (session.status === 'round-ended' && session.lastOutcome) {
@@ -393,6 +400,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
           attemptsUsed: attempts.length,
         })
       }
+      lastAnnouncedRoundKeyRef.current = null
       dispatchAnnouncement(`Game over. Final score ${session.score}.`)
     }
   }, [
