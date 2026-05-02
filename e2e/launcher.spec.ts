@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
+import { waitForAnimationIdle } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -95,6 +96,10 @@ test.describe('Launcher — session scope', () => {
     // Wait for the search results dropdown to be fully gone before clicking
     // panel-close, so the dropdown cannot intercept the click at z-50.
     await expect(page.getByTestId('search-results')).not.toBeAttached({ timeout: 5_000 })
+    // Wait for the panel slide-in animation to finish before clicking
+    // panel-close — on slow Software ANGLE CI the animation is still running
+    // when the next line executes, causing the click to miss / be intercepted.
+    await waitForAnimationIdle(page.getByTestId('country-panel'))
     await page.getByTestId('panel-close').click()
     await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 3_000 })
   })

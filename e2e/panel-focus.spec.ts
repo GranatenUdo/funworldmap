@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { dismissLauncher, waitForAnimationIdle } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -13,6 +13,7 @@ async function searchAndOpenPanel(page: Page, query: string) {
   await firstOption.click()
   const panel = page.getByTestId('country-panel')
   await expect(panel).toBeVisible({ timeout: 15_000 })
+  await waitForAnimationIdle(panel)
   return panel
 }
 
