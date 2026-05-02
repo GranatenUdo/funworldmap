@@ -105,6 +105,9 @@ test.describe('Country Pinning game', () => {
     await setRoundAndWait(page, 'FRA', 'France')
     await clickCountryPolygon(page, 'AUS')
 
+    // Three lives exhausted → round-ended with endsGame=true.
+    // finalize() drives the round-ended → game-over transition.
+    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
   })
 
@@ -131,6 +134,9 @@ test.describe('Country Pinning game', () => {
     await setRoundAndWait(page, 'FRA', 'France')
     await clickCountryPolygon(page, 'AUS')
 
+    // Three lives exhausted → round-ended with endsGame=true.
+    // finalize() drives the round-ended → game-over transition.
+    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
     // Effect focuses the Play again button on mount.
     await expect
