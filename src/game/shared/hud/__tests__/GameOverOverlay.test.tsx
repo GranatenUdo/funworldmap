@@ -18,6 +18,7 @@ const baseSession: GameSession = {
   currentRound: null,
   lastOutcome: null,
   dailyDate: null,
+  endedEarly: false,
   used: new Set(),
 }
 
@@ -122,5 +123,18 @@ describe('GameOverOverlay', () => {
       />,
     )
     expect(screen.getByText(/best: 50 pts/i)).toBeTruthy()
+  })
+
+  it('renders "Game ended early." when session.endedEarly is true', () => {
+    render(
+      <GameOverOverlay
+        session={{ ...baseSession, maxRounds: null, attemptsPerRound: 1, endedEarly: true }}
+        personalBest={zeroBest}
+        beatPersonalBest={false}
+        onPlayAgain={() => {}}
+        onBackToMap={() => {}}
+      />,
+    )
+    expect(screen.getByText('Game ended early.')).toBeTruthy()
   })
 })

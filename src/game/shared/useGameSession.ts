@@ -37,6 +37,7 @@ const EMPTY: GameSession = {
   currentRound: null,
   lastOutcome: null,
   dailyDate: null,
+  endedEarly: false,
   used: new Set(),
 }
 
@@ -178,7 +179,7 @@ function reducer(state: GameSession, action: Action): GameSession {
     case 'finishFree': {
       if (state.status === 'idle' || state.status === 'game-over') return state
       if (state.dailyDate !== null) return state
-      return { ...state, status: 'game-over' }
+      return { ...state, status: 'game-over', endedEarly: true }
     }
 
     case 'finalize': {

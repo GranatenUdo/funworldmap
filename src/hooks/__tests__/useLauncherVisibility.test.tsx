@@ -22,6 +22,7 @@ function makeSession(overrides: Partial<GameSession> = {}): GameSession {
     currentRound: null,
     lastOutcome: null,
     dailyDate: null,
+    endedEarly: false,
     used: new Set(),
     ...overrides,
   }

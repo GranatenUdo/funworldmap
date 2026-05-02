@@ -464,4 +464,31 @@ describe('useGameSession (post-collapse)', () => {
       expect(result.current.session.status).toBe('playing')
     })
   })
+
+  describe('endedEarly flag', () => {
+    it('start sets endedEarly false', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      expect(result.current.session.endedEarly).toBe(false)
+    })
+
+    it('finishFree sets endedEarly true', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.finishFree())
+      expect(result.current.session.endedEarly).toBe(true)
+    })
+
+    it('endOfRound natural ending leaves endedEarly false', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')))
+      act(() => result.current.advance(round('ITA')))
+      act(() => result.current.attempt(countryInput('ESP'), miss('ITA', 'ESP')))
+      act(() => result.current.advance(round('PRT')))
+      act(() => result.current.attempt(countryInput('GBR'), miss('PRT', 'GBR')))
+      expect(result.current.session.lives).toBe(0)
+      expect(result.current.session.endedEarly).toBe(false)
+    })
+  })
 })

@@ -99,6 +99,7 @@ export type GameSession = {
   currentRound: RoundSpec | null
   lastOutcome: GuessOutcome | null
   dailyDate: string | null           // YYYY-MM-DD when this is a daily; null for free/idle
+  endedEarly: boolean                // true when finishFree() ended the game before natural completion
   used: Set<string>
 }
 

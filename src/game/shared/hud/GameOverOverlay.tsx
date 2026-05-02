@@ -63,11 +63,13 @@ export function GameOverOverlay({
           Game over
         </h2>
         <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">
-          {session.maxRounds === null
-            ? 'Three wrong guesses.'
-            : session.maxRounds === 1
-              ? '1 round complete.'
-              : `${session.maxRounds} rounds complete.`}
+          {session.endedEarly
+            ? 'Game ended early.'
+            : session.maxRounds === null
+              ? 'Three wrong guesses.'
+              : session.maxRounds === 1
+                ? '1 round complete.'
+                : `${session.maxRounds} rounds complete.`}
         </p>
 
         <dl
