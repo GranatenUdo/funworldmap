@@ -33,6 +33,9 @@ test.describe('mobile — daily city flow', () => {
         .toBeGreaterThanOrEqual(expectedAttempts)
     }
 
+    // Three attempts exhaust the daily city round, landing in round-ended.
+    // finalize() drives the round-ended → game-over transition.
+    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 15_000 })
   })
 })

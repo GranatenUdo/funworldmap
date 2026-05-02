@@ -15,6 +15,7 @@ test.describe('daily best-of-3', () => {
     })
     await expect(page.getByTestId('game-done')).toBeVisible()
     await page.getByTestId('game-done').click()
+    await page.evaluate(() => (window as unknown as { __funworldmap_game: { finalize(): void } }).__funworldmap_game.finalize())
     await expect(page.getByTestId('game-over')).toBeVisible()
   })
 
