@@ -42,7 +42,7 @@ test.describe('game-over → new mode', () => {
             const g = (window as unknown as { __funworldmap_game?: { getSession: () => { status: string } } }).__funworldmap_game
             return g?.getSession().status ?? 'no-game'
           }),
-          { timeout: 5_000 },
+          { timeout: 15_000 },
         )
         .toBe('round-ended')
       await page.keyboard.press('Escape')
@@ -53,14 +53,14 @@ test.describe('game-over → new mode', () => {
             const g = (window as unknown as { __funworldmap_game?: { getSession: () => { status: string } } }).__funworldmap_game
             return g?.getSession().status ?? 'no-game'
           }),
-          { timeout: 5_000 },
+          { timeout: 15_000 },
         )
         .toBe('playing')
     }
     await submitAndWait(page, 'USA', 1)
 
     await finalizeGame(page)
-    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 15_000 })
 
     // Hash-only nav — does NOT reload the page, so the in-memory game-over
     // state is preserved up to the moment the bootstrap effect re-runs.
@@ -68,7 +68,7 @@ test.describe('game-over → new mode', () => {
       window.location.hash = '#game/city-guessing'
     })
 
-    await expect(page.getByTestId('game-over')).toBeHidden({ timeout: 5_000 })
+    await expect(page.getByTestId('game-over')).toBeHidden({ timeout: 15_000 })
     await expect(page.getByTestId('game-hud')).toHaveAttribute('data-game-mode', 'city-guessing')
     await expect(page.getByTestId('game-hud')).toHaveAttribute('data-game-status', 'playing')
   })

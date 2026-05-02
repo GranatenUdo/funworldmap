@@ -76,7 +76,7 @@ test.describe('daily survives ocean clicks', () => {
 
     await finalizeGame(page)
     // Game-over reached — verify daily UI, not free UI:
-    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 15_000 })
     await expect(page.getByTestId('daily-share-block')).toBeVisible()
     await expect(page.getByTestId('game-over-pb')).toHaveCount(0)
     await expect(page.getByTestId('game-over-play-again')).toHaveCount(0)

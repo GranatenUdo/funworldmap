@@ -30,8 +30,8 @@ test.describe('panel focus management', () => {
       .poll(
         () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
         // 300 ms focus-deferring setTimeout in App.tsx + CI render latency
-        // can comfortably exceed the 5 s default; 10 s gives slack.
-        { timeout: 10_000 },
+        // can comfortably exceed the 5 s default; 15 s matches the CI baseline.
+        { timeout: 15_000 },
       )
       .toBe('panel-close')
   })

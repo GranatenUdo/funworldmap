@@ -97,7 +97,7 @@ export async function submitAndWait(page: Page, cca3: string, expectAfter: numbe
           .__funworldmap_game
         return game?.getSession().currentAttempts.length ?? 0
       }),
-      { timeout: 5_000 },
+      { timeout: 15_000 },
     )
     .toBe(expectAfter)
 }
@@ -450,7 +450,7 @@ export async function routeMapTiles(page: Page): Promise<void> {
  */
 export async function waitForAnimationIdle(
   locator: ReturnType<Page['locator']>,
-  timeout = 5_000,
+  timeout = 15_000,
 ): Promise<void> {
   await expect(locator).toHaveAttribute('data-animation-state', 'idle', { timeout })
 }
