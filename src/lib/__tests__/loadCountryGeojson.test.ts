@@ -10,18 +10,23 @@ describe('loadCountryGeojson', () => {
     }
   })
 
-  it('returns exactly 195 features (canonical 193 UN + VAT + PSE)', async () => {
-    // Note: this happens to balance out — world-atlas drops Tuvalu (ccn3 798,
-    // missing at 50m resolution) but splits Australia (ccn3 036) into two
-    // geometries (Australia mainland + Ashmore and Cartier Is.). 194 + 1 = 195.
-    // If world-atlas changes, this count will need to be revisited.
+  it('returns exactly 196 features (canonical 193 UN + VAT + PSE)', async () => {
+    // 196 = 195 canonical countries (193 UN + VAT + PSE), with AUS (id=36)
+    // appearing as 2 features (mainland + Ashmore & Cartier Islands), so the
+    // total feature count is one greater than the distinct-country count.
+    // All 195 canonical IDs are present in countries-10m (50m omits Tuvalu).
     const fc = await loadCountryGeojson()
-    expect(fc.features).toHaveLength(195)
+    expect(fc.features).toHaveLength(196)
   })
 
   it('includes Palestine (id 275)', async () => {
     const fc = await loadCountryGeojson()
     expect(fc.features.some((f) => Number(f.id) === 275)).toBe(true)
+  })
+
+  it('includes Tuvalu (id 798) — 10m has it; 50m did not', async () => {
+    const fc = await loadCountryGeojson()
+    expect(fc.features.some((f) => Number(f.id) === 798)).toBe(true)
   })
 
   it('excludes Taiwan (id 158)', async () => {
