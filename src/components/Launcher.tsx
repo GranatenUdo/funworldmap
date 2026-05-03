@@ -238,8 +238,11 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
             <div className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">
               funworldmap
             </div>
-            <p className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2">
-              {anchorDate ? `Daily · ${anchorDate}` : '194 countries. Explore or guess.'}
+            <p
+              className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2"
+              data-testid="launcher-subtitle"
+            >
+              {anchorDate ? `Daily · ${anchorDate}` : `${countries.length} countries. Explore or guess.`}
             </p>
           </div>
 
