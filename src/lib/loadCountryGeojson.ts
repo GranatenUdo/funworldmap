@@ -1,6 +1,13 @@
+import { CANONICAL_NUMERIC_IDS } from './canonicalCountries'
+
 /** Load the world-atlas 50m countries topology and return a normalized GeoJSON
  *  FeatureCollection with antimeridian wrapping fixed for non-polar polygons.
- *  Each feature has its numeric id promoted to `properties.id` (string). */
+ *  Each feature has its numeric id promoted to `properties.id` (string).
+ *
+ *  The features are filtered through `CANONICAL_NUMERIC_IDS` so only the 195
+ *  canonical sovereign states (193 UN members + VAT + PSE) are returned.
+ *  Dropped territories (Taiwan, Greenland, Hong Kong, Western Sahara, …)
+ *  are not rendered and therefore not clickable on the map. */
 export async function loadCountryGeojson(): Promise<GeoJSON.FeatureCollection> {
   const [topojsonClient, worldAtlas] = await Promise.all([
     import('topojson-client'),
@@ -12,6 +19,10 @@ export async function loadCountryGeojson(): Promise<GeoJSON.FeatureCollection> {
     topology,
     topology.objects.countries,
   ) as GeoJSON.FeatureCollection
+
+  geojson.features = geojson.features.filter((f) =>
+    CANONICAL_NUMERIC_IDS.has(Number(f.id)),
+  )
 
   for (const feature of geojson.features) {
     if (feature.id != null && feature.properties) {
