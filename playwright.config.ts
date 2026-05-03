@@ -51,6 +51,7 @@ export default defineConfig({
         'daily-reveal-on-final-attempt.spec.ts',
         // formerly chromium (DOM-only, run on real-GPU now to consolidate):
         'scaffold.spec.ts',
+        'canonical-195.spec.ts',
         'search.spec.ts',
         'theme-and-responsive.spec.ts',
         'accessibility.spec.ts',
