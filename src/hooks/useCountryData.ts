@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import countriesFile from '../data/countries.json'
+import { CANONICAL_CCA3 } from '../lib/canonicalCountries'
 import type { CountryData, CountriesFile } from '../lib/types'
 
 const data = countriesFile as unknown as CountriesFile
@@ -17,14 +18,15 @@ export interface CountryLookups {
 
 export function useCountryData(): CountryLookups {
   return useMemo(() => {
+    const countries = data.countries.filter((c) => CANONICAL_CCA3.has(c.cca3))
     const byNumeric = new Map<string, CountryData>()
     const byCca3 = new Map<string, CountryData>()
 
-    for (const country of data.countries) {
+    for (const country of countries) {
       byNumeric.set(country.ccn3, country)
       byCca3.set(country.cca3, country)
     }
 
-    return { countries: data.countries, byNumeric, byCca3, sources: data._sources }
+    return { countries, byNumeric, byCca3, sources: data._sources }
   }, [])
 }

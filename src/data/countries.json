@@ -6774,7 +6774,7 @@
         "SEN"
       ],
       "independent": true,
-      "unMember": false,
+      "unMember": true,
       "landlocked": false,
       "timezones": [
         "UTC"
@@ -6794,7 +6794,7 @@
         "latlng": "restcountries",
         "borders": "restcountries",
         "independent": "restcountries",
-        "unMember": "restcountries",
+        "unMember": "manual-override",
         "landlocked": "restcountries",
         "timezones": "restcountries",
         "continents": "restcountries",

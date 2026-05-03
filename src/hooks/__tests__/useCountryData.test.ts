@@ -3,9 +3,9 @@ import { renderHook } from '@testing-library/react'
 import { useCountryData } from '../useCountryData'
 
 describe('useCountryData', () => {
-  it('returns a non-empty countries array', () => {
+  it('returns the canonical 195-country array', () => {
     const { result } = renderHook(() => useCountryData())
-    expect(result.current.countries.length).toBeGreaterThan(100)
+    expect(result.current.countries.length).toBe(195)
   })
 
   it('byNumeric maps ccn3 to country', () => {
@@ -20,6 +20,17 @@ describe('useCountryData', () => {
     const germany = result.current.byCca3.get('DEU')
     expect(germany).toBeDefined()
     expect(germany?.name.common).toBe('Germany')
+  })
+
+  it('excludes non-canonical entries and includes UN observers / canonical edge-cases', () => {
+    const { result } = renderHook(() => useCountryData())
+    const { byCca3 } = result.current
+    // Taiwan is excluded (not a UN member, not in observer allowlist)
+    expect(byCca3.has('TWN')).toBe(false)
+    // Palestine is included (UN observer state)
+    expect(byCca3.has('PSE')).toBe(true)
+    // Guinea-Bissau is included (UN member; regression guard for the unMember fix)
+    expect(byCca3.has('GNB')).toBe(true)
   })
 
   it('byNumeric and byCca3 have identical sizes', () => {

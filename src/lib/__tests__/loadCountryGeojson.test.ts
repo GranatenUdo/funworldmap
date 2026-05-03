@@ -1,5 +1,47 @@
 import { describe, expect, it } from 'vitest'
-import { fixAntimeridian } from '../loadCountryGeojson'
+import { fixAntimeridian, loadCountryGeojson } from '../loadCountryGeojson'
+import { CANONICAL_NUMERIC_IDS } from '../canonicalCountries'
+
+describe('loadCountryGeojson', () => {
+  it('returns only features whose numeric id is in CANONICAL_NUMERIC_IDS', async () => {
+    const fc = await loadCountryGeojson()
+    for (const feature of fc.features) {
+      expect(CANONICAL_NUMERIC_IDS.has(Number(feature.id))).toBe(true)
+    }
+  })
+
+  it('returns at least 195 features (canonical 193 UN + VAT + PSE)', async () => {
+    // Not pinning an exact count — world-atlas occasionally splits a country
+    // into multiple features at id-level (e.g. AUS appears as mainland +
+    // Ashmore & Cartier Is. sharing id=36 in countries-10m). The semantic
+    // invariants are locked in by the per-country includes/excludes tests
+    // below. Here we just guarantee the canonical 195 is reachable.
+    const fc = await loadCountryGeojson()
+    expect(fc.features.length).toBeGreaterThanOrEqual(195)
+    expect(fc.features.length).toBeLessThanOrEqual(210)
+  })
+
+  it('includes Palestine (id 275)', async () => {
+    const fc = await loadCountryGeojson()
+    expect(fc.features.some((f) => Number(f.id) === 275)).toBe(true)
+  })
+
+  it('includes Tuvalu (id 798) — 10m has it; 50m did not', async () => {
+    const fc = await loadCountryGeojson()
+    expect(fc.features.some((f) => Number(f.id) === 798)).toBe(true)
+  })
+
+  it('excludes Taiwan (id 158)', async () => {
+    const fc = await loadCountryGeojson()
+    expect(fc.features.some((f) => Number(f.id) === 158)).toBe(false)
+  })
+
+  it('excludes Greenland (id 304) and Hong Kong (id 344)', async () => {
+    const fc = await loadCountryGeojson()
+    expect(fc.features.some((f) => Number(f.id) === 304)).toBe(false)
+    expect(fc.features.some((f) => Number(f.id) === 344)).toBe(false)
+  })
+})
 
 function makePolygonFeature(coords: [number, number][][]): GeoJSON.Feature {
   return {

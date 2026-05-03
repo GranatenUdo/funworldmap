@@ -161,6 +161,8 @@ Two files under `scripts/daily-content/`:
 
 **Curation criteria (in order of priority):**
 1. **Political neutrality.** Exclude entries where the daily puzzle would implicitly take a side on contested sovereignty, borders, or naming: Taiwan, Kosovo, Palestine, Western Sahara, Jerusalem, Crimea, Taipei (as capital) — any choice on these is editorial. Free mode stays on the full pool; daily uses the filtered one.
+
+   > **2026-05-03 update:** the dataset itself is now restricted to the canonical 195 (193 UN members + Vatican + Palestine), which automatically excludes Taiwan, Kosovo, Western Sahara, Crimea, and dependent territories. Palestine is included in the daily pool. The previous per-territory exclusion list is superseded by the canonical-195 filter.
 2. **Unambiguous recognition.** Exclude microstates and non-sovereign territories whose names/locations typical users cannot place (Vatican aside — it's recognizable enough). Retain teaching-value clarity over edge-case trivia.
 3. **Global balance.** No continent dominates. Roughly: Europe 25 %, Asia 25 %, Africa 20 %, Americas 20 %, Oceania 10 %. Prevents regional bias in the daily series.
 4. **Stable names/IDs.** Exclude entries with recent naming disputes (e.g., Türkiye vs. Turkey) where `countries.json` may churn.
