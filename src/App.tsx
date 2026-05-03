@@ -28,17 +28,19 @@ export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
   const { cities } = useCityData()
 
+  // useCountryData already filters to the canonical 195 (193 UN members + Vatican + Palestine)
+  // via CANONICAL_CCA3, so no further independence filter is needed here. Palestine has
+  // independent === false in the source data; passing the field through keeps the panel badge
+  // honest while still including PSE in the playable pool.
   const pool = useMemo<CountryLike[]>(
     () =>
-      countries
-        .filter((c: CountryData) => c.independent === true)
-        .map((c: CountryData) => ({
-          cca3: c.cca3,
-          name: { common: c.name.common },
-          flag: c.flag,
-          latlng: c.latlng,
-          independent: true,
-        })),
+      countries.map((c: CountryData) => ({
+        cca3: c.cca3,
+        name: { common: c.name.common },
+        flag: c.flag,
+        latlng: c.latlng,
+        independent: c.independent,
+      })),
     [countries],
   )
   const poolByCca3 = useMemo(() => new Map(pool.map((c) => [c.cca3, c])), [pool])
