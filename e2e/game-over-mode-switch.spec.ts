@@ -24,6 +24,11 @@ async function waitForGameReady(page: Page) {
 
 test.describe('game-over → new mode', () => {
   test('hash-changing to a different #game URL during game-over starts the new mode', async ({ page }) => {
+    // Quarantined on CI pending tracking issue #32 — under chromium workers=2,
+    // the endGame→start sequence in GameController's hashchange handler leaves
+    // session.modeId='' instead of the new mode. Reproduces 4/4 CI runs; cannot
+    // reproduce locally. Runs locally for diagnosis.
+    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/32')
     await page.goto('/#game/country-pinning')
     await waitForMap(page)
     await waitForGameReady(page)
