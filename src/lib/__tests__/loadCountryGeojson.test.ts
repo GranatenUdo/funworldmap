@@ -10,13 +10,15 @@ describe('loadCountryGeojson', () => {
     }
   })
 
-  it('returns exactly 196 features (canonical 193 UN + VAT + PSE)', async () => {
-    // 196 = 195 canonical countries (193 UN + VAT + PSE), with AUS (id=36)
-    // appearing as 2 features (mainland + Ashmore & Cartier Islands), so the
-    // total feature count is one greater than the distinct-country count.
-    // All 195 canonical IDs are present in countries-10m (50m omits Tuvalu).
+  it('returns at least 195 features (canonical 193 UN + VAT + PSE)', async () => {
+    // Not pinning an exact count — world-atlas occasionally splits a country
+    // into multiple features at id-level (e.g. AUS appears as mainland +
+    // Ashmore & Cartier Is. sharing id=36 in countries-10m). The semantic
+    // invariants are locked in by the per-country includes/excludes tests
+    // below. Here we just guarantee the canonical 195 is reachable.
     const fc = await loadCountryGeojson()
-    expect(fc.features).toHaveLength(196)
+    expect(fc.features.length).toBeGreaterThanOrEqual(195)
+    expect(fc.features.length).toBeLessThanOrEqual(210)
   })
 
   it('includes Palestine (id 275)', async () => {

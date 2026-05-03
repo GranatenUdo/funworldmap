@@ -17,6 +17,11 @@ import countriesData from '../data/countries.json'
  *
  * Adding a country to this list means it shows on the map, can be guessed,
  * and is eligible for the daily. Be deliberate.
+ *
+ * NOTE: the `ReadonlySet` typing is type-only. At runtime these are regular
+ * `Set` instances. Consumers MUST treat them as read-only — only call `.has()`
+ * / `.size`. Mutating them (`(.. as Set).add(...)`) would corrupt the global
+ * canonical state for every consumer in the same JS realm.
  */
 export const CANONICAL_OBSERVER_CCA3: ReadonlySet<string> = new Set(['VAT', 'PSE'])
 
