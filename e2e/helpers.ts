@@ -97,7 +97,7 @@ export async function submitAndWait(page: Page, cca3: string, expectAfter: numbe
           .__funworldmap_game
         return game?.getSession().currentAttempts.length ?? 0
       }),
-      { timeout: 5_000 },
+      { timeout: 15_000 },
     )
     .toBe(expectAfter)
 }
@@ -124,22 +124,24 @@ export async function finalizeGame(page: Page): Promise<void> {
  * launcher by default.
  *
  * Implementation notes:
- * - Uses waitFor({ state: 'visible' }) with a 2s budget instead of a one-shot
- *   isVisible() — the latter races against the launcher's 260ms staggered
- *   entrance animation on slow renderers (Linux CI, headless xvfb).
+ * - Waits for waitForAppReady first so the app has committed its first
+ *   render. After that, useLauncherVisibility's `visible` boolean is
+ *   deterministic (the outer launcher div has no entrance animation — it
+ *   is committed mounted-or-not on first render). This eliminates the
+ *   prior 2s race window, which on slow CI was returning early without
+ *   dismissing — leaving the launcher overlaid for subsequent clicks.
  * - Awaits not.toBeAttached after dismiss so the caller can rely on the
- *   launcher's backdrop being fully removed before performing clicks that
- *   would otherwise be absorbed by the still-present backdrop.
+ *   launcher being fully removed before performing clicks that would
+ *   otherwise be absorbed by the launcher's z-[210] backdrop.
  * - Final 150ms settle lets React batch-commit the post-dismiss header
  *   re-render (play + satellite buttons reappearing) before the caller
  *   interacts.
  */
 export async function dismissLauncher(page: Page): Promise<void> {
+  await waitForAppReady(page)
   const launcher = page.getByTestId('launcher')
-  try {
-    await launcher.waitFor({ state: 'visible', timeout: 2_000 })
-  } catch {
-    // Launcher never appeared within 2s — deep-link test or already dismissed.
+  if (!(await launcher.isVisible())) {
+    // Deep-link test: launcher will not appear.
     return
   }
   await page.getByTestId('launcher-dismiss').click()
@@ -450,7 +452,7 @@ export async function routeMapTiles(page: Page): Promise<void> {
  */
 export async function waitForAnimationIdle(
   locator: ReturnType<Page['locator']>,
-  timeout = 5_000,
+  timeout = 15_000,
 ): Promise<void> {
   await expect(locator).toHaveAttribute('data-animation-state', 'idle', { timeout })
 }

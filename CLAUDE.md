@@ -131,6 +131,26 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 3. **Reproduce locally with `--workers=2`** (matches CI parallelism). Single-worker local runs hide most flakes.
 4. **The escalation rule from `docs/superpowers/plans/2026-04-22-deflake-chromium-e2e.md`:** if local 10× green but CI red, the test is making an assumption your local env happens to satisfy. Don't paper over with retries — fix the assumption.
 
+### Quarantining a CI-only flake (last-resort)
+
+When a test fails consistently on CI and the underlying bug is bigger-than-this-PR (a real-bug, an animation race that needs component changes, etc.), quarantine it via conditional `test.fixme` so CI is honestly green while the test stays runnable locally for diagnosis:
+
+```ts
+test('the flaky test', async ({ page }) => {
+  // Quarantined on CI pending tracking issue #N — <one-line-symptom>.
+  // <Why CI-only — what differs between local and CI.>
+  test.fixme(!!process.env.CI, 'tracking issue: https://github.com/.../issues/N')
+  // …test body unchanged…
+})
+```
+
+Rules:
+
+1. **Every quarantined test MUST have a tracking issue link** in the `test.fixme` reason. The issue documents the symptom, the diagnosis so far, suggested fix shapes, and the failing run URL.
+2. **`test.fixme` is for "we will fix this", not "we accept this is broken forever".** A quarantine without a tracking issue is `test.skip`, which is a stronger signal of permanent disable — use that only when removing the test outright.
+3. **Conditional on `process.env.CI` only**, not on browser/project. The test should run in dev so a developer hitting the bug path locally still sees the failure.
+4. **Don't add `continue-on-error`** to the workflow — that silently allows CI to be perpetually red. `test.fixme` makes the suppression explicit and visible in `npm run test:e2e` output ("3 fixme") rather than hidden in a workflow attribute.
+
 ### Reference: the 2026-04-28 flake regression
 
 `docs/superpowers/notes/2026-04-28-flake-regression-analysis.md` documents how this codebase's chromium e2e suite regressed to a flaky state after the 2026-04-22 deflake fix. TL;DR: the original deflake fix was load-time-only (added `data-app-ready`); per-test `waitForTimeout` calls and `force: true` clicks were never removed; subsequent PRs added more tests following the same patterns; cumulative flake rate eventually exceeded CI tolerance. The rules above are the rules whose violation caused that regression.

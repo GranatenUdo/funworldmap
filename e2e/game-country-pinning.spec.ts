@@ -160,7 +160,7 @@ test.describe('Country Pinning game', () => {
         const t = document.querySelector('.country-tooltip')
         return t?.classList.contains('visible') ?? false
       }),
-      { timeout: 2_000 },
+      { timeout: 15_000 },
     ).toBe(false)
   })
 

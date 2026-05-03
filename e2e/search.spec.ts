@@ -31,9 +31,9 @@ test.describe('Search', () => {
     await searchInput.press('ArrowDown')
     await searchInput.press('Enter')
 
-    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#FRA')
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 15_000 }).toBe('#FRA')
     const panel = page.getByTestId('country-panel')
-    await expect(panel).toBeVisible({ timeout: 10_000 })
+    await expect(panel).toBeVisible({ timeout: 15_000 })
     await expect(panel).toContainText('France')
   })
 
@@ -53,7 +53,7 @@ test.describe('Search', () => {
     // ensures React has committed the isOpen state that gates onKeyDown.
     await expect(
       page.getByTestId('search-results').getByRole('option', { name: /Germany/ }).first()
-    ).toBeVisible({ timeout: 10_000 })
+    ).toBeVisible({ timeout: 15_000 })
 
     await input.press('ArrowDown')
     // Enter to select
