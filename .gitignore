@@ -30,6 +30,9 @@ coverage/
 # Worktrees
 .worktrees/
 
+# Claude Code session state (scheduled tasks lock, etc.)
+.claude/
+
 # Playwright MCP session artifacts
 .playwright-mcp/
 
