@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react'
 import { type ReactNode } from 'react'
 import { MapProvider, useMap } from '../useMap'
 import { useCompareViewDimming } from '../useCompareViewDimming'
+import { CORAL, CORAL_LIGHT, TEAL_DIM } from '../../lib/mapPalette'
 
 function makeFakeMap() {
   const calls: Record<string, unknown[][]> = { setFilter: [], setPaintProperty: [] }
@@ -52,6 +53,49 @@ describe('useCompareViewDimming', () => {
     expect(borderCall?.[2]).toBe(0.15)
   })
 
+  it('pins A (selection) to CORAL and B (compare) to TEAL_DIM when compareWith is present', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useCompareViewDimming({
+          loaded: true,
+          compareWith: { ccn3: '276' },
+          satellite: false,
+          resolvedTheme: 'light',
+        }),
+      { wrapper: makeWrapper(fake) },
+    )
+    const selFill = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-selected' && c[1] === 'fill-color',
+    )
+    expect(selFill?.[2]).toBe(CORAL)
+    const cmpFill = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-compare-fill' && c[1] === 'fill-color',
+    )
+    expect(cmpFill?.[2]).toBe(TEAL_DIM)
+  })
+
+  it('pins A to CORAL (not CORAL_LIGHT) in dark mode when compareWith is present', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useCompareViewDimming({
+          loaded: true,
+          compareWith: { ccn3: '276' },
+          satellite: false,
+          resolvedTheme: 'dark',
+        }),
+      { wrapper: makeWrapper(fake) },
+    )
+    const selFill = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-selected' && c[1] === 'fill-color',
+    )
+    // In compare mode the badge colour (#f43f5e = CORAL) is always used,
+    // not the dark-theme variant CORAL_LIGHT.
+    expect(selFill?.[2]).toBe(CORAL)
+    expect(selFill?.[2]).not.toBe(CORAL_LIGHT)
+  })
+
   it('restores default fill + border paint when compareWith clears (non-satellite)', () => {
     const fake = makeFakeMap()
     renderHook(
@@ -75,6 +119,11 @@ describe('useCompareViewDimming', () => {
       (c) => c[0] === 'country-borders' && c[1] === 'line-opacity',
     )
     expect(borderOpacity?.[2]).toBe(0.5)
+    // On exit from compare, selection layers restore to the theme-adjusted coral.
+    const selFill = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-selected' && c[1] === 'fill-color',
+    )
+    expect(selFill?.[2]).toBe(CORAL_LIGHT)
   })
 
   it('restores satellite border paint when compareWith clears in satellite mode', () => {
