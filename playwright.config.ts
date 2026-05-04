@@ -77,6 +77,7 @@ export default defineConfig({
         'daily-deep-link.spec.ts',
         'launcher-history.spec.ts',
         'telemetry-deep-link.spec.ts',
+        'toast-above-modal.spec.ts',
       ],
     },
     {
