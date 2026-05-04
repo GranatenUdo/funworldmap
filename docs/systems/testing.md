@@ -53,13 +53,13 @@ Test map state by reaching into the MapLibre API through the browser's JavaScrip
 
 ### Exposing the Map Instance
 
-For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. `useMapInstance` (lines 104–106) and `GameController` (lines 704–706) conditionally expose test seams:
+For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. Three modules contribute to the test seams: `useMapInstance.ts` (lines 104–106) exposes the map instance under `__funworldmap_map`, `GameController.tsx` (lines 704–706) adds game submission methods, and `GameSessionProvider.tsx` (lines 60–84) adds session lifecycle methods like `completeNow` and `endGame`:
 
 ```ts
-// In useMapInstance.ts and GameController.tsx:
+// In useMapInstance.ts, GameController.tsx, and GameSessionProvider.tsx:
 if (import.meta.env.VITE_TEST_HOOKS) {
-  window.__funworldmap_map = map
-  window.__funworldmap_game = { submitGuess, submitCountryGuess, setRound, ... }
+  window.__funworldmap_map[methodName] = ... // multiple modules contribute
+  window.__funworldmap_game[methodName] = ... // (see source for complete list)
 }
 ```
 
