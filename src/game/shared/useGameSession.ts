@@ -21,6 +21,7 @@ type Action =
   | { type: 'endGame' }
   | { type: 'finishFree' }
   | { type: 'finalize' }
+  | { type: 'restart'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number; dailyDate: string | null }
 
 const EMPTY: GameSession = {
   modeId: 'country-pinning',
@@ -187,6 +188,31 @@ function reducer(state: GameSession, action: Action): GameSession {
       if (!state.lastOutcome?.endsGame) return state
       return { ...state, status: 'game-over' }
     }
+
+    case 'restart': {
+      // Atomic transition from any state (including game-over) directly into
+      // a fresh playing session for a new mode. Collapsing endGame+start into
+      // a single dispatch avoids the intermediate `status='idle'` render that
+      // would otherwise unmount the HUD between the two reducer ticks — the
+      // root cause of bug #32 (game-over → hash-mode-switch race).
+      if (action.attemptsPerRound > 1 && action.maxRounds === null) {
+        if (typeof console !== 'undefined') {
+          console.error('useGameSession: attemptsPerRound>1 with maxRounds=null is unsupported')
+        }
+        return state
+      }
+      return {
+        ...EMPTY,
+        modeId: action.modeId,
+        status: 'playing',
+        maxRounds: action.maxRounds,
+        attemptsPerRound: action.attemptsPerRound,
+        attemptsRemaining: action.attemptsPerRound,
+        currentRound: action.firstRound,
+        dailyDate: action.dailyDate,
+        used: new Set([roundKey(action.firstRound)]),
+      }
+    }
   }
 }
 
@@ -201,6 +227,7 @@ export function useGameSession(): {
   endGame: () => void
   finishFree: () => void
   finalize: () => void
+  restart: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
 } {
   const [session, dispatch] = useReducer(reducer, EMPTY)
   const start = useCallback(
@@ -223,5 +250,10 @@ export function useGameSession(): {
   const endGame = useCallback(() => dispatch({ type: 'endGame' }), [])
   const finishFree = useCallback(() => dispatch({ type: 'finishFree' }), [])
   const finalize = useCallback(() => dispatch({ type: 'finalize' }), [])
-  return { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize }
+  const restart = useCallback(
+    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound = 1, dailyDate: string | null = null) =>
+      dispatch({ type: 'restart', modeId, firstRound, maxRounds, attemptsPerRound, dailyDate }),
+    [],
+  )
+  return { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart }
 }

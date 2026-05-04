@@ -117,7 +117,7 @@ interface Props {
 
 export function GameController({ countries, cities, byCca3 }: Props) {
   const { mapRef } = useMap()
-  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize } = useGameSessionContext()
+  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
@@ -137,10 +137,17 @@ export function GameController({ countries, cities, byCca3 }: Props) {
 
   // Start a daily round, resuming from a saved blob if the date+mode match.
   // Used by both the immediate hash-bootstrap and the deferred-pool drain path.
+  // When `atomicRestart` is true, the fresh-start branch dispatches the atomic
+  // `restart` reducer action instead of `start`, collapsing what would
+  // otherwise be a two-render endGame+start sequence into a single render.
+  // (See bug #32: the intermediate `status='idle'` render between dispatches
+  // unmounts the HUD and triggers a remount race on slow CI.)
   const startOrResumeDaily = useCallback(
-    (id: ModeId, date: string, firstRound: RoundSpec): void => {
+    (id: ModeId, date: string, firstRound: RoundSpec, atomicRestart = false): void => {
       const resumed = readResume()
       if (resumed && resumed.date === date && resumed.modeId === id && resumed.attempts.length > 0) {
+        // `resume` already replaces state atomically regardless of prior status,
+        // so it is safe from any state including game-over.
         resume({
           modeId: id,
           round: firstRound,
@@ -151,11 +158,15 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
         return
       }
-      start(id, firstRound, 1, DAILY_ATTEMPTS_PER_ROUND, date)
+      if (atomicRestart) {
+        restart(id, firstRound, 1, DAILY_ATTEMPTS_PER_ROUND, date)
+      } else {
+        start(id, firstRound, 1, DAILY_ATTEMPTS_PER_ROUND, date)
+      }
       track('deep_link_opened', { dateKind: 'today', outcome: 'start' })
       track('daily_started', { mode: id })
     },
-    [start, resume],
+    [start, resume, restart],
   )
 
   // Hash → session bootstrap. Read status via ref (hashchange closure-staleness fix).
@@ -181,24 +192,30 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       }
       // If a game/daily route arrives while the previous session is still in
       // game-over (e.g. user pasted a different mode URL or used browser
-      // back/forward), end the previous session synchronously so the start
-      // branches below proceed. statusRef is a mutable ref, so we mirror the
-      // dispatch locally to keep the `=== 'idle'` guards consistent within
-      // this same check() invocation.
-      if (
-        statusRef.current === 'game-over' &&
-        ((state.kind === 'game' && state.modeId) ||
-          (state.kind === 'daily' && state.modeId && !state.reveal))
-      ) {
+      // back/forward), capture that as a one-shot flag so the start branches
+      // below dispatch the atomic `restart` action instead of the two-step
+      // `endGame + start` sequence. Bug #32: the intermediate `status='idle'`
+      // commit between the two dispatches unmounts the HUD and races on slow
+      // CI; `restart` collapses both into a single reducer transition.
+      const isPlayableRoute =
+        (state.kind === 'game' && state.modeId) ||
+        (state.kind === 'daily' && state.modeId && !state.reveal)
+      const wasGameOver = statusRef.current === 'game-over' && !!isPlayableRoute
+      if (wasGameOver) {
         clearResume()
-        endGame()
+        // Mirror the upcoming reducer transition into the local statusRef so
+        // the `=== 'idle'` guards below pass on this same check() invocation.
+        // The actual dispatch happens via `restart` in the start branches.
         statusRef.current = 'idle'
       }
 
       // Today-only playable routes: past/future redirect to /reveal or root.
       if (state.kind === 'daily' && state.modeId && !state.reveal && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
-        if (id !== 'country-pinning' && id !== 'city-guessing') return
+        if (id !== 'country-pinning' && id !== 'city-guessing') {
+          if (wasGameOver) endGame()
+          return
+        }
 
         const todayStr = toLocalDateString(new Date())
 
@@ -223,33 +240,53 @@ export function GameController({ countries, cities, byCca3 }: Props) {
 
         const hasPool = id === 'country-pinning' ? countries.length > 0 : cities.length > 0
         if (!hasPool) {
+          // Pool not yet loaded; defer and let the drain effect pick up once
+          // it arrives. If we were transitioning out of game-over, fall back
+          // to the legacy two-step path here (endGame so the drain effect's
+          // `status==='idle'` guard passes). The atomic restart only matters
+          // when the start dispatches synchronously; the deferred path always
+          // runs in a separate render tick anyway.
+          if (wasGameOver) endGame()
           pendingStartRef.current = id
           return
         }
         const puzzle = dailyPuzzles.byDate(state.date)
-        if (!puzzle) return
+        if (!puzzle) {
+          if (wasGameOver) endGame()
+          return
+        }
         const firstRound =
           id === 'country-pinning'
             ? buildCountryDailyRound(puzzle.country.cca3, countries)
             : buildCityDailyRound(puzzle.city.id, cities)
         if (!firstRound) {
+          if (wasGameOver) endGame()
           dispatchToast('Daily content unavailable — try again shortly.')
           return
         }
-        startOrResumeDaily(id, state.date, firstRound)
+        startOrResumeDaily(id, state.date, firstRound, wasGameOver)
         return
       }
       if (state.kind === 'game' && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
-        if (id !== 'country-pinning' && id !== 'city-guessing') return
+        if (id !== 'country-pinning' && id !== 'city-guessing') {
+          if (wasGameOver) endGame()
+          return
+        }
         const hasPool = id === 'country-pinning' ? countries.length > 0 : cities.length > 0
         if (!hasPool) {
+          // See daily-branch comment above: defer + endGame fallback.
+          if (wasGameOver) endGame()
           pendingStartRef.current = id
           return
         }
         const m = getMode(id, pools)
         const firstRound = m.nextRound(new Set())
-        start(id, firstRound, m.maxRounds)
+        if (wasGameOver) {
+          restart(id, firstRound, m.maxRounds)
+        } else {
+          start(id, firstRound, m.maxRounds)
+        }
         track('free_started', { mode: id })
       }
       if (state.kind !== 'game' && state.kind !== 'daily' && statusRef.current !== 'idle') {

@@ -123,7 +123,7 @@ export function SingleCountryPanel({
   }
 
   const panelClasses = isDesktop
-    ? 'fixed right-4 top-16 bottom-4 w-[360px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 overflow-y-auto rounded-2xl border border-sand-200/50 dark:border-dark-200/20'
+    ? 'fixed right-4 top-16 bottom-4 w-[360px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 overflow-y-auto rounded-2xl border border-sand-200/50 dark:border-dark-200/20 panel-card-in'
     : `fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 overflow-y-auto rounded-t-2xl transition-[height] duration-200 ${
         expanded ? 'h-[80vh]' : 'h-[40vh]'
       }`
@@ -136,7 +136,6 @@ export function SingleCountryPanel({
       aria-label="Country information"
       data-testid="country-panel"
       data-animation-state={animationState}
-      style={isDesktop ? { animation: 'panel-card-in 250ms ease-out' } : undefined}
     >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
         {comparePickingMode && (
@@ -145,10 +144,7 @@ export function SingleCountryPanel({
           </div>
         )}
         <div className="flex items-start justify-between gap-3">
-          <div
-            className="flex items-start gap-3.5 min-w-0"
-            style={{ animation: 'fade-up 200ms ease-out' }}
-          >
+          <div className="flex items-start gap-3.5 min-w-0 panel-fade-up">
             <img
               data-testid="country-flag"
               src={country.flag}
@@ -245,10 +241,7 @@ export function SingleCountryPanel({
       <div className="mx-5 h-px bg-teal/10 dark:bg-teal-light/10" />
 
       <div className="px-5 py-3">
-        <div
-          className="grid grid-cols-2 gap-x-4"
-          style={{ animation: 'panel-field-in 200ms ease-out 50ms both' }}
-        >
+        <div className="grid grid-cols-2 gap-x-4 panel-field-in-1">
           <DataCell label="Capital" field="capital" country={country} sources={sources}>
             {country.capital.length > 0 ? country.capital.join(', ') : '\u2014'}
           </DataCell>
@@ -267,7 +260,7 @@ export function SingleCountryPanel({
           <>
             <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
 
-            <div style={{ animation: 'panel-field-in 200ms ease-out 100ms both' }}>
+            <div className="panel-field-in-2">
               {country.governmentType && (
                 <DataCell
                   label="Government"
@@ -295,7 +288,7 @@ export function SingleCountryPanel({
 
             <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
 
-            <div style={{ animation: 'panel-field-in 200ms ease-out 150ms both' }}>
+            <div className="panel-field-in-3">
               <div className="grid grid-cols-2 gap-x-4">
                 {Object.keys(country.languages).length > 0 && (
                   <DataCell label="Languages" field="languages" country={country} sources={sources}>
@@ -323,7 +316,7 @@ export function SingleCountryPanel({
             {country.borders.length > 0 && (
               <>
                 <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
-                <div style={{ animation: 'panel-field-in 200ms ease-out 200ms both' }}>
+                <div className="panel-field-in-4">
                   <FieldLabel
                     label="Borders"
                     field="borders"

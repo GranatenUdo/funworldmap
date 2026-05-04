@@ -29,6 +29,12 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         actionTimeout: isCi ? 20_000 : 5_000,
+        // Emulate prefers-reduced-motion: reduce so the existing
+        // `@media (prefers-reduced-motion: reduce)` rule in src/index.css
+        // collapses every animation to ~0ms. Eliminates the entire
+        // animation-driven actionability flake class on Linux/ANGLE CI.
+        // See docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md.
+        reducedMotion: 'reduce',
         launchOptions: {
           args: ['--use-gl=angle', '--use-angle=default'],
         },
