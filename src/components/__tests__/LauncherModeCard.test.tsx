@@ -48,4 +48,22 @@ describe('LauncherModeCard', () => {
     expect(link.getAttribute('href')).toBe('#daily/2026-05-01/reveal')
     expect(link.textContent).toMatch(/May 1/)
   })
+
+  it("no-puzzle-today state shows 'no longer available' copy when deep-linked to rolled-off date", () => {
+    render(<LauncherModeCard modeId="country-pinning" anchorDate="2026-04-15" todayDate="2026-05-02" state="no-puzzle-today" latestAvailableDate="2026-05-01" freeBest={baseBest} onStartDaily={() => {}} onStartFree={() => {}} />)
+    expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(/no longer available/)
+    expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).not.toMatch(/isn't ready yet/)
+  })
+
+  it("no-puzzle-today state shows 'not ready yet' copy when on today (no anchorDate)", () => {
+    render(<LauncherModeCard modeId="country-pinning" todayDate="2026-05-02" state="no-puzzle-today" latestAvailableDate="2026-05-01" freeBest={baseBest} onStartDaily={() => {}} onStartFree={() => {}} />)
+    expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(/isn't ready yet/)
+    expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).not.toMatch(/no longer available/)
+  })
+
+  it("no-puzzle-today state shows 'not ready yet' copy when anchorDate equals todayDate", () => {
+    render(<LauncherModeCard modeId="country-pinning" anchorDate="2026-05-02" todayDate="2026-05-02" state="no-puzzle-today" latestAvailableDate="2026-05-01" freeBest={baseBest} onStartDaily={() => {}} onStartFree={() => {}} />)
+    expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(/isn't ready yet/)
+    expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).not.toMatch(/no longer available/)
+  })
 })

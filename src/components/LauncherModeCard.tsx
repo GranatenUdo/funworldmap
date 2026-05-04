@@ -132,7 +132,9 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
 
       {state === 'no-puzzle-today' && (
         <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-no-puzzle`}>
-          Today's puzzle isn't ready yet.{' '}
+          {(!anchorDate || anchorDate === todayDate)
+            ? "Today's puzzle isn't ready yet."
+            : "That day's puzzle is no longer available."}{' '}
           {latestAvailableDate && (
             <a
               href={`#daily/${latestAvailableDate}/reveal`}
