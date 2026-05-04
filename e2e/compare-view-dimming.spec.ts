@@ -78,28 +78,27 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
     expect(bColor).toBe(TEAL_DIM)
   })
 
-  test('exiting compare mode restores selection to theme-appropriate coral', async ({ page }) => {
-    // Start in compare mode.
-    await page.goto('/#FRA,DEU')
-    await waitForMap(page)
-    // Wait for compare mode paint to settle.
-    await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.15, 2)
+  test.describe('exit restoration in light mode', () => {
+    test.use({ colorScheme: 'light' })
 
-    // Exit compare by navigating to single-country hash.
-    await page.evaluate(() => {
-      window.location.hash = '#FRA'
+    test('exiting compare mode restores selection to theme-appropriate coral', async ({ page }) => {
+      // Start in compare mode.
+      await page.goto('/#FRA,DEU')
+      await waitForMap(page)
+      // Wait for compare mode paint to settle.
+      await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.15, 2)
+
+      // Exit compare by navigating to single-country hash.
+      await page.evaluate(() => {
+        window.location.hash = '#FRA'
+      })
+      // Wait for compare mode to release (border opacity restores).
+      await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.6, 2)
+
+      // Light mode → CORAL is the restored colour (matches the badge).
+      // Verify that exiting compare restores the correct theme-appropriate fill-color.
+      const selColor = await getFillColor(page, 'country-selected')
+      expect(selColor).toBe(CORAL)
     })
-    // Wait for compare mode to release (border opacity restores).
-    await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.6, 2)
-
-    // The selection fill-color should be the light-mode coral (same value as CORAL since
-    // the default theme is dark and uses satellite — which defaults to CORAL in compare
-    // and CORAL_LIGHT in non-compare dark mode). What matters: it should NOT be TEAL_DIM.
-    const selColor = await getFillColor(page, 'country-selected')
-    expect(selColor).not.toBe(TEAL_DIM)
-    // In light mode the restored colour is CORAL; in dark mode it is CORAL_LIGHT (#fb7185).
-    // Either is correct — just confirm we restored away from compare's fixed CORAL.
-    // The key invariant: not teal, not undefined.
-    expect(selColor).toBeTruthy()
   })
 })
