@@ -21,4 +21,31 @@ describe('LauncherModeCard', () => {
     expect(screen.queryByText(/Play\s*·\s*3 attempts/)).toBeNull()
     expect(screen.getByTestId('launcher-card-country-pinning-see-reveal')).toBeTruthy()
   })
+
+  it("loading state renders 'Loading…' copy", () => {
+    render(<LauncherModeCard modeId="country-pinning" todayDate="2026-05-02" state="loading" freeBest={baseBest} onStartDaily={() => {}} onStartFree={() => {}} />)
+    expect(screen.getByTestId('launcher-card-country-pinning-loading').textContent).toMatch(/Loading/)
+    expect(screen.queryByTestId('launcher-card-country-pinning-error')).toBeNull()
+    expect(screen.queryByTestId('launcher-card-country-pinning-no-puzzle')).toBeNull()
+  })
+
+  it("unavailable-error state renders 'Couldn't load' copy", () => {
+    render(<LauncherModeCard modeId="country-pinning" todayDate="2026-05-02" state="unavailable-error" freeBest={baseBest} onStartDaily={() => {}} onStartFree={() => {}} />)
+    expect(screen.getByTestId('launcher-card-country-pinning-error').textContent).toMatch(/Couldn't load/)
+    expect(screen.queryByTestId('launcher-card-country-pinning-loading')).toBeNull()
+  })
+
+  it("no-puzzle-today state renders 'not ready yet' copy without link when no latestAvailableDate", () => {
+    render(<LauncherModeCard modeId="country-pinning" todayDate="2026-05-02" state="no-puzzle-today" freeBest={baseBest} onStartDaily={() => {}} onStartFree={() => {}} />)
+    expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(/isn't ready yet/)
+    expect(screen.queryByTestId('launcher-card-country-pinning-no-puzzle-link')).toBeNull()
+  })
+
+  it("no-puzzle-today state renders 'try [date]' link when latestAvailableDate is provided", () => {
+    render(<LauncherModeCard modeId="country-pinning" todayDate="2026-05-02" state="no-puzzle-today" latestAvailableDate="2026-05-01" freeBest={baseBest} onStartDaily={() => {}} onStartFree={() => {}} />)
+    const link = screen.getByTestId('launcher-card-country-pinning-no-puzzle-link')
+    expect(link).toBeTruthy()
+    expect(link.getAttribute('href')).toBe('#daily/2026-05-01/reveal')
+    expect(link.textContent).toMatch(/May 1/)
+  })
 })

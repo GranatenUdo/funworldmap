@@ -184,12 +184,12 @@ test.describe('Launcher — daily state', () => {
     await expect(page.getByTestId('launcher-card-country-pinning-played-result')).toContainText('87')
   })
 
-  test('unavailable state when daily index fetch fails', async ({ page }) => {
+  test('unavailable-error state when daily index fetch fails', async ({ page }) => {
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'unavailable')
-    await expect(page.getByTestId('launcher-card-country-pinning-unavailable')).toBeVisible()
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'unavailable-error')
+    await expect(page.getByTestId('launcher-card-country-pinning-error')).toBeVisible()
   })
 
   test('free-mode link starts endless free mode', async ({ page }) => {

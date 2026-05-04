@@ -53,11 +53,16 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
 
   const date = anchorDate ?? today
 
+  const latestAvailableDate: string | null = useMemo(() => {
+    if (!index) return null
+    return Object.keys(index.days).filter((d) => d <= today).sort().pop() ?? null
+  }, [index, today])
+
   function cardState(modeId: ModeId): LauncherCardState {
-    if (puzzlesStatus === 'unavailable') return 'unavailable'
-    if (puzzlesStatus === 'loading') return 'unavailable'
+    if (puzzlesStatus === 'loading') return 'loading'
+    if (puzzlesStatus === 'unavailable') return 'unavailable-error'
     const puzzle = byDate(date)
-    if (!puzzle) return 'unavailable'
+    if (!puzzle) return 'no-puzzle-today'
     const prior = getDay(date, modeId)
     if (prior) return 'played'
     if (date < today) return 'past-unplayed'
@@ -269,6 +274,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
                   state={cardState(m.id)}
                   played={playedFor(m.id)}
                   freeBest={bestFor(m.id)}
+                  latestAvailableDate={latestAvailableDate}
                   onStartDaily={() => startDaily(m.id)}
                   onStartFree={() => startFree(m.id)}
                   onSeeReveal={() => seeReveal(m.id)}

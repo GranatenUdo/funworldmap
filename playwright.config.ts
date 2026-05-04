@@ -76,6 +76,7 @@ export default defineConfig({
         'daily-share.spec.ts',
         'daily-deep-link.spec.ts',
         'launcher-history.spec.ts',
+        'launcher-card-loading-states.spec.ts',
         'telemetry-deep-link.spec.ts',
         'toast-above-modal.spec.ts',
       ],
