@@ -2,7 +2,7 @@
 
 ## Tool
 
-**Playwright** — browser automation framework for end-to-end testing. Tests run against the Vite development server (`npm run dev`) in a real browser (Chromium). Tier 2 map integration tests require the development build because the map instance is only exposed via `window.__funworldmap_map` when `import.meta.env.DEV` is true (see Exposing the Map Instance below).
+**Playwright** — browser automation framework for end-to-end testing. Tests run against the Vite preview server (`npm run build:e2e && npm run preview`) in a real browser (Chromium). The test seams (`window.__funworldmap_map` and `window.__funworldmap_game`) are only exposed when `import.meta.env.VITE_TEST_HOOKS` is true at build time (see Exposing the Map Instance below).
 
 ## The Canvas Challenge
 
@@ -53,21 +53,29 @@ Test map state by reaching into the MapLibre API through the browser's JavaScrip
 
 ### Exposing the Map Instance
 
-For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. `useMapInstance` exposes it unconditionally on `window.__funworldmap_map`:
+For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. `useMapInstance` (lines 104–106) and `GameController` (lines 704–706) conditionally expose test seams:
 
 ```ts
-// In useMapInstance.ts, inside the init effect:
-;(window as unknown as Record<string, unknown>).__funworldmap_map = map
+// In useMapInstance.ts and GameController.tsx:
+if (import.meta.env.VITE_TEST_HOOKS) {
+  window.__funworldmap_map = map
+  window.__funworldmap_game = { submitGuess, submitCountryGuess, setRound, ... }
+}
 ```
 
-Tests access it via:
+Tests access them via:
 ```ts
-const zoom = await page.evaluate(() => (window as unknown as {
-  __funworldmap_map: { getZoom: () => number }
-}).__funworldmap_map.getZoom())
+const zoom = await page.evaluate(() => (window as any).__funworldmap_map.getZoom())
+const success = await page.evaluate(([cca3]) => (window as any).__funworldmap_game.submitCountryGuess(cca3), ['FRA'])
 ```
 
-The instance is exposed in production builds as well as development. This is a deliberate test seam: Playwright runs against the built bundle (`npm run build && npm run preview`), and the funworldmap site has no backend, no auth, and no sensitive runtime state — exposing a map reference is acceptable for this project. A future change to a sensitive context would need to gate this behind `import.meta.env.DEV`.
+The seams are gated behind `import.meta.env.VITE_TEST_HOOKS`, which is only set at build time:
+
+- **Standard production builds** (`npm run build`): `VITE_TEST_HOOKS` is undefined, seams are not exposed.
+- **E2e builds** (`npm run build:e2e`): Vite uses `--mode e2e`, loads `.env.e2e` (which sets `VITE_TEST_HOOKS=1`), and exposes the seams.
+- **Standard dev server** (`npm run dev`): Does not set `VITE_TEST_HOOKS` — seams are not available. E2e tests therefore require the built e2e bundle: `npm run build:e2e && npm run preview`.
+
+This is deliberate: the funworldmap site has no backend, no auth, and no sensitive runtime state, so exposing a map reference for testing is acceptable. The gating ensures production users never see these seams.
 
 ## WebGL2 in Headless Browsers
 
