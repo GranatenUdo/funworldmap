@@ -81,12 +81,6 @@ test.describe('Launcher — session scope', () => {
   })
 
   test('dismissing + closing a country panel does NOT re-show launcher', async ({ page }) => {
-    // Quarantined on CI pending tracking issue #31 — country-panel slide-in's
-    // staggered child animations keep panel-close (and earlier in the test, the
-    // France search-result option) perpetually unstable, so Playwright's click
-    // actionability check loops indefinitely. Reproduces 4/4 CI runs; cannot
-    // reproduce locally. Runs locally for diagnosis.
-    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/31')
     await freshTab(page)
     await page.getByTestId('launcher-dismiss').click()
     await page.getByTestId('search-input').fill('France')
