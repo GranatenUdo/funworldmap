@@ -111,6 +111,19 @@ body {
   }
 }
 
+/* Country-panel staggered entrance utilities.
+   className-based (vs inline `style={{ animation: ... }}`) so that
+   Element.getAnimations({ subtree: true }) reliably enumerates them on
+   the Linux Software-ANGLE / real-GPU CI rendering path. See
+   docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md and the
+   `data-animation-state` lifecycle in SingleCountryPanel.tsx. */
+.panel-card-in    { animation: panel-card-in 250ms ease-out; }
+.panel-fade-up    { animation: fade-up 200ms ease-out; }
+.panel-field-in-1 { animation: panel-field-in 200ms ease-out 50ms both; }
+.panel-field-in-2 { animation: panel-field-in 200ms ease-out 100ms both; }
+.panel-field-in-3 { animation: panel-field-in 200ms ease-out 150ms both; }
+.panel-field-in-4 { animation: panel-field-in 200ms ease-out 200ms both; }
+
 @keyframes dropdown-in {
   from {
     opacity: 0;
