@@ -3,6 +3,7 @@ import { renderHook, act } from '@testing-library/react'
 import { useGameSession } from '../useGameSession'
 import type {
   AttemptRecord,
+  CityRoundSpec,
   CountryRoundSpec,
   GuessInput,
   ModeGuessResult,
@@ -489,6 +490,123 @@ describe('useGameSession (post-collapse)', () => {
       act(() => result.current.attempt(countryInput('GBR'), miss('PRT', 'GBR')))
       expect(result.current.session.lives).toBe(0)
       expect(result.current.session.endedEarly).toBe(false)
+    })
+  })
+
+  // Bug #32 — atomic restart for game-over → hash-mode-switch.
+  // The two-step `endGame() + start()` sequence the hashchange handler used to
+  // perform produced an intermediate `status='idle'` render between dispatches,
+  // which unmounted <HudShell> and triggered a 4 s remount race on slow CI.
+  // The `restart` action collapses both steps into a single reducer transition
+  // (any state → fresh playing) so React commits exactly one render.
+  describe('restart', () => {
+    it('start → game-over → restart transitions atomically to playing in the new mode', () => {
+      const { result } = renderHook(() => useGameSession())
+      // Drive a free country session to game-over (lose all 3 lives).
+      act(() => { result.current.start('country-pinning', round('FRA'), null) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
+      act(() => { result.current.advance(round('ESP')) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('ESP', 'USA')) })
+      act(() => { result.current.advance(round('DEU')) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('DEU', 'USA')) })
+      act(() => { result.current.finalize() })
+      expect(result.current.session.status).toBe('game-over')
+      expect(result.current.session.modeId).toBe('country-pinning')
+
+      // Hashchange-during-game-over → atomic restart into city mode.
+      const cityRound: CityRoundSpec = {
+        kind: 'city-guessing',
+        targetId: 'paris',
+        targetName: 'Paris',
+        targetCountryName: 'France',
+        targetCountryFlag: 'flags/FRA.svg',
+        targetCentroid: [2.35, 48.85],
+      }
+      act(() => { result.current.restart('city-guessing', cityRound, 10, 1, null) })
+      expect(result.current.session.modeId).toBe('city-guessing')
+      expect(result.current.session.status).toBe('playing')
+      expect(result.current.session.modeId).not.toBe('')
+      // Fresh session: empty score/streak, lives reset, no recorded attempts.
+      expect(result.current.session.score).toBe(0)
+      expect(result.current.session.lives).toBe(3)
+      expect(result.current.session.currentAttempts).toEqual([])
+      expect(result.current.session.maxRounds).toBe(10)
+      expect(result.current.session.attemptsPerRound).toBe(1)
+      expect(result.current.session.attemptsRemaining).toBe(1)
+      expect(result.current.session.currentRound).toEqual(cityRound)
+      expect(result.current.session.dailyDate).toBeNull()
+      expect(result.current.session.endedEarly).toBe(false)
+    })
+
+    it('restart from idle behaves like start (no-op-friendly initial path)', () => {
+      const { result } = renderHook(() => useGameSession())
+      expect(result.current.session.status).toBe('idle')
+      act(() => { result.current.restart('country-pinning', round('FRA'), 10, 1, null) })
+      expect(result.current.session.status).toBe('playing')
+      expect(result.current.session.modeId).toBe('country-pinning')
+      expect(result.current.session.maxRounds).toBe(10)
+    })
+
+    it('restart from playing collapses into a fresh playing session for the new mode', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), null) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA', 30)) })
+      // mid-session, score=30, lives=2, status=round-ended
+      expect(result.current.session.score).toBe(30)
+      const cityRound: CityRoundSpec = {
+        kind: 'city-guessing',
+        targetId: 'tokyo',
+        targetName: 'Tokyo',
+        targetCountryName: 'Japan',
+        targetCountryFlag: 'flags/JPN.svg',
+        targetCentroid: [139.69, 35.68],
+      }
+      act(() => { result.current.restart('city-guessing', cityRound, 10, 1, null) })
+      expect(result.current.session.status).toBe('playing')
+      expect(result.current.session.modeId).toBe('city-guessing')
+      expect(result.current.session.score).toBe(0)
+      expect(result.current.session.lives).toBe(3)
+    })
+
+    it('rejects (no-op) the unsupported attemptsPerRound>1 + maxRounds=null combo, preserving prior state', () => {
+      const { result } = renderHook(() => useGameSession())
+      // Drive to game-over so we can verify state is preserved on rejection.
+      act(() => { result.current.start('country-pinning', round('FRA'), null) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
+      act(() => { result.current.advance(round('ESP')) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('ESP', 'USA')) })
+      act(() => { result.current.advance(round('DEU')) })
+      act(() => { result.current.attempt(countryInput('USA'), miss('DEU', 'USA')) })
+      act(() => { result.current.finalize() })
+      const before = result.current.session
+      expect(before.status).toBe('game-over')
+      act(() => { result.current.restart('country-pinning', round('GBR'), null, 3) })
+      // Unsupported combo; reducer must not transition.
+      expect(result.current.session).toBe(before)
+    })
+
+    it('restart preserves dailyDate when supplied (atomic daily-mode swap)', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => { result.current.start('country-pinning', round('FRA'), 1, 3, '2026-05-02') })
+      act(() => { result.current.attempt(countryInput('USA'), miss('FRA', 'USA')) })
+      act(() => { result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU')) })
+      act(() => { result.current.attempt(countryInput('ESP'), miss('FRA', 'ESP')) })
+      act(() => { result.current.finalize() })
+      expect(result.current.session.status).toBe('game-over')
+      const cityRound: CityRoundSpec = {
+        kind: 'city-guessing',
+        targetId: 'paris',
+        targetName: 'Paris',
+        targetCountryName: 'France',
+        targetCountryFlag: 'flags/FRA.svg',
+        targetCentroid: [2.35, 48.85],
+      }
+      act(() => { result.current.restart('city-guessing', cityRound, 1, 3, '2026-05-02') })
+      expect(result.current.session.status).toBe('playing')
+      expect(result.current.session.modeId).toBe('city-guessing')
+      expect(result.current.session.dailyDate).toBe('2026-05-02')
+      expect(result.current.session.attemptsPerRound).toBe(3)
+      expect(result.current.session.attemptsRemaining).toBe(3)
     })
   })
 })

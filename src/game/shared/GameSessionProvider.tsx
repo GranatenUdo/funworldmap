@@ -16,6 +16,7 @@ export type GameSessionApi = {
   endGame: () => void
   finishFree: () => void
   finalize: () => void
+  restart: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -27,7 +28,7 @@ interface Props {
 }
 
 export function GameSessionProvider({ pools, children }: Props) {
-  const { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize } = useGameSession()
+  const { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart } = useGameSession()
 
   const mode = useMemo<GameMode | null>(() => {
     if (session.modeId === 'country-pinning' && pools.countries.length === 0) return null
@@ -49,8 +50,8 @@ export function GameSessionProvider({ pools, children }: Props) {
   )
 
   const api = useMemo<GameSessionApi>(
-    () => ({ session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize }),
-    [session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize],
+    () => ({ session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart }),
+    [session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart],
   )
 
   const apiRef = useRef(api)
@@ -64,12 +65,20 @@ export function GameSessionProvider({ pools, children }: Props) {
     w.__funworldmap_game.endGame = () => apiRef.current.endGame()
     w.__funworldmap_game.completeNow = () => apiRef.current.completeNow()
     w.__funworldmap_game.finalize = () => apiRef.current.finalize()
+    w.__funworldmap_game.restart = (
+      modeId: ModeId,
+      firstRound: RoundSpec,
+      maxRounds: number | null,
+      attemptsPerRound?: number,
+      dailyDate?: string | null,
+    ) => apiRef.current.restart(modeId, firstRound, maxRounds, attemptsPerRound, dailyDate)
     return () => {
       if (w.__funworldmap_game) {
         delete w.__funworldmap_game.getSession
         delete w.__funworldmap_game.endGame
         delete w.__funworldmap_game.completeNow
         delete w.__funworldmap_game.finalize
+        delete w.__funworldmap_game.restart
       }
     }
   }, [])

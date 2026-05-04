@@ -20,6 +20,7 @@ function makeApi(session: GameSession): GameSessionApi {
     endGame: () => {},
     finishFree: () => {},
     finalize: () => {},
+    restart: () => {},
   }
 }
 
