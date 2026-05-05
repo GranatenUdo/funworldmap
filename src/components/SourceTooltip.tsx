@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   useFloating,
   useHover,
@@ -24,11 +24,13 @@ interface Props {
 export default function SourceTooltip({ field, fieldSources, sources }: Props) {
   const [open, setOpen] = useState(false)
 
+  const middleware = useMemo(() => [offset(8), flip(), shift({ padding: 8 })], [])
+
   const { refs, floatingStyles, context } = useFloating({
     open,
     onOpenChange: setOpen,
     placement: 'top',
-    middleware: [offset(8), flip(), shift({ padding: 8 })],
+    middleware,
     whileElementsMounted: autoUpdate,
   })
 
