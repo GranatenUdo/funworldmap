@@ -93,6 +93,39 @@ Source: [`2026-04-21-retention-program-v1-design.md`](superpowers/specs/2026-04-
 - **CI-driven Worker deploys** — v1 deploys the Worker manually; move to a GitHub Action on `cloudflare-worker/**` changes.
 - **Worker blob-slot extension for `modesPlayed`** — `cloudflare-worker/index.ts` doesn't capture the `modesPlayed` field on `daily_shared` events because the blob slots are fixed to `mode, path, method, dateKind, outcome, cellKind`. Adding a 7th blob or converting to JSON-blob storage would surface the 1-mode vs 2-mode split on share dashboards.
 
+## Test coverage gaps from the 2026-05-04 vision audit
+
+Source: [`docs/superpowers/notes/2026-05-04-vision-bug-hunt.md`](superpowers/notes/2026-05-04-vision-bug-hunt.md) sections marked "Coverage gaps in this run". The audit completed sections A, B, E, G, H, I, K, L; sections C, D, F, J5, M were declared as gaps and folded into Phase 5.4 of the remediation plan. Each item is a candidate for an e2e spec.
+
+### City-guessing daily flow (audit section C)
+- City marker / label rendering at zoom levels.
+- Distance-km readout legibility on guess-reveal.
+- Three-attempt best-of-3 scoring path through the city HUD.
+- Share artifact format for city-only / both-mode plays.
+
+### Daily unhappy paths (audit section D)
+- Ocean click as a guess in country-pinning — game must NOT end on attempt 1 (covered partly by `daily-survives-ocean-click.spec.ts` but worth expanding).
+- Antipode / off-globe click — scored or rejected? Visual + score behaviour.
+- Refresh mid-game — resume blob restores attempts (lifecycle covered for two attempts; cover all three).
+- Stale resume blob (date mismatch) — must clear cleanly on bootstrap.
+- Double-submit (two `submitGuess` calls back-to-back) — state consistency.
+- Tab away + back during reveal animation — animation finishes / jumps to end cleanly.
+
+### Streak break + rebuild (audit section F)
+- Seed history with 3-day streak, gap, then rebuild to 3 — milestone fires AGAIN (covered by the 5430df5 fix).
+- Day-3 / day-7 / day-14 / day-30 / day-100 milestone overlays — visual + telemetry.
+- Streak pill consistency across launcher header / in-game HUD / header.
+
+### Reduced-motion variants (audit section J5)
+- Use Playwright's `page.emulateMedia({ reducedMotion: 'reduce' })` against the daily reveal animation, country fly-to, modal transitions.
+- Verify animations are skipped/shortened, not jarring.
+
+### Per-event telemetry verification (audit section M)
+- For each event in `daily-puzzle.md`'s telemetry table (`daily_opened`, `daily_started`, `daily_attempted`, `daily_completed`, `daily_shared`, `free_started`, `history_opened`, `history_cell_clicked`, `streak_reached_milestone`, `launcher_dismissed`, `deep_link_opened`):
+  - Fires once on its trigger.
+  - Carries the documented props.
+  - Network capture via `page.on('request')` against `/api/event`.
+
 ---
 
 ## Rejected (won't build)
