@@ -146,7 +146,10 @@ export async function dismissLauncher(page: Page): Promise<void> {
   }
   await page.getByTestId('launcher-dismiss').click()
   await expect(launcher).not.toBeAttached({ timeout: 5_000 })
-  await page.waitForTimeout(150)
+  // Header is conditionally rendered (returns null while launcher is visible).
+  // Wait for a known Header child to be attached before returning so callers'
+  // next interaction (e.g. clicking theme-toggle) doesn't race the re-mount.
+  await page.locator('#search-input').waitFor({ state: 'attached', timeout: 5_000 })
 }
 
 /**
