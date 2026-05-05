@@ -42,6 +42,7 @@ function writeIdleHash(): void {
   const h = window.location.hash
   if (h.startsWith('#game') || h.startsWith('#daily')) {
     history.replaceState(null, '', window.location.pathname)
+    window.dispatchEvent(new HashChangeEvent('hashchange'))
   }
 }
 

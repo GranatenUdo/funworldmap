@@ -87,6 +87,7 @@ export default defineConfig({
         'mobile-panel-header.spec.ts',
         'compare-source-attribution.spec.ts',
         'source-tooltip-edge.spec.ts',
+        'header-play-reopens-launcher.spec.ts',
       ],
     },
     {
