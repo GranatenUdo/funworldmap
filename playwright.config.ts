@@ -82,6 +82,7 @@ export default defineConfig({
         'axe-snapshot.spec.ts',
         'label-contrast.spec.ts',
         'mobile-panel-header.spec.ts',
+        'compare-source-attribution.spec.ts',
       ],
     },
     {

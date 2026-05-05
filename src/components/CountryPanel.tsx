@@ -39,6 +39,7 @@ export default function CountryPanel({
         onClose={onClose}
         onExitCompare={onExitCompare}
         byCca3={byCca3}
+        sources={sources}
       />
     )
   }
