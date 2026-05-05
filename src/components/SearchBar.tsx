@@ -198,15 +198,17 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
                 </li>
               )}
           {results.length > 0 && (
-            <div
-              className="px-3 py-2 border-t border-sand-200/60 dark:border-dark-200/30 text-[11px] text-sand-500 dark:text-dark-100 flex gap-3 justify-end sticky bottom-0 bg-sand-50/95 dark:bg-dark-400/95"
-              data-testid="search-keyboard-hint"
-              aria-hidden="true"
-            >
-              <span><kbd>↓↑</kbd> Select</span>
-              <span><kbd>↵</kbd> Confirm</span>
-              <span><kbd>Esc</kbd> Close</span>
-            </div>
+            <li role="presentation" aria-hidden="true">
+              <div
+                className="px-3 py-2 border-t border-sand-200/60 dark:border-dark-200/30 text-[11px] text-sand-500 dark:text-dark-100 flex gap-3 justify-end sticky bottom-0 bg-sand-50/95 dark:bg-dark-400/95"
+                data-testid="search-keyboard-hint"
+                aria-hidden="true"
+              >
+                <span><kbd>↓↑</kbd> Select</span>
+                <span><kbd>↵</kbd> Confirm</span>
+                <span><kbd>Esc</kbd> Close</span>
+              </div>
+            </li>
           )}
         </ul>
       )}
