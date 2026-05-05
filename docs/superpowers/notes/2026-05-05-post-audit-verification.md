@@ -145,4 +145,96 @@ Needs human-in-the-loop verification. Phase 1.6 raised Toast z-index above modal
 
 ## 2.5 — Label-contrast measurement
 
-(Pending.)
+Run date: 2026-05-04.
+Spec: `e2e/label-contrast.spec.ts`.
+Method: Playwright browser tests + static WCAG math. All four theme × view combinations measured.
+
+All symbol label layers in the OpenFreeMap positron basemap receive a **uniform** `text-color` and
+`text-halo-color` from `applyMapTheme` (`src/lib/mapColors.ts`). The halo colour exactly matches the
+land background colour in each theme (by design — the halo blends into the land). The decisive
+contrast pair is therefore **text vs halo**, which is the immediate background for the glyph.
+
+Tested layers: `place_country`, `place_state`, `place_city`, `place_town`, `place_village`, `place_suburb`
+(representative subset of OpenFreeMap positron symbol layers; all receive identical paint values).
+
+Tested combinations: light+map, dark+map, light+satellite, dark+satellite.
+
+### Light + Map view
+
+| Layer | Text colour | Halo / bg | Contrast (text vs halo) | WCAG AA? |
+|---|---|---|---|---|
+| place_country | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No (< 4.5:1) |
+| place_state | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_city | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_town | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_village | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_suburb | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+
+Note: `text vs bg` = 3.75:1 (bg === halo in light mode — intentional design). `halo vs bg` = 1.00:1 (same colour).
+
+### Dark + Map view
+
+| Layer | Text colour | Halo / bg | Contrast (text vs halo) | WCAG AA? |
+|---|---|---|---|---|
+| place_country | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL (< 3:1) |
+| place_state | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_city | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_town | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_village | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_suburb | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+
+Note: `text vs bg` = 2.44:1 (bg === halo in dark mode — intentional design). `halo vs bg` = 1.00:1.
+
+### Light + Satellite view
+
+Satellite background is variable raster imagery. The halo provides the immediate glyph background —
+text-vs-halo is the decisive metric. Background measurement not applicable.
+
+| Layer | Text colour | Halo | Contrast (text vs halo) | WCAG AA? |
+|---|---|---|---|---|
+| place_country | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No (< 4.5:1) |
+| place_state | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_city | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_town | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_village | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+| place_suburb | `#78716c` | `#e8e3da` | 3.75:1 | ⚠ No |
+
+### Dark + Satellite view
+
+| Layer | Text colour | Halo | Contrast (text vs halo) | WCAG AA? |
+|---|---|---|---|---|
+| place_country | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL (< 3:1) |
+| place_state | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_city | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_town | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_village | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+| place_suburb | `#475569` | `#10141a` | 2.44:1 | ✗ FAIL |
+
+### Findings
+
+**Worst-case ratio:** 2.44:1 (dark mode, all label layers, all views) — below the WCAG AA minimum of 3:1.
+
+**Audit claim assessment:** The visual audit's claim that "country labels [have] poor contrast in BOTH dark
+and light map views" is **SUPPORTED** by measurement:
+
+- **Dark mode:** 2.44:1 — fails WCAG AA (3:1 minimum) in all combinations. The failing contrast is a
+  consequence of `text-color: #475569` (slate-600) against `text-halo-color: #10141a` (near-black). The
+  two colours are both dark; the halo does not provide sufficient lift for the glyph.
+
+- **Light mode:** 3.75:1 — passes the 3:1 minimum but misses WCAG AA normal-text threshold (4.5:1). This
+  is a warning, not a hard failure.
+
+**Root cause:** `applyMapTheme` applies a de-emphasis palette (`#475569` / `#10141a` in dark) to
+intentionally push basemap labels into the background so the quiz's country highlights are the visual
+focus. This is a deliberate design trade-off, not an oversight. The consequence is that dark mode labels
+fail WCAG AA accessibility requirements.
+
+**Backlog items:**
+
+- **[backlog / medium]** Improve dark-mode label contrast: raise `text-color` from `#475569` (slate-600,
+  lum 0.097) to at least `#64748b` (slate-500, lum 0.148) and/or lighten `text-halo-color` from
+  `#10141a` to `#1e2a3a`. Target ≥ 3:1 minimum; ≥ 4.5:1 preferred. Verify the change does not make
+  labels visually compete with country fill/selection highlights.
+
+- **[backlog / low]** Improve light-mode label contrast from 3.75:1 toward 4.5:1 by darkening
+  `text-color` slightly (e.g. `#6b6459` → already used in UI, or `#57534e` stone-600).

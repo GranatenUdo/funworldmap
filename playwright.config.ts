@@ -80,6 +80,7 @@ export default defineConfig({
         'telemetry-deep-link.spec.ts',
         'toast-above-modal.spec.ts',
         'axe-snapshot.spec.ts',
+        'label-contrast.spec.ts',
       ],
     },
     {
