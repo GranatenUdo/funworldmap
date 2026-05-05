@@ -104,4 +104,39 @@ test.describe('Search', () => {
 
     await expect(page.getByTestId('search-results')).toContainText('United States')
   })
+
+  test('keyboard hint is visible when dropdown is open', async ({ page }) => {
+    const input = page.getByTestId('search-input')
+    await input.fill('fra')
+
+    await expect(page.getByTestId('search-results')).toBeVisible()
+    await expect(page.getByTestId('search-keyboard-hint')).toBeVisible()
+    await expect(page.getByTestId('search-keyboard-hint')).toContainText('Select')
+    await expect(page.getByTestId('search-keyboard-hint')).toContainText('Confirm')
+    await expect(page.getByTestId('search-keyboard-hint')).toContainText('Close')
+  })
+
+  test('keyboard hint is hidden when dropdown closes', async ({ page }) => {
+    const input = page.getByTestId('search-input')
+    await input.fill('fra')
+
+    await expect(page.getByTestId('search-results')).toBeVisible()
+    await expect(page.getByTestId('search-keyboard-hint')).toBeVisible()
+
+    // Clear the input — dropdown should close and hint should disappear
+    await input.fill('')
+
+    await expect(page.getByTestId('search-results')).not.toBeAttached()
+    await expect(page.getByTestId('search-keyboard-hint')).not.toBeAttached()
+  })
+
+  test('keyboard hint is hidden when no results', async ({ page }) => {
+    const input = page.getByTestId('search-input')
+    await input.fill('xyznotacountry')
+
+    await expect(page.getByTestId('search-no-results')).toBeVisible()
+    // Hint should not be visible when there are no results
+    const hint = page.getByTestId('search-keyboard-hint')
+    await expect(hint).toHaveCount(0)
+  })
 })

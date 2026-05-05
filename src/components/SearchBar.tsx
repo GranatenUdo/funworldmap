@@ -146,7 +146,7 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
         <ul
           id={LISTBOX_ID}
           role="listbox"
-          className="absolute top-full left-0 right-0 mt-1.5 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl border border-sand-300/50 dark:border-dark-200/30 rounded-xl shadow-2xl overflow-hidden z-50 max-h-[400px] overflow-y-auto"
+          className="absolute top-full left-0 right-0 mt-1.5 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl border border-sand-300/50 dark:border-dark-200/30 rounded-xl shadow-2xl overflow-hidden z-50 max-h-[432px] overflow-y-auto"
           style={{ animation: 'dropdown-in 120ms ease-out', transformOrigin: 'top' }}
           data-testid="search-results"
         >
@@ -197,6 +197,17 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
                   No countries found for &ldquo;{query}&rdquo;
                 </li>
               )}
+          {results.length > 0 && (
+            <div
+              className="px-3 py-2 border-t border-sand-200/60 dark:border-dark-200/30 text-[11px] text-sand-500 dark:text-dark-100 flex gap-3 justify-end sticky bottom-0 bg-sand-50/95 dark:bg-dark-400/95"
+              data-testid="search-keyboard-hint"
+              aria-hidden="true"
+            >
+              <span><kbd>↓↑</kbd> Select</span>
+              <span><kbd>↵</kbd> Confirm</span>
+              <span><kbd>Esc</kbd> Close</span>
+            </div>
+          )}
         </ul>
       )}
     </div>
