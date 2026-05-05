@@ -93,6 +93,36 @@ Source: [`2026-04-21-retention-program-v1-design.md`](superpowers/specs/2026-04-
 - **CI-driven Worker deploys** — v1 deploys the Worker manually; move to a GitHub Action on `cloudflare-worker/**` changes.
 - **Worker blob-slot extension for `modesPlayed`** — `cloudflare-worker/index.ts` doesn't capture the `modesPlayed` field on `daily_shared` events because the blob slots are fixed to `mode, path, method, dateKind, outcome, cellKind`. Adding a 7th blob or converting to JSON-blob storage would surface the 1-mode vs 2-mode split on share dashboards.
 
+## Cross-browser CI failures from 2026-05-05 PR #36
+
+PR #36 added three new e2e projects to the matrix: `mobile-chromium`, `mobile-webkit`, and `desktop-firefox-touch` (Phase 5.2 expansion). First CI run exposed 8 distinct failures across non-chromium projects, hypothesized to be real CSS/rendering bugs rather than test flakes (per Phase 5.5 plan). Each item describes the symptom, hypothesis, acceptance criteria for fix.
+
+### Theme bootstrap timing on mobile-webkit (3 failures)
+- **Symptom:** All three `theme-and-responsive.spec.ts` failures on `mobile-webkit` only. Theme system tests pass on all chromium projects.
+  - `theme-and-responsive.spec.ts:15` — defaults to system theme (no dark class if system is light)
+  - `theme-and-responsive.spec.ts:28` — dark class is applied to html when dark mode active
+  - `theme-and-responsive.spec.ts:46` — respects prefers-color-scheme: dark when in system mode
+- **Hypothesis:** The inline theme-bootstrap script in `index.html` (lines ~15–40) reads `localStorage.getItem('funworldmap-theme')` and checks `window.matchMedia('(prefers-color-scheme: dark)')` to set the root `<html>` class before React mounts. On WebKit, Playwright's `colorScheme` fixture may be applied AFTER the bootstrap runs (or overrides it), causing the script to read stale values. The spec expects bootstrap-then-fixture order; WebKit may reverse it.
+- **Acceptance criteria:** Each test passes 10/10 on `--project=mobile-webkit --repeat-each=10`. Add a minimal tracing call in the spec to log the order: `console.log('bootstrap:', await page.evaluate(() => document.documentElement.className))` before and after fixture application.
+- **Reference:** [`src/index.html`](../../src/index.html) lines 15–40; test file [`e2e/theme-and-responsive.spec.ts`](../e2e/theme-and-responsive.spec.ts); PR #36 added `mobile-webkit` to `playwright.config.ts` projects.
+
+### Mobile click-tolerance failures on mobile-chromium and desktop-firefox-touch (2 failures, pre-existing in spec)
+- **Symptom:** `mobile-tap.spec.ts` two failures (both on `mobile-chromium` and `desktop-firefox-touch`):
+  - `mobile-tap.spec.ts:48` — 5 px finger-roll tap is accepted (within tolerance)
+  - `mobile-tap.spec.ts:61` — 12 px drag is NOT accepted as a click (above tolerance)
+- **Hypothesis:** The spec tests `clickTolerance: 8` in `useMapInstance.ts`. These tests likely authored and run locally against desktop chromium viewport; when emulated on mobile viewport (320px-ish width), the 5–12 px movements scale differently or the pointer-event order changes. Desktop and mobile may have different baseline movement thresholds before a `pointerup` is classified as a drag vs. a tap. Worth checking: does Playwright's `mobile-chromium` emulation match the actual browser's behavior? Possible real bug: the tap-tolerance calculation may be viewport-blind or use `window.devicePixelRatio` incorrectly.
+- **Acceptance criteria:** Spec passes 10/10 on `--project=mobile-chromium --repeat-each=10` and `--project=desktop-firefox-touch --repeat-each=10`. Confirm the tolerance logic in `useMapInstance.ts` accounts for viewport width or pixel-ratio scaling.
+- **Reference:** [`e2e/mobile-tap.spec.ts`](../e2e/mobile-tap.spec.ts) lines 48 and 61; [`src/hooks/useMapInstance.ts`](../../src/hooks/useMapInstance.ts) `clickTolerance` definition.
+
+### Map loading failure on desktop-firefox-touch (1 failure, GPU stack divergence)
+- **Symptom:** `mobile-smoke.spec.ts:7` — app loads and map reaches loaded state. Failed on `desktop-firefox-touch` only; chromium variants all pass.
+  - Map did not emit the `data-map-loaded` attribute within the test timeout.
+- **Hypothesis:** Firefox uses a different WebGL2 driver stack than Chromium (no ANGLE available on Linux headless). Under headless Firefox CI, the GL context may not initialize, or tile rendering may timeout. The test calls `gotoAndWaitForMap(page, '/daily')` which waits for `[data-map-loaded]`; if Firefox's MapLibre never fires the ready event, the wait times out. This is not a flake — it's a real rendering blocker on Firefox.
+- **Acceptance criteria:** Map loads and fires `data-map-loaded` consistently on `--project=desktop-firefox-touch` (10/10 repeats). May require disabling WebGL2 fallback or adjusting the timeout; if Firefox never initializes WebGL2, the map canvas may be blank and that needs a dedicated Firefox code path.
+- **Reference:** [`e2e/mobile-smoke.spec.ts`](../e2e/mobile-smoke.spec.ts) line 7; [`e2e/helpers.ts`](../e2e/helpers.ts) `gotoAndWaitForMap` call; `src/hooks/useMapInstance.ts` `onLoadComplete` signal.
+
+---
+
 ## Test coverage gaps from the 2026-05-04 vision audit
 
 Source: [`docs/superpowers/notes/2026-05-04-vision-bug-hunt.md`](superpowers/notes/2026-05-04-vision-bug-hunt.md) sections marked "Coverage gaps in this run". The audit completed sections A, B, E, G, H, I, K, L; sections C, D, F, J5, M were declared as gaps and folded into Phase 5.4 of the remediation plan. Each item is a candidate for an e2e spec.
