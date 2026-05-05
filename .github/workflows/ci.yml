@@ -42,10 +42,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Phase 5.2 — expanded matrix to include mobile and Firefox projects.
-        # These were previously only runnable locally; now running in CI to surface
-        # cross-browser CSS/DOM regressions (WebKit/Firefox may have real issues).
-        project: [chromium, mobile-chromium, mobile-webkit, desktop-firefox-touch]
+        # Chromium-only on CI. The non-chromium projects (mobile-chromium,
+        # mobile-webkit, desktop-firefox-touch) remain configured in
+        # playwright.config.ts for local opt-in via `--project=<name>`, but
+        # CI doesn't gate on them yet — they consistently fail under
+        # ubuntu-latest (no real GPU, WebKit theme-bootstrap timing,
+        # Firefox WebGL2). Roadmap item: self-hosted runner + green
+        # cross-browser baseline before re-adding to the CI matrix.
+        # See `docs/roadmap.md` § "Cross-browser CI failures from PR #36".
+        project: [chromium]
     steps:
       - uses: actions/checkout@v4
 
@@ -63,7 +68,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium webkit firefox
+        run: npx playwright install --with-deps chromium
 
       - name: E2E tests (${{ matrix.project }})
         run: npx playwright test --project=${{ matrix.project }} --reporter=blob
