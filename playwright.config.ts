@@ -83,6 +83,7 @@ export default defineConfig({
         'label-contrast.spec.ts',
         'mobile-panel-header.spec.ts',
         'compare-source-attribution.spec.ts',
+        'source-tooltip-edge.spec.ts',
       ],
     },
     {

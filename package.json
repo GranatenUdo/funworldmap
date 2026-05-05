@@ -19,6 +19,7 @@
     "fetch-cities": "tsx scripts/fetch-cities.ts"
   },
   "dependencies": {
+    "@floating-ui/react": "^0.27.19",
     "@sentry/react": "^10.49.0",
     "@vis.gl/react-maplibre": "^8.1.1",
     "fuse.js": "^7.3.0",
@@ -54,7 +55,7 @@
     "vitest": "^4.1.4"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.60.1",
+    "@rollup/rollup-win32-x64-msvc": "^4.60.3",
     "@tailwindcss/oxide-win32-x64-msvc": "^4.2.2",
     "lightningcss-win32-x64-msvc": "^1.32.0"
   }
