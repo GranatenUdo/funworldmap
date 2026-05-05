@@ -264,7 +264,28 @@ async function readLabelPaints(page: Page, layerIds: string[]): Promise<LabelPai
 // ─── Wait for map loaded ──────────────────────────────────────────────────
 
 async function waitForMapLoaded(page: Page): Promise<void> {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 90_000 })
+  // Race the success signal and the non-recoverable watchdog signal.
+  // data-map-error="timeout" means the app-level watchdog fired before MapLibre's
+  // 'load' event — [data-map-loaded] will never appear after that, so we fast-fail
+  // with a descriptive message rather than waiting out the full 90s timeout.
+  // data-map-error="style" is a transient map error that can occur before a
+  // successful load and does NOT block the 'load' event — we ignore it here.
+  const result = await page.waitForFunction(
+    () => {
+      const loadedEl = document.querySelector('[data-map-loaded]')
+      if (loadedEl) return 'loaded'
+      const errorEl = document.querySelector('[data-map-error]')
+      const reason = errorEl?.getAttribute('data-map-error')
+      if (reason === 'timeout') return 'timeout'
+      return null
+    },
+    undefined,
+    { timeout: 90_000 },
+  )
+  const state = await result.jsonValue()
+  if (state === 'timeout') {
+    throw new Error('Map watchdog fired: data-map-error="timeout". MapLibre did not reach \'load\' within BASEMAP_LOAD_TIMEOUT_MS.')
+  }
 }
 
 // ─── Contrast row ─────────────────────────────────────────────────────────
