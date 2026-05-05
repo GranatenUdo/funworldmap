@@ -63,7 +63,77 @@ The single finding (`aria-prohibited-attr` on the HUD attempt-indicator row) is 
 
 ## 2.2 — Cross-browser parity
 
-(Pending.)
+Run date: 2026-05-05.
+
+The non-chromium Playwright projects have a dedicated testMatch that covers only mobile-oriented specs
+(app load, tap reliability, free-play, daily flow, tutorial). The suggested DOM-only specs
+(`scaffold.spec.ts`, `launcher.spec.ts`, `launcher-card-loading-states.spec.ts`) are intentionally
+excluded from those projects' testMatch — they are chromium-only by design (see `playwright.config.ts`
+lines 43–83 vs 86–120). The canonical cross-browser coverage is therefore the specs that each project
+actually runs.
+
+Specs exercised per project:
+
+| Project | Specs run |
+|---|---|
+| mobile-webkit | `mobile-smoke.spec.ts`, `mobile-tap.spec.ts` |
+| desktop-firefox-touch | `mobile-smoke.spec.ts`, `mobile-tap.spec.ts` |
+| mobile-chromium | `mobile-smoke.spec.ts`, `mobile-tap.spec.ts`, `mobile-free-play.spec.ts`, `mobile-daily-flow.spec.ts`, `tutorial-first-click.spec.ts` |
+
+### Results
+
+| Project | Total | Passed | Failed | Notes |
+|---|---|---|---|---|
+| mobile-webkit | 3 | 3 | 0 | iPhone 14 device profile |
+| desktop-firefox-touch | 3 | 3 | 0 | Firefox/Android UA, touch viewport |
+| mobile-chromium | 7 | 7 | 0 | Pixel 7 device profile |
+
+All 13 tests passed across all three projects. Local dev server reused (`reuseExistingServer: true`).
+
+### Coverage vs intent
+
+The non-chromium projects cover:
+
+- **App boot / map load** (`mobile-smoke`): verified on WebKit, Firefox, Chromium mobile.
+- **MapLibre click-tolerance gate** (`mobile-tap`): the 5 px / 12 px threshold tests pass on both WebKit
+  and Firefox, confirming the `clickTolerance=8` fix is not Chromium-specific.
+- **Free-play launcher → game flow** (`mobile-free-play`): country-pinning and city-guessing start and
+  accept guesses correctly on Chromium mobile.
+- **Daily city flow** (`mobile-daily-flow`): three-guess completion + `finalizeGame()` seam works on
+  Chromium mobile.
+- **Tutorial first-click** (`tutorial-first-click`): tutorial dismisses correctly on Chromium mobile.
+
+### Findings
+
+No browser-specific bugs surfaced. Specific observations:
+
+1. **`mobile-tap` passes on WebKit** (low severity, positive finding). WebKit historically tolerates
+   larger finger-roll deltas (per the comment in `mobile-tap.spec.ts`), but because the tests dispatch
+   synthetic DOM events directly on the canvas rather than using real pointer gestures, the test is
+   browser-agnostic. Both the 5 px (accepted) and 12 px (rejected) threshold tests pass consistently
+   on WebKit. No action needed.
+
+2. **`desktop-firefox-touch` clipboard permissions** (low severity, configuration note). The project
+   overrides `permissions: []` because Firefox rejects `clipboard-read`/`clipboard-write` from the
+   top-level config. No mobile spec exercises clipboard, so no coverage gap today. If a future
+   cross-browser share-toast test is added for Firefox, it will need a browser-specific permissions
+   approach or must use a clipboard-stub route handler. Document as a constraint when implementing
+   Phase 2.4 verification.
+
+3. **DOM-only specs not covered on non-chromium projects** (medium severity, coverage gap). `scaffold`,
+   `launcher`, `launcher-card-loading-states`, `panel-and-deeplink`, etc. run only on `chromium`.
+   These exercise the launcher card render states (shimmer, loaded, cta count, link routing) and are
+   the highest-value surfaces for cross-browser layout regressions. There is no current mechanism to
+   run them on mobile-webkit or desktop-firefox-touch. If a future regression affects WebKit-specific
+   CSS (e.g. `gap` in a flex container with `safe` alignment, or a `-webkit-` prefix gap), it would
+   not be caught by CI. This is a backlog item, not a blocker.
+
+### Backlog items from this phase
+
+- **[backlog]** Add `launcher.spec.ts` and `scaffold.spec.ts` to `mobile-webkit` testMatch once the
+  launcher is confirmed stable on real iOS Safari (blocked on human-in-the-loop verification).
+- **[backlog]** Document the Firefox clipboard-permissions constraint in `e2e/helpers.ts` for
+  whoever implements Phase 2.4 (share-toast verification).
 
 ## 2.3 — Production daily-index check
 
