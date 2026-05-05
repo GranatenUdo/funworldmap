@@ -22,7 +22,11 @@ vi.mock('maplibre-gl', () => {
       return { setZoomRate: () => {} }
     }
     getCanvas() {
-      return { style: { cursor: 'grab' } }
+      return {
+        style: { cursor: 'grab' },
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }
     }
   }
   class FakeControl {}

@@ -16,7 +16,7 @@ import { ResetViewControl, flyToHome } from '../lib/resetViewControl'
 import { prefersReducedMotion, subscribeReducedMotion } from '../lib/motion'
 import { useMap } from './useMap'
 
-export type MapErrorReason = 'timeout' | 'style' | 'country-data'
+export type MapErrorReason = 'timeout' | 'style' | 'country-data' | 'webgl-lost'
 const BASEMAP_PROBE_TIMEOUT_MS = 3_000
 
 interface UseMapInstanceOptions {
@@ -29,6 +29,7 @@ interface UseMapInstanceResult {
   loaded: boolean
   mapError: MapErrorReason | null
   basemapDegraded: boolean
+  retryWebGL: () => void
 }
 
 export function useMapInstance({
@@ -47,6 +48,9 @@ export function useMapInstance({
   }, [])
   const [mapError, setMapErrorState] = useState<MapErrorReason | null>(null)
   const [basemapDegraded, setBasemapDegraded] = useState(false)
+  // Ref to the canvas so retryWebGL can call restoreContext() without
+  // capturing a stale map reference.
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -154,6 +158,40 @@ export function useMapInstance({
       })
     })
 
+    // WebGL context-loss recovery.
+    // MapLibre registers its own canvas listener and re-emits the event as
+    // map.fire('webglcontextlost', { originalEvent: e }). The `originalEvent`
+    // is the actual WebGLContextEvent and must receive preventDefault() — the
+    // MapLibre wrapper object does not have a preventDefault of its own.
+    // We ALSO register directly on the canvas so we can guarantee
+    // preventDefault fires even if MapLibre's internal listener fires first
+    // without calling it.
+    const onMapContextLost = (e: { originalEvent?: Event }) => {
+      // The MapLibre wrapper carries the raw event as `originalEvent`.
+      e.originalEvent?.preventDefault()
+      setMapErrorState('webgl-lost')
+    }
+    const onMapContextRestored = () => {
+      setMapErrorState((prev) => (prev === 'webgl-lost' ? null : prev))
+    }
+    const onCanvasContextLost = (e: Event) => {
+      // preventDefault on the raw canvas event — belt-and-suspenders to ensure
+      // the browser knows we want to attempt context restoration.
+      e.preventDefault()
+      setMapErrorState('webgl-lost')
+    }
+    const onCanvasContextRestored = () => {
+      setMapErrorState((prev) => (prev === 'webgl-lost' ? null : prev))
+    }
+
+    map.on('webglcontextlost', onMapContextLost as (e: object) => void)
+    map.on('webglcontextrestored', onMapContextRestored)
+
+    const canvas = map.getCanvas()
+    canvasRef.current = canvas
+    canvas.addEventListener('webglcontextlost', onCanvasContextLost, { passive: false })
+    canvas.addEventListener('webglcontextrestored', onCanvasContextRestored)
+
     return () => {
       cancelled = true
       window.clearTimeout(watchdog)
@@ -164,6 +202,9 @@ export function useMapInstance({
       // double-invocation, where this effect tears down then re-runs.
       setLoadedBoth(false)
       unsubscribeReducedMotion()
+      canvas.removeEventListener('webglcontextlost', onCanvasContextLost)
+      canvas.removeEventListener('webglcontextrestored', onCanvasContextRestored)
+      canvasRef.current = null
       map.remove()
       mapRef.current = null
       if (import.meta.env.VITE_TEST_HOOKS) {
@@ -175,5 +216,29 @@ export function useMapInstance({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerRef])
 
-  return { supported, loaded, mapError, basemapDegraded }
+  // retryWebGL: attempt programmatic context restore. If the canvas hasn't
+  // restored within 1 s (e.g. the GPU process crashed), fall back to a full
+  // page reload which re-initialises everything cleanly.
+  const retryWebGL = useCallback(() => {
+    const canvas = canvasRef.current
+    if (canvas) {
+      try {
+        const gl = canvas.getContext('webgl2') as WebGL2RenderingContext | null
+        gl?.getExtension('WEBGL_lose_context')?.restoreContext()
+      } catch {
+        // Ignore — restoreContext throws if context is already restored.
+      }
+    }
+    // Fallback: if webglcontextrestored hasn't fired after 1 s, reload.
+    window.setTimeout(() => {
+      setMapErrorState((prev) => {
+        if (prev === 'webgl-lost') {
+          window.location.reload()
+        }
+        return prev
+      })
+    }, 1_000)
+  }, [])
+
+  return { supported, loaded, mapError, basemapDegraded, retryWebGL }
 }

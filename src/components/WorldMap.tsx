@@ -55,7 +55,7 @@ export default function WorldMap({
     applyWarmLighting(map)
   }, [])
 
-  const { supported, loaded, mapError, basemapDegraded } = useMapInstance({
+  const { supported, loaded, mapError, basemapDegraded, retryWebGL } = useMapInstance({
     containerRef,
     onLoad,
   })
@@ -94,7 +94,10 @@ export default function WorldMap({
       />
       {basemapDegraded && mapError === null && <BasemapBanner />}
       {mapError !== null && (
-        <MapErrorOverlay reason={mapError} onRetry={() => window.location.reload()} />
+        <MapErrorOverlay
+          reason={mapError}
+          onRetry={mapError === 'webgl-lost' ? retryWebGL : () => window.location.reload()}
+        />
       )}
     </div>
   )

@@ -42,6 +42,7 @@ export default defineConfig({
       // Combined testMatch: every spec previously in chromium + chromium-gpu.
       testMatch: [
         // formerly chromium-gpu (real-GPU-needing):
+        'webgl-context-loss.spec.ts',
         'map-and-countries.spec.ts',
         'map-reliability.spec.ts',
         'keyboard-map-nav.spec.ts',

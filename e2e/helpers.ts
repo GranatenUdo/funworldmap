@@ -456,3 +456,23 @@ export async function waitForAnimationIdle(
 ): Promise<void> {
   await expect(locator).toHaveAttribute('data-animation-state', 'idle', { timeout })
 }
+
+/**
+ * Force a WebGL context loss on the map canvas. The `WEBGL_lose_context`
+ * extension is supported in all Chromium-family browsers. After calling
+ * this, the `map-error-overlay` with `data-webgl-lost` should appear.
+ *
+ * Note: `loseContext()` is synchronous. The browser dispatches the
+ * `webglcontextlost` event synchronously before the call returns.
+ */
+export async function forceWebGLContextLoss(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const canvas = document.querySelector('canvas')
+    if (!canvas) throw new Error('No canvas found')
+    const gl = canvas.getContext('webgl2') as WebGL2RenderingContext | null
+    if (!gl) throw new Error('WebGL2 context not available')
+    const ext = gl.getExtension('WEBGL_lose_context')
+    if (!ext) throw new Error('WEBGL_lose_context extension not available')
+    ext.loseContext()
+  })
+}
