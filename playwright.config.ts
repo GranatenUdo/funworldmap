@@ -81,6 +81,7 @@ export default defineConfig({
         'toast-above-modal.spec.ts',
         'axe-snapshot.spec.ts',
         'label-contrast.spec.ts',
+        'mobile-panel-header.spec.ts',
       ],
     },
     {
