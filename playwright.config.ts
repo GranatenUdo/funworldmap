@@ -69,6 +69,7 @@ export default defineConfig({
         'a11y-keyboard-smoke.spec.ts',
         'country-news.spec.ts',
         'launcher.spec.ts',
+        'launcher-focus-order.spec.ts',
         'daily-puzzle.spec.ts',
         'daily-best-of-3.spec.ts',
         'daily-streak.spec.ts',
