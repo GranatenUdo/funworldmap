@@ -111,7 +111,20 @@ export default defineConfig({
         // mobile-webkit project — the mobile smoke spec doesn't use clipboard.
         permissions: [],
       },
-      testMatch: ['mobile-smoke.spec.ts', 'mobile-tap.spec.ts'],
+      testMatch: [
+        'mobile-smoke.spec.ts',
+        'mobile-tap.spec.ts',
+        // Phase 5.5 — canonical DOM specs added to surface WebKit CSS/DOM regressions.
+        // No clipboard (permissions:[]), no GPU/map interaction — safe on WebKit.
+        // panel-and-deeplink.spec.ts excluded: its `Country Panel` describe block
+        // assumes a desktop viewport (≥1024px) for secondary fields (Government,
+        // border chips). This project uses iPhone 14 (390px) — secondary fields are
+        // hidden behind the expand button on mobile, causing 2/7 tests to fail.
+        // Those tests pass on the `chromium` project (desktop viewport); the mobile-
+        // specific bottom-sheet tests are already in the chromium testMatch too.
+        'theme-and-responsive.spec.ts',
+        'launcher-card-loading-states.spec.ts',
+      ],
     },
     {
       name: 'desktop-firefox-touch',
@@ -126,7 +139,17 @@ export default defineConfig({
         // for this project — the mobile smoke spec doesn't use clipboard.
         permissions: [],
       },
-      testMatch: ['mobile-smoke.spec.ts', 'mobile-tap.spec.ts'],
+      testMatch: [
+        'mobile-smoke.spec.ts',
+        'mobile-tap.spec.ts',
+        // Phase 5.5 — canonical DOM specs added to surface Firefox CSS/DOM regressions.
+        // No clipboard (permissions:[]), no GPU/map interaction — safe on Firefox.
+        // panel-and-deeplink.spec.ts excluded: same reason as mobile-webkit —
+        // this project uses a 412px viewport (below the 1024px desktop cutoff),
+        // so the `Country Panel` describe block's desktop-assumption tests fail.
+        'theme-and-responsive.spec.ts',
+        'launcher-card-loading-states.spec.ts',
+      ],
     },
   ],
   webServer: {
