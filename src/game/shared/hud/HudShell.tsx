@@ -46,7 +46,6 @@ export function HudShell({ session, onEndGame, onDone, children }: Props) {
   const [confirmAsked, setConfirmAsked] = useState(false)
   const [promptShownThisRound, setPromptShownThisRound] = useState(false)
 
-  // Reset both flags when the round resets (new round or new game).
   // `session.currentAttempts.length === 0` covers both the advance case
   // (reducer clears currentAttempts on advance/restart) and a brand-new game.
   useEffect(() => {
