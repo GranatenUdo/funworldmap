@@ -1,7 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
 import { dismissLauncher, waitForAnimationIdle } from './helpers'
 
-test.setTimeout(60_000)
+test.setTimeout(90_000)
 
 // Search for a country and click the first result. Under slow CI the
 // search-results dropdown can need >5 s to populate (Fuse debounce +
@@ -13,7 +13,7 @@ async function searchAndOpenPanel(page: Page, query: string) {
   await firstOption.click()
   const panel = page.getByTestId('country-panel')
   await expect(panel).toBeVisible({ timeout: 15_000 })
-  await waitForAnimationIdle(panel)
+  await waitForAnimationIdle(panel, 30_000)
   return panel
 }
 

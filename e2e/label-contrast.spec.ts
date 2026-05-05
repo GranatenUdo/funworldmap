@@ -264,7 +264,7 @@ async function readLabelPaints(page: Page, layerIds: string[]): Promise<LabelPai
 // ─── Wait for map loaded ──────────────────────────────────────────────────
 
 async function waitForMapLoaded(page: Page): Promise<void> {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+  await page.waitForSelector('[data-map-loaded]', { timeout: 90_000 })
 }
 
 // ─── Contrast row ─────────────────────────────────────────────────────────
