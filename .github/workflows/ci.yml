@@ -67,6 +67,16 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
+      # Install Mesa software OpenGL drivers (llvmpipe). On GitHub-hosted
+      # ubuntu-latest there's no GPU, so without this Chromium falls back to
+      # SwiftShader (its built-in software renderer), which is 5-10x slower
+      # than llvmpipe for WebGL2 paths and was the documented cause of cold-
+      # WebGL CI flakes on PR #36. Per Promaton/Snider 2026-02 research, just
+      # having Mesa available gives ~3x speedup on WebGL-heavy tests even
+      # without any GPU acceleration.
+      - name: Install Mesa software OpenGL drivers
+        run: sudo apt-get install -y mesa-utils libgl1-mesa-dri libglu1-mesa libegl1
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 

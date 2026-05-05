@@ -24,10 +24,20 @@ export default defineConfig({
       // per docs/superpowers/notes/2026-04-28-flake-regression-analysis.md
       // recommendation D: it was the documented largest single contributor
       // to the flake rate and ran ~8 min for tests that don't need GPU at all.
+      //
+      // 2026-05-05 follow-up (PR #36 flake-triage): on GitHub-hosted ubuntu-latest
+      // there's no real GPU, so `--use-angle=default` falls back to SwiftShader
+      // (Chromium's slow built-in software renderer). Mitigations:
+      //   1. Install Mesa/llvmpipe via apt in CI (see .github/workflows/ci.yml).
+      //   2. Use Playwright v1.49+'s "new headless" via `channel: 'chromium'`
+      //      so GPU/WebGL handling matches headed mode (chromium-headless-shell
+      //      is more aggressive about disabling GPU, which compounds with
+      //      software-rendering slowness).
       timeout: isCi ? 120_000 : 60_000,
       expect: { timeout: isCi ? 15_000 : 5_000 },
       use: {
         ...devices['Desktop Chrome'],
+        channel: 'chromium',
         actionTimeout: isCi ? 20_000 : 5_000,
         // Emulate prefers-reduced-motion: reduce so the existing
         // `@media (prefers-reduced-motion: reduce)` rule in src/index.css
