@@ -47,6 +47,7 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
       <button
         ref={refs.setReference}
         {...getReferenceProps()}
+        tabIndex={-1}
         className="text-sand-400 dark:text-dark-100 hover:text-teal dark:hover:text-teal-light text-xs w-4 h-4 rounded-full border border-sand-300 dark:border-dark-200 inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 transition-colors ml-1"
         aria-label={`Source: ${source.name}`}
       >
@@ -65,6 +66,7 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
             href={source.url}
             target="_blank"
             rel="noopener noreferrer"
+            tabIndex={-1}
             className="text-teal-light hover:text-teal underline"
           >
             {source.url}
