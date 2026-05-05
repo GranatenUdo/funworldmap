@@ -89,6 +89,7 @@ export default defineConfig({
         'source-tooltip-edge.spec.ts',
         'source-tooltip-keyboard.spec.ts',
         'header-play-reopens-launcher.spec.ts',
+        'done-confirm-low-score.spec.ts',
       ],
     },
     {

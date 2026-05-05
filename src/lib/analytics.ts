@@ -6,6 +6,7 @@ export type EventSchema = {
   daily_attempted: { mode: ModeId; attemptIndex: number; scoreBucket: number }
   daily_completed: { mode: ModeId; bestScoreBucket: number; attemptsUsed: number }
   daily_shared: { date: string; modesPlayed: 1 | 2; method: 'share-api' | 'clipboard-text' | 'clipboard-link' }
+  daily_done_low_score_prompt: { mode: ModeId; bestScore: number; attemptsRemaining: number }
   free_started: { mode: ModeId }
   history_opened: Record<string, never>
   history_cell_clicked: { cellKind: 'played' | 'unplayed-in-window' | 'rolled-off' }
