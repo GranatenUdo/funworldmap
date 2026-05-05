@@ -41,7 +41,7 @@ export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void
       map.setPaintProperty(
         layer.id,
         'text-color',
-        mode === 'dark' ? '#475569' : '#78716c',
+        mode === 'dark' ? '#64748b' : '#78716c',
       )
       map.setPaintProperty(
         layer.id,

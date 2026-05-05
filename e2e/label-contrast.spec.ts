@@ -23,7 +23,7 @@
  * sufficient to verify the paint values actually written to the map.
  *
  * applyMapTheme applies these values:
- *   dark:  text-color #475569, text-halo-color #10141a
+ *   dark:  text-color #64748b, text-halo-color #10141a
  *   light: text-color #78716c, text-halo-color #e8e3da
  *
  * Background land-fill colours applied by applyMapTheme (src/lib/mapColors.ts):
@@ -302,7 +302,7 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
   test.setTimeout(120_000)
 
   // applyMapTheme values from src/lib/mapColors.ts (exact constants, not guessed)
-  const EXPECTED_DARK_TEXT = '#475569'
+  const EXPECTED_DARK_TEXT = '#64748b'
   const EXPECTED_DARK_HALO = '#10141a'
   const EXPECTED_LIGHT_TEXT = '#78716c'
   const EXPECTED_LIGHT_HALO = '#e8e3da'
@@ -381,22 +381,15 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     }
 
     const rows = measureContrast(paints, DARK_LAND_BG)
-    const testInfo = test.info()
     console.log('\n=== Dark + Map view ===')
     for (const r of rows) {
       const tvh = formatRatio(r.textVsHalo)
       const tvb = formatRatio(r.textVsBg)
       const hvb = formatRatio(r.haloVsBg)
-      const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'WARN <AA' : 'FAIL <3:1'
+      const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'OK ≥3:1' : 'FAIL <3:1'
       console.log(`  ${r.layer}: text vs halo = ${tvh} [${aaLabel}] | text vs bg = ${tvb} | halo vs bg = ${hvb}`)
-      // Log violations (collect mode); sanity-check that measurement worked (ratio > 0)
-      if (r.textVsHalo < 3.0) {
-        testInfo.attach('contrast-violation', {
-          body: `${r.layer} text-vs-halo ${tvh} below WCAG minimum 3:1`,
-          contentType: 'text/plain',
-        })
-      }
-      expect(r.textVsHalo, `${r.layer} text-vs-halo measurement`).toBeGreaterThan(0)
+      // Phase 3.10: dark-mode 3:1 minimum is now a hard assertion (was collect-only in Phase 2.5)
+      expect(r.textVsHalo, `${r.layer} text-vs-halo must meet WCAG minimum 3:1`).toBeGreaterThanOrEqual(3.0)
     }
   })
 
@@ -454,21 +447,14 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
 
     const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
     const rows = measureContrast(paints, DARK_LAND_BG)
-    const testInfo = test.info()
 
     console.log('\n=== Dark + Satellite view (text vs halo — primary path; bg is variable imagery) ===')
     for (const r of rows) {
       const tvh = formatRatio(r.textVsHalo)
-      const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'WARN <AA' : 'FAIL <3:1'
+      const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'OK ≥3:1' : 'FAIL <3:1'
       console.log(`  ${r.layer}: text vs halo = ${tvh} [${aaLabel}]`)
-      // Log violations (collect mode); sanity-check that measurement worked (ratio > 0)
-      if (r.textVsHalo < 3.0) {
-        testInfo.attach('contrast-violation', {
-          body: `${r.layer} text-vs-halo ${tvh} below WCAG minimum 3:1`,
-          contentType: 'text/plain',
-        })
-      }
-      expect(r.textVsHalo, `${r.layer} text-vs-halo measurement`).toBeGreaterThan(0)
+      // Phase 3.10: dark-mode 3:1 minimum is now a hard assertion (was collect-only in Phase 2.5)
+      expect(r.textVsHalo, `${r.layer} text-vs-halo must meet WCAG minimum 3:1`).toBeGreaterThanOrEqual(3.0)
     }
   })
 
@@ -479,16 +465,9 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     const halo = parseColor(EXPECTED_DARK_HALO)!
     const ratio = contrastRatio(text, halo)
     const ratioStr = formatRatio(ratio)
-    const testInfo = test.info()
     console.log(`\nStatic dark  text(${EXPECTED_DARK_TEXT}) vs halo(${EXPECTED_DARK_HALO}) = ${ratioStr}`)
-    // Log violation (collect mode); sanity-check that measurement worked (ratio > 0)
-    if (ratio < 3.0) {
-      testInfo.attach('contrast-violation', {
-        body: `Dark palette text-vs-halo ${ratioStr} below WCAG minimum 3:1`,
-        contentType: 'text/plain',
-      })
-    }
-    expect(ratio).toBeGreaterThan(0)
+    // Phase 3.10: dark-mode 3:1 minimum is now a hard assertion (was collect-only in Phase 2.5)
+    expect(ratio, `Dark palette text-vs-halo must meet WCAG minimum 3:1`).toBeGreaterThanOrEqual(3.0)
   })
 
   test('static: light palette text-vs-halo measurement', () => {
