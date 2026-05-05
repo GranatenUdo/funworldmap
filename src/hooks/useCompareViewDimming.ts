@@ -3,6 +3,7 @@ import {
   EMPTY_FILTER as EMPTY,
   DEFAULT_FILL_OPACITY,
   applyBorderPaintForMode,
+  applySelectionColor,
   LAYER,
 } from '../lib/mapLayers'
 import { CORAL, CORAL_LIGHT, TEAL_DIM } from '../lib/mapPalette'
@@ -43,10 +44,7 @@ export function useCompareViewDimming({
 
         // Pin A (selected) = coral badge colour, B (compareWith) = teal-dim badge
         // colour, overriding whatever useMapTheme set (it uses CORAL_LIGHT in dark).
-        map.setPaintProperty(LAYER.selected, 'fill-color', CORAL)
-        map.setPaintProperty(LAYER.selectedBorder, 'line-color', CORAL)
-        map.setPaintProperty(LAYER.selectedGlow, 'line-color', CORAL)
-        map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', CORAL)
+        applySelectionColor(map, CORAL)
 
         map.setPaintProperty(LAYER.compareFill, 'fill-color', TEAL_DIM)
         map.setPaintProperty(LAYER.compareBorder, 'line-color', TEAL_DIM)
@@ -59,10 +57,7 @@ export function useCompareViewDimming({
         // Restore the selection highlight to the theme-appropriate coral so
         // single-country selection outside compare looks right in both themes.
         const coral = resolvedTheme === 'dark' ? CORAL_LIGHT : CORAL
-        map.setPaintProperty(LAYER.selected, 'fill-color', coral)
-        map.setPaintProperty(LAYER.selectedBorder, 'line-color', coral)
-        map.setPaintProperty(LAYER.selectedGlow, 'line-color', coral)
-        map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', coral)
+        applySelectionColor(map, coral)
       }
     } catch {
       // Layers may not exist yet (e.g. fast theme toggle before load completes).

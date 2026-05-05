@@ -203,3 +203,13 @@ export const LAYER = {
   compareExtrusion: 'country-compare-extrusion',
   satellite: 'satellite-layer',
 } as const
+
+/** Apply a uniform color to all four selection-highlight layers in one call.
+ *  Used by useMapTheme (theme change) and useCompareViewDimming (compare
+ *  enter/exit) so the four setPaintProperty calls have a single definition. */
+export function applySelectionColor(map: maplibregl.Map, color: string): void {
+  map.setPaintProperty(LAYER.selected, 'fill-color', color)
+  map.setPaintProperty(LAYER.selectedBorder, 'line-color', color)
+  map.setPaintProperty(LAYER.selectedGlow, 'line-color', color)
+  map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', color)
+}
