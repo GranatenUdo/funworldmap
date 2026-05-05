@@ -144,7 +144,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   }, [onDismiss])
 
   const dismissWithBackdrop = useCallback(() => {
-    track('launcher_dismissed', { path: 'card' })
+    track('launcher_dismissed', { path: 'backdrop' })
     onDismiss()
     focusSearchInput()
   }, [onDismiss])
