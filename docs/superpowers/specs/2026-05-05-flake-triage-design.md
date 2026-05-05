@@ -41,7 +41,7 @@ The 2026-04-28 analysis prescription "remove anti-patterns" no longer applies; t
 
 ## Approach: phased fix-and-monitor
 
-Four phases, each independently verifiable. Phases 1-3 land as separate small commits on the existing branch; Phase 4 is observational. Each fix uses 10× local-green at `workers=2 retries=0` as the merge gate (per CLAUDE.md "10× local rule").
+Four phases, each independently verifiable. **All four phases land on the existing `feat/vision-audit-remediation` branch (PR #36)** — not as separate follow-up PRs. Rationale: the branch is already in-flight; merging #36 with red CI then opening a follow-up doubles the review cycle. Phases 1-3 land as separate small commits; Phase 4 is observational. Each fix uses 10× local-green at `workers=2 retries=0` as the merge gate (per CLAUDE.md "10× local rule").
 
 ### Phase 1 — High-confidence fix: `dismissLauncher` race
 
@@ -99,7 +99,7 @@ After Phases 1-3 land:
 - For the variable-flake-pool specs: track which (if any) persistently flake. Specs that flake in ≥ 3 of 5 runs get triaged with the same investigate-then-fix pattern.
 - Specs that don't recur are presumed environmental noise; not actioned.
 
-**Acceptance**: 5 consecutive runs all-green (chromium e2e + lint+unit). If after 5 runs the flake rate hasn't dropped meaningfully, this spec acknowledges that the residual flakes are environmental and option D (real GPU CI runner) is the next move — outside this spec's scope.
+**Acceptance**: **5 consecutive runs all-green** (chromium e2e + lint+unit). Locked criterion. If after 5 runs the flake rate hasn't dropped meaningfully, this spec acknowledges that the residual flakes are environmental and option D (real GPU CI runner) is the next move — outside this spec's scope.
 
 ## Out of scope
 
@@ -112,7 +112,7 @@ After Phases 1-3 land:
 ## Risks and unknowns
 
 1. **Phase 2 and 3 are investigation-prefixed.** Diagnosis may surface real bugs in app code rather than test-rigor issues. If so, fixes land in components, not tests; this is correct per CLAUDE.md but expands the change-set on the PR branch.
-2. **Phase 4's "5 consecutive green" criterion may be statistically unreachable** if the variable-flake-pool baseline rate is > ~5%. Backup plan: relax to "8 of 10 green," document the per-spec residual rate, and surface remaining flakes as roadmap items for option D.
+2. **Phase 4's "5 consecutive green" criterion may be statistically unreachable** if the variable-flake-pool baseline rate is > ~5%. Per user decision the criterion is locked at 5 consecutive — if it's not met, the outcome is "escalate to option D," not "relax the criterion." This is the deliberate forcing function for environmental fix.
 3. **Phase 1's hypothesis (Header-remount race) is not yet verified** by reproducing the failure with intentional slow-down. Counter-evidence (the fix doesn't resolve `theme-and-responsive`) would imply a different root cause and require Phase-2-style investigation.
 4. **CI environment is not under this spec's control.** GitHub Actions runner allocation failures (one occurred in run 3) are separate from the test code; they show up as job-level failures, not spec failures, and are filed as out-of-band noise.
 
