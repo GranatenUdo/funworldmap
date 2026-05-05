@@ -46,6 +46,9 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
 
   return (
     <>
+      {/* tabIndex={-1}: removed from sequential Tab order so blur-out closes the
+          tooltip cleanly. Keyboard users can still reach it via focus (useFocus
+          hook); sighted-keyboard reach via Tab is a known a11y trade-off (Phase 4.3). */}
       <button
         ref={refs.setReference}
         {...getReferenceProps()}
