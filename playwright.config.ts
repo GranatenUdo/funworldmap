@@ -79,6 +79,7 @@ export default defineConfig({
         'launcher-card-loading-states.spec.ts',
         'telemetry-deep-link.spec.ts',
         'toast-above-modal.spec.ts',
+        'axe-snapshot.spec.ts',
       ],
     },
     {
