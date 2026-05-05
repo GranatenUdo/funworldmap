@@ -133,9 +133,12 @@ export async function finalizeGame(page: Page): Promise<void> {
  * - Awaits not.toBeAttached after dismiss so the caller can rely on the
  *   launcher being fully removed before performing clicks that would
  *   otherwise be absorbed by the launcher's z-[210] backdrop.
- * - Final 150ms settle lets React batch-commit the post-dismiss header
- *   re-render (play + satellite buttons reappearing) before the caller
- *   interacts.
+ * - After dismiss, waits for the search-input element to be attached. Header
+ *   returns null while the launcher is visible (Header.tsx), so a Header
+ *   child becoming attached is the deterministic signal that the post-dismiss
+ *   re-render has committed and Header children (theme-toggle,
+ *   satellite-toggle, header-play) are safe to click. Replaces a former 150ms
+ *   sleep that raced the re-mount on slow CI.
  */
 export async function dismissLauncher(page: Page): Promise<void> {
   await waitForAppReady(page)
