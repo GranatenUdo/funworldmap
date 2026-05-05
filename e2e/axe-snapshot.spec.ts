@@ -105,6 +105,16 @@ test('axe-snapshot: in-game HUD', async ({ page }) => {
     .analyze()
 
   reportViolations('In-game HUD', results.violations)
+
+  // Phase 3.9: attempts indicator should have role=group, no aria-prohibited-attr.
+  const ariaProhibitedAttr = results.violations.find(v => v.id === 'aria-prohibited-attr')
+  if (ariaProhibitedAttr !== undefined) {
+    throw new Error(
+      `[axe] aria-prohibited-attr violation(s) found in in-game HUD: ${ariaProhibitedAttr.nodes
+        .map(n => n.html)
+        .join('; ')}`,
+    )
+  }
 })
 
 // ── 3. Country panel open ─────────────────────────────────────────────────────

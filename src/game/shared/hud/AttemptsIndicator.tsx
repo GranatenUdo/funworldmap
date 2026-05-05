@@ -18,7 +18,7 @@ export function AttemptsIndicator({ session }: { session: GameSession }) {
 
   return (
     <div data-testid="attempts-indicator" className="relative flex items-center gap-2">
-      <div className="flex gap-1.5" aria-label={`Attempt ${Math.min(used + (session.status === 'playing' ? 1 : 0), total)} of ${total}`}>
+      <div className="flex gap-1.5" role="group" aria-label={`Attempt ${Math.min(used + (session.status === 'playing' ? 1 : 0), total)} of ${total}`}>
         {Array.from({ length: total }, (_, i) => (
           <span
             key={i}
