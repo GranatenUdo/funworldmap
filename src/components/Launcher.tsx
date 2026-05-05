@@ -22,8 +22,17 @@ interface Props {
 }
 
 function focusSearchInput(): void {
-  const el = document.getElementById('search-input') as HTMLInputElement | null
-  el?.focus()
+  // Defer until after React has committed the post-dismiss render.
+  // Header returns null while the launcher is open, so the search input
+  // doesn't exist in the DOM until the launcher unmounts and React
+  // re-renders the header. A double-rAF (two animation frames) ensures
+  // the commit + paint cycle has completed before we attempt to focus.
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      const el = document.getElementById('search-input') as HTMLInputElement | null
+      el?.focus()
+    })
+  })
 }
 
 export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
@@ -130,6 +139,12 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
 
   const dismissWithFocus = useCallback(() => {
     track('launcher_dismissed', { path: 'link' })
+    onDismiss()
+    focusSearchInput()
+  }, [onDismiss])
+
+  const dismissWithBackdrop = useCallback(() => {
+    track('launcher_dismissed', { path: 'card' })
     onDismiss()
     focusSearchInput()
   }, [onDismiss])
@@ -266,6 +281,11 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
           aria-hidden="true"
           className="absolute inset-0 bg-black/55 dark:bg-[rgba(11,15,26,0.7)] backdrop-blur-[4px]"
           style={{ animation: 'launcher-backdrop-in 220ms ease-out' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              dismissWithBackdrop()
+            }
+          }}
         />
         <div className="relative w-full max-w-2xl mx-auto">
           <div

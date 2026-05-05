@@ -31,43 +31,38 @@ test.describe('Launcher — dismiss paths', () => {
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     await page.getByTestId('launcher-dismiss').click()
-    await expect(page.getByTestId('launcher')).not.toBeVisible()
+    await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
+    // Wait for header to re-mount after launcher unmounts, then check focus
+    await expect(page.getByTestId('search-input')).toBeAttached({ timeout: 5_000 })
     await expect(page.getByTestId('search-input')).toBeFocused()
   })
 
-  test('typing in search dismisses on first non-empty change', async ({ page }) => {
+  test('search input is not in DOM while launcher is open', async ({ page }) => {
+    // Header returns null when launcher is visible, so the search input is not
+    // in the DOM at all — this prevents pointer-blocked affordances.
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('search-input').fill('F')
-    await expect(page.getByTestId('launcher')).not.toBeVisible({ timeout: 3_000 })
-    await expect(page.getByTestId('search-input')).toBeFocused()
-  })
-
-  test('focusing search without typing does NOT dismiss', async ({ page }) => {
-    await freshTab(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('search-input').focus()
-    await expect(page.getByTestId('search-input')).toBeFocused()
-    await expect(page.getByTestId('launcher')).toBeVisible()
+    await expect(page.getByTestId('search-input')).not.toBeAttached()
   })
 
   test('pressing Escape dismisses and focuses search', async ({ page }) => {
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     await page.keyboard.press('Escape')
-    await expect(page.getByTestId('launcher')).not.toBeVisible({ timeout: 3_000 })
+    await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
+    // Wait for header to re-mount after launcher unmounts, then check focus
+    await expect(page.getByTestId('search-input')).toBeAttached({ timeout: 5_000 })
     await expect(page.getByTestId('search-input')).toBeFocused()
   })
 
-  test('clicking the backdrop area does NOT dismiss', async ({ page }) => {
+  test('clicking the backdrop area dismisses the launcher', async ({ page }) => {
     await freshTab(page)
     const launcher = page.getByTestId('launcher')
     await expect(launcher).toBeVisible({ timeout: 10_000 })
-    const viewport = page.viewportSize() || { width: 1280, height: 720 }
-    await page.mouse.click(10, 10)
-    await expect(launcher).toBeVisible()
-    await page.mouse.click(viewport.width - 10, viewport.height - 10)
-    await expect(launcher).toBeVisible()
+    // Click the backdrop div directly (top-left corner, away from centred card content)
+    const backdrop = launcher.locator('> div[aria-hidden="true"]')
+    await backdrop.click({ position: { x: 20, y: 20 } })
+    await expect(launcher).not.toBeAttached({ timeout: 5_000 })
   })
 })
 
@@ -115,11 +110,11 @@ test.describe('Launcher — session scope', () => {
 })
 
 test.describe('Launcher — header behaviour', () => {
-  test('play + satellite hidden while launcher visible', async ({ page }) => {
+  test('play + satellite not in DOM while launcher visible', async ({ page }) => {
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByTestId('header-play')).not.toBeVisible()
-    await expect(page.getByTestId('satellite-toggle')).not.toBeVisible()
+    await expect(page.getByTestId('header-play')).not.toBeAttached()
+    await expect(page.getByTestId('satellite-toggle')).not.toBeAttached()
   })
 
   test('play + satellite restored after dismiss', async ({ page }) => {

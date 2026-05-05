@@ -78,6 +78,7 @@ export default defineConfig({
         'daily-deep-link.spec.ts',
         'launcher-history.spec.ts',
         'launcher-card-loading-states.spec.ts',
+        'launcher-backdrop-dismiss.spec.ts',
         'telemetry-deep-link.spec.ts',
         'toast-above-modal.spec.ts',
         'axe-snapshot.spec.ts',
