@@ -42,10 +42,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Single project after the 2026-05-02 Software-ANGLE drop. Kept as a
-        # matrix entry for now to avoid restructuring the job name; can be
-        # flattened to a non-matrix job in a follow-up.
-        project: [chromium]
+        # Phase 5.2 — expanded matrix to include mobile and Firefox projects.
+        # These were previously only runnable locally; now running in CI to surface
+        # cross-browser CSS/DOM regressions (WebKit/Firefox may have real issues).
+        project: [chromium, mobile-chromium, mobile-webkit, desktop-firefox-touch]
     steps:
       - uses: actions/checkout@v4
 
@@ -63,7 +63,7 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps chromium webkit firefox
 
       - name: E2E tests (${{ matrix.project }})
         run: npx playwright test --project=${{ matrix.project }} --reporter=blob
