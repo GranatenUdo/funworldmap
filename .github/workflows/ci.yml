@@ -37,7 +37,7 @@ jobs:
         run: npm run test:unit
 
   e2e:
-    name: e2e (${{ matrix.project }})
+    name: e2e (${{ matrix.project }} shard ${{ matrix.shard }}/4)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -51,6 +51,15 @@ jobs:
         # cross-browser baseline before re-adding to the CI matrix.
         # See `docs/roadmap.md` § "Cross-browser CI failures from PR #36".
         project: [chromium]
+        # 4-way sharding: split the ~215-spec chromium suite across 4 parallel
+        # runners. Each shard runs ~50 specs in ~7 min wall-clock instead of
+        # one runner doing all 215 in ~28 min. Reduces per-shard accumulated
+        # cold-WebGL pressure; flaky timeouts have more headroom because the
+        # shard finishes before the runner's per-job time pressure builds up.
+        # Per Playwright docs (https://playwright.dev/docs/test-sharding),
+        # fullyParallel=true (already set in playwright.config.ts) distributes
+        # individual TESTS not files, so shards are balanced.
+        shard: [1, 2, 3, 4]
     steps:
       - uses: actions/checkout@v4
 
@@ -80,8 +89,8 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: E2E tests (${{ matrix.project }})
-        run: npx playwright test --project=${{ matrix.project }} --reporter=blob
+      - name: E2E tests (${{ matrix.project }} shard ${{ matrix.shard }}/4)
+        run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}/4 --reporter=blob
         env:
           VITE_ANALYTICS_ENDPOINT: ''
           VITE_CF_WA_TOKEN: ''
@@ -90,7 +99,8 @@ jobs:
         uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:
-          name: playwright-blob-${{ matrix.project }}
+          # Unique per (project, shard) so they don't collide on download.
+          name: playwright-blob-${{ matrix.project }}-${{ matrix.shard }}
           path: blob-report
           retention-days: 1
 
