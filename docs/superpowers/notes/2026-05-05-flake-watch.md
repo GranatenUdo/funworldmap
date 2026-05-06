@@ -44,3 +44,38 @@ After research into alternatives that work on free GitHub runners, two changes a
 
 Both are minimal config changes — no test code touched. If chromium e2e drops from ~28 min to ~10 min and label-contrast stops flaking, hypothesis confirmed and the rest of the watch can resume. If not, evidence for option D (paid GPU runner) is conclusive.
 
+### Run 2 — 2026-05-05 ~21:51 UTC (option A test)
+
+- run_id: `25402952484`
+- Result: **❌ FAIL** (option A didn't help)
+- Duration: 31m9s (slightly worse than the 28m baseline)
+- chromium e2e: **8 failures**, including same `label-contrast.spec.ts:382 light + map view` 90s `waitForFunction` timeout, plus a wider variety of flake-pool specs.
+
+**Conclusion**: neither Mesa/llvmpipe nor `channel: 'chromium'` materially improved CI behavior. The bottleneck is deeper than software-renderer choice OR Playwright headless mode.
+
+## Pivot: Option B (4-way sharding)
+
+After option A failed, switched approach. Hypothesis: the bottleneck is per-job CUMULATIVE time pressure (215 specs × cold-WebGL penalty stacking up), not per-test slowness.
+
+`.github/workflows/ci.yml` modified to shard chromium across 4 parallel matrix jobs via `--shard=N/4`. Mesa install + new headless mode kept (no harm; may help marginally).
+
+### Run 3 — 2026-05-06 ~00:?? UTC (option B / sharding test)
+
+- run_id: `25418049261`
+- Result: **✅ PASS** (1st green of the watch)
+- Wall-clock: ~13 min (longest shard 2/4 at 12m44s, others 5-9m)
+- chromium e2e: ALL 4 SHARDS GREEN
+
+| Job | Duration | Result |
+|---|---|---|
+| lint + type + unit | 1m11s | ✅ |
+| e2e (chromium shard 1/4) | 6m49s | ✅ |
+| e2e (chromium shard 2/4) | 12m44s | ✅ |
+| e2e (chromium shard 3/4) | 5m1s | ✅ |
+| e2e (chromium shard 4/4) | 8m41s | ✅ |
+| Merge e2e reports | 22s | ✅ |
+
+**Hypothesis confirmed**. Wall-clock dropped from 28-31 min to ~13 min; label-contrast no longer hit the 90s test timeout. Sharding broke the cumulative-time-pressure pattern that 3 rounds of in-spec / app-config fixes couldn't address.
+
+**Watch counter (consecutive green)**: 1 / 5
+
