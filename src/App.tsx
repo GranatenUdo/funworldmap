@@ -289,8 +289,14 @@ function AppInner({
         if (launcherVisible) {
           track('launcher_dismissed', { path: 'escape' })
           dismissLauncher()
-          const searchInput = document.getElementById('search-input') as HTMLInputElement | null
-          searchInput?.focus()
+          // Defer focus: Header returns null while launcher is open, so the
+          // search input doesn't exist until React re-renders post-dismiss.
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+              const searchInput = document.getElementById('search-input') as HTMLInputElement | null
+              searchInput?.focus()
+            })
+          })
           return
         }
         if (compareWith || comparePickingMode) { exitCompare(); return }

@@ -39,3 +39,5 @@ coverage/
 # Ad-hoc debugging screenshots
 /screenshot-*.png
 /screenshots/
+/[a-z][0-9]*-*.png
+/verify-*.png

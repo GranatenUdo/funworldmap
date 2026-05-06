@@ -143,7 +143,13 @@ export function SingleCountryPanel({
             Pick a country to compare with...
           </div>
         )}
-        <div className="flex items-start justify-between gap-3">
+        <div
+          className={
+            isDesktop
+              ? 'flex items-start justify-between gap-3'
+              : 'flex flex-col items-stretch gap-2'
+          }
+        >
           <div className="flex items-start gap-3.5 min-w-0 panel-fade-up">
             <img
               data-testid="country-flag"
@@ -178,7 +184,7 @@ export function SingleCountryPanel({
             </div>
           </div>
 
-          <div className="flex items-center gap-1 shrink-0">
+          <div className={`flex items-center gap-1 ${isDesktop ? 'shrink-0' : 'flex-wrap'}`}>
             {!comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}

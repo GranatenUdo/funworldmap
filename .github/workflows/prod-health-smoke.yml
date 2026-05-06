@@ -1,0 +1,71 @@
+name: Production Health Smoke
+
+on:
+  schedule:
+    # Every 6 hours, offset 1h after the daily-puzzle workflow's runs
+    # daily-puzzle runs at: 15 0,6,12,18 * * *
+    # smoke check runs at: 15 1,7,13,19 * * *
+    - cron: "15 1,7,13,19 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  check-daily-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch and validate /daily/index.json
+        id: check
+        run: |
+          set -euo pipefail
+          response=$(curl -fsSL https://funworldmap.com/daily/index.json)
+          window_end=$(echo "$response" | jq -r '.window.end')
+          today_utc=$(date -u +%Y-%m-%d)
+
+          echo "window.end: $window_end"
+          echo "today (UTC): $today_utc"
+
+          # Compare strings (YYYY-MM-DD lex sort = chrono sort)
+          if [[ "$window_end" < "$today_utc" ]]; then
+            echo "::error::window.end ($window_end) is before today UTC ($today_utc)"
+            echo "stale=true" >> $GITHUB_OUTPUT
+            echo "window_end=$window_end" >> $GITHUB_OUTPUT
+            echo "today=$today_utc" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+          echo "stale=false" >> $GITHUB_OUTPUT
+
+      - name: Open issue on staleness
+        if: failure() && steps.check.outputs.stale == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const window_end = '${{ steps.check.outputs.window_end }}'
+            const today = '${{ steps.check.outputs.today }}'
+            const title = `Daily index stale: window ends ${window_end}, today is ${today}`
+            // Check for existing open issue with the same title prefix
+            const existing = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'daily-index-stale',
+            })
+            const match = existing.data.find(i => i.title.startsWith('Daily index stale'))
+            if (match) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: match.number,
+                body: `Smoke check at ${new Date().toISOString()} — still stale (window.end=${window_end}, today=${today}).`,
+              })
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body: `Production /daily/index.json window.end is **${window_end}** but today (UTC) is **${today}**.\n\nLikely the \`.github/workflows/daily-puzzle.yml\` workflow has stopped running or is failing. Check the Actions tab.`,
+                labels: ['daily-index-stale', 'p1'],
+              })
+            }

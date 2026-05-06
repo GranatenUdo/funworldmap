@@ -133,9 +133,12 @@ export async function finalizeGame(page: Page): Promise<void> {
  * - Awaits not.toBeAttached after dismiss so the caller can rely on the
  *   launcher being fully removed before performing clicks that would
  *   otherwise be absorbed by the launcher's z-[210] backdrop.
- * - Final 150ms settle lets React batch-commit the post-dismiss header
- *   re-render (play + satellite buttons reappearing) before the caller
- *   interacts.
+ * - After dismiss, waits for the search-input element to be attached. Header
+ *   returns null while the launcher is visible (Header.tsx), so a Header
+ *   child becoming attached is the deterministic signal that the post-dismiss
+ *   re-render has committed and Header children (theme-toggle,
+ *   satellite-toggle, header-play) are safe to click. Replaces a former 150ms
+ *   sleep that raced the re-mount on slow CI.
  */
 export async function dismissLauncher(page: Page): Promise<void> {
   await waitForAppReady(page)
@@ -146,7 +149,10 @@ export async function dismissLauncher(page: Page): Promise<void> {
   }
   await page.getByTestId('launcher-dismiss').click()
   await expect(launcher).not.toBeAttached({ timeout: 5_000 })
-  await page.waitForTimeout(150)
+  // Header is conditionally rendered (returns null while launcher is visible).
+  // Wait for a known Header child to be attached before returning so callers'
+  // next interaction (e.g. clicking theme-toggle) doesn't race the re-mount.
+  await page.locator('#search-input').waitFor({ state: 'attached', timeout: 5_000 })
 }
 
 /**
@@ -455,4 +461,24 @@ export async function waitForAnimationIdle(
   timeout = 15_000,
 ): Promise<void> {
   await expect(locator).toHaveAttribute('data-animation-state', 'idle', { timeout })
+}
+
+/**
+ * Force a WebGL context loss on the map canvas. The `WEBGL_lose_context`
+ * extension is supported in all Chromium-family browsers. After calling
+ * this, the `map-error-overlay` with `data-webgl-lost` should appear.
+ *
+ * Note: `loseContext()` is synchronous. The browser dispatches the
+ * `webglcontextlost` event synchronously before the call returns.
+ */
+export async function forceWebGLContextLoss(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const canvas = document.querySelector('canvas')
+    if (!canvas) throw new Error('No canvas found')
+    const gl = canvas.getContext('webgl2') as WebGL2RenderingContext | null
+    if (!gl) throw new Error('WebGL2 context not available')
+    const ext = gl.getExtension('WEBGL_lose_context')
+    if (!ext) throw new Error('WEBGL_lose_context extension not available')
+    ext.loseContext()
+  })
 }

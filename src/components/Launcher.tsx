@@ -22,8 +22,17 @@ interface Props {
 }
 
 function focusSearchInput(): void {
-  const el = document.getElementById('search-input') as HTMLInputElement | null
-  el?.focus()
+  // Defer until after React has committed the post-dismiss render.
+  // Header returns null while the launcher is open, so the search input
+  // doesn't exist in the DOM until the launcher unmounts and React
+  // re-renders the header. A double-rAF (two animation frames) ensures
+  // the commit + paint cycle has completed before we attempt to focus.
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(() => {
+      const el = document.getElementById('search-input') as HTMLInputElement | null
+      el?.focus()
+    })
+  })
 }
 
 export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
@@ -53,11 +62,16 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
 
   const date = anchorDate ?? today
 
+  const latestAvailableDate: string | null = useMemo(() => {
+    if (!index) return null
+    return Object.keys(index.days).filter((d) => d <= today).sort().pop() ?? null
+  }, [index, today])
+
   function cardState(modeId: ModeId): LauncherCardState {
-    if (puzzlesStatus === 'unavailable') return 'unavailable'
-    if (puzzlesStatus === 'loading') return 'unavailable'
+    if (puzzlesStatus === 'loading') return 'loading'
+    if (puzzlesStatus === 'unavailable') return 'unavailable-error'
     const puzzle = byDate(date)
-    if (!puzzle) return 'unavailable'
+    if (!puzzle) return 'no-puzzle-today'
     const prior = getDay(date, modeId)
     if (prior) return 'played'
     if (date < today) return 'past-unplayed'
@@ -129,6 +143,12 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     focusSearchInput()
   }, [onDismiss])
 
+  const dismissWithBackdrop = useCallback(() => {
+    track('launcher_dismissed', { path: 'backdrop' })
+    onDismiss()
+    focusSearchInput()
+  }, [onDismiss])
+
   const startDaily = useCallback(
     (id: ModeId) => {
       track('launcher_dismissed', { path: 'card' })
@@ -183,14 +203,47 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
 
   useEffect(() => {
     const root = rootRef.current
-    if (!root) return
-    const lastModeBtn = root.querySelector<HTMLButtonElement>(
-      `[data-testid="launcher-card-${lastMode}-daily-cta"], [data-testid="launcher-card-${lastMode}-free-link"], [data-testid="launcher-card-${lastMode}-see-reveal"]`,
-    )
+    if (!root || !root.isConnected) return
+    if (puzzlesStatus !== 'ready' && puzzlesStatus !== 'unavailable') return
+
+    const active = document.activeElement
+    const isFirstFocus = active === document.body || !root.contains(active as Node)
+    // A free-link that was the only focusable element during loading is a
+    // "loading placeholder": it was auto-focused when puzzlesStatus was not
+    // ready, and should be superseded now that daily content has settled.
+    const activeIsLoadingPlaceholder =
+      active instanceof HTMLElement &&
+      root.contains(active) &&
+      /-free-link$/.test(active.getAttribute('data-testid') ?? '')
+
+    if (!isFirstFocus && !activeIsLoadingPlaceholder) return
+
+    // Priority: lastMode daily-cta → lastMode see-reveal → any daily-cta →
+    // any see-reveal → lastMode free-link → any free-link → first focusable button
+    const lastModeDailyCta = lastMode
+      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-daily-cta"]:not([disabled])`)
+      : null
+    const lastModeSeeReveal = lastMode
+      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-see-reveal"]:not([disabled])`)
+      : null
+    const lastModeFreeLink = lastMode
+      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-free-link"]:not([disabled])`)
+      : null
+    const firstDailyCta = root.querySelector<HTMLButtonElement>('[data-testid$="-daily-cta"]:not([disabled])')
+    const firstSeeReveal = root.querySelector<HTMLButtonElement>('[data-testid$="-see-reveal"]:not([disabled])')
+    const firstFreeLink = root.querySelector<HTMLButtonElement>('[data-testid$="-free-link"]:not([disabled])')
     const firstFocusable = root.querySelector<HTMLButtonElement>('button:not([disabled])')
-    const target = lastModeBtn ?? firstFocusable ?? root
-    target.focus()
-  }, [lastMode])
+
+    const target =
+      lastModeDailyCta ??
+      lastModeSeeReveal ??
+      firstDailyCta ??
+      firstSeeReveal ??
+      lastModeFreeLink ??
+      firstFreeLink ??
+      firstFocusable
+    target?.focus()
+  }, [puzzlesStatus, lastMode])
 
   useEffect(() => {
     const root = rootRef.current
@@ -228,6 +281,11 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
           aria-hidden="true"
           className="absolute inset-0 bg-black/55 dark:bg-[rgba(11,15,26,0.7)] backdrop-blur-[4px]"
           style={{ animation: 'launcher-backdrop-in 220ms ease-out' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              dismissWithBackdrop()
+            }
+          }}
         />
         <div className="relative w-full max-w-2xl mx-auto">
           <div
@@ -269,6 +327,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
                   state={cardState(m.id)}
                   played={playedFor(m.id)}
                   freeBest={bestFor(m.id)}
+                  latestAvailableDate={latestAvailableDate}
                   onStartDaily={() => startDaily(m.id)}
                   onStartFree={() => startFree(m.id)}
                   onSeeReveal={() => seeReveal(m.id)}

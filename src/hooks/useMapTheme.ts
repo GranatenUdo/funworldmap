@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { applyMapTheme } from '../lib/mapColors'
 import { TEAL, TEAL_LIGHT, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
-import { LAYER } from '../lib/mapLayers'
+import { LAYER, applySelectionColor } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -29,10 +29,7 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
       map.setPaintProperty(LAYER.extrusion, 'fill-extrusion-color', teal)
       map.setPaintProperty(LAYER.hoverBorder, 'line-color', teal)
 
-      map.setPaintProperty(LAYER.selected, 'fill-color', coral)
-      map.setPaintProperty(LAYER.selectedBorder, 'line-color', coral)
-      map.setPaintProperty(LAYER.selectedGlow, 'line-color', coral)
-      map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', coral)
+      applySelectionColor(map, coral)
 
       map.setSky({
         'sky-color': isDark ? '#0a1a2e' : '#88c6fc',

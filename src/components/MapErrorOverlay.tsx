@@ -1,4 +1,4 @@
-type Reason = 'timeout' | 'style' | 'country-data'
+type Reason = 'timeout' | 'style' | 'country-data' | 'webgl-lost'
 
 interface Props {
   reason: Reason
@@ -17,6 +17,10 @@ const REASON_MESSAGES: Record<Reason, { title: string; body: string }> = {
   'country-data': {
     title: "We couldn't load country data",
     body: 'The country outlines failed to load. Try again in a moment.',
+  },
+  'webgl-lost': {
+    title: 'Map paused',
+    body: 'The map briefly lost its graphics context. Tap to restore.',
   },
 }
 

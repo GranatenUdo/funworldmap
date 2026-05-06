@@ -20,6 +20,7 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
     if (typeof navigator.share === 'function') {
       try {
         await navigator.share({ title: 'funworldmap daily', text, url })
+        dispatchToast('Shared!')
         track('daily_shared', { date, modesPlayed: modesPlayed as 1 | 2, method: 'share-api' })
         return
       } catch (err) {

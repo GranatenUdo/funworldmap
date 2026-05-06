@@ -25,5 +25,9 @@ export const MIN_ZOOM = 1.5
 export const MAX_ZOOM = 12
 export const MAX_PITCH = 60
 
-/** Time to wait for MapLibre 'load' event before showing an error overlay. */
-export const BASEMAP_LOAD_TIMEOUT_MS = 10_000
+/** Time to wait for MapLibre 'load' event before showing an error overlay.
+ * 30s gives cold WebGL initialization headroom on Software-ANGLE CI runners
+ * (no GPU). Real network failures still surface within a reasonable user wait;
+ * 10s was tuned for fast-GPU paths and was too tight for ubuntu-latest CI.
+ */
+export const BASEMAP_LOAD_TIMEOUT_MS = 30_000

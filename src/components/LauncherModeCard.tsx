@@ -1,7 +1,13 @@
 import type { ModeId, PersonalBest } from '../game/shared/types'
 import { parseLocalDate } from '../game/daily/dates'
 
-export type LauncherCardState = 'unplayed' | 'played' | 'past-unplayed' | 'unavailable'
+export type LauncherCardState =
+  | 'unplayed'
+  | 'played'
+  | 'past-unplayed'
+  | 'loading'           // index still fetching
+  | 'unavailable-error' // fetch failed
+  | 'no-puzzle-today'   // index loaded, but no entry for today's date
 
 const ICONS: Record<ModeId, React.ReactNode> = {
   'country-pinning': (
@@ -42,12 +48,13 @@ interface Props {
   state: LauncherCardState
   played?: PlayedResult
   freeBest: PersonalBest
+  latestAvailableDate?: string | null  // most recent past date with a daily; for 'no-puzzle-today'
   onStartDaily: () => void
   onStartFree: () => void
   onSeeReveal?: () => void
 }
 
-export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played, freeBest, onStartDaily, onStartFree, onSeeReveal }: Props) {
+export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played, freeBest, latestAvailableDate, onStartDaily, onStartFree, onSeeReveal }: Props) {
   const testIdBase = `launcher-card-${modeId}`
   return (
     <div
@@ -111,9 +118,32 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
         </div>
       )}
 
-      {state === 'unavailable' && (
-        <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-unavailable`}>
-          Today's daily is syncing.
+      {state === 'loading' && (
+        <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-loading`}>
+          Loading…
+        </div>
+      )}
+
+      {state === 'unavailable-error' && (
+        <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-error`}>
+          Couldn't load today's puzzle. Refresh to retry.
+        </div>
+      )}
+
+      {state === 'no-puzzle-today' && (
+        <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-no-puzzle`}>
+          {(!anchorDate || anchorDate === todayDate)
+            ? "Today's puzzle isn't ready yet."
+            : "That day's puzzle is no longer available."}{' '}
+          {latestAvailableDate && (
+            <a
+              href={`#daily/${latestAvailableDate}/reveal`}
+              data-testid={`${testIdBase}-no-puzzle-link`}
+              className="text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded"
+            >
+              Try {parseLocalDate(latestAvailableDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}'s daily →
+            </a>
+          )}
         </div>
       )}
 
