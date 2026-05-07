@@ -93,7 +93,7 @@ function ensureRevealSources(map: maplibregl.Map): void {
       source: REVEAL_LINE_SOURCE,
       paint: {
         'line-color': '#f59e0b',
-        'line-width': 2,
+        'line-width': 3,
         'line-dasharray': [2, 2],
       },
     })
@@ -566,8 +566,12 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         const start = performance.now()
         let lastIdx = -1
         const step = (now: number) => {
-          const progress = Math.min(1, (now - start) / plan.durationMs)
-          const idx = Math.max(1, Math.ceil(progress * (totalPoints - 1)))
+          const linear = Math.min(1, (now - start) / plan.durationMs)
+          // Ease-out cubic on the visible-arc index so both line growth and
+          // camera tracking decelerate as they approach the target — feels
+          // less like a snap on long globe rotations.
+          const eased = 1 - Math.pow(1 - linear, 3)
+          const idx = Math.max(1, Math.ceil(eased * (totalPoints - 1)))
           // Skip setData when the visible slice hasn't changed since the last
           // frame — saves a MapLibre tile rebuild on the final frame and on
           // any frames where rAF fires faster than the per-point step.
@@ -585,7 +589,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
               map.jumpTo({ center: arc[idx] })
             } catch { /* source may have been torn down */ }
           }
-          frameId = progress < 1 ? window.requestAnimationFrame(step) : null
+          frameId = linear < 1 ? window.requestAnimationFrame(step) : null
         }
         frameId = window.requestAnimationFrame(step)
       }
