@@ -7,8 +7,8 @@ export interface RevealAnimationPlan {
   durationMs: number
 }
 
-const MIN_MS = 400
-const MAX_MS = 1200
+const MIN_MS = 1500
+const MAX_MS = 3000
 const DIST_REF_KM = 10_000
 
 function scaledDuration(distanceKm: number, reducedMotion: boolean): number {

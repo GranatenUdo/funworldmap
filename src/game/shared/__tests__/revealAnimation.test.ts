@@ -59,11 +59,11 @@ describe('computeRevealAnimationPlan', () => {
     expect(plan).not.toBeNull()
     expect(plan!.from).toEqual([10, 51])
     expect(plan!.to).toEqual([2, 46])
-    expect(plan!.durationMs).toBeGreaterThanOrEqual(400)
-    expect(plan!.durationMs).toBeLessThanOrEqual(1200)
+    expect(plan!.durationMs).toBeGreaterThanOrEqual(1500)
+    expect(plan!.durationMs).toBeLessThanOrEqual(3000)
   })
 
-  it('short distance clamps to 400 ms minimum', () => {
+  it('short distance clamps to 1500 ms minimum', () => {
     const reveal: CountryReveal = {
       kind: 'country',
       correct: false,
@@ -73,10 +73,10 @@ describe('computeRevealAnimationPlan', () => {
       distanceKm: 100,
     }
     const plan = computeRevealAnimationPlan(reveal, byCca3, false)
-    expect(plan!.durationMs).toBe(400)
+    expect(plan!.durationMs).toBe(1500)
   })
 
-  it('long distance clamps to 1200 ms maximum', () => {
+  it('long distance clamps to 3000 ms maximum', () => {
     const reveal: CountryReveal = {
       kind: 'country',
       correct: false,
@@ -86,7 +86,7 @@ describe('computeRevealAnimationPlan', () => {
       distanceKm: 15000,
     }
     const plan = computeRevealAnimationPlan(reveal, byCca3, false)
-    expect(plan!.durationMs).toBe(1200)
+    expect(plan!.durationMs).toBe(3000)
   })
 
   it('reducedMotion=true forces durationMs=0', () => {
