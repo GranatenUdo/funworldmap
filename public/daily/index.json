@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-05-07T19:55:23.650Z",
+  "generatedAt": "2026-05-08T03:54:37.347Z",
   "window": {
-    "start": "2026-04-08",
-    "end": "2026-05-07"
+    "start": "2026-04-09",
+    "end": "2026-05-08"
   },
   "days": {
-    "2026-04-08": {
-      "country": {
-        "cca3": "JPN"
-      },
-      "city": {
-        "id": "USA-new-york"
-      }
-    },
     "2026-04-09": {
       "country": {
         "cca3": "PER"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "COL-bogota"
+      }
+    },
+    "2026-05-08": {
+      "country": {
+        "cca3": "JPN"
+      },
+      "city": {
+        "id": "USA-new-york"
       }
     }
   }
