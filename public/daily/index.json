@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-05-09T19:34:10.096Z",
+  "generatedAt": "2026-05-10T04:16:38.482Z",
   "window": {
-    "start": "2026-04-10",
-    "end": "2026-05-09"
+    "start": "2026-04-11",
+    "end": "2026-05-10"
   },
   "days": {
-    "2026-04-10": {
-      "country": {
-        "cca3": "FRA"
-      },
-      "city": {
-        "id": "NGA-lagos"
-      }
-    },
     "2026-04-11": {
       "country": {
         "cca3": "NOR"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "USA-new-york"
+      }
+    },
+    "2026-05-10": {
+      "country": {
+        "cca3": "ESP"
+      },
+      "city": {
+        "id": "NGA-lagos"
       }
     }
   }
