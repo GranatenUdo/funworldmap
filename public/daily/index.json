@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-05-10T19:34:34.414Z",
+  "generatedAt": "2026-05-11T04:37:38.919Z",
   "window": {
-    "start": "2026-04-11",
-    "end": "2026-05-10"
+    "start": "2026-04-12",
+    "end": "2026-05-11"
   },
   "days": {
-    "2026-04-11": {
-      "country": {
-        "cca3": "NOR"
-      },
-      "city": {
-        "id": "JPN-tokyo"
-      }
-    },
     "2026-04-12": {
       "country": {
         "cca3": "IND"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "NGA-lagos"
+      }
+    },
+    "2026-05-11": {
+      "country": {
+        "cca3": "IDN"
+      },
+      "city": {
+        "id": "JPN-tokyo"
       }
     }
   }
