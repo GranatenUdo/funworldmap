@@ -1,7 +1,14 @@
 import { expect, type Page, type JSHandle } from '@playwright/test'
 import { Buffer } from 'node:buffer'
-import type { ModeId } from '../src/game/shared/types'
+import type { GameSession, ModeId } from '../src/game/shared/types'
 import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
+
+/**
+ * The JSON-serializable subset of GameSession that survives `page.evaluate`.
+ * Drops `used: Set<string>` because Sets serialize as `{}` across the
+ * Playwright IPC boundary; everything else round-trips cleanly.
+ */
+export type SessionSnapshot = Omit<GameSession, 'used'>
 
 export interface SeedHistoryOptions {
   date: string
@@ -190,6 +197,18 @@ export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promi
     }),
     { timeout: timeoutMs },
   ).toBe('ready')
+}
+
+/**
+ * Read the current game session via the `__funworldmap_game.getSession()` test
+ * seam. Returns the JSON-serializable subset (see `SessionSnapshot` above).
+ * Requires `waitForGameTestHook(page)` to have resolved first.
+ */
+export function getSession(page: Page): Promise<SessionSnapshot> {
+  return page.evaluate(() => {
+    const w = window as unknown as { __funworldmap_game: { getSession: () => unknown } }
+    return w.__funworldmap_game.getSession()
+  }) as Promise<SessionSnapshot>
 }
 
 /**

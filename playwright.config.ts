@@ -70,6 +70,7 @@ export default defineConfig({
         // formerly chromium (DOM-only, run on real-GPU now to consolidate):
         'scaffold.spec.ts',
         'canonical-195.spec.ts',
+        'cold-load-deep-link.spec.ts',
         'search.spec.ts',
         'theme-and-responsive.spec.ts',
         'accessibility.spec.ts',
