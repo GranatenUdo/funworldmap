@@ -363,7 +363,6 @@ export function SingleCountryPanel({
             )}
           </>
         )}
-
       </div>
     </div>
   )

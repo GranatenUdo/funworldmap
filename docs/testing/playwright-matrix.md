@@ -22,7 +22,7 @@ Which Playwright project runs which spec, and why. Kept in sync with `playwright
 
 | Spec | chromium | chromium-gpu | mobile-chromium | mobile-webkit | desktop-firefox-touch |
 | --- | :-: | :-: | :-: | :-: | :-: |
-| `scaffold`, `search`, `theme-and-responsive`, `accessibility`, `panel-*`, `meta-and-static`, `satellite-default`, `a11y-*`, `country-news`, `launcher*`, `daily-*` | ✓ | | | | |
+| `scaffold`, `search`, `theme-and-responsive`, `accessibility`, `panel-*`, `meta-and-static`, `satellite-default`, `a11y-*`, `launcher*`, `daily-*` | ✓ | | | | |
 | `map-and-countries`, `map-reliability`, `keyboard-map-nav`, `game-country-pinning`, `game-city-guessing`, `compare-view-dimming` | | ✓ | | | |
 | `reveal-animation`, `reveal-animation-reduced-motion` | | ✓ | | | |
 | `mobile-smoke` | | | ✓ | ✓ | ✓ |
