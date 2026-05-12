@@ -2,6 +2,7 @@ import type { DailyHistoryV1, DailyDayResult, StreakState, Milestone } from './t
 import { STORAGE_KEY, MILESTONES } from './types'
 import type { ModeId } from '../shared/types'
 import { toLocalDateString } from './dates'
+import { breadcrumbDailyStorage, captureDailyStorage } from './sentry'
 
 const EMPTY_STREAK: StreakState = {
   current: 0,
@@ -19,13 +20,20 @@ export function readHistory(): DailyHistoryV1 {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return emptyHistory()
     const parsed = JSON.parse(raw) as Partial<DailyHistoryV1>
-    if (parsed.version !== 1) return emptyHistory()
+    if (parsed.version !== 1) {
+      captureDailyStorage(
+        `daily-history: unknown version ${String(parsed.version)}`,
+        'unknown-version',
+      )
+      return emptyHistory()
+    }
     return {
       version: 1,
       streak: { ...EMPTY_STREAK, ...(parsed.streak ?? {}) } as StreakState,
       days: parsed.days ?? {},
     }
-  } catch {
+  } catch (err) {
+    captureDailyStorage(err, 'parse-failure')
     return emptyHistory()
   }
 }
@@ -33,8 +41,8 @@ export function readHistory(): DailyHistoryV1 {
 export function writeHistory(h: DailyHistoryV1): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(h))
-  } catch {
-    /* private-mode / quota exceeded — best-effort */
+  } catch (err) {
+    breadcrumbDailyStorage('writeHistory failed', err)
   }
 }
 
