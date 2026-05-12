@@ -23,6 +23,7 @@ import type { CountryData, CountriesFile } from './lib/types'
 import { parseHash } from './lib/hashState'
 import { track } from './lib/analytics'
 import { dispatchToast } from './lib/toast'
+import { prefersReducedMotion } from './lib/motion'
 
 export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
@@ -197,7 +198,12 @@ function AppInner({
     if (session.status !== 'playing' || session.roundIndex !== 0) return
     if (selected) deselect()
     setComparePickingMode(false)
-    mapRef.current?.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 700 })
+    const reduced = prefersReducedMotion()
+    mapRef.current?.flyTo({
+      center: DEFAULT_CENTER,
+      zoom: DEFAULT_ZOOM,
+      duration: reduced ? 0 : 700,
+    })
     // Fires on the very first round of each new game — covers idle→playing
     // and game-over→Play-again transitions without needing a prev-status ref.
   }, [session.status, session.roundIndex, selected, deselect, mapRef])
