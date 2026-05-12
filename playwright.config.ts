@@ -60,6 +60,7 @@ export default defineConfig({
         'game-city-guessing.spec.ts',
         'game-over-mode-switch.spec.ts',
         'compare-view-dimming.spec.ts',
+        'reduced-motion-game-start.spec.ts',
         'reveal-animation.spec.ts',
         'reveal-animation-reduced-motion.spec.ts',
         'tutorial-first-click.spec.ts',
