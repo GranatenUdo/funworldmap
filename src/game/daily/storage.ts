@@ -1,8 +1,8 @@
-import * as Sentry from '@sentry/react'
 import type { DailyHistoryV1, DailyDayResult, StreakState, Milestone } from './types'
 import { STORAGE_KEY, MILESTONES } from './types'
 import type { ModeId } from '../shared/types'
 import { toLocalDateString } from './dates'
+import { breadcrumbDailyStorage, captureDailyStorage } from './sentry'
 
 const EMPTY_STREAK: StreakState = {
   current: 0,
@@ -21,9 +21,9 @@ export function readHistory(): DailyHistoryV1 {
     if (!raw) return emptyHistory()
     const parsed = JSON.parse(raw) as Partial<DailyHistoryV1>
     if (parsed.version !== 1) {
-      Sentry.captureException(
-        new Error(`daily-history: unknown version ${String(parsed.version)}`),
-        { tags: { area: 'daily-storage', kind: 'unknown-version' } },
+      captureDailyStorage(
+        `daily-history: unknown version ${String(parsed.version)}`,
+        'unknown-version',
       )
       return emptyHistory()
     }
@@ -33,9 +33,7 @@ export function readHistory(): DailyHistoryV1 {
       days: parsed.days ?? {},
     }
   } catch (err) {
-    Sentry.captureException(err, {
-      tags: { area: 'daily-storage', kind: 'parse-failure' },
-    })
+    captureDailyStorage(err, 'parse-failure')
     return emptyHistory()
   }
 }
@@ -44,12 +42,7 @@ export function writeHistory(h: DailyHistoryV1): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(h))
   } catch (err) {
-    Sentry.addBreadcrumb({
-      category: 'storage',
-      level: 'warning',
-      message: 'writeHistory failed',
-      data: { name: (err as Error)?.name, message: (err as Error)?.message },
-    })
+    breadcrumbDailyStorage('writeHistory failed', err)
   }
 }
 
