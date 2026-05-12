@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_run:
+    workflows: ["Daily puzzle index", "News feed"]
+    types: [completed]
+    branches: [main]
 
 permissions:
   contents: read
@@ -15,6 +19,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
