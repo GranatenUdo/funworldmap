@@ -198,10 +198,11 @@ function AppInner({
     if (session.status !== 'playing' || session.roundIndex !== 0) return
     if (selected) deselect()
     setComparePickingMode(false)
+    const reduced = prefersReducedMotion()
     mapRef.current?.flyTo({
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
-      duration: prefersReducedMotion() ? 0 : 700,
+      duration: reduced ? 0 : 700,
     })
     // Fires on the very first round of each new game — covers idle→playing
     // and game-over→Play-again transitions without needing a prev-status ref.

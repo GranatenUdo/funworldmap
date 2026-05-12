@@ -1,30 +1,32 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, type Page } from '@playwright/test'
 import { waitForAppReady, waitForGameTestHook } from './helpers'
 
 /**
  * Spy on `__funworldmap_map.flyTo` and return the duration from the most
  * recent call. Must be called AFTER the map is available (waitForAppReady).
  *
- * Implementation: replaces flyTo with a wrapper that records the duration
- * argument, then calls through to the original implementation. The recorded
- * value is exposed on `window.__flyTo_last_duration` for retrieval.
+ * The recorded duration is stored under a unique key on `window` so the spy
+ * is page-local: a fresh Playwright `page` fixture starts with a fresh
+ * `__funworldmap_map` and no leftover spy state.
  */
-async function spyOnFlyToDuration(page: import('@playwright/test').Page): Promise<void> {
+async function spyOnFlyToDuration(page: Page): Promise<void> {
   await page.evaluate(() => {
-    const map = (window as unknown as { __funworldmap_map: { flyTo: (...args: unknown[]) => void } }).__funworldmap_map
-    const orig = map.flyTo.bind(map)
-    ;(window as unknown as { __flyTo_last_duration?: number | undefined }).__flyTo_last_duration = undefined
-    map.flyTo = (opts: unknown) => {
-      ;(window as unknown as { __flyTo_last_duration?: number | undefined }).__flyTo_last_duration =
-        (opts as { duration?: number }).duration
+    const w = window as unknown as {
+      __funworldmap_map: { flyTo: (opts: { duration?: number }) => void }
+      __flyTo_last_duration?: number
+    }
+    const orig = w.__funworldmap_map.flyTo.bind(w.__funworldmap_map)
+    w.__flyTo_last_duration = undefined
+    w.__funworldmap_map.flyTo = (opts) => {
+      w.__flyTo_last_duration = opts.duration
       orig(opts)
     }
   })
 }
 
-async function getLastFlyToDuration(page: import('@playwright/test').Page): Promise<number | undefined> {
+async function getLastFlyToDuration(page: Page): Promise<number | undefined> {
   return page.evaluate(
-    () => (window as unknown as { __flyTo_last_duration?: number | undefined }).__flyTo_last_duration,
+    () => (window as unknown as { __flyTo_last_duration?: number }).__flyTo_last_duration,
   )
 }
 
