@@ -117,8 +117,6 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
     vi.useFakeTimers({
       toFake: ['setTimeout', 'clearTimeout', 'requestAnimationFrame', 'cancelAnimationFrame'],
     })
-    // Mock fetch for CountryNewsSection so the panel renders cleanly.
-    globalThis.fetch = vi.fn(() => new Promise(() => {})) as unknown as typeof fetch
   })
 
   afterEach(() => {
