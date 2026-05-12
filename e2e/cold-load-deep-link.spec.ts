@@ -1,20 +1,5 @@
-import { test, expect, type Page } from '@playwright/test'
-import { waitForAppReady, waitForGameTestHook } from './helpers'
-
-interface MinimalSession {
-  status: string
-  modeId: string
-  attemptsPerRound: number
-  maxRounds: number | null
-  dailyDate: string | null
-}
-
-function getSession(page: Page): Promise<MinimalSession> {
-  return page.evaluate(() => {
-    const w = window as unknown as { __funworldmap_game: { getSession: () => MinimalSession } }
-    return w.__funworldmap_game.getSession()
-  }) as Promise<MinimalSession>
-}
+import { test, expect } from '@playwright/test'
+import { getSession, waitForAppReady, waitForGameTestHook } from './helpers'
 
 test.describe('Cold-load deep links bootstrap their target state', () => {
   test('navigating directly to #game/country-pinning starts the game', async ({ page }) => {
