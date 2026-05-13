@@ -1,78 +1,8 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForAppReady } from './helpers'
+import { waitForAppReady, seedPlayedDaily, installShareStub } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
-
-/** Seed a played country-pinning daily for `date` and stub /daily/index.json. */
-async function seedPlayedDaily(page: Page, date: string): Promise<void> {
-  await page.addInitScript(
-    ({ d }) => {
-      ;(window as unknown as { __PLAYWRIGHT__: boolean }).__PLAYWRIGHT__ = true
-      const index = {
-        generatedAt: new Date().toISOString(),
-        window: { start: d, end: d },
-        days: { [d]: { country: { cca3: 'FRA' }, city: { id: 'paris' } } },
-      }
-      const history = {
-        version: 1,
-        streak: { current: 3, longest: 3, lastActiveDate: d, lastMilestoneShown: 0 },
-        days: {
-          [d]: {
-            'country-pinning': {
-              score: 87,
-              attempts: [
-                { pointsEarned: 42, distanceKm: 1200 },
-                { pointsEarned: 63, distanceKm: 400 },
-                { pointsEarned: 91, distanceKm: 0 },
-              ],
-              completedAt: 1,
-            },
-          },
-        },
-      }
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify(history))
-      ;(window as unknown as { __seededIndex?: unknown }).__seededIndex = index
-    },
-    { d: date },
-  )
-  await page.route('**/daily/index.json', async (route) => {
-    const seeded = await page.evaluate(
-      () => (window as unknown as { __seededIndex?: unknown }).__seededIndex,
-    )
-    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(seeded) })
-  })
-}
-
-async function installShareSuccessStub(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    ;(window as unknown as { __lastShare?: unknown }).__lastShare = undefined
-    // @ts-expect-error — test-time installation
-    navigator.share = async (data: { title: string; text: string; url: string }) => {
-      ;(window as unknown as { __lastShare?: unknown }).__lastShare = data
-    }
-  })
-}
-
-async function installShareAbortStub(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    // @ts-expect-error — test-time installation
-    navigator.share = async () => {
-      const err = new Error('user cancelled') as Error & { name: string }
-      err.name = 'AbortError'
-      throw err
-    }
-  })
-}
-
-async function installShareGenericFailureStub(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    // @ts-expect-error — test-time installation
-    navigator.share = async () => {
-      throw new Error('share not allowed')
-    }
-  })
-}
 
 async function removeNavigatorShare(page: Page): Promise<void> {
   await page.addInitScript(() => {
@@ -112,8 +42,8 @@ async function getAnalyticsEvents(
 test.describe('Daily share-button branches', () => {
   test('share-api success: toast "Shared!" + analytics method=share-api', async ({ page }) => {
     const today = toLocalDateString(new Date())
-    await seedPlayedDaily(page, today)
-    await installShareSuccessStub(page)
+    await seedPlayedDaily(page, today, { captureAnalytics: true })
+    await installShareStub(page, 'success')
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
     await page.getByTestId('daily-share-primary').click()
@@ -125,25 +55,32 @@ test.describe('Daily share-button branches', () => {
 
   test('share-api AbortError: no toast, no clipboard fallback, no analytics', async ({ page }) => {
     const today = toLocalDateString(new Date())
-    await seedPlayedDaily(page, today)
-    await installShareAbortStub(page)
+    await seedPlayedDaily(page, today, { captureAnalytics: true })
+    await installShareStub(page, 'abort')
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
     await page.getByTestId('daily-share-primary').click()
-    // The click handler's promise resolves (AbortError caught, early return) —
-    // assert neither toast appears and no analytics event was pushed.
-    await expect(page.getByText('Shared!')).not.toBeVisible()
-    await expect(page.getByText('Copied!')).not.toBeVisible()
+    // Let the async handler (and its catch) complete. Two animation frames is
+    // enough for the catch to settle and any toast event to be dispatched —
+    // if one were going to be.
+    await page.evaluate(() => new Promise<void>((r) => requestAnimationFrame(() => requestAnimationFrame(() => r()))))
+    // Load-bearing assertion: no analytics event means the handler took the
+    // silent-abort branch. A regression that fires the toast would also fire
+    // analytics (per the source — both happen together).
     const events = await getAnalyticsEvents(page)
     expect(events.find((e) => e.name === 'daily_shared')).toBeUndefined()
+    // Belt-and-suspenders: toast text never rendered (toHaveCount(0) is
+    // deterministic at the moment of check, not auto-retrying).
+    await expect(page.getByText('Shared!')).toHaveCount(0)
+    await expect(page.getByText('Copied!')).toHaveCount(0)
   })
 
   test('share-api generic error: falls through to clipboard, toast "Copied!" + analytics method=clipboard-text', async ({
     page,
   }) => {
     const today = toLocalDateString(new Date())
-    await seedPlayedDaily(page, today)
-    await installShareGenericFailureStub(page)
+    await seedPlayedDaily(page, today, { captureAnalytics: true })
+    await installShareStub(page, 'fail')
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
     await page.getByTestId('daily-share-primary').click()
@@ -156,7 +93,7 @@ test.describe('Daily share-button branches', () => {
     page,
   }) => {
     const today = toLocalDateString(new Date())
-    await seedPlayedDaily(page, today)
+    await seedPlayedDaily(page, today, { captureAnalytics: true })
     await removeNavigatorShare(page)
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
@@ -168,7 +105,7 @@ test.describe('Daily share-button branches', () => {
 
   test("clipboard also fails: toast \"Couldn't copy\" + no analytics", async ({ page }) => {
     const today = toLocalDateString(new Date())
-    await seedPlayedDaily(page, today)
+    await seedPlayedDaily(page, today, { captureAnalytics: true })
     await removeNavigatorShare(page)
     await installClipboardFailStub(page)
     await page.goto(`/#daily/${today}/reveal`)
@@ -181,7 +118,7 @@ test.describe('Daily share-button branches', () => {
 
   test('copy-link: toast "Link copied" + analytics method=clipboard-link', async ({ page }) => {
     const today = toLocalDateString(new Date())
-    await seedPlayedDaily(page, today)
+    await seedPlayedDaily(page, today, { captureAnalytics: true })
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
     await page.getByTestId('daily-share-copy-link').click()
@@ -192,7 +129,7 @@ test.describe('Daily share-button branches', () => {
 
   test("copy-link clipboard failure: \"Couldn't copy\" toast", async ({ page }) => {
     const today = toLocalDateString(new Date())
-    await seedPlayedDaily(page, today)
+    await seedPlayedDaily(page, today, { captureAnalytics: true })
     await installClipboardFailStub(page)
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
