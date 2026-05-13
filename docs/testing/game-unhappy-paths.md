@@ -38,33 +38,37 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 1. **User clicks JPN on the map (or submits `JPN` via the seam).**
    - After: `lastOutcome.reveal.kind === 'country'`, `correct: false`, `clickedCca3='JPN'`, `targetCca3='FRA'`.
-   - After: The **JPN polygon flashes red/wrong-color** and stays highlighted for the duration of the reveal hold.
-   - After: The **FRA polygon highlights green/correct-color**.
+   - After: A **tessellated dashed line** (65-vertex geodesic arc) renders on the globe from the JPN centroid to the FRA centroid. The camera pans toward the target. (Verified by `e2e/reveal-animation.spec.ts:9-41` which asserts the line geometry.)
    - After: The country panel slides in (`role="complementary"`) populated with FRA's data: flag, name, capital, region, neighbors.
    - After: A "Continue" button is focusable and visible inside the panel.
    - After: HUD reveal line reads "Wrong — that was Japan. +X points. The answer was France. −1 life."
-   - After: No auto-advance occurs even after 10 s. Game waits for Continue.
+   - After: No auto-advance occurs even after 10 s. Game waits for Continue (or Esc/Space/Enter which skip-the-hold and advance early — see A8).
 
-### A2. Correct country guess — auto-advance with no panel
+> **2026-05-13 update** (`docs/testing/animation-verification-2026-05-13.md`): the original contract claimed "JPN polygon flashes red, FRA polygon highlights green." That was speculative. Actual reveal mechanic is the dashed-line arc described above. No polygon-fill highlighting in country mode.
+
+### A2. Correct country guess — panel opens with target info
 
 **Pre:** Free Country Pinning, `status=playing`, target is FRA.
 
 1. **User clicks FRA.**
-   - After: FRA polygon highlights as correct (no wrong-flash).
    - After: HUD reveal line: "Correct! +100 points. That was France."
-   - After: No country panel opens (mid-game; correct guesses are pure HUD).
-   - After: ~3.0-3.5 s later, session transitions back to `playing` with the next target. The HUD prompt updates atomically with the transition.
+   - After: The country panel slides in with France's data: flag, name, capital, region, neighbors. **Same panel as the wrong-guess case** — `App.tsx:137-153` computes `roundEndTarget` for any final outcome (correct or wrong) in country-pinning round-end.
+   - After: Continue button is focusable inside the panel.
+   - After: ~3.0-3.5 s later (if the user doesn't press a key), auto-advance fires and the next round begins. Pressing Continue or Esc/Space/Enter advances immediately.
+
+> **2026-05-13 update** (`docs/testing/animation-verification-2026-05-13.md`): the original contract claimed "no country panel opens; correct guesses are pure HUD." That was wrong — the panel renders for both correct and wrong guesses in country-pinning free play. The HUD reveal line differs by outcome but the panel UX is the same.
 
 ### A3. City guess — dashed geodesic arc from click to target
 
 **Pre:** Free City Guessing, `status=playing`, target Shenzhen at `[114.06, 22.55]`.
 
 1. **User clicks somewhere far (e.g. `[-100, 40]`).**
-   - After: A **dashed line (geodesic arc)** animates on the map from the click point to the target city centroid.
-   - After: A **target marker** appears at the city centroid.
-   - After: The animation duration is ≤ 2 s; on completion the arc remains visible until next round.
-   - After: HUD reveal line: "Far — 12,000 km. That was Shenzhen." (or "Near" if < 1000 km, "Spot on!" if < 1 km).
-   - After: Auto-advance to next round at ~200-300 ms after animation completes (no Continue button for city mode).
+   - After: A **tessellated dashed geodesic line** (65 vertices) renders from the click point to the target city centroid. Verified by `e2e/reveal-animation.spec.ts:43-60`.
+   - After: A **target marker** appears at the city centroid (visible as a yellow dot at the target location).
+   - After: HUD reveal line: "Far — X km" / "Near — X km" / "Spot on!" depending on distance.
+   - After: Auto-advance is rapid (~200 ms); the rendered line is brief.
+
+> **2026-05-13 update** (`docs/testing/animation-verification-2026-05-13.md`): captured a screenshot during `round-ended` and confirmed the target marker is rendered. The dashed-arc line is real but visually faint at low resolution; primary signal is the target marker. Behavior of the underlying line is verified at the geometric level by the existing spec.
 
 ### A4. City skip — no arc, marker only
 
