@@ -38,7 +38,7 @@ Create `src/game/hooks/` (new, mirrors the existing `src/hooks/` convention at t
 | `src/game/hooks/useDailyResumePersistence.ts` | 2 | Writes the daily best-of-N resume blob to localStorage whenever the in-flight attempts mutate during a daily round. | `useDailyResumePersistence(session: GameSession): void` |
 | `src/game/hooks/useGameAnnouncements.ts` | 3 | Dispatches `funworldmap:announce` events for screen-readers on round-start and game-over; handles auto-advance timers and round-end keyboard handlers; records personal-best / daily-history on game-over. Owns `recordedRef` and `lastAnnouncedRoundKeyRef`. | `useGameAnnouncements({ session, mode, byCca3, advance, finalize, record, recordDailyResult }): void` |
 | `src/game/hooks/useRevealMapEffects.ts` | 4 | Drives the reveal layer (paint properties, geodesic arc rAF loop), intermediate-reveal flashes between daily attempts, camera reset on round start, the city-mode any-click handler, and the idle-state reveal-clear. Owns `lastIntermediateAttemptCountRef`, `prevStatusForIntermediateRef`. | `useRevealMapEffects({ session, mode, mapRef, byCca3, submitGuessInput }): void` |
-| `src/game/hooks/useHashGameRouter.ts` | 5 | Parses the location hash, drives the initial bootstrap, listens to `hashchange`, drains deferred starts once pools arrive, emits `deep_link_opened` analytics. Owns `pendingStartRef`, `lastRevealEmitHashRef`, `statusRef`. Also fires `daily_attempted` per intermediate-attempt — owns `lastAttemptCountRef`, `prevStatusForTelemetryRef`. | `useHashGameRouter({ session, mode, pools, byCca3, dailyPuzzles, dailyHistoryGet, start, resume, restart, endGame }): { statusRef: RefObject<SessionStatus> }` |
+| `src/game/hooks/useHashGameRouter.ts` | 5 | Parses the location hash, drives the initial bootstrap, listens to `hashchange`, drains deferred starts once pools arrive, emits `deep_link_opened` analytics. Owns `pendingStartRef`, `lastRevealEmitHashRef`, `statusRef`. Also fires `daily_attempted` per intermediate-attempt — owns `lastAttemptCountRef`, `prevStatusForTelemetryRef`. | `useHashGameRouter(opts: UseHashGameRouterOptions): { statusRef: RefObject<SessionStatus> }` where `UseHashGameRouterOptions = { session, mode, pools, byCca3, dailyPuzzles, dailyHistoryGet, start, resume, restart, endGame }` (10 fields — typed interface exported alongside the hook). |
 
 After all phases land, the final shape of `GameController.tsx` is:
 
@@ -52,7 +52,18 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
   const pools = useMemo(() => ({ countries, cities }), [countries, cities])
 
-  const { statusRef } = useHashGameRouter({ session, pools, byCca3, dailyPuzzles, dailyHistoryGet, ...sessionApi })
+  const { statusRef } = useHashGameRouter({
+    session,
+    mode,
+    pools,
+    byCca3,
+    dailyPuzzles,
+    dailyHistoryGet,
+    start: sessionApi.start,
+    resume: sessionApi.resume,
+    restart: sessionApi.restart,
+    endGame: sessionApi.endGame,
+  })
   useDailyResumePersistence(session)
   useGameAnnouncements({ session, mode, byCca3, advance, finalize, record, recordDailyResult })
   useRevealMapEffects({ session, mode, mapRef, byCca3, submitGuessInput })
@@ -90,6 +101,28 @@ The characterization tests use:
 - A `buildSession()` factory imported from `src/game/shared/__tests__/factories.ts` (existing — used by `useGameSession.test.ts`).
 - `vi.useFakeTimers()` for setTimeout-driven effects (auto-advance, intermediate-reveal hold).
 - Stubbed `localStorage` via `vi.stubGlobal('localStorage', ...)` or the JSDOM default (resume.ts already exercises real localStorage in tests).
+
+### Line numbers vs symbol names
+
+Every line range in this plan (e.g. `GameController.tsx:707-765`) was accurate at plan-write time (2026-05-14, against the post-PR-#50 tree). **After each phase lands, line numbers shift for the phases that haven't run yet.** Treat the ranges as anchors valid at plan-write time; before executing each phase, re-locate the inlined effect by its symbol or comment marker (`// Test seams.`, `// Persist daily best-of-N progress to localStorage so refresh resumes.`, `// Side effects on status change.`, etc.) rather than trusting the numeric range. Update line numbers in the per-phase prompt before dispatching the implementer subagent.
+
+### CI testIgnore interaction (Phases 3, 4, 5)
+
+Two CI risks every executor of Phases 3-5 must internalise:
+
+1. **`game-country-pinning.spec.ts` is in CI's `testIgnore`** list (`playwright.config.ts:115-127`). It runs locally but not on CI. Phases 3 (announcements), 4 (reveal map effects), and 5 (hash router) all touch behaviour that spec exercises. Run `npm run test:e2e -- --project=chromium game-country-pinning.spec.ts` LOCALLY as part of each phase's verification — CI alone is not enough.
+2. **5 tests are quarantined via `test.fixme(!!process.env.CI, …)`** (issues #31, #32, #47). Each is documented in `docs/testing/playwright-matrix.md`'s "Quarantined tests" section. The extractions may interact with these — Phase 3 with #32 (game-over → hash mode switch), Phase 4 with #47 (animation timing), Phase 5 with #31 and #32 (hash routing). If a quarantined test starts passing locally, the underlying fix may have landed as a side-effect — file a note; if it starts failing harder, revisit the extraction.
+
+### App.tsx coupling (Phase 4 + Phase 5 risk)
+
+`src/App.tsx` is closely coupled to GameController via:
+
+- The `roundEndTarget` `useMemo` at `App.tsx:137-153` reading `session.lastOutcome.reveal.targetCca3` (touched by Phase 4's reveal-map effects).
+- The `advanceRoundEndPanel` callback at `App.tsx:155-163` dispatching `advance` / `finalize` (touched by Phase 3's announcements + Phase 4's reveal).
+- The `onMapSelect` handler at `App.tsx:165-194` branching on `session.modeId === 'country-pinning'` (touched by Phase 5 if the router changes which mode is active).
+- The reveal-state hash listener at `App.tsx:105-117` (a second `hashchange` subscriber that duplicates the GameController's router — touched by Phase 5).
+
+**Before Phase 4 and Phase 5 land**, audit App.tsx for these touch-points. If the extracted hook changes the shape or timing of any field App.tsx reads, App.tsx will need a parallel update — and that update should land in the SAME PR as the extraction, not a follow-up.
 
 ---
 
@@ -195,12 +228,31 @@ describe('test seams (characterization, pre-extraction)', () => {
 })
 ```
 
-`renderControllerInProviders` is a small helper wrapping the component in `<GameSessionProvider>` + `<DailyPuzzlesProvider>` + the map context. Define it in the test file (or a sibling `test-helpers.tsx` if Phase 3 and Phase 4 also need it; Phase 1 may inline for simplicity, then DRY in Phase 3).
+`renderControllerInProviders` is a small helper wrapping the component in `<GameSessionProvider>` + `<DailyPuzzlesProvider>` + the map context. **Phase 1 defines this helper inline in `useGameTestSeams.test.tsx`. Phase 3 promotes it to `src/game/hooks/__tests__/test-helpers.tsx`** and updates Phase 1's test to import from there. This is a deliberate scope split — Phase 1 stays minimal; Phase 3 picks up the DRY when the second consumer appears.
 
-`fixtures.ts` exports:
-- `countriesFixture`: a 2-country array `[{ cca3: 'USA', name: { common: 'United States' }, latlng: [38, -97], flag: '🇺🇸' }, { cca3: 'FRA', name: { common: 'France' }, latlng: [46, 2], flag: '🇫🇷' }]` typed as `CountryLike[]`.
-- `citiesFixture`: a 2-city array of `CityLike`.
-- `byCca3Fixture`: `new Map([['USA', countriesFixture[0]], ['FRA', countriesFixture[1]]])`.
+**Pin fixtures location (Phase 1 sub-task):** Create `src/game/hooks/__tests__/fixtures.ts` as part of Phase 1's Task 1.2. It does NOT exist on `main` today (verified 2026-05-14 by checking `src/game/hooks/` does not exist; sibling `src/game/shared/__tests__/factories.ts` is a related but separate file used by reducer tests). The file's contract:
+
+```ts
+// src/game/hooks/__tests__/fixtures.ts
+import type { CountryLike, CityLike } from '../../shared/types'
+
+export const countriesFixture: CountryLike[] = [
+  { cca3: 'USA', name: { common: 'United States' }, latlng: [38, -97], flag: 'flags/US.svg', independent: true },
+  { cca3: 'FRA', name: { common: 'France' }, latlng: [46, 2], flag: 'flags/FR.svg', independent: true },
+]
+
+export const citiesFixture: CityLike[] = [
+  { id: 'USA-new-york', name: 'New York', countryCca3: 'USA', countryName: 'United States', countryFlag: 'flags/US.svg', latlng: [40.7128, -74.0060], scalerank: 0 },
+  { id: 'FRA-paris', name: 'Paris', countryCca3: 'FRA', countryName: 'France', countryFlag: 'flags/FR.svg', latlng: [48.8566, 2.3522], scalerank: 0 },
+]
+
+export const byCca3Fixture: Map<string, CountryLike> = new Map([
+  ['USA', countriesFixture[0]],
+  ['FRA', countriesFixture[1]],
+])
+```
+
+Phase 1's Task 1.2 must create this file BEFORE the characterization tests are run. Subsequent phases that need a richer or different shape can add to this file (e.g. add a `multiAttemptCountriesFixture` in Phase 2) rather than re-defining inline.
 
 - [ ] **Step 2: Run the test against `main` (before extraction)**
 
@@ -1536,7 +1588,12 @@ import { getMode } from '../modes'
 
 const DAILY_ATTEMPTS_PER_ROUND = 3
 
-interface Args {
+/**
+ * Public options interface for useHashGameRouter. Exported alongside the hook
+ * so call sites (currently just GameController) get typed completion and so
+ * future fields can be added without changing the positional contract.
+ */
+export interface UseHashGameRouterOptions {
   session: GameSession
   mode: GameMode | null
   pools: { countries: CountryLike[]; cities: CityLike[] }
@@ -1549,8 +1606,8 @@ interface Args {
   endGame: () => void
 }
 
-export function useHashGameRouter(args: Args): { statusRef: RefObject<GameSession['status']> } {
-  const { session, pools, byCca3, dailyPuzzles, dailyHistoryGet, start, resume, restart, endGame } = args
+export function useHashGameRouter(opts: UseHashGameRouterOptions): { statusRef: RefObject<GameSession['status']> } {
+  const { session, pools, byCca3, dailyPuzzles, dailyHistoryGet, start, resume, restart, endGame } = opts
   const { countries, cities } = pools
 
   const pendingStartRef = useRef<ModeId | null>(null)
