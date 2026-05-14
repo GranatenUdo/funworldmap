@@ -8,6 +8,10 @@ async function waitForMap(page: Page) {
 }
 
 async function startCountryPinningWithFRA(page: Page): Promise<void> {
+  // Override the project's global reducedMotion:'reduce' so the panel slide-in
+  // animation actually happens. These tests assert behavior keyed on the
+  // animation timing (data-animation-state='entering' and the ~3s reveal hold).
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
   await waitForMap(page)
   await page.getByTestId('launcher-card-country-pinning-free-link').click()
