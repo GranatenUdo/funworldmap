@@ -2,16 +2,20 @@ import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { gzipSync } from 'node:zlib'
 import { join } from 'node:path'
 
+const BUDGET_KEYS = [
+  'main-js-gzip',
+  'lazy-js-gzip',
+  'css-gzip',
+  'async-countries-gzip',
+  'initial-total-gzip',
+  'total-with-async-gzip',
+] as const
+
+type BudgetKey = (typeof BUDGET_KEYS)[number]
+
 interface Budgets {
   version: 1
-  budgets: {
-    'main-js-gzip': number
-    'lazy-js-gzip': number
-    'css-gzip': number
-    'async-countries-gzip': number
-    'initial-total-gzip': number
-    'total-with-async-gzip': number
-  }
+  budgets: Record<BudgetKey, number>
 }
 
 const root = process.cwd()
@@ -77,14 +81,20 @@ interface Check {
   budget: number
 }
 
-const checks: Check[] = [
-  { name: 'main-js-gzip', measured: mainJsBytes, budget: budgets.budgets['main-js-gzip'] },
-  { name: 'lazy-js-gzip', measured: lazyJsBytes, budget: budgets.budgets['lazy-js-gzip'] },
-  { name: 'css-gzip', measured: cssBytes, budget: budgets.budgets['css-gzip'] },
-  { name: 'async-countries-gzip', measured: asyncCountriesBytes, budget: budgets.budgets['async-countries-gzip'] },
-  { name: 'initial-total-gzip', measured: initialTotal, budget: budgets.budgets['initial-total-gzip'] },
-  { name: 'total-with-async-gzip', measured: totalWithAsync, budget: budgets.budgets['total-with-async-gzip'] },
-]
+const measurements: Record<BudgetKey, number> = {
+  'main-js-gzip': mainJsBytes,
+  'lazy-js-gzip': lazyJsBytes,
+  'css-gzip': cssBytes,
+  'async-countries-gzip': asyncCountriesBytes,
+  'initial-total-gzip': initialTotal,
+  'total-with-async-gzip': totalWithAsync,
+}
+
+const checks: Check[] = BUDGET_KEYS.map((name) => ({
+  name,
+  measured: measurements[name],
+  budget: budgets.budgets[name],
+}))
 
 let failed = false
 for (const c of checks) {
