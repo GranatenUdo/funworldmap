@@ -2,7 +2,7 @@ import { useEffect, type RefObject } from 'react'
 import type { CityLike, CountryLike, GameMode, GameSession, GuessInput, ModeId, RoundSpec } from '../shared/types'
 import { centroidFromLatLng } from '../shared/distance'
 
-interface Args {
+export interface UseGameTestSeamsArgs {
   session: GameSession
   mode: GameMode | null
   byCca3: Map<string, CountryLike>
@@ -14,15 +14,20 @@ interface Args {
   statusRef: RefObject<GameSession['status']>
 }
 
+/**
+ * Registers `window.__funworldmap_game.{submitGuess,submitCountryGuess,setRound}`
+ * when `VITE_TEST_HOOKS=1`. Both `submitGuess` and `submitCountryGuess` exist
+ * for e2e backward-compat — the names predate the collapsed `attempt` action
+ * and are still referenced by the Playwright suite.
+ */
 export function useGameTestSeams({
   session, mode, byCca3, cities, start, overrideRound, submitGuessInput, statusRef,
-}: Args): void {
+}: UseGameTestSeamsArgs): void {
   useEffect(() => {
     if (!import.meta.env.VITE_TEST_HOOKS) return
     const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
     if (!w.__funworldmap_game) w.__funworldmap_game = {}
     w.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
-    // Test shorthand: takes cca3 alone and looks up name + centroid.
     w.__funworldmap_game.submitCountryGuess = (cca3: string): boolean => {
       if (session.modeId !== 'country-pinning') return false
       const country = byCca3.get(cca3.toUpperCase())
