@@ -4,6 +4,7 @@ import type { AttemptRecord, CityLike, CountryLike, ModeId, RoundSpec } from './
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { useGameTestSeams } from './hooks/useGameTestSeams'
+import { useDailyResumePersistence } from './hooks/useDailyResumePersistence'
 import { getMode } from './modes'
 import { HudShell } from './shared/hud/HudShell'
 import { GameOverOverlay } from './shared/hud/GameOverOverlay'
@@ -20,7 +21,7 @@ import { buildCountryDailyRound, buildCityDailyRound } from './daily/dailyRound'
 import { toLocalDateString, classifyDate } from './daily/dates'
 import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './daily/useDailyHistory'
-import { readResume, writeResume, clearResume } from './daily/resume'
+import { readResume, clearResume } from './daily/resume'
 import { track } from '../lib/analytics'
 import { dispatchToast } from '../lib/toast'
 
@@ -176,6 +177,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   statusRef.current = session.status
 
   useGameTestSeams({ session, mode, byCca3, cities, start, overrideRound, submitGuessInput, statusRef })
+  useDailyResumePersistence(session)
 
   useEffect(() => {
     const check = () => {
@@ -333,20 +335,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     start(pending, firstRound, m.maxRounds)
     track('free_started', { mode: pending })
   }, [countries, cities, session.status, pools, start, startOrResumeDaily, dailyPuzzles])
-
-  // Persist daily best-of-N progress to localStorage so refresh resumes.
-  useEffect(() => {
-    if (session.status !== 'playing') return
-    if (session.attemptsPerRound <= 1) return
-    if (session.currentAttempts.length === 0) return
-    if (session.dailyDate === null) return
-    writeResume({
-      version: 1,
-      date: session.dailyDate,
-      modeId: session.modeId,
-      attempts: session.currentAttempts,
-    })
-  }, [session.status, session.attemptsPerRound, session.currentAttempts, session.dailyDate, session.modeId])
 
   // Side effects on status change.
   useEffect(() => {
