@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:e2e": "tsc -b && vite build --mode e2e",
+    "bundle:budget": "npm run build && tsx scripts/bundle-budget/check.ts",
     "preview": "vite preview",
     "lint": "eslint src/",
     "format": "prettier --write src/",
