@@ -1,3 +1,4 @@
+import { centroidFromLatLng } from '../game/shared/distance'
 import missingFromFiftym from '../data/missing-from-50m.json'
 
 interface MissingEntry {
@@ -23,7 +24,7 @@ const MARKER_HALF_DEG = 0.5
 export function buildMissingFeatures(): GeoJSON.Feature[] {
   const list = missingFromFiftym as unknown as ReadonlyArray<MissingEntry>
   return list.map((entry) => {
-    const [lat, lng] = entry.latlng
+    const [lng, lat] = centroidFromLatLng(entry.latlng)
     const ring: [number, number][] = [
       [lng - MARKER_HALF_DEG, lat - MARKER_HALF_DEG],
       [lng + MARKER_HALF_DEG, lat - MARKER_HALF_DEG],
@@ -34,7 +35,7 @@ export function buildMissingFeatures(): GeoJSON.Feature[] {
     return {
       type: 'Feature' as const,
       id: Number(entry.ccn3),
-      properties: { id: entry.ccn3, synthetic: true },
+      properties: { id: entry.ccn3 },
       geometry: {
         type: 'Polygon' as const,
         coordinates: [ring],
