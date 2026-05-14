@@ -73,6 +73,7 @@ export function SingleCountryPanel({
   const [expanded, setExpanded] = useState(false)
   const showSecondary = isDesktop || expanded
   const panelRootRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   useEffect(() => {
@@ -105,6 +106,17 @@ export function SingleCountryPanel({
       window.cancelAnimationFrame(rafId)
       window.clearTimeout(timeoutId)
     }
+  }, [])
+
+  useEffect(() => {
+    // Move focus to the heading on mount.
+    // requestAnimationFrame defers focus until after the panel's first
+    // commit so the screen-reader announcement is meaningful, and so
+    // it composes with the panel's entrance animation cleanly.
+    const rafId = window.requestAnimationFrame(() => {
+      headingRef.current?.focus()
+    })
+    return () => window.cancelAnimationFrame(rafId)
   }, [])
 
   const onShareLink = () => {
@@ -157,7 +169,11 @@ export function SingleCountryPanel({
               className="w-[72px] h-[50px] object-cover rounded-xl shadow-lg shrink-0"
             />
             <div className="min-w-0 pt-0.5">
-              <h2 className="text-2xl font-bold text-sand-900 dark:text-dark-50 truncate tracking-tight leading-tight">
+              <h2
+                ref={headingRef}
+                tabIndex={-1}
+                className="text-2xl font-bold text-sand-900 dark:text-dark-50 truncate tracking-tight leading-tight focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50 rounded"
+              >
                 {country.name.common}
               </h2>
               {country.name.official !== country.name.common && (

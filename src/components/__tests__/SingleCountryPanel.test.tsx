@@ -15,66 +15,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { act, render } from '@testing-library/react'
 import type { CountryData, CountriesFile } from '../../lib/types'
 import type { ComponentType } from 'react'
-
-// jsdom does not implement matchMedia; SourceTooltip touches it at module
-// evaluation time. Stub it before SingleCountryPanel is dynamically imported.
-function stubMatchMedia(): void {
-  // jsdom currently has no matchMedia; the property is undefined. Cast through
-  // unknown to dodge TS 2774 ("function always defined") for the standard lib
-  // declaration which marks matchMedia as required.
-  if ((window as unknown as { matchMedia?: unknown }).matchMedia) return
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    configurable: true,
-    value: () => ({
-      matches: false,
-      media: '',
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }),
-  })
-}
-
-const sources: CountriesFile['_sources'] = {
-  restcountries: {
-    name: 'REST Countries',
-    url: 'https://restcountries.com',
-    description: 'Country reference data',
-    lastUpdated: '2026-01-01',
-  },
-}
-
-function makeCountry(overrides: Partial<CountryData> = {}): CountryData {
-  return {
-    cca3: 'FRA',
-    ccn3: '250',
-    cca2: 'FR',
-    name: { common: 'France', official: 'French Republic' },
-    capital: ['Paris'],
-    region: 'Europe',
-    subregion: 'Western Europe',
-    population: 67_000_000,
-    area: 551_695,
-    governmentType: 'Republic',
-    languages: { fra: 'French' },
-    currencies: { EUR: { name: 'Euro', symbol: '€' } },
-    flag: '',
-    flagAlt: '',
-    latlng: [46, 2],
-    borders: [],
-    independent: true,
-    unMember: true,
-    landlocked: false,
-    timezones: ['UTC+01:00'],
-    continents: ['Europe'],
-    _fieldSources: {},
-    ...overrides,
-  } as CountryData
-}
+import { makeCountry, sources, stubMatchMedia, stubGetAnimations } from './singleCountryPanelTestUtils'
 
 // Dynamically loaded after matchMedia is stubbed.
 let SingleCountryPanel: ComponentType<{
@@ -125,20 +66,17 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
   })
 
   it('starts as "entering" before any timer fires', () => {
-    const original = Element.prototype.getAnimations
-    Element.prototype.getAnimations = vi.fn().mockReturnValue([])
+    const { restore } = stubGetAnimations()
     try {
       const { getByTestId } = renderPanel()
       expect(getByTestId('country-panel').getAttribute('data-animation-state')).toBe('entering')
     } finally {
-      if (original) Element.prototype.getAnimations = original
-      else delete (Element.prototype as { getAnimations?: unknown }).getAnimations
+      restore()
     }
   })
 
   it('flips entering → idle on the rAF tick when getAnimations() returns []', async () => {
-    const original = Element.prototype.getAnimations
-    Element.prototype.getAnimations = vi.fn().mockReturnValue([])
+    const { restore } = stubGetAnimations()
     try {
       const { getByTestId } = renderPanel()
       const root = getByTestId('country-panel')
@@ -150,18 +88,18 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
 
       expect(root.getAttribute('data-animation-state')).toBe('idle')
     } finally {
-      if (original) Element.prototype.getAnimations = original
-      else delete (Element.prototype as { getAnimations?: unknown }).getAnimations
+      restore()
     }
   })
 
   it('flips entering → idle once all .finished promises resolve', async () => {
-    const original = Element.prototype.getAnimations
+    const { restore } = stubGetAnimations()
     let resolveFinished!: () => void
     const finished = new Promise<void>((resolve) => {
       resolveFinished = resolve
     })
     const fakeAnim = { finished } as unknown as Animation
+    // Override the default stub with a custom animation whose .finished is pending.
     Element.prototype.getAnimations = vi.fn().mockReturnValue([fakeAnim])
     try {
       const { getByTestId } = renderPanel()
@@ -179,16 +117,16 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
       })
       expect(root.getAttribute('data-animation-state')).toBe('idle')
     } finally {
-      if (original) Element.prototype.getAnimations = original
-      else delete (Element.prototype as { getAnimations?: unknown }).getAnimations
+      restore()
     }
   })
 
   it('flips entering → idle via the 1s fallback timer when .finished never resolves', async () => {
-    const original = Element.prototype.getAnimations
+    const { restore } = stubGetAnimations()
     // Animation whose .finished promise never resolves — exactly the CI
     // event-loop-starvation pathology described in the bug-#31 diagnosis.
     const stuckAnim = { finished: new Promise<void>(() => {}) } as unknown as Animation
+    // Override the default stub with an animation whose .finished never resolves.
     Element.prototype.getAnimations = vi.fn().mockReturnValue([stuckAnim])
     try {
       const { getByTestId } = renderPanel()
@@ -206,8 +144,7 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
       })
       expect(root.getAttribute('data-animation-state')).toBe('idle')
     } finally {
-      if (original) Element.prototype.getAnimations = original
-      else delete (Element.prototype as { getAnimations?: unknown }).getAnimations
+      restore()
     }
   })
 })
