@@ -18,9 +18,37 @@ import {
 import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
 import { getMode } from '../../modes'
 import { RESUME_KEY } from '../../daily/resume'
-import type { CountryReveal, GameMode, GuessOutcome, PointReveal } from '../../shared/types'
+import type { CountryReveal, GuessOutcome, PointReveal } from '../../shared/types'
 
 const POOLS = { countries: countriesFixture, cities: citiesFixture }
+
+type AnnouncementsArgs = Parameters<typeof useGameAnnouncements>[0]
+
+interface BuildAnnouncementsArgsOverrides {
+  session?: AnnouncementsArgs['session']
+  mode?: AnnouncementsArgs['mode']
+  byCca3?: AnnouncementsArgs['byCca3']
+  advance?: AnnouncementsArgs['advance']
+  finalize?: AnnouncementsArgs['finalize']
+  record?: AnnouncementsArgs['record']
+  recordDailyResult?: AnnouncementsArgs['recordDailyResult']
+}
+
+function buildAnnouncementsArgs(overrides: BuildAnnouncementsArgsOverrides = {}): AnnouncementsArgs {
+  return {
+    session: overrides.session ?? makeSession(),
+    mode: overrides.mode ?? getMode('country-pinning', POOLS),
+    byCca3: overrides.byCca3 ?? byCca3Fixture,
+    advance: overrides.advance ?? vi.fn(),
+    finalize: overrides.finalize ?? vi.fn(),
+    record: overrides.record ?? vi.fn(),
+    recordDailyResult: overrides.recordDailyResult ?? vi.fn(),
+  }
+}
+
+function renderAnnouncementsHook(args: AnnouncementsArgs) {
+  return renderHook(() => useGameAnnouncements(args))
+}
 
 interface Captured {
   events: string[]
@@ -99,70 +127,42 @@ describe('useGameAnnouncements', () => {
 
   it('announces target name on entering playing with a country-pinning round', () => {
     captured = captureAnnouncements()
-    const mode: GameMode = getMode('country-pinning', POOLS)
     const session = makeSession({
       status: 'playing',
       modeId: 'country-pinning',
       currentRound: makeCountryRound({ targetCca3: 'FRA', targetName: 'France' }),
       roundIndex: 0,
     })
-    renderHook(() =>
-      useGameAnnouncements({
-        session,
-        mode,
-        byCca3: byCca3Fixture,
-        advance: vi.fn(),
-        finalize: vi.fn(),
-        record: vi.fn(),
-        recordDailyResult: vi.fn(),
-      }),
-    )
+    renderAnnouncementsHook(buildAnnouncementsArgs({ session }))
     expect(captured.events).toContain('Pin: France')
   })
 
   it('announces "Where is …" on entering playing with a city-guessing round', () => {
     captured = captureAnnouncements()
-    const mode: GameMode = getMode('city-guessing', POOLS)
     const session = makeSession({
       status: 'playing',
       modeId: 'city-guessing',
       currentRound: makeCityRound({ targetName: 'Paris', targetCountryName: 'France' }),
       roundIndex: 0,
     })
-    renderHook(() =>
-      useGameAnnouncements({
-        session,
-        mode,
-        byCca3: byCca3Fixture,
-        advance: vi.fn(),
-        finalize: vi.fn(),
-        record: vi.fn(),
-        recordDailyResult: vi.fn(),
-      }),
-    )
+    renderAnnouncementsHook(buildAnnouncementsArgs({
+      session,
+      mode: getMode('city-guessing', POOLS),
+    }))
     expect(captured.events.some((s) => /Where is Paris, France/.test(s))).toBe(true)
   })
 
   it('does not re-announce when round key is unchanged across rerenders', () => {
     captured = captureAnnouncements()
-    const mode: GameMode = getMode('country-pinning', POOLS)
     const session = makeSession({
       status: 'playing',
       modeId: 'country-pinning',
       currentRound: makeCountryRound({ targetCca3: 'FRA', targetName: 'France' }),
       roundIndex: 0,
     })
+    const args = buildAnnouncementsArgs({ session })
     const { rerender } = renderHook(
-      ({ s }) =>
-        useGameAnnouncements({
-          session: s,
-          mode,
-          byCca3: byCca3Fixture,
-          advance: vi.fn(),
-          finalize: vi.fn(),
-          record: vi.fn(),
-          recordDailyResult: vi.fn(),
-        }),
+      ({ s }) => useGameAnnouncements({ ...args, session: s }),
       { initialProps: { s: session } },
     )
     rerender({ s: { ...session, score: session.score + 10 } })
@@ -180,7 +180,6 @@ describe('useGameAnnouncements', () => {
 
     it('auto-advances country-pinning non-final round-end after REVEAL_MS_COUNTRY (1200ms) when no animation plan', () => {
       const advance = vi.fn()
-      const mode: GameMode = getMode('country-pinning', POOLS)
       // Reveal with clickedCca3=null yields no animation plan (skip / no-guess).
       const reveal = makeCountryReveal({ correct: false, clickedCca3: null, distanceKm: null })
       // attemptsPerRound>1 + attemptsRemaining>0 → isFinalOutcome=false, so the
@@ -194,17 +193,7 @@ describe('useGameAnnouncements', () => {
         roundIndex: 0,
         maxRounds: 5,
       })
-      renderHook(() =>
-        useGameAnnouncements({
-          session,
-          mode,
-          byCca3: byCca3Fixture,
-          advance,
-          finalize: vi.fn(),
-          record: vi.fn(),
-          recordDailyResult: vi.fn(),
-        }),
-      )
+      renderAnnouncementsHook(buildAnnouncementsArgs({ session, advance }))
       act(() => {
         vi.advanceTimersByTime(1199)
       })
@@ -218,7 +207,6 @@ describe('useGameAnnouncements', () => {
     it('calls finalize() instead of advance() when lastOutcome.endsGame is true and not country-pinning', () => {
       const advance = vi.fn()
       const finalize = vi.fn()
-      const mode: GameMode = getMode('city-guessing', POOLS)
       // PointReveal with clickedPoint=null yields no animation plan, so the
       // city-mode branch uses REVEAL_MS_CITY (2000ms).
       const reveal = makePointReveal({ clickedPoint: null })
@@ -227,17 +215,12 @@ describe('useGameAnnouncements', () => {
         modeId: 'city-guessing',
         lastOutcome: makeOutcome(reveal, true),
       })
-      renderHook(() =>
-        useGameAnnouncements({
-          session,
-          mode,
-          byCca3: byCca3Fixture,
-          advance,
-          finalize,
-          record: vi.fn(),
-          recordDailyResult: vi.fn(),
-        }),
-      )
+      renderAnnouncementsHook(buildAnnouncementsArgs({
+        session,
+        mode: getMode('city-guessing', POOLS),
+        advance,
+        finalize,
+      }))
       act(() => {
         vi.advanceTimersByTime(2000)
       })
@@ -249,7 +232,6 @@ describe('useGameAnnouncements', () => {
   it('records personal best on game-over for free play (dailyDate=null)', () => {
     const record = vi.fn()
     const recordDailyResult = vi.fn()
-    const mode: GameMode = getMode('country-pinning', POOLS)
     const session = makeSession({
       status: 'game-over',
       modeId: 'country-pinning',
@@ -257,17 +239,7 @@ describe('useGameAnnouncements', () => {
       bestStreak: 4,
       dailyDate: null,
     })
-    renderHook(() =>
-      useGameAnnouncements({
-        session,
-        mode,
-        byCca3: byCca3Fixture,
-        advance: vi.fn(),
-        finalize: vi.fn(),
-        record,
-        recordDailyResult,
-      }),
-    )
+    renderAnnouncementsHook(buildAnnouncementsArgs({ session, record, recordDailyResult }))
     expect(record).toHaveBeenCalledWith(250, 4)
     expect(recordDailyResult).not.toHaveBeenCalled()
   })
@@ -276,7 +248,6 @@ describe('useGameAnnouncements', () => {
     localStorage.setItem(RESUME_KEY, '{"version":1,"date":"2026-05-14","modeId":"country-pinning","attempts":[]}')
     const record = vi.fn()
     const recordDailyResult = vi.fn()
-    const mode: GameMode = getMode('country-pinning', POOLS)
     const session = makeSession({
       status: 'game-over',
       modeId: 'country-pinning',
@@ -284,17 +255,7 @@ describe('useGameAnnouncements', () => {
       dailyDate: '2026-05-14',
       currentAttempts: [makeAttempt({ pointsEarned: 80 })],
     })
-    renderHook(() =>
-      useGameAnnouncements({
-        session,
-        mode,
-        byCca3: byCca3Fixture,
-        advance: vi.fn(),
-        finalize: vi.fn(),
-        record,
-        recordDailyResult,
-      }),
-    )
+    renderAnnouncementsHook(buildAnnouncementsArgs({ session, record, recordDailyResult }))
     expect(recordDailyResult).toHaveBeenCalledWith(
       '2026-05-14',
       'country-pinning',
@@ -306,24 +267,15 @@ describe('useGameAnnouncements', () => {
 
   it('dedups record() across rerenders when status stays game-over', () => {
     const record = vi.fn()
-    const mode: GameMode = getMode('country-pinning', POOLS)
     const session = makeSession({
       status: 'game-over',
       modeId: 'country-pinning',
       score: 100,
       dailyDate: null,
     })
+    const args = buildAnnouncementsArgs({ session, record })
     const { rerender } = renderHook(
-      ({ s }) =>
-        useGameAnnouncements({
-          session: s,
-          mode,
-          byCca3: byCca3Fixture,
-          advance: vi.fn(),
-          finalize: vi.fn(),
-          record,
-          recordDailyResult: vi.fn(),
-        }),
+      ({ s }) => useGameAnnouncements({ ...args, session: s }),
       { initialProps: { s: session } },
     )
     rerender({ s: { ...session, score: 100 } })
