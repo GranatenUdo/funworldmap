@@ -1,4 +1,13 @@
-import type { GameSession } from '../types'
+import type { AttemptRecord, GameSession } from '../types'
+
+export function makeAttempt(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
+  return {
+    pointsEarned: 0,
+    input: { kind: 'country', cca3: 'USA', name: 'United States', centroid: [-97, 38] },
+    reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'USA', clickedName: 'United States', distanceKm: 7000 },
+    ...overrides,
+  }
+}
 
 export function makeSession(overrides: Partial<GameSession> = {}): GameSession {
   return {
