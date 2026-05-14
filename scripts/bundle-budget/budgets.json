@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "comment": "Budgets are gzip sizes in bytes. Set to (measured + 10%) at creation 2026-05-14, after countries-50m swap (PR #50). Update via separate PRs with measurement evidence in the description.",
+  "budgets": {
+    "main-js-gzip": 530000,
+    "css-gzip": 23000,
+    "async-countries-gzip": 260000,
+    "initial-total-gzip": 560000,
+    "total-with-async-gzip": 810000
+  }
+}

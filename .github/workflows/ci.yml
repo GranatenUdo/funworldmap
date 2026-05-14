@@ -33,6 +33,13 @@ jobs:
       - name: Type check
         run: tsc -b
 
+      - name: Bundle-size budget check
+        run: npm run bundle:budget
+        env:
+          VITE_SENTRY_DSN: ''
+          VITE_CF_WA_TOKEN: ''
+          VITE_ANALYTICS_ENDPOINT: ''
+
       - name: Unit tests
         run: npm run test:unit
 
