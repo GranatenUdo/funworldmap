@@ -1,61 +1,8 @@
 import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from 'vitest'
-import { render, screen, cleanup } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import type { CountryData, CountriesFile } from '../../lib/types'
 import type { ComponentType } from 'react'
-
-// jsdom does not implement matchMedia; SourceTooltip touches it at module
-// evaluation time. Stub it before SingleCountryPanel is dynamically imported.
-function stubMatchMedia(): void {
-  if ((window as unknown as { matchMedia?: unknown }).matchMedia) return
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    configurable: true,
-    value: () => ({
-      matches: false,
-      media: '',
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }),
-  })
-}
-
-const country = {
-  ccn3: '250',
-  cca3: 'FRA',
-  cca2: 'FR',
-  name: { common: 'France', official: 'French Republic' },
-  flag: 'flags/FR.svg',
-  flagAlt: 'Flag of France',
-  capital: ['Paris'],
-  region: 'Europe',
-  subregion: 'Western Europe',
-  latlng: [46, 2],
-  area: 551695,
-  population: 67391582,
-  borders: ['ESP', 'ITA'],
-  independent: true,
-  unMember: true,
-  landlocked: false,
-  languages: { fra: 'French' },
-  currencies: { EUR: { name: 'Euro', symbol: '€' } },
-  timezones: ['UTC+01:00'],
-  continents: ['Europe'],
-  governmentType: 'semi-presidential republic',
-  _fieldSources: {},
-} as CountryData
-
-const sources: CountriesFile['_sources'] = {
-  restcountries: {
-    name: 'REST Countries',
-    url: 'https://restcountries.com',
-    description: 'Country reference data',
-    lastUpdated: '2026-01-01',
-  },
-}
+import { makeCountry, sources, stubMatchMedia, stubGetAnimations } from './singleCountryPanelTestUtils'
 
 // Dynamically loaded after matchMedia is stubbed.
 let SingleCountryPanel: ComponentType<{
@@ -77,7 +24,7 @@ describe('SingleCountryPanel — focus management on mount', () => {
     SingleCountryPanel = mod.SingleCountryPanel as typeof SingleCountryPanel
   })
 
-  let originalGetAnimations: typeof Element.prototype.getAnimations | undefined
+  let restore: () => void
 
   beforeEach(() => {
     // Same pattern as SingleCountryPanel.test.tsx:117-118
@@ -87,22 +34,23 @@ describe('SingleCountryPanel — focus management on mount', () => {
     // jsdom doesn't implement getAnimations; stub it so the animation-state
     // effect doesn't throw when the rAF fires. Mirror the manual-assignment
     // pattern used in SingleCountryPanel.test.tsx (vi.spyOn rejects absent props).
-    originalGetAnimations = Element.prototype.getAnimations
-    Element.prototype.getAnimations = vi.fn().mockReturnValue([])
+    ;({ restore } = stubGetAnimations())
   })
 
   afterEach(() => {
-    if (originalGetAnimations) {
-      Element.prototype.getAnimations = originalGetAnimations
-    } else {
-      delete (Element.prototype as { getAnimations?: unknown }).getAnimations
-    }
+    restore()
     vi.useRealTimers()
-    cleanup()
   })
 
   const baseProps = {
-    country,
+    country: makeCountry({
+      flag: 'flags/FR.svg',
+      flagAlt: 'Flag of France',
+      borders: ['ESP', 'ITA'],
+      population: 67391582,
+      area: 551695,
+      governmentType: 'semi-presidential republic',
+    }),
     comparePickingMode: false,
     sources,
     isDesktop: true,
