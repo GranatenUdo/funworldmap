@@ -1,4 +1,4 @@
-import type { AttemptRecord, GameSession } from '../types'
+import type { AttemptRecord, CityRoundSpec, CountryRoundSpec, GameSession } from '../types'
 
 export function makeAttempt(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
   return {
@@ -27,6 +27,29 @@ export function makeSession(overrides: Partial<GameSession> = {}): GameSession {
     dailyDate: null,
     endedEarly: false,
     used: new Set(),
+    ...overrides,
+  }
+}
+
+export function makeCountryRound(overrides: Partial<CountryRoundSpec> = {}): CountryRoundSpec {
+  return {
+    kind: 'country-pinning',
+    targetCca3: 'FRA',
+    targetName: 'France',
+    targetFlag: 'flags/FR.svg',
+    targetCentroid: [2, 46],
+    ...overrides,
+  }
+}
+
+export function makeCityRound(overrides: Partial<CityRoundSpec> = {}): CityRoundSpec {
+  return {
+    kind: 'city-guessing',
+    targetId: 'FRA-paris',
+    targetName: 'Paris',
+    targetCountryName: 'France',
+    targetCountryFlag: 'flags/FR.svg',
+    targetCentroid: [2.3522, 48.8566],
     ...overrides,
   }
 }
