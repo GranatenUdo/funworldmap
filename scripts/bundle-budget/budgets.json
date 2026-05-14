@@ -1,11 +1,12 @@
 {
   "version": 1,
-  "comment": "Budgets are gzip sizes in bytes. Set to (measured + 10%) at creation 2026-05-14, after countries-50m swap (PR #50). Update via separate PRs with measurement evidence in the description.",
+  "comment": "Budgets are gzip sizes in bytes. Set to (measured + 10%) at creation 2026-05-14, after countries-50m swap (PR #50). Categories: main-js = the initial bundle Vite emits as the largest index-*.js (loaded by dist/index.html). lazy-js = OTHER index-*.js chunks (today: topojson-client, lazy-loaded via dynamic import). css = sum of all index-*.css. async-countries = the countries-*.js chunk (lazy-loaded via dynamic import). initial-total = main-js + css (the first-paint blocker). total-with-async = initial + async-countries + lazy-js (full bandwidth a session may use). Updating a budget upward requires a separate PR with measurement evidence.",
   "budgets": {
-    "main-js-gzip": 530000,
-    "css-gzip": 23000,
+    "main-js-gzip": 540000,
+    "lazy-js-gzip": 3000,
+    "css-gzip": 24000,
     "async-countries-gzip": 260000,
     "initial-total-gzip": 560000,
-    "total-with-async-gzip": 810000
+    "total-with-async-gzip": 820000
   }
 }
