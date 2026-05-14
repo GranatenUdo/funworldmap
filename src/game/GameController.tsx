@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
-import type { AttemptRecord, CityLike, CountryLike, GuessInput, ModeId, RoundSpec } from './shared/types'
+import type { AttemptRecord, CityLike, CountryLike, ModeId, RoundSpec } from './shared/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
 import { usePersonalBests } from './shared/usePersonalBests'
+import { useGameTestSeams } from './hooks/useGameTestSeams'
 import { getMode } from './modes'
 import { HudShell } from './shared/hud/HudShell'
 import { GameOverOverlay } from './shared/hud/GameOverOverlay'
@@ -10,7 +11,7 @@ import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
 import { useMap } from '../hooks/useMap'
 import { parseHash } from '../lib/hashState'
 import { LAYER } from '../lib/mapLayers'
-import { centroidFromLatLng, tessellateArc } from './shared/distance'
+import { tessellateArc } from './shared/distance'
 import { computeRevealAnimationPlan } from './shared/revealAnimation'
 import { prefersReducedMotion } from '../lib/motion'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../lib/mapStyles'
@@ -173,6 +174,9 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // Hash → session bootstrap. Read status via ref (hashchange closure-staleness fix).
   const statusRef = useRef(session.status)
   statusRef.current = session.status
+
+  useGameTestSeams({ session, mode, byCca3, cities, start, overrideRound, submitGuessInput, statusRef })
+
   useEffect(() => {
     const check = () => {
       const state = parseHash(window.location.hash)
@@ -703,66 +707,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     const map = mapRef.current
     if (map) clearRevealSources(map)
   }, [session.status])
-
-  // Test seams. submitGuess/submitCountryGuess names are kept for e2e backward-compat; both dispatch the collapsed 'attempt' action.
-  useEffect(() => {
-    if (!import.meta.env.VITE_TEST_HOOKS) return
-    const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
-    if (!w.__funworldmap_game) w.__funworldmap_game = {}
-    w.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
-    // Test shorthand: takes cca3 alone and looks up name + centroid.
-    w.__funworldmap_game.submitCountryGuess = (cca3: string): boolean => {
-      if (session.modeId !== 'country-pinning') return false
-      const country = byCca3.get(cca3.toUpperCase())
-      if (!country) return false
-      submitGuessInput({
-        kind: 'country',
-        cca3: cca3.toUpperCase(),
-        name: country.name.common,
-        centroid: centroidFromLatLng(country.latlng),
-      })
-      return true
-    }
-    w.__funworldmap_game.setRound = (id: string): boolean => {
-      if (!mode) return false
-      let round: RoundSpec | null = null
-      if (session.modeId === 'country-pinning') {
-        const country = byCca3.get(id.toUpperCase())
-        if (!country) return false
-        round = {
-          kind: 'country-pinning',
-          targetCca3: country.cca3,
-          targetName: country.name.common,
-          targetFlag: country.flag,
-          targetCentroid: centroidFromLatLng(country.latlng),
-        }
-      } else {
-        const city = cities.find((c) => c.id === id)
-        if (!city) return false
-        round = {
-          kind: 'city-guessing',
-          targetId: city.id,
-          targetName: city.name,
-          targetCountryName: city.countryName,
-          targetCountryFlag: city.countryFlag,
-          targetCentroid: centroidFromLatLng(city.latlng),
-        }
-      }
-      if (statusRef.current === 'idle') {
-        start(session.modeId, round, mode.maxRounds)
-      } else {
-        overrideRound(round)
-      }
-      return true
-    }
-    return () => {
-      if (w.__funworldmap_game) {
-        delete w.__funworldmap_game.submitGuess
-        delete w.__funworldmap_game.submitCountryGuess
-        delete w.__funworldmap_game.setRound
-      }
-    }
-  }, [mode, session.modeId, byCca3, cities, start, overrideRound, submitGuessInput])
 
   // Escape exits.
   // Country-pinning round-ended: Escape is owned by the round-end effect above (advance, not exit).
