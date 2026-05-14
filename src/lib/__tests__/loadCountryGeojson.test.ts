@@ -26,7 +26,7 @@ describe('loadCountryGeojson', () => {
     expect(fc.features.some((f) => Number(f.id) === 275)).toBe(true)
   })
 
-  it('includes Tuvalu (id 798) — 10m has it; 50m did not', async () => {
+  it('includes Tuvalu (id 798) — present via hand-patch in missing-from-50m.json', async () => {
     const fc = await loadCountryGeojson()
     expect(fc.features.some((f) => Number(f.id) === 798)).toBe(true)
   })

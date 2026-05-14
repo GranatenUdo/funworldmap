@@ -1,20 +1,21 @@
 import { CANONICAL_NUMERIC_IDS } from './canonicalCountries'
+import { buildMissingFeatures } from './missingCountriesPatch'
 
-/** Load the world-atlas 10m countries topology and return a normalized GeoJSON
- *  FeatureCollection with antimeridian wrapping fixed for non-polar polygons.
- *  Each feature has its numeric id promoted to `properties.id` (string).
+/** Load the world-atlas 50m countries topology + a synthetic patch for the
+ *  small island states 50m omits, and return a normalized GeoJSON FeatureCollection
+ *  with antimeridian wrapping fixed for non-polar polygons.
  *
  *  The features are filtered through `CANONICAL_NUMERIC_IDS` so only the 195
  *  canonical sovereign states (193 UN members + VAT + PSE) are returned.
- *  Dropped territories (Taiwan, Greenland, Hong Kong, Western Sahara, …)
- *  are not rendered and therefore not clickable on the map.
  *
- *  We use the 10m source (rather than 50m) because 50m omits Tuvalu (id 798)
- *  entirely. 10m has all 195 canonical IDs at the cost of a larger bundle. */
+ *  We use 50m + patch (rather than 10m) because 10m's bundle is ~3.5 MB raw /
+ *  ~954 KB gzip; 50m is ~756 KB raw / much smaller gzip, and the patch adds
+ *  a handful of tiny synthetic polygons for the small island states 50m omits
+ *  (see src/data/missing-from-50m.json). */
 export async function loadCountryGeojson(): Promise<GeoJSON.FeatureCollection> {
   const [topojsonClient, worldAtlas] = await Promise.all([
     import('topojson-client'),
-    import('world-atlas/countries-10m.json'),
+    import('world-atlas/countries-50m.json'),
   ])
 
   const topology = worldAtlas.default as unknown as TopoJSON.Topology
@@ -32,6 +33,9 @@ export async function loadCountryGeojson(): Promise<GeoJSON.FeatureCollection> {
       feature.properties.id = String(feature.id)
     }
   }
+
+  // Append synthetic features for the canonical IDs missing in 50m.
+  geojson.features.push(...buildMissingFeatures())
 
   fixAntimeridian(geojson)
   return geojson
