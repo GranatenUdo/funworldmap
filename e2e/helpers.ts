@@ -65,6 +65,88 @@ export async function seedDailyHistory(
 }
 
 /**
+ * Seed a played country-pinning daily for `date` and stub /daily/index.json
+ * to serve a one-day index. Optionally enables the analytics test seam
+ * via window.__PLAYWRIGHT__.
+ *
+ * Pre-fills history with a 3-attempt result (score=87) so the reveal overlay
+ * renders the share block immediately on goto.
+ */
+export async function seedPlayedDaily(
+  page: Page,
+  date: string,
+  opts: { captureAnalytics?: boolean } = {},
+): Promise<void> {
+  const { captureAnalytics = false } = opts
+  await page.addInitScript(
+    ({ d, capture }) => {
+      if (capture) {
+        ;(window as unknown as { __PLAYWRIGHT__: boolean }).__PLAYWRIGHT__ = true
+      }
+      const index = {
+        generatedAt: new Date().toISOString(),
+        window: { start: d, end: d },
+        days: { [d]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
+      }
+      const history = {
+        version: 1,
+        streak: { current: 3, longest: 3, lastActiveDate: d, lastMilestoneShown: 0 },
+        days: {
+          [d]: {
+            'country-pinning': {
+              score: 87,
+              attempts: [
+                { pointsEarned: 42, distanceKm: 1200 },
+                { pointsEarned: 63, distanceKm: 400 },
+                { pointsEarned: 91, distanceKm: 0 },
+              ],
+              completedAt: 1,
+            },
+          },
+        },
+      }
+      localStorage.setItem('funworldmap-daily-history', JSON.stringify(history))
+      ;(window as unknown as { __seededIndex?: unknown }).__seededIndex = index
+    },
+    { d: date, capture: captureAnalytics },
+  )
+  await page.route('**/daily/index.json', async (route) => {
+    const seeded = await page.evaluate(
+      () => (window as unknown as { __seededIndex?: unknown }).__seededIndex,
+    )
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(seeded) })
+  })
+}
+
+/**
+ * Install a controllable navigator.share stub for share-branches tests.
+ * 'success' resolves and records the call to window.__lastShare.
+ * 'abort'   rejects with an AbortError (user cancelled the share sheet).
+ * 'fail'    rejects with a non-Abort error (some other failure).
+ */
+export async function installShareStub(
+  page: Page,
+  behavior: 'success' | 'abort' | 'fail',
+): Promise<void> {
+  await page.addInitScript((b: string) => {
+    ;(window as unknown as { __lastShare?: unknown }).__lastShare = undefined
+    // @ts-expect-error — test-time installation
+    navigator.share = async (data: { title: string; text: string; url: string }) => {
+      if (b === 'success') {
+        ;(window as unknown as { __lastShare?: unknown }).__lastShare = data
+        return
+      }
+      if (b === 'abort') {
+        const err = new Error('user cancelled') as Error & { name: string }
+        err.name = 'AbortError'
+        throw err
+      }
+      throw new Error('share not allowed')
+    }
+  }, behavior)
+}
+
+/**
  * Stub `/daily/index.json` with a one-day index containing France + Paris.
  * Call BEFORE page.goto. Defaults to FRA/FRA-paris; other IDs can be
  * supplied if a test needs them.

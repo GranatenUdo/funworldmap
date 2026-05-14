@@ -1,58 +1,8 @@
-import { test, expect, type Page } from '@playwright/test'
-import { waitForAppReady } from './helpers'
+import { test, expect } from '@playwright/test'
+import { waitForAppReady, seedPlayedDaily, installShareStub } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
-
-async function seedPlayedDaily(page: Page, date: string): Promise<void> {
-  // Seed localStorage history + install a sessionStorage-visible index object
-  // that the route handler can then serve as /daily/index.json.
-  await page.addInitScript(
-    ({ d }) => {
-      const index = {
-        generatedAt: new Date().toISOString(),
-        window: { start: d, end: d },
-        days: { [d]: { country: { cca3: 'FRA' }, city: { id: 'paris' } } },
-      }
-      const history = {
-        version: 1,
-        streak: { current: 3, longest: 3, lastActiveDate: d, lastMilestoneShown: 0 },
-        days: {
-          [d]: {
-            'country-pinning': {
-              score: 87,
-              attempts: [
-                { pointsEarned: 42, distanceKm: 1200 },
-                { pointsEarned: 63, distanceKm: 400 },
-                { pointsEarned: 91, distanceKm: 0 },
-              ],
-              completedAt: 1,
-            },
-          },
-        },
-      }
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify(history))
-      ;(window as unknown as { __seededIndex?: unknown }).__seededIndex = index
-    },
-    { d: date },
-  )
-  await page.route('**/daily/index.json', async (route) => {
-    const seeded = await page.evaluate(
-      () => (window as unknown as { __seededIndex?: unknown }).__seededIndex,
-    )
-    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(seeded) })
-  })
-}
-
-async function installNavigatorShareMock(page: Page): Promise<void> {
-  await page.addInitScript(() => {
-    ;(window as unknown as { __lastShare?: { title: string; text: string; url: string } }).__lastShare = undefined
-    // @ts-expect-error — test-time installation
-    navigator.share = async (data: { title: string; text: string; url: string }) => {
-      ;(window as unknown as { __lastShare?: unknown }).__lastShare = data
-    }
-  })
-}
 
 test.describe('Daily share block', () => {
   test('share block visible in DailyRevealOverlay with played country', async ({ page }) => {
@@ -71,7 +21,7 @@ test.describe('Daily share block', () => {
   test('clicking Share uses navigator.share when present', async ({ page }) => {
     const today = toLocalDateString(new Date())
     await seedPlayedDaily(page, today)
-    await installNavigatorShareMock(page)
+    await installShareStub(page, 'success')
     await page.goto(`/#daily/${today}/reveal`)
     await waitForAppReady(page)
     await page.getByTestId('daily-share-primary').click()
