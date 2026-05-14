@@ -37,7 +37,7 @@ Which Playwright project runs which spec, and why. Kept in sync with `playwright
 
 ## CI testIgnore (chromium-only, local-only on CI)
 
-These 13 specs are configured for the `chromium` project but excluded on CI pending a self-hosted GPU runner. They run locally where the real GPU + faster compositor produce reliable timing. See `playwright.config.ts:110-126` and `docs/roadmap.md` § "Flaky-on-free-CI specs (need GPU runner)".
+These 13 specs are configured for the `chromium` project but excluded on CI pending a self-hosted GPU runner. They run locally where the real GPU + faster compositor produce reliable timing. See `playwright.config.ts:115-127` and `docs/roadmap.md` § "Flaky-on-free-CI specs (need GPU runner)".
 
 - `label-contrast`
 - `header-play-reopens-launcher`
@@ -63,9 +63,9 @@ These individual tests pass locally but fail on CI due to environment-specific t
 | --- | --- | --- | --- |
 | `country-panel slide-in click stability race` | `e2e/launcher.spec.ts:87` | [#31](https://github.com/GranatenUdo/funworldmap/issues/31) | Compositor stability under ANGLE/parallel workers |
 | `game-over → hash-mode-switch leaves data-game-mode=''` | `e2e/game-over-mode-switch.spec.ts:36` | [#32](https://github.com/GranatenUdo/funworldmap/issues/32) | Bug-#32 territory; budget exhaustion |
-| `rapid Continue click during panel slide-in (wrong guess)` | `e2e/animation-interrupt.spec.ts:25` | [#47](https://github.com/GranatenUdo/funworldmap/issues/47) | `data-animation-state='entering'` race under CI's reducedMotion baseline |
-| `Escape mid-reveal (correct guess) skips the hold` | `e2e/animation-interrupt.spec.ts:50` | [#47](https://github.com/GranatenUdo/funworldmap/issues/47) | Same root cause as above |
-| `Escape mid-panel-slide-in (wrong guess) skips the hold` | `e2e/animation-interrupt.spec.ts:76` | [#47](https://github.com/GranatenUdo/funworldmap/issues/47) | Same root cause as above |
+| `rapid Continue click during panel slide-in (wrong guess)` | `e2e/animation-interrupt.spec.ts:30` | [#47](https://github.com/GranatenUdo/funworldmap/issues/47) | `data-animation-state='entering'` race under CI's reducedMotion baseline |
+| `Escape mid-reveal (correct guess) skips the hold` | `e2e/animation-interrupt.spec.ts:53` | [#47](https://github.com/GranatenUdo/funworldmap/issues/47) | Same root cause as above |
+| `Escape mid-panel-slide-in (wrong guess) skips the hold` | `e2e/animation-interrupt.spec.ts:78` | [#47](https://github.com/GranatenUdo/funworldmap/issues/47) | Same root cause as above |
 
 ## Why some specs do not run under every mobile project
 
