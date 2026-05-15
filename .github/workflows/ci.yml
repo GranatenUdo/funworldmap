@@ -116,6 +116,15 @@ jobs:
     needs: [e2e]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # `actions: read` is required by `gh run download` to list workflow-run
+      # artifacts via the GitHub API. Without it the CLI errors with
+      # `HTTP 403: Resource not accessible by integration`. actions/download-artifact@v4
+      # itself works without this permission (uses a privileged internal path)
+      # but its blob-storage download has hard-coded retries that exhausted on
+      # PR #59; `gh run download` + outer bash retry is more robust.
+      actions: read
     steps:
       - uses: actions/checkout@v4
 
@@ -126,12 +135,38 @@ jobs:
 
       - run: npm ci
 
-      - name: Download blob reports
-        uses: actions/download-artifact@v4
-        with:
-          path: all-blob-reports
-          pattern: playwright-blob-*
-          merge-multiple: true
+      - name: Download blob reports (with retry)
+        # actions/download-artifact@v4 has hard-coded internal retry behavior;
+        # when one of 4 parallel artifact downloads times out on Azure blob
+        # storage, the whole step fails (observed on PR #59 — 3 of 4 artifacts
+        # downloaded fine, 1 timed out after 5 internal retries). Wrap with
+        # an outer bash retry that uses `gh run download` (CLI tool with
+        # different transport path; more reliable for cross-job artifact
+        # retrieval).
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          mkdir -p all-blob-reports
+          for attempt in 1 2 3; do
+            echo "Download attempt $attempt..."
+            if gh run download ${{ github.run_id }} \
+                --pattern 'playwright-blob-*' \
+                --dir all-blob-reports; then
+              echo "Download succeeded on attempt $attempt"
+              # Flatten: each artifact extracts into its own subdir; merge them.
+              find all-blob-reports -mindepth 2 -type f -exec mv -t all-blob-reports {} +
+              find all-blob-reports -mindepth 1 -type d -empty -delete
+              ls all-blob-reports
+              exit 0
+            fi
+            if [ "$attempt" -lt 3 ]; then
+              echo "Failed, sleeping 30s before retry..."
+              sleep 30
+            fi
+          done
+          echo "All 3 attempts failed"
+          exit 1
 
       - name: Merge into HTML report
         run: npx playwright merge-reports --reporter=html all-blob-reports
