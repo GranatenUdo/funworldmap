@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, type RefObject } from 'react'
-import type { CityLike, CountryLike, GameMode, GameSession, ModeId, RoundSpec } from '../shared/types'
+import type { CityLike, CountryLike, GameSession, ModeId, RoundSpec } from '../shared/types'
 import type { GameSessionApi } from '../shared/GameSessionProvider'
 import type { UseDailyPuzzles } from '../daily/useDailyPuzzles'
 import type { UseDailyHistory } from '../daily/useDailyHistory'
@@ -20,9 +20,7 @@ const DAILY_ATTEMPTS_PER_ROUND = 3
  */
 export interface UseHashGameRouterOptions {
   session: GameSession
-  mode: GameMode | null
   pools: { countries: CountryLike[]; cities: CityLike[] }
-  byCca3: Map<string, CountryLike>
   dailyPuzzles: UseDailyPuzzles
   dailyHistoryGet: UseDailyHistory['get']
   start: GameSessionApi['start']

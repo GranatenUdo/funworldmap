@@ -42,7 +42,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const pools = useMemo(() => ({ countries, cities }), [countries, cities])
 
   const { statusRef } = useHashGameRouter({
-    session, mode, pools, byCca3,
+    session, pools,
     dailyPuzzles, dailyHistoryGet,
     start, resume, restart, endGame,
   })

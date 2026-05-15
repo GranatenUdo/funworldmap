@@ -12,7 +12,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, cleanup } from '@testing-library/react'
 import { useHashGameRouter, type UseHashGameRouterOptions } from '../useHashGameRouter'
 import { makeSession } from '../../shared/__tests__/factories'
-import { citiesFixture, countriesFixture, byCca3Fixture } from './fixtures'
+import { citiesFixture, countriesFixture } from './fixtures'
 import { RESUME_KEY } from '../../daily/resume'
 import { toLocalDateString } from '../../daily/dates'
 import type { DailyPuzzleRef } from '../../daily/types'
@@ -21,9 +21,7 @@ type RouterArgs = UseHashGameRouterOptions
 
 interface BuildRouterArgsOverrides {
   session?: RouterArgs['session']
-  mode?: RouterArgs['mode']
   pools?: RouterArgs['pools']
-  byCca3?: RouterArgs['byCca3']
   dailyPuzzles?: RouterArgs['dailyPuzzles']
   dailyHistoryGet?: RouterArgs['dailyHistoryGet']
   start?: RouterArgs['start']
@@ -41,9 +39,7 @@ const noopDailyPuzzles = {
 function buildRouterArgs(overrides: BuildRouterArgsOverrides = {}): RouterArgs {
   return {
     session: overrides.session ?? makeSession(),
-    mode: overrides.mode ?? null,
     pools: overrides.pools ?? { countries: countriesFixture, cities: citiesFixture },
-    byCca3: overrides.byCca3 ?? byCca3Fixture,
     dailyPuzzles: overrides.dailyPuzzles ?? noopDailyPuzzles,
     dailyHistoryGet: overrides.dailyHistoryGet ?? (() => null),
     start: overrides.start ?? vi.fn(),
