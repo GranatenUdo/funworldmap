@@ -12,10 +12,9 @@ import {
   makeCountryRound,
   makeSession,
 } from '../../shared/__tests__/factories'
-import { byCca3Fixture } from './fixtures'
+import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
 import { createFakeMapRef } from './fakeMapRef'
 import { getMode } from '../../modes'
-import { citiesFixture, countriesFixture } from './fixtures'
 import type { CountryReveal, GuessOutcome } from '../../shared/types'
 
 const POOLS = { countries: countriesFixture, cities: citiesFixture }
