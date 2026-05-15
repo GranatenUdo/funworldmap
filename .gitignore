@@ -41,3 +41,9 @@ coverage/
 /screenshots/
 /[a-z][0-9]*-*.png
 /verify-*.png
+
+# Local debug screenshots from one-off investigations.
+/share-*.png
+
+# Build-tool .bak corruption artefacts on Windows.
+/.tmp-*/
