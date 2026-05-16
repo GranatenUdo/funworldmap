@@ -3,6 +3,18 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "description": "Interactive political world map with daily geography puzzles. Fully client-side; deployable to any static host.",
+  "homepage": "https://funworldmap.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GranatenUdo/funworldmap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GranatenUdo/funworldmap/issues"
+  },
+  "keywords": ["world-map", "geography", "maplibre", "react", "daily-puzzle", "wcag-aa"],
+  "license": "MIT",
+  "author": "Tobias Ens",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
