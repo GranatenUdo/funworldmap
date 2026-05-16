@@ -6,7 +6,7 @@ export type DailyPuzzlesStatus = 'loading' | 'ready' | 'unavailable'
 export interface UseDailyPuzzles {
   status: DailyPuzzlesStatus
   index: DailyIndex | null
-  byDate(date: string): DailyPuzzleRef | null
+  byDate: (date: string) => DailyPuzzleRef | null
 }
 
 export function useDailyPuzzles(): UseDailyPuzzles {
@@ -29,7 +29,9 @@ export function useDailyPuzzles(): UseDailyPuzzles {
         if (cancelled) return
         setStatus('unavailable')
       })
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   const byDate = useCallback(

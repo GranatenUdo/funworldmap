@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { usePersonalBests } from '../usePersonalBests'
 import { __resetForTests as resetPbStore } from '../personalBestsStore'
+import type { PersonalBest } from '../types'
 
 describe('usePersonalBests v1→v2 migration', () => {
   beforeEach(() => {
@@ -30,8 +31,12 @@ describe('usePersonalBests v1→v2 migration', () => {
 
   it('record() writes to v2', () => {
     const { result } = renderHook(() => usePersonalBests('city-guessing'))
-    act(() => { result.current.record(700, 4) })
-    const v2 = JSON.parse(localStorage.getItem('funworldmap-game-city-guessing-bests-v2') ?? 'null')
-    expect(v2.bestScore).toBe(700)
+    act(() => {
+      result.current.record(700, 4)
+    })
+    const v2 = JSON.parse(
+      localStorage.getItem('funworldmap-game-city-guessing-bests-v2') ?? 'null',
+    ) as PersonalBest | null
+    expect(v2?.bestScore).toBe(700)
   })
 })

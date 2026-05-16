@@ -13,9 +13,9 @@ export interface UseDailyHistory {
   history: DailyHistoryV1
   streak: StreakState
   pendingMilestone: Milestone | null
-  get(date: string, modeId: ModeId): DailyDayResult | null
-  record(date: string, modeId: ModeId, result: DailyDayResult): void
-  markMilestoneShown(): void
+  get: (date: string, modeId: ModeId) => DailyDayResult | null
+  record: (date: string, modeId: ModeId, result: DailyDayResult) => void
+  markMilestoneShown: () => void
 }
 
 export function useDailyHistory(): UseDailyHistory {
@@ -29,15 +29,12 @@ export function useDailyHistory(): UseDailyHistory {
     [],
   )
 
-  const record = useCallback(
-    (date: string, modeId: ModeId, result: DailyDayResult) => {
-      setHistory((prev) => {
-        const merged = mergeDay(prev, date, modeId, result)
-        return updateStreak(merged, date)
-      })
-    },
-    [],
-  )
+  const record = useCallback((date: string, modeId: ModeId, result: DailyDayResult) => {
+    setHistory((prev) => {
+      const merged = mergeDay(prev, date, modeId, result)
+      return updateStreak(merged, date)
+    })
+  }, [])
 
   const pendingMilestone = useMemo(() => derivePendingMilestone(history), [history])
 

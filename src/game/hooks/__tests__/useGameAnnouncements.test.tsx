@@ -36,7 +36,9 @@ interface BuildAnnouncementsArgsOverrides {
   recordDailyResult?: AnnouncementsArgs['recordDailyResult']
 }
 
-function buildAnnouncementsArgs(overrides: BuildAnnouncementsArgsOverrides = {}): AnnouncementsArgs {
+function buildAnnouncementsArgs(
+  overrides: BuildAnnouncementsArgsOverrides = {},
+): AnnouncementsArgs {
   return {
     session: overrides.session ?? makeSession(),
     mode: overrides.mode ?? getMode('country-pinning', POOLS),
@@ -121,10 +123,12 @@ describe('useGameAnnouncements', () => {
       currentRound: makeCityRound({ targetName: 'Paris', targetCountryName: 'France' }),
       roundIndex: 0,
     })
-    renderAnnouncementsHook(buildAnnouncementsArgs({
-      session,
-      mode: getMode('city-guessing', POOLS),
-    }))
+    renderAnnouncementsHook(
+      buildAnnouncementsArgs({
+        session,
+        mode: getMode('city-guessing', POOLS),
+      }),
+    )
     expect(captured.events.some((s) => /Where is Paris, France/.test(s))).toBe(true)
   })
 
@@ -137,10 +141,9 @@ describe('useGameAnnouncements', () => {
       roundIndex: 0,
     })
     const args = buildAnnouncementsArgs({ session })
-    const { rerender } = renderHook(
-      ({ s }) => useGameAnnouncements({ ...args, session: s }),
-      { initialProps: { s: session } },
-    )
+    const { rerender } = renderHook(({ s }) => useGameAnnouncements({ ...args, session: s }), {
+      initialProps: { s: session },
+    })
     rerender({ s: { ...session, score: session.score + 10 } })
     expect(captured.events.filter((s) => s.includes('France')).length).toBe(1)
   })
@@ -191,12 +194,14 @@ describe('useGameAnnouncements', () => {
         modeId: 'city-guessing',
         lastOutcome: makeOutcome(reveal, true),
       })
-      renderAnnouncementsHook(buildAnnouncementsArgs({
-        session,
-        mode: getMode('city-guessing', POOLS),
-        advance,
-        finalize,
-      }))
+      renderAnnouncementsHook(
+        buildAnnouncementsArgs({
+          session,
+          mode: getMode('city-guessing', POOLS),
+          advance,
+          finalize,
+        }),
+      )
       act(() => {
         vi.advanceTimersByTime(2000)
       })
@@ -221,7 +226,10 @@ describe('useGameAnnouncements', () => {
   })
 
   it('records daily-history on game-over when dailyDate is set, and clears resume', () => {
-    localStorage.setItem(RESUME_KEY, '{"version":1,"date":"2026-05-14","modeId":"country-pinning","attempts":[]}')
+    localStorage.setItem(
+      RESUME_KEY,
+      '{"version":1,"date":"2026-05-14","modeId":"country-pinning","attempts":[]}',
+    )
     const record = vi.fn()
     const recordDailyResult = vi.fn()
     const session = makeSession({
@@ -235,7 +243,7 @@ describe('useGameAnnouncements', () => {
     expect(recordDailyResult).toHaveBeenCalledWith(
       '2026-05-14',
       'country-pinning',
-      expect.objectContaining({ score: 80, attempts: expect.any(Array) }),
+      expect.objectContaining({ score: 80, attempts: expect.any(Array) as unknown[] }),
     )
     expect(record).not.toHaveBeenCalled()
     expect(localStorage.getItem(RESUME_KEY)).toBeNull()
@@ -250,10 +258,9 @@ describe('useGameAnnouncements', () => {
       dailyDate: null,
     })
     const args = buildAnnouncementsArgs({ session, record })
-    const { rerender } = renderHook(
-      ({ s }) => useGameAnnouncements({ ...args, session: s }),
-      { initialProps: { s: session } },
-    )
+    const { rerender } = renderHook(({ s }) => useGameAnnouncements({ ...args, session: s }), {
+      initialProps: { s: session },
+    })
     rerender({ s: { ...session, score: 100 } })
     expect(record).toHaveBeenCalledTimes(1)
   })

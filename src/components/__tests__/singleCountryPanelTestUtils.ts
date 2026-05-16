@@ -96,6 +96,7 @@ export function stubMatchMedia(): void {
  * Returns a `restore` function — call it in afterEach to undo the patch.
  */
 export function stubGetAnimations(): { restore: () => void } {
+  // eslint-disable-next-line @typescript-eslint/unbound-method -- WHY: we are intentionally capturing the prototype method to restore it later; we never call it via the captured ref, so `this`-rebinding is irrelevant.
   const original = Element.prototype.getAnimations
   Element.prototype.getAnimations = vi.fn().mockReturnValue([])
   return {

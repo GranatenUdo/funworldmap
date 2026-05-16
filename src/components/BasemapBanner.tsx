@@ -54,7 +54,9 @@ export function BasemapBanner() {
       </span>
       <button
         type="button"
-        onClick={onRetry}
+        onClick={() => {
+          void onRetry()
+        }}
         disabled={retrying}
         className="ml-3 underline underline-offset-2 hover:no-underline disabled:opacity-50"
         aria-label="Retry loading basemap tiles"

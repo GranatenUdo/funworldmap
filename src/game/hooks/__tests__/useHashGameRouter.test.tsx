@@ -228,7 +228,7 @@ describe('useHashGameRouter', () => {
         modeId: 'country-pinning',
         dailyDate: today,
         attemptsPerRound: 3,
-        attempts: expect.any(Array),
+        attempts: expect.any(Array) as unknown[],
       }),
     )
     expect(start).not.toHaveBeenCalled()

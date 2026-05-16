@@ -110,7 +110,7 @@ export function pendingMilestone(h: DailyHistoryV1): Milestone | null {
   const lastShown = h.streak.lastMilestoneShown
   // MILESTONES is ascending; pick the single threshold equal to `current`
   // (streak increments by 1 on each new day, so it can only equal exactly one).
-  const hit = MILESTONES.find((m) => m === current) as Milestone | undefined
+  const hit = MILESTONES.find((m) => m === current)
   if (!hit) return null
   if (hit <= lastShown) return null
   return hit

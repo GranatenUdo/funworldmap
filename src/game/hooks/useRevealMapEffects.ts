@@ -53,12 +53,14 @@ function ensureRevealSources(map: maplibregl.Map): void {
 
 function clearRevealSources(map: maplibregl.Map): void {
   const emptyFc = { type: 'FeatureCollection' as const, features: [] }
-  const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource | undefined
-  const lineSrc = map.getSource(REVEAL_LINE_SOURCE) as maplibregl.GeoJSONSource | undefined
+  const markerSrc = map.getSource<maplibregl.GeoJSONSource>(REVEAL_MARKER_SOURCE)
+  const lineSrc = map.getSource<maplibregl.GeoJSONSource>(REVEAL_LINE_SOURCE)
   try {
     markerSrc?.setData(emptyFc)
     lineSrc?.setData(emptyFc)
-  } catch { /* no-op */ }
+  } catch {
+    /* no-op */
+  }
 }
 
 export interface UseRevealMapEffectsArgs {
@@ -104,7 +106,9 @@ export function useRevealMapEffects({
         const colour = reveal.correct ? REVEAL_CORRECT : REVEAL_WRONG
         map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
         map.setPaintProperty(LAYER.hoverBorder, 'line-width', reduced ? 3 : 4)
-      } catch { /* layer may not exist */ }
+      } catch {
+        /* layer may not exist */
+      }
     }
 
     const plan = computeRevealAnimationPlan(reveal, byCca3, reduced)
@@ -118,11 +122,13 @@ export function useRevealMapEffects({
           const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
           markerSrc.setData({
             type: 'FeatureCollection',
-            features: [{
-              type: 'Feature',
-              geometry: { type: 'Point', coordinates: reveal.targetCentroid },
-              properties: {},
-            }],
+            features: [
+              {
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: reveal.targetCentroid },
+                properties: {},
+              },
+            ],
           })
         } catch (err) {
           console.warn('reveal marker skipped:', err)
@@ -130,7 +136,11 @@ export function useRevealMapEffects({
       }
       return () => {
         if (reveal.kind === 'country') {
-          try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+          try {
+            map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
+          } catch {
+            /* no-op */
+          }
         }
       }
     }
@@ -147,11 +157,13 @@ export function useRevealMapEffects({
       // Target marker goes in first so it is visible from t=0.
       markerSrc.setData({
         type: 'FeatureCollection',
-        features: [{
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: plan.to },
-          properties: {},
-        }],
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: plan.to },
+            properties: {},
+          },
+        ],
       })
 
       // Snap camera to the wrong-guess centroid; rAF loop will track the line head.
@@ -160,11 +172,13 @@ export function useRevealMapEffects({
       if (plan.durationMs === 0) {
         lineSrc.setData({
           type: 'FeatureCollection',
-          features: [{
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: arc },
-            properties: {},
-          }],
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'LineString', coordinates: arc },
+              properties: {},
+            },
+          ],
         })
         map.jumpTo({ center: plan.to })
       } else {
@@ -185,14 +199,18 @@ export function useRevealMapEffects({
             try {
               lineSrc.setData({
                 type: 'FeatureCollection',
-                features: [{
-                  type: 'Feature',
-                  geometry: { type: 'LineString', coordinates: arc.slice(0, idx + 1) },
-                  properties: {},
-                }],
+                features: [
+                  {
+                    type: 'Feature',
+                    geometry: { type: 'LineString', coordinates: arc.slice(0, idx + 1) },
+                    properties: {},
+                  },
+                ],
               })
               map.jumpTo({ center: arc[idx] })
-            } catch { /* source may have been torn down */ }
+            } catch {
+              /* source may have been torn down */
+            }
           }
           frameId = linear < 1 ? window.requestAnimationFrame(step) : null
         }
@@ -205,7 +223,11 @@ export function useRevealMapEffects({
     return () => {
       if (frameId !== null) window.cancelAnimationFrame(frameId)
       if (reveal.kind === 'country') {
-        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+        try {
+          map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
+        } catch {
+          /* no-op */
+        }
       }
     }
   }, [session.status, session.lastOutcome, byCca3])
@@ -213,7 +235,8 @@ export function useRevealMapEffects({
   // Intermediate reveal between attempts (daily only): correctness-coloured
   // guess highlight + score toast.
   useEffect(() => {
-    const enteringPlaying = prevStatusForIntermediateRef.current !== 'playing' && session.status === 'playing'
+    const enteringPlaying =
+      prevStatusForIntermediateRef.current !== 'playing' && session.status === 'playing'
     prevStatusForIntermediateRef.current = session.status
     if (enteringPlaying) {
       // On fresh start: 0. On resume: the resumed attempts count, so the
@@ -239,13 +262,23 @@ export function useRevealMapEffects({
         map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], last.reveal.clickedCca3 ?? ''])
         map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
         map.setPaintProperty(LAYER.hoverBorder, 'line-width', 3)
-      } catch { /* layer may not exist */ }
+      } catch {
+        /* layer may not exist */
+      }
       const t = window.setTimeout(() => {
-        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+        try {
+          map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
+        } catch {
+          /* no-op */
+        }
       }, holdMs)
       return () => {
         window.clearTimeout(t)
-        try { map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], '']) } catch { /* no-op */ }
+        try {
+          map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
+        } catch {
+          /* no-op */
+        }
       }
     }
 
@@ -259,23 +292,39 @@ export function useRevealMapEffects({
       if (point) {
         markerSrc.setData({
           type: 'FeatureCollection',
-          features: [{ type: 'Feature', geometry: { type: 'Point', coordinates: point }, properties: { intermediate: true } }],
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'Point', coordinates: point },
+              properties: { intermediate: true },
+            },
+          ],
         })
-        try { map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', colour) } catch { /* no-op */ }
+        try {
+          map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', colour)
+        } catch {
+          /* no-op */
+        }
       }
-    } catch { /* style may still be resolving */ }
+    } catch {
+      /* style may still be resolving */
+    }
     const t = window.setTimeout(() => {
       try {
         clearRevealSources(map)
         map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
-      } catch { /* no-op */ }
+      } catch {
+        /* no-op */
+      }
     }, holdMs)
     return () => {
       window.clearTimeout(t)
       try {
         clearRevealSources(map)
         map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
-      } catch { /* no-op */ }
+      } catch {
+        /* no-op */
+      }
     }
   }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
 
@@ -299,7 +348,9 @@ export function useRevealMapEffects({
       submitGuessInput({ kind: 'point', lngLat: [e.lngLat.lng, e.lngLat.lat] })
     }
     map.on('click', onClick)
-    return () => { map.off('click', onClick) }
+    return () => {
+      map.off('click', onClick)
+    }
   }, [session.status, session.modeId, submitGuessInput])
 
   // Clear reveal geometry on every transition into idle.

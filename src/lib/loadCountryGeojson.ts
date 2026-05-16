@@ -24,9 +24,7 @@ export async function loadCountryGeojson(): Promise<GeoJSON.FeatureCollection> {
     topology.objects.countries,
   ) as GeoJSON.FeatureCollection
 
-  geojson.features = geojson.features.filter((f) =>
-    CANONICAL_NUMERIC_IDS.has(Number(f.id)),
-  )
+  geojson.features = geojson.features.filter((f) => CANONICAL_NUMERIC_IDS.has(Number(f.id)))
 
   for (const feature of geojson.features) {
     if (feature.id != null && feature.properties) {
@@ -48,9 +46,9 @@ export function fixAntimeridian(collection: GeoJSON.FeatureCollection): void {
   for (const feature of collection.features) {
     const polygons =
       feature.geometry.type === 'MultiPolygon'
-        ? (feature.geometry as GeoJSON.MultiPolygon).coordinates
+        ? feature.geometry.coordinates
         : feature.geometry.type === 'Polygon'
-          ? [(feature.geometry as GeoJSON.Polygon).coordinates]
+          ? [feature.geometry.coordinates]
           : []
 
     for (const polygon of polygons) {

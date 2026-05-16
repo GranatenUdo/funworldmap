@@ -29,6 +29,7 @@ interface Props {
 }
 
 export function FirstSessionTutorial({ modeId, attemptsPerRound, firstAttemptMade }: Props) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- WHY: tsc requires this assertion to narrow the template literal to keyof typeof COPY; eslint's type inference disagrees but removing the cast breaks `tsc --strict`.
   const variant = (attemptsPerRound > 1 ? `${modeId}-daily` : `${modeId}-free`) as keyof typeof COPY
   const [open, setOpen] = useState(false)
   const key = KEY_PREFIX + variant
