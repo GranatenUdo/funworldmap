@@ -15,7 +15,7 @@ import {
   makeSession,
 } from '../../shared/__tests__/factories'
 import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
-import { createFakeMapRef } from './fakeMapRef'
+import { createFakeMapRef } from '../../../test/fakeMapRef'
 import { getMode } from '../../modes'
 
 const POOLS = { countries: countriesFixture, cities: citiesFixture }

@@ -16,6 +16,7 @@ import { citiesFixture, countriesFixture } from './fixtures'
 import { RESUME_KEY } from '../../daily/resume'
 import { toLocalDateString } from '../../daily/dates'
 import type { DailyPuzzleRef } from '../../daily/types'
+import { installAnalyticsCapture, type AnalyticsCapture } from '../../../test/analyticsCapture'
 
 type RouterArgs = UseHashGameRouterOptions
 
@@ -54,20 +55,17 @@ function renderRouterHook(args: RouterArgs) {
 }
 
 describe('useHashGameRouter', () => {
-  let analytics: Array<{ name: string; props: Record<string, unknown> }>
+  let captured: AnalyticsCapture
 
   beforeEach(() => {
-    analytics = []
-    window.__testAnalytics = analytics
-    window.__PLAYWRIGHT__ = true
+    captured = installAnalyticsCapture()
     window.location.hash = ''
     localStorage.clear()
   })
 
   afterEach(() => {
     cleanup()
-    delete window.__testAnalytics
-    delete window.__PLAYWRIGHT__
+    captured.uninstall()
     window.location.hash = ''
     localStorage.clear()
   })
@@ -83,7 +81,7 @@ describe('useHashGameRouter', () => {
       // maxRounds — country-pinning is endless (null) per modes registry
       null,
     )
-    expect(analytics.find((e) => e.name === 'free_started')).toBeDefined()
+    expect(captured.events.find((e) => e.name === 'free_started')).toBeDefined()
   })
 
   it('defers start when pools are empty, then drains once pools arrive', () => {
@@ -119,13 +117,13 @@ describe('useHashGameRouter', () => {
     const session = makeSession({ status: 'idle' })
     const args = buildRouterArgs({ session })
     const { rerender } = renderRouterHook(args)
-    const initialCount = analytics.filter(
+    const initialCount = captured.events.filter(
       (e) => e.name === 'deep_link_opened' && e.props.outcome === 'reveal',
     ).length
     expect(initialCount).toBe(1)
     // Unrelated rerender — same hash, deps unchanged — should not re-emit.
     rerender(buildRouterArgs({ session: makeSession({ status: 'idle', score: 42 }) }))
-    const afterCount = analytics.filter(
+    const afterCount = captured.events.filter(
       (e) => e.name === 'deep_link_opened' && e.props.outcome === 'reveal',
     ).length
     expect(afterCount).toBe(1)
@@ -155,7 +153,7 @@ describe('useHashGameRouter', () => {
     renderRouterHook(buildRouterArgs({ start, endGame }))
     expect(window.location.hash).toBe('')
     expect(
-      analytics.find(
+      captured.events.find(
         (e) =>
           e.name === 'deep_link_opened' &&
           e.props.outcome === 'redirect' &&
@@ -172,7 +170,7 @@ describe('useHashGameRouter', () => {
     expect(window.location.hash).toMatch(/\/reveal$/)
     expect(window.location.hash).toContain('daily/2020-01-01/country-pinning/reveal')
     expect(
-      analytics.find(
+      captured.events.find(
         (e) =>
           e.name === 'deep_link_opened' &&
           e.props.outcome === 'redirect' &&
@@ -235,7 +233,7 @@ describe('useHashGameRouter', () => {
     )
     expect(start).not.toHaveBeenCalled()
     expect(
-      analytics.find(
+      captured.events.find(
         (e) =>
           e.name === 'deep_link_opened' &&
           e.props.outcome === 'resume' &&
@@ -275,9 +273,9 @@ describe('useHashGameRouter', () => {
       ],
     })
     const { rerender } = renderRouterHook(buildRouterArgs({ session: playingZero }))
-    analytics.length = 0
+    captured.reset()
     rerender(buildRouterArgs({ session: playingOne }))
-    const event = analytics.find((e) => e.name === 'daily_attempted')
+    const event = captured.events.find((e) => e.name === 'daily_attempted')
     expect(event).toBeDefined()
     expect(event!.props).toMatchObject({
       mode: 'country-pinning',
