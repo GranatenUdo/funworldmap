@@ -7,6 +7,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, cleanup } from '@testing-library/react'
 import { useRevealMapEffects } from '../useRevealMapEffects'
+import { REVEAL_CORRECT, REVEAL_WRONG } from '../../../lib/mapPalette'
 import {
   makeCityRound,
   makeCountryReveal,
@@ -104,7 +105,7 @@ describe('useRevealMapEffects', () => {
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
       'country-hover-border',
       'line-color',
-      '#22c55e',
+      REVEAL_CORRECT,
     )
   })
 
@@ -120,7 +121,7 @@ describe('useRevealMapEffects', () => {
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
       'country-hover-border',
       'line-color',
-      '#f59e0b',
+      REVEAL_WRONG,
     )
   })
 
@@ -185,7 +186,7 @@ describe('useRevealMapEffects', () => {
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
       'country-hover-border',
       'line-color',
-      '#f59e0b',
+      REVEAL_WRONG,
     )
   })
 
