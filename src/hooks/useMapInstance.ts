@@ -56,7 +56,7 @@ export function useMapInstance({
     if (!containerRef.current) return
 
     let cancelled = false
-    probeBasemap(BASEMAP_STYLE, BASEMAP_PROBE_TIMEOUT_MS).then((result) => {
+    void probeBasemap(BASEMAP_STYLE, BASEMAP_PROBE_TIMEOUT_MS).then((result) => {
       if (cancelled) return
       if (result === 'fail') setBasemapDegraded(true)
     })
@@ -101,7 +101,7 @@ export function useMapInstance({
     // Tooltip DOM element (raw DOM, not React — avoids re-render on mousemove)
     const tooltip = document.createElement('div')
     tooltip.className = 'country-tooltip'
-    containerRef.current!.parentElement!.appendChild(tooltip)
+    containerRef.current.parentElement!.appendChild(tooltip)
     tooltipRef.current = tooltip
 
     // Test seam — only exposed under VITE_TEST_HOOKS so production bundles ship clean.
@@ -149,7 +149,7 @@ export function useMapInstance({
         })
     })
 
-    map.on('error', (e) => {
+    map.on('error', (e: { error?: { message?: string } }) => {
       console.warn('Map error:', e.error?.message || e)
       setMapErrorState((prev) => {
         // Don't overwrite a real failure with a transient post-load tile issue.
@@ -223,7 +223,7 @@ export function useMapInstance({
     const canvas = canvasRef.current
     if (canvas) {
       try {
-        const gl = canvas.getContext('webgl2') as WebGL2RenderingContext | null
+        const gl = canvas.getContext('webgl2')
         gl?.getExtension('WEBGL_lose_context')?.restoreContext()
       } catch {
         // Ignore — restoreContext throws if context is already restored.

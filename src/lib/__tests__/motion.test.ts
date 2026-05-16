@@ -9,7 +9,9 @@ function mockMatchMedia() {
     writable: true,
     configurable: true,
     value: vi.fn().mockImplementation((query: string) => ({
-      get matches() { return matchesValue },
+      get matches() {
+        return matchesValue
+      },
       media: query,
       onchange: null,
       addEventListener: (type: string, listener: (e: MediaQueryListEvent) => void) => {
@@ -49,9 +51,9 @@ describe('motion', () => {
       const cb = vi.fn()
       const unsubscribe = subscribeReducedMotion(cb)
       expect(listeners).toHaveLength(1)
-      listeners[0]!({ matches: true } as MediaQueryListEvent)
+      listeners[0]({ matches: true } as MediaQueryListEvent)
       expect(cb).toHaveBeenCalledWith(true)
-      listeners[0]!({ matches: false } as MediaQueryListEvent)
+      listeners[0]({ matches: false } as MediaQueryListEvent)
       expect(cb).toHaveBeenCalledWith(false)
       unsubscribe()
       expect(listeners).toHaveLength(0)

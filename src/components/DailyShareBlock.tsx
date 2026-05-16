@@ -1,5 +1,9 @@
 import { useCallback } from 'react'
-import { buildShareText, modesPlayed as countModesPlayed, type ShareResults } from '../game/daily/shareText'
+import {
+  buildShareText,
+  modesPlayed as countModesPlayed,
+  type ShareResults,
+} from '../game/daily/shareText'
 import type { StreakState } from '../game/daily/types'
 import { track } from '../lib/analytics'
 import { dispatchToast } from '../lib/toast'
@@ -49,7 +53,10 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
   }, [date, url, modesPlayed])
 
   return (
-    <div data-testid="daily-share-block" className="mt-4 p-4 rounded-xl bg-sand-50/80 dark:bg-dark-400/60 border border-sand-300/40 dark:border-dark-200/30">
+    <div
+      data-testid="daily-share-block"
+      className="mt-4 p-4 rounded-xl bg-sand-50/80 dark:bg-dark-400/60 border border-sand-300/40 dark:border-dark-200/30"
+    >
       <pre
         data-testid="daily-share-preview"
         className="whitespace-pre-wrap text-xs text-sand-900 dark:text-dark-50 font-mono mb-3 tabular-nums select-all"
@@ -59,7 +66,9 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
       <div className="flex gap-2">
         <button
           type="button"
-          onClick={handlePrimary}
+          onClick={() => {
+            void handlePrimary()
+          }}
           data-testid="daily-share-primary"
           className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
         >
@@ -67,7 +76,9 @@ export function DailyShareBlock({ date, results, streak, originUrl }: Props) {
         </button>
         <button
           type="button"
-          onClick={handleCopyLink}
+          onClick={() => {
+            void handleCopyLink()
+          }}
           data-testid="daily-share-copy-link"
           className="px-4 py-2 rounded-xl text-teal-accessible dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
         >

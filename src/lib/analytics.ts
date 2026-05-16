@@ -5,7 +5,11 @@ export type EventSchema = {
   daily_started: { mode: ModeId }
   daily_attempted: { mode: ModeId; attemptIndex: number; scoreBucket: number }
   daily_completed: { mode: ModeId; bestScoreBucket: number; attemptsUsed: number }
-  daily_shared: { date: string; modesPlayed: 1 | 2; method: 'share-api' | 'clipboard-text' | 'clipboard-link' }
+  daily_shared: {
+    date: string
+    modesPlayed: 1 | 2
+    method: 'share-api' | 'clipboard-text' | 'clipboard-link'
+  }
   daily_done_low_score_prompt: { mode: ModeId; bestScore: number; attemptsRemaining: number }
   free_started: { mode: ModeId }
   history_opened: Record<string, never>
@@ -37,7 +41,7 @@ export function track<N extends EventName>(name: N, props: EventSchema[N]): void
 
   if (navigator.doNotTrack === '1') return
 
-  const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT
+  const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT as string | undefined
   if (!endpoint) return
 
   const body = JSON.stringify({ name, props })

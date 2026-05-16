@@ -15,7 +15,12 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vite
 import { act, render } from '@testing-library/react'
 import type { CountryData, CountriesFile } from '../../lib/types'
 import type { ComponentType } from 'react'
-import { makeCountry, sources, stubMatchMedia, stubGetAnimations } from './singleCountryPanelTestUtils'
+import {
+  makeCountry,
+  sources,
+  stubMatchMedia,
+  stubGetAnimations,
+} from './singleCountryPanelTestUtils'
 
 // Dynamically loaded after matchMedia is stubbed.
 let SingleCountryPanel: ComponentType<{
@@ -82,6 +87,7 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
       const root = getByTestId('country-panel')
       expect(root.getAttribute('data-animation-state')).toBe('entering')
 
+      // eslint-disable-next-line @typescript-eslint/require-await -- WHY: act() wants an async callback to schedule a microtask flush after the body runs; the body itself is sync (vitest timer manipulation).
       await act(async () => {
         vi.runAllTimers()
       })
@@ -106,12 +112,14 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
       const root = getByTestId('country-panel')
 
       // rAF callback runs and reads getAnimations(); .finished is still pending.
+      // eslint-disable-next-line @typescript-eslint/require-await -- WHY: act() wants an async callback to schedule a microtask flush after the body runs; the body itself is sync (vitest timer manipulation).
       await act(async () => {
         vi.advanceTimersByTime(16)
       })
       expect(root.getAttribute('data-animation-state')).toBe('entering')
 
       // Resolve .finished → Promise.all().then() flips to idle.
+      // eslint-disable-next-line @typescript-eslint/require-await -- WHY: act() wants an async callback to schedule a microtask flush after the body runs; the body itself is sync.
       await act(async () => {
         resolveFinished()
       })
@@ -133,12 +141,14 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
       const root = getByTestId('country-panel')
 
       // rAF runs; .finished hangs.
+      // eslint-disable-next-line @typescript-eslint/require-await -- WHY: act() wants an async callback to schedule a microtask flush after the body runs; the body itself is sync.
       await act(async () => {
         vi.advanceTimersByTime(999)
       })
       expect(root.getAttribute('data-animation-state')).toBe('entering')
 
       // 1s fallback fires.
+      // eslint-disable-next-line @typescript-eslint/require-await -- WHY: act() wants an async callback to schedule a microtask flush after the body runs; the body itself is sync.
       await act(async () => {
         vi.advanceTimersByTime(2)
       })

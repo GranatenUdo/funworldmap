@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useDailyResumePersistence } from '../useDailyResumePersistence'
 import { makeSession, makeAttempt } from '../../shared/__tests__/factories'
-import { RESUME_KEY } from '../../daily/resume'
+import { RESUME_KEY, type DailyResumeV1 } from '../../daily/resume'
 
 describe('useDailyResumePersistence', () => {
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('useDailyResumePersistence', () => {
 
     const raw = localStorage.getItem(RESUME_KEY)
     expect(raw).not.toBeNull()
-    const blob = JSON.parse(raw!)
+    const blob = JSON.parse(raw!) as DailyResumeV1
     expect(blob.version).toBe(1)
     expect(blob.date).toBe('2026-05-14')
     expect(blob.modeId).toBe('country-pinning')
@@ -96,7 +96,7 @@ describe('useDailyResumePersistence', () => {
       initialProps: { s: session1 },
     })
 
-    const blobAfterFirst = JSON.parse(localStorage.getItem(RESUME_KEY)!)
+    const blobAfterFirst = JSON.parse(localStorage.getItem(RESUME_KEY)!) as DailyResumeV1
     expect(blobAfterFirst.attempts).toHaveLength(1)
 
     const attempt2 = makeAttempt({ pointsEarned: 50 })
@@ -110,7 +110,7 @@ describe('useDailyResumePersistence', () => {
 
     rerender({ s: session2 })
 
-    const blobAfterSecond = JSON.parse(localStorage.getItem(RESUME_KEY)!)
+    const blobAfterSecond = JSON.parse(localStorage.getItem(RESUME_KEY)!) as DailyResumeV1
     expect(blobAfterSecond.attempts).toHaveLength(2)
   })
 })

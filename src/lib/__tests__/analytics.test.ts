@@ -28,10 +28,10 @@ describe('track', () => {
   it('dispatches via sendBeacon when available', () => {
     track('daily_opened', { mode: 'country-pinning', dateAge: 0 })
     expect(sendBeaconMock).toHaveBeenCalledTimes(1)
-    const [url, body] = sendBeaconMock.mock.calls[0]
+    const [url, body] = sendBeaconMock.mock.calls[0] as [string, string]
     expect(url).toBe('https://funworldmap.com/api/event')
     expect(typeof body).toBe('string')
-    expect(JSON.parse(body as string)).toEqual({
+    expect(JSON.parse(body)).toEqual({
       name: 'daily_opened',
       props: { mode: 'country-pinning', dateAge: 0 },
     })
@@ -42,7 +42,7 @@ describe('track', () => {
     Object.defineProperty(navigator, 'sendBeacon', { configurable: true, value: undefined })
     track('free_started', { mode: 'city-guessing' })
     expect(fetchMock).toHaveBeenCalledTimes(1)
-    const [url, init] = fetchMock.mock.calls[0]
+    const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit]
     expect(url).toBe('https://funworldmap.com/api/event')
     expect(init).toMatchObject({ method: 'POST', keepalive: true })
   })

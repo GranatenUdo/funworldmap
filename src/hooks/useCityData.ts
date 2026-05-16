@@ -23,7 +23,7 @@ export function useCityData(): { cities: CityLike[] } {
           countryCca3: c.countryCca3,
           countryName: c.countryName,
           countryFlag: c.countryFlag,
-          latlng: c.latlng as [number, number],
+          latlng: c.latlng,
           scalerank: c.scalerank,
         })),
     [],

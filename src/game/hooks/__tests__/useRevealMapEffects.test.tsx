@@ -98,10 +98,11 @@ describe('useRevealMapEffects', () => {
       lastOutcome: makeOutcome(reveal),
     })
     renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(
-      'country-hover-border',
-      ['==', ['get', 'id'], 'FRA'],
-    )
+    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-hover-border', [
+      '==',
+      ['get', 'id'],
+      'FRA',
+    ])
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
       'country-hover-border',
       'line-color',
@@ -134,18 +135,18 @@ describe('useRevealMapEffects', () => {
       lastOutcome: makeOutcome(reveal),
     })
     const args = buildRevealArgs({ session, mapRef: fake.ref })
-    const { rerender } = renderHook(
-      ({ s }) => useRevealMapEffects({ ...args, session: s }),
-      { initialProps: { s: session } },
-    )
+    const { rerender } = renderHook(({ s }) => useRevealMapEffects({ ...args, session: s }), {
+      initialProps: { s: session },
+    })
     fake.calls.setFilter.mockClear()
     // Transition to 'playing' invalidates the effect → cleanup runs → filter
     // is reset to the empty id.
     rerender({ s: makeSession({ ...session, status: 'playing', lastOutcome: null }) })
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(
-      'country-hover-border',
-      ['==', ['get', 'id'], ''],
-    )
+    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-hover-border', [
+      '==',
+      ['get', 'id'],
+      '',
+    ])
   })
 
   it('flashes clicked country with correctness colour on intermediate attempt (best-of-N)', () => {
@@ -161,15 +162,19 @@ describe('useRevealMapEffects', () => {
       currentAttempts: [],
     })
     const args = buildRevealArgs({ session: baseSession, mapRef: fake.ref })
-    const { rerender } = renderHook(
-      ({ s }) => useRevealMapEffects({ ...args, session: s }),
-      { initialProps: { s: baseSession } },
-    )
+    const { rerender } = renderHook(({ s }) => useRevealMapEffects({ ...args, session: s }), {
+      initialProps: { s: baseSession },
+    })
     fake.calls.setFilter.mockClear()
     fake.calls.setPaintProperty.mockClear()
     const wrongAttempt = {
       pointsEarned: 0,
-      input: { kind: 'country' as const, cca3: 'USA', name: 'United States', centroid: [-97, 38] as [number, number] },
+      input: {
+        kind: 'country' as const,
+        cca3: 'USA',
+        name: 'United States',
+        centroid: [-97, 38] as [number, number],
+      },
       reveal: makeCountryReveal({ correct: false, clickedCca3: 'USA' }),
     }
     rerender({
@@ -179,10 +184,11 @@ describe('useRevealMapEffects', () => {
         attemptsRemaining: 1,
       }),
     })
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(
-      'country-hover-border',
-      ['==', ['get', 'id'], 'USA'],
-    )
+    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-hover-border', [
+      '==',
+      ['get', 'id'],
+      'USA',
+    ])
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
       'country-hover-border',
       'line-color',
@@ -198,14 +204,19 @@ describe('useRevealMapEffects', () => {
       modeId: 'city-guessing',
       currentRound: makeCityRound(),
     })
-    renderRevealHook(buildRevealArgs({
-      session,
-      mode: getMode('city-guessing', POOLS),
-      mapRef: fake.ref,
-    }))
+    renderRevealHook(
+      buildRevealArgs({
+        session,
+        mode: getMode('city-guessing', POOLS),
+        mapRef: fake.ref,
+      }),
+    )
     expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
-    const firstCall = fake.calls.flyTo.mock.calls[0][0]
-    expect(firstCall).toMatchObject({ zoom: expect.any(Number), center: expect.any(Array) })
+    const firstCall = fake.calls.flyTo.mock.calls[0][0] as { zoom: number; center: number[] }
+    expect(firstCall).toMatchObject({
+      zoom: expect.any(Number) as number,
+      center: expect.any(Array) as number[],
+    })
   })
 
   it('attaches click handler in city-guessing playing state, detaches on unmount', () => {
@@ -215,11 +226,13 @@ describe('useRevealMapEffects', () => {
       modeId: 'city-guessing',
       currentRound: makeCityRound(),
     })
-    const { unmount } = renderRevealHook(buildRevealArgs({
-      session,
-      mode: getMode('city-guessing', POOLS),
-      mapRef: fake.ref,
-    }))
+    const { unmount } = renderRevealHook(
+      buildRevealArgs({
+        session,
+        mode: getMode('city-guessing', POOLS),
+        mapRef: fake.ref,
+      }),
+    )
     expect(fake.calls.on).toHaveBeenCalledWith('click', expect.any(Function))
     unmount()
     expect(fake.calls.off).toHaveBeenCalledWith('click', expect.any(Function))

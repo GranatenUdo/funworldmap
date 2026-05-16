@@ -2,7 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const initMock = vi.fn()
 vi.mock('@sentry/react', () => ({
-  init: (...args: unknown[]) => initMock(...args),
+  init: (...args: unknown[]): void => {
+    initMock(...args)
+  },
   ErrorBoundary: ({ children }: { children: unknown }) => children,
 }))
 

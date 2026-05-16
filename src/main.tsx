@@ -5,7 +5,7 @@ import './index.css'
 import App from './App'
 import { initSentry } from './lib/initSentry'
 
-initSentry(import.meta.env.VITE_SENTRY_DSN)
+initSentry(import.meta.env.VITE_SENTRY_DSN as string | undefined)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
