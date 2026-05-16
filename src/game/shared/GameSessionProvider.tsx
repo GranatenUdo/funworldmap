@@ -59,13 +59,12 @@ export function GameSessionProvider({ pools, children }: Props) {
 
   useEffect(() => {
     if (!import.meta.env.VITE_TEST_HOOKS) return
-    const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
-    if (!w.__funworldmap_game) w.__funworldmap_game = {}
-    w.__funworldmap_game.getSession = () => apiRef.current.session
-    w.__funworldmap_game.endGame = () => apiRef.current.endGame()
-    w.__funworldmap_game.completeNow = () => apiRef.current.completeNow()
-    w.__funworldmap_game.finalize = () => apiRef.current.finalize()
-    w.__funworldmap_game.restart = (
+    if (!window.__funworldmap_game) window.__funworldmap_game = {}
+    window.__funworldmap_game.getSession = () => apiRef.current.session
+    window.__funworldmap_game.endGame = () => apiRef.current.endGame()
+    window.__funworldmap_game.completeNow = () => apiRef.current.completeNow()
+    window.__funworldmap_game.finalize = () => apiRef.current.finalize()
+    window.__funworldmap_game.restart = (
       modeId: ModeId,
       firstRound: RoundSpec,
       maxRounds: number | null,
@@ -73,12 +72,12 @@ export function GameSessionProvider({ pools, children }: Props) {
       dailyDate?: string | null,
     ) => apiRef.current.restart(modeId, firstRound, maxRounds, attemptsPerRound, dailyDate)
     return () => {
-      if (w.__funworldmap_game) {
-        delete w.__funworldmap_game.getSession
-        delete w.__funworldmap_game.endGame
-        delete w.__funworldmap_game.completeNow
-        delete w.__funworldmap_game.finalize
-        delete w.__funworldmap_game.restart
+      if (window.__funworldmap_game) {
+        delete window.__funworldmap_game.getSession
+        delete window.__funworldmap_game.endGame
+        delete window.__funworldmap_game.completeNow
+        delete window.__funworldmap_game.finalize
+        delete window.__funworldmap_game.restart
       }
     }
   }, [])

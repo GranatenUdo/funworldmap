@@ -25,10 +25,9 @@ export function useGameTestSeams({
 }: UseGameTestSeamsArgs): void {
   useEffect(() => {
     if (!import.meta.env.VITE_TEST_HOOKS) return
-    const w = window as unknown as { __funworldmap_game?: Record<string, unknown> }
-    if (!w.__funworldmap_game) w.__funworldmap_game = {}
-    w.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
-    w.__funworldmap_game.submitCountryGuess = (cca3: string): boolean => {
+    if (!window.__funworldmap_game) window.__funworldmap_game = {}
+    window.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
+    window.__funworldmap_game.submitCountryGuess = (cca3: string): boolean => {
       if (session.modeId !== 'country-pinning') return false
       const country = byCca3.get(cca3.toUpperCase())
       if (!country) return false
@@ -40,7 +39,7 @@ export function useGameTestSeams({
       })
       return true
     }
-    w.__funworldmap_game.setRound = (id: string): boolean => {
+    window.__funworldmap_game.setRound = (id: string): boolean => {
       if (!mode) return false
       let round: RoundSpec | null = null
       if (session.modeId === 'country-pinning') {
@@ -73,10 +72,10 @@ export function useGameTestSeams({
       return true
     }
     return () => {
-      if (w.__funworldmap_game) {
-        delete w.__funworldmap_game.submitGuess
-        delete w.__funworldmap_game.submitCountryGuess
-        delete w.__funworldmap_game.setRound
+      if (window.__funworldmap_game) {
+        delete window.__funworldmap_game.submitGuess
+        delete window.__funworldmap_game.submitCountryGuess
+        delete window.__funworldmap_game.setRound
       }
     }
   }, [mode, session.modeId, byCca3, cities, start, overrideRound, submitGuessInput, statusRef])

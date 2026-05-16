@@ -12,13 +12,15 @@ import { useGameAnnouncements } from '../useGameAnnouncements'
 import {
   makeAttempt,
   makeCityRound,
+  makeCountryReveal,
   makeCountryRound,
+  makeOutcome,
+  makePointReveal,
   makeSession,
 } from '../../shared/__tests__/factories'
 import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
 import { getMode } from '../../modes'
 import { RESUME_KEY } from '../../daily/resume'
-import type { CountryReveal, GuessOutcome, PointReveal } from '../../shared/types'
 
 const POOLS = { countries: countriesFixture, cities: citiesFixture }
 
@@ -65,32 +67,6 @@ function captureAnnouncements(): Captured {
     events,
     detach: () => window.removeEventListener('funworldmap:announce', handler),
   }
-}
-
-function makeCountryReveal(overrides: Partial<CountryReveal> = {}): CountryReveal {
-  return {
-    kind: 'country',
-    correct: false,
-    targetCca3: 'FRA',
-    clickedCca3: 'USA',
-    clickedName: 'United States',
-    distanceKm: 7000,
-    ...overrides,
-  }
-}
-
-function makePointReveal(overrides: Partial<PointReveal> = {}): PointReveal {
-  return {
-    kind: 'point',
-    targetCentroid: [2.3522, 48.8566],
-    clickedPoint: [-74.006, 40.7128],
-    distanceKm: 5800,
-    ...overrides,
-  }
-}
-
-function makeOutcome(reveal: CountryReveal | PointReveal, endsGame: boolean): GuessOutcome {
-  return { pointsEarned: 0, livesDelta: 0, reveal, endsGame }
 }
 
 describe('useGameAnnouncements', () => {

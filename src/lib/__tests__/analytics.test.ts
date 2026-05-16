@@ -1,13 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { track } from '../analytics'
 
-declare global {
-  interface Window {
-    __PLAYWRIGHT__?: boolean
-    __testAnalytics?: Array<{ name: string; props: Record<string, string | number> }>
-  }
-}
-
 describe('track', () => {
   let fetchMock: ReturnType<typeof vi.fn>
   let sendBeaconMock: ReturnType<typeof vi.fn>
@@ -23,8 +16,8 @@ describe('track', () => {
       configurable: true,
       value: sendBeaconMock,
     })
-    delete (window as Window).__PLAYWRIGHT__
-    delete (window as Window).__testAnalytics
+    delete window.__PLAYWRIGHT__
+    delete window.__testAnalytics
   })
 
   afterEach(() => {
@@ -62,11 +55,11 @@ describe('track', () => {
   })
 
   it('captures to window.__testAnalytics when window.__PLAYWRIGHT__ is set', () => {
-    ;(window as Window).__PLAYWRIGHT__ = true
+    window.__PLAYWRIGHT__ = true
     track('launcher_dismissed', { path: 'link' })
     expect(sendBeaconMock).not.toHaveBeenCalled()
     expect(fetchMock).not.toHaveBeenCalled()
-    expect((window as Window).__testAnalytics).toEqual([
+    expect(window.__testAnalytics).toEqual([
       { name: 'launcher_dismissed', props: { path: 'link' } },
     ])
   })
@@ -79,14 +72,14 @@ describe('track', () => {
   })
 
   it('emits deep_link_opened with all four outcome values', () => {
-    ;(window as Window).__PLAYWRIGHT__ = true
+    window.__PLAYWRIGHT__ = true
     track('deep_link_opened', { dateKind: 'today', outcome: 'start' })
     track('deep_link_opened', { dateKind: 'today', outcome: 'resume' })
     track('deep_link_opened', { dateKind: 'past', outcome: 'reveal' })
     track('deep_link_opened', { dateKind: 'future', outcome: 'redirect' })
-    const outcomes = ((window as unknown as { __testAnalytics?: Array<{ name: string; props: { outcome?: string } }> }).__testAnalytics ?? [])
+    const outcomes = (window.__testAnalytics ?? [])
       .filter((e) => e.name === 'deep_link_opened')
-      .map((e) => e.props.outcome)
+      .map((e) => e.props.outcome as string | undefined)
     expect(outcomes).toEqual(['start', 'resume', 'reveal', 'redirect'])
   })
 })

@@ -58,16 +58,16 @@ describe('useHashGameRouter', () => {
 
   beforeEach(() => {
     analytics = []
-    ;(window as unknown as { __testAnalytics?: typeof analytics }).__testAnalytics = analytics
-    ;(window as unknown as { __PLAYWRIGHT__: boolean }).__PLAYWRIGHT__ = true
+    window.__testAnalytics = analytics
+    window.__PLAYWRIGHT__ = true
     window.location.hash = ''
     localStorage.clear()
   })
 
   afterEach(() => {
     cleanup()
-    delete (window as unknown as { __testAnalytics?: unknown }).__testAnalytics
-    delete (window as unknown as { __PLAYWRIGHT__?: boolean }).__PLAYWRIGHT__
+    delete window.__testAnalytics
+    delete window.__PLAYWRIGHT__
     window.location.hash = ''
     localStorage.clear()
   })
