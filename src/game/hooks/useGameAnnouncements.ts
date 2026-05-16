@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { AttemptRecord, CountryLike, GameMode, GameSession } from '../shared/types'
 import type { DailyDayResult } from '../daily/types'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
+import { isCountryPinning } from '../shared/modePredicates'
 import { prefersReducedMotion } from '../../lib/motion'
 import { clearResume } from '../daily/resume'
 import { track } from '../../lib/analytics'
@@ -89,7 +90,7 @@ export function useGameAnnouncements({
     if (session.status === 'round-ended' && session.lastOutcome) {
       const isFinalOutcome =
         session.attemptsPerRound === 1 || session.attemptsRemaining === 0
-      const isCountryPinning = session.modeId === 'country-pinning'
+      const inCountryMode = isCountryPinning(session.modeId)
       const isCorrect =
         session.lastOutcome.reveal?.kind === 'country'
           ? session.lastOutcome.reveal.correct
@@ -111,12 +112,12 @@ export function useGameAnnouncements({
         : null
       const animatedMs = plan ? Math.max(plan.durationMs + 300, 1800) : null
 
-      if (isCountryPinning && !isFinalOutcome) {
+      if (inCountryMode && !isFinalOutcome) {
         const ms = animatedMs ?? REVEAL_MS_COUNTRY
         const t = window.setTimeout(advanceNow, ms)
         return () => window.clearTimeout(t)
       }
-      if (!isCountryPinning) {
+      if (!inCountryMode) {
         const ms = animatedMs ?? REVEAL_MS_CITY
         const t = window.setTimeout(advanceNow, ms)
         return () => window.clearTimeout(t)

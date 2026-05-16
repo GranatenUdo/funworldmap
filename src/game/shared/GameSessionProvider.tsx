@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import { useGameSession } from './useGameSession'
 import type { AttemptRecord, CityLike, CountryLike, GameMode, GameSession, GuessInput, ModeId, RoundSpec } from './types'
 import { getMode } from '../modes'
+import { isCountryPinning, isCityGuessing } from './modePredicates'
 
 export type GameSessionApi = {
   session: GameSession
@@ -31,8 +32,8 @@ export function GameSessionProvider({ pools, children }: Props) {
   const { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart } = useGameSession()
 
   const mode = useMemo<GameMode | null>(() => {
-    if (session.modeId === 'country-pinning' && pools.countries.length === 0) return null
-    if (session.modeId === 'city-guessing' && pools.cities.length === 0) return null
+    if (isCountryPinning(session.modeId) && pools.countries.length === 0) return null
+    if (isCityGuessing(session.modeId) && pools.cities.length === 0) return null
     try {
       return getMode(session.modeId, pools)
     } catch {

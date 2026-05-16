@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import type { CityLike, CountryLike } from './shared/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
+import { isCountryPinning } from './shared/modePredicates'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { useGameTestSeams } from './hooks/useGameTestSeams'
 import { useDailyResumePersistence } from './hooks/useDailyResumePersistence'
@@ -59,7 +60,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   // Country-pinning round-ended: Escape is owned by the round-end effect above (advance, not exit).
   useEffect(() => {
     if (session.status === 'idle') return
-    if (session.status === 'round-ended' && session.modeId === 'country-pinning') return
+    if (session.status === 'round-ended' && isCountryPinning(session.modeId)) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
       const tgt = e.target as HTMLElement | null

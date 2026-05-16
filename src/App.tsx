@@ -13,6 +13,7 @@ import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
+import { isCountryPinning } from './game/shared/modePredicates'
 import { DailyPuzzlesProvider, useDailyPuzzlesContext } from './game/daily/DailyPuzzlesProvider'
 import { toLocalDateString } from './game/daily/dates'
 import { GameController } from './game/GameController'
@@ -137,7 +138,7 @@ function AppInner({
 
   const roundEndTarget = useMemo(() => {
     if (session.status !== 'round-ended') return null
-    if (session.modeId !== 'country-pinning') return null
+    if (!isCountryPinning(session.modeId)) return null
     const isFinalOutcome =
       session.attemptsPerRound === 1 || session.attemptsRemaining === 0
     if (!isFinalOutcome) return null
@@ -166,7 +167,7 @@ function AppInner({
   const onMapSelect = useCallback(
     (cca3: string) => {
       if (gameActive) {
-        if (session.modeId === 'country-pinning') {
+        if (isCountryPinning(session.modeId)) {
           const country = poolByCca3.get(cca3.toUpperCase())
           if (!country) {
             dispatchToast("That territory isn't in the country pool.")

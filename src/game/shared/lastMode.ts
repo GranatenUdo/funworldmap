@@ -1,11 +1,12 @@
 import type { ModeId } from './types'
+import { isModeId } from './modePredicates'
 
 export const LAST_MODE_KEY = 'funworldmap-game-last-mode'
 
 export function readLastMode(): ModeId {
   try {
     const v = localStorage.getItem(LAST_MODE_KEY)
-    if (v === 'country-pinning' || v === 'city-guessing') return v
+    if (isModeId(v)) return v
   } catch {
     /* ignore: private mode / disabled storage */
   }

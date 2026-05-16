@@ -1,6 +1,7 @@
 import { useEffect, type RefObject } from 'react'
 import type { CityLike, CountryLike, GameMode, GameSession, GuessInput, ModeId, RoundSpec } from '../shared/types'
 import { centroidFromLatLng } from '../shared/distance'
+import { isCountryPinning } from '../shared/modePredicates'
 
 export interface UseGameTestSeamsArgs {
   session: GameSession
@@ -28,7 +29,7 @@ export function useGameTestSeams({
     if (!window.__funworldmap_game) window.__funworldmap_game = {}
     window.__funworldmap_game.submitGuess = (input: GuessInput) => submitGuessInput(input)
     window.__funworldmap_game.submitCountryGuess = (cca3: string): boolean => {
-      if (session.modeId !== 'country-pinning') return false
+      if (!isCountryPinning(session.modeId)) return false
       const country = byCca3.get(cca3.toUpperCase())
       if (!country) return false
       submitGuessInput({
@@ -42,7 +43,7 @@ export function useGameTestSeams({
     window.__funworldmap_game.setRound = (id: string): boolean => {
       if (!mode) return false
       let round: RoundSpec | null = null
-      if (session.modeId === 'country-pinning') {
+      if (isCountryPinning(session.modeId)) {
         const country = byCca3.get(id.toUpperCase())
         if (!country) return false
         round = {

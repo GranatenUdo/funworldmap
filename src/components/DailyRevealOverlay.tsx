@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
+import { isCountryPinning, isCityGuessing } from '../game/shared/modePredicates'
 import { DailyShareBlock } from './DailyShareBlock'
 import type { ShareResults } from '../game/daily/shareText'
 import { installFocusTrap } from '../lib/focusTrap'
@@ -49,8 +50,8 @@ export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cit
     }
   }, [onClose])
 
-  const showCountry = modeId === null || modeId === 'country-pinning'
-  const showCity = modeId === null || modeId === 'city-guessing'
+  const showCountry = modeId === null || isCountryPinning(modeId)
+  const showCity = modeId === null || isCityGuessing(modeId)
 
   const country = puzzle ? countries.find((c) => c.cca3 === puzzle.country.cca3) ?? null : null
   const city = puzzle ? cities.find((c) => c.id === puzzle.city.id) ?? null : null

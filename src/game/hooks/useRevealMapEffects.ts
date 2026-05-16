@@ -4,6 +4,7 @@ import type { CountryLike, GameMode, GameSession, GuessInput } from '../shared/t
 import { LAYER } from '../../lib/mapLayers'
 import { tessellateArc } from '../shared/distance'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
+import { isCityGuessing } from '../shared/modePredicates'
 import { prefersReducedMotion } from '../../lib/motion'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../../lib/mapStyles'
 import {
@@ -290,7 +291,7 @@ export function useRevealMapEffects({
   // City-mode any-click handler.
   useEffect(() => {
     if (session.status !== 'playing') return
-    if (session.modeId !== 'city-guessing') return
+    if (!isCityGuessing(session.modeId)) return
     const map = mapRef.current
     if (!map) return
     const onClick = (e: maplibregl.MapMouseEvent) => {
