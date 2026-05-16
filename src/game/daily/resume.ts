@@ -1,4 +1,5 @@
 import type { ModeId, AttemptRecord } from '../shared/types'
+import { isModeId } from '../shared/modePredicates'
 import { toLocalDateString } from './dates'
 import { breadcrumbDailyStorage, captureDailyStorage } from './sentry'
 
@@ -29,7 +30,7 @@ export function readResume(): DailyResumeV1 | null {
       try { localStorage.removeItem(RESUME_KEY) } catch { /* no-op */ }
       return null
     }
-    if (parsed.modeId !== 'country-pinning' && parsed.modeId !== 'city-guessing') {
+    if (!isModeId(parsed.modeId)) {
       captureDailyStorage(`resume: invalid modeId ${String(parsed.modeId)}`, 'parse-failure')
       return null
     }

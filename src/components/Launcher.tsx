@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { listModes } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
+import { isCountryPinning } from '../game/shared/modePredicates'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
 import { installFocusTrap } from '../lib/focusTrap'
@@ -78,13 +79,13 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     return 'unplayed'
   }
 
-  const bestFor = (id: ModeId) => (id === 'country-pinning' ? cpBest : cgBest)
+  const bestFor = (id: ModeId) => (isCountryPinning(id) ? cpBest : cgBest)
   const playedFor = useCallback((id: ModeId) => {
     const prior = getDay(date, id)
     if (!prior) return undefined
     const puzzle = byDate(date)
     if (!puzzle) return { score: prior.score }
-    if (id === 'country-pinning') {
+    if (isCountryPinning(id)) {
       const c = countries.find((cc) => cc.cca3 === puzzle.country.cca3)
       return { score: prior.score, targetName: c?.name.common }
     }

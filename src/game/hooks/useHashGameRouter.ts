@@ -10,6 +10,7 @@ import { readResume, clearResume } from '../daily/resume'
 import { toLocalDateString, classifyDate } from '../daily/dates'
 import { buildCountryDailyRound, buildCityDailyRound } from '../daily/dailyRound'
 import { getMode } from '../modes'
+import { isCountryPinning, isModeId } from '../shared/modePredicates'
 
 const DAILY_ATTEMPTS_PER_ROUND = 3
 
@@ -133,7 +134,7 @@ export function useHashGameRouter(
       // Today-only playable routes: past/future redirect to /reveal or root.
       if (state.kind === 'daily' && state.modeId && !state.reveal && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
-        if (id !== 'country-pinning' && id !== 'city-guessing') {
+        if (!isModeId(id)) {
           if (wasGameOver) endGame()
           return
         }
@@ -159,7 +160,7 @@ export function useHashGameRouter(
           return
         }
 
-        const hasPool = id === 'country-pinning' ? countries.length > 0 : cities.length > 0
+        const hasPool = isCountryPinning(id) ? countries.length > 0 : cities.length > 0
         if (!hasPool) {
           // Pool not yet loaded; defer and let the drain effect pick up once
           // it arrives. If we were transitioning out of game-over, fall back
@@ -177,7 +178,7 @@ export function useHashGameRouter(
           return
         }
         const firstRound =
-          id === 'country-pinning'
+          isCountryPinning(id)
             ? buildCountryDailyRound(puzzle.country.cca3, countries)
             : buildCityDailyRound(puzzle.city.id, cities)
         if (!firstRound) {
@@ -190,11 +191,11 @@ export function useHashGameRouter(
       }
       if (state.kind === 'game' && statusRef.current === 'idle') {
         const id = state.modeId as ModeId
-        if (id !== 'country-pinning' && id !== 'city-guessing') {
+        if (!isModeId(id)) {
           if (wasGameOver) endGame()
           return
         }
-        const hasPool = id === 'country-pinning' ? countries.length > 0 : cities.length > 0
+        const hasPool = isCountryPinning(id) ? countries.length > 0 : cities.length > 0
         if (!hasPool) {
           // See daily-branch comment above: defer + endGame fallback.
           if (wasGameOver) endGame()
@@ -224,7 +225,7 @@ export function useHashGameRouter(
   useEffect(() => {
     const pending = pendingStartRef.current
     if (!pending || session.status !== 'idle') return
-    const hasPool = pending === 'country-pinning' ? countries.length > 0 : cities.length > 0
+    const hasPool = isCountryPinning(pending) ? countries.length > 0 : cities.length > 0
     if (!hasPool) return
     // Check what kind of start we need based on current hash:
     const state = parseHash(window.location.hash)
@@ -233,7 +234,7 @@ export function useHashGameRouter(
       if (!puzzle) return
       pendingStartRef.current = null
       const firstRound =
-        pending === 'country-pinning'
+        isCountryPinning(pending)
           ? buildCountryDailyRound(puzzle.country.cca3, countries)
           : buildCityDailyRound(puzzle.city.id, cities)
       if (!firstRound) {

@@ -1,4 +1,5 @@
 import type { ModeId, PersonalBest } from '../game/shared/types'
+import { isCountryPinning } from '../game/shared/modePredicates'
 import { parseLocalDate } from '../game/daily/dates'
 
 export type LauncherCardState =
@@ -31,9 +32,9 @@ const TITLE: Record<ModeId, string> = {
 
 function headerLabel(modeId: ModeId, anchorDate: string | undefined, today: string): string {
   const isToday = !anchorDate || anchorDate === today
-  if (isToday) return modeId === 'country-pinning' ? 'TODAY · COUNTRY' : 'TODAY · CITY'
+  if (isToday) return isCountryPinning(modeId) ? 'TODAY · COUNTRY' : 'TODAY · CITY'
   const md = parseLocalDate(anchorDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  return `${md.toUpperCase()} · ${modeId === 'country-pinning' ? 'COUNTRY' : 'CITY'}`
+  return `${md.toUpperCase()} · ${isCountryPinning(modeId) ? 'COUNTRY' : 'CITY'}`
 }
 
 interface PlayedResult {
@@ -160,8 +161,8 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
         <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">Best (free)</span>{' '}
         <span data-testid={`${testIdBase}-free-best`} className="tabular-nums">
           {freeBest.gamesPlayed > 0
-            ? (modeId === 'country-pinning' ? `${freeBest.bestScore} pts` : `${freeBest.bestScore} / 1000`)
-            : (modeId === 'country-pinning' ? '— pts' : '— / 1000')}
+            ? (isCountryPinning(modeId) ? `${freeBest.bestScore} pts` : `${freeBest.bestScore} / 1000`)
+            : (isCountryPinning(modeId) ? '— pts' : '— / 1000')}
         </span>
       </div>
     </div>

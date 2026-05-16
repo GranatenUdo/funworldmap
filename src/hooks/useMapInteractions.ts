@@ -4,6 +4,7 @@ import type { CountryData } from '../lib/types'
 import { LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
+import { isCountryPinning } from '../game/shared/modePredicates'
 
 interface Options {
   loaded: boolean
@@ -37,7 +38,7 @@ export function useMapInteractions({
   const { session } = useGameSessionContext()
   const sessionRef = useRef(session)
   sessionRef.current = session
-  const tooltipsEnabled = !(session.modeId === 'country-pinning' && session.status === 'playing')
+  const tooltipsEnabled = !(isCountryPinning(session.modeId) && session.status === 'playing')
 
   useEffect(() => {
     const map = mapRef.current
