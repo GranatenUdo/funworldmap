@@ -36,7 +36,6 @@ export function LauncherMilestoneOverlay({ days, onDismiss }: Props) {
     return () => {
       window.clearTimeout(t)
     }
-     
   }, [days])
 
   return (

@@ -25,6 +25,11 @@ export interface AnalyticsCapture {
 }
 
 export function installAnalyticsCapture(): AnalyticsCapture {
+  // Contract: track() in analytics.ts assigns `window.__testAnalytics = []` only
+  // when it's undefined. We install eagerly with the same reference so the
+  // returned `events` array and `window.__testAnalytics` stay aligned through
+  // mutations. Don't delete `__testAnalytics` between install and uninstall —
+  // that would cause track() to create a divergent array on next emit.
   const events: AnalyticsCapture['events'] = []
   window.__PLAYWRIGHT__ = true
   window.__testAnalytics = events
