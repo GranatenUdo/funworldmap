@@ -39,7 +39,7 @@ jobs:
 
       - name: Open issue on staleness
         if: failure() && steps.check.outputs.stale == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           script: |
             const window_end = '${{ steps.check.outputs.window_end }}'
