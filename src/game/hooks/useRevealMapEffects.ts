@@ -2,6 +2,7 @@ import { useEffect, useRef, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryLike, GameMode, GameSession, GuessInput } from '../shared/types'
 import { LAYER } from '../../lib/mapLayers'
+import { REVEAL_CORRECT, REVEAL_WRONG, REVEAL_FAR } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCityGuessing } from '../shared/modePredicates'
@@ -26,7 +27,7 @@ function ensureRevealSources(map: maplibregl.Map): void {
       source: REVEAL_MARKER_SOURCE,
       paint: {
         'circle-radius': 10,
-        'circle-color': '#f59e0b',
+        'circle-color': REVEAL_WRONG,
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': 2,
       },
@@ -42,7 +43,7 @@ function ensureRevealSources(map: maplibregl.Map): void {
       type: 'line',
       source: REVEAL_LINE_SOURCE,
       paint: {
-        'line-color': '#f59e0b',
+        'line-color': REVEAL_WRONG,
         'line-width': 3,
         'line-dasharray': [2, 2],
       },
@@ -100,7 +101,7 @@ export function useRevealMapEffects({
     if (reveal.kind === 'country') {
       try {
         map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], reveal.targetCca3])
-        const colour = reveal.correct ? '#22c55e' : '#f59e0b'
+        const colour = reveal.correct ? REVEAL_CORRECT : REVEAL_WRONG
         map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
         map.setPaintProperty(LAYER.hoverBorder, 'line-width', reduced ? 3 : 4)
       } catch { /* layer may not exist */ }
@@ -233,7 +234,7 @@ export function useRevealMapEffects({
     const holdMs = reduced ? 0 : 600
 
     if (last.reveal.kind === 'country') {
-      const colour = last.reveal.correct ? '#22c55e' : '#f59e0b'
+      const colour = last.reveal.correct ? REVEAL_CORRECT : REVEAL_WRONG
       try {
         map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], last.reveal.clickedCca3 ?? ''])
         map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
@@ -250,7 +251,7 @@ export function useRevealMapEffects({
 
     // City mode: distance-banded marker color.
     const d = last.reveal.distanceKm
-    const colour = d < 50 ? '#22c55e' : d < 500 ? '#f59e0b' : '#ef4444'
+    const colour = d < 50 ? REVEAL_CORRECT : d < 500 ? REVEAL_WRONG : REVEAL_FAR
     try {
       ensureRevealSources(map)
       const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
@@ -266,14 +267,14 @@ export function useRevealMapEffects({
     const t = window.setTimeout(() => {
       try {
         clearRevealSources(map)
-        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b')
+        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
       } catch { /* no-op */ }
     }, holdMs)
     return () => {
       window.clearTimeout(t)
       try {
         clearRevealSources(map)
-        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', '#f59e0b')
+        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
       } catch { /* no-op */ }
     }
   }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
