@@ -12,7 +12,14 @@
   "bugs": {
     "url": "https://github.com/GranatenUdo/funworldmap/issues"
   },
-  "keywords": ["world-map", "geography", "maplibre", "react", "daily-puzzle", "wcag-aa"],
+  "keywords": [
+    "world-map",
+    "geography",
+    "maplibre",
+    "react",
+    "daily-puzzle",
+    "wcag-aa"
+  ],
   "license": "MIT",
   "author": "Tobias Ens",
   "scripts": {
@@ -21,6 +28,8 @@
     "build:e2e": "tsc -b && vite build --mode e2e",
     "bundle:budget": "npm run build && tsx scripts/bundle-budget/check.ts",
     "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "check": "npm run lint && npm run typecheck && npm run test:unit",
     "lint": "eslint src/",
     "format": "prettier --write src/",
     "test:e2e": "playwright test",
@@ -28,7 +37,8 @@
     "daily:generate": "tsx scripts/daily-content/generate-index.ts",
     "daily:validate": "tsx scripts/daily-content/validate-pools.ts",
     "update-data": "tsx scripts/fetch-countries.ts",
-    "fetch-cities": "tsx scripts/fetch-cities.ts"
+    "fetch-cities": "tsx scripts/fetch-cities.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@floating-ui/react": "^0.27.19",
@@ -56,8 +66,10 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.18",
     "globals": "^15.14.0",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.1",
     "lightningcss": "^1.32.0",
+    "lint-staged": "^17.0.5",
     "prettier": "^3.8.3",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.21.0",
@@ -67,8 +79,12 @@
     "vitest": "^4.1.4"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.60.3",
+    "@rollup/rollup-win32-x64-msvc": "^4.60.4",
     "@tailwindcss/oxide-win32-x64-msvc": "^4.2.2",
     "lightningcss-win32-x64-msvc": "^1.32.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix",
+    "*.{ts,tsx,json,md,yml,yaml}": "prettier --write"
   }
 }
