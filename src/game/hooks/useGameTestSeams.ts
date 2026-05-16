@@ -1,5 +1,13 @@
 import { useEffect, type RefObject } from 'react'
-import type { CityLike, CountryLike, GameMode, GameSession, GuessInput, ModeId, RoundSpec } from '../shared/types'
+import type {
+  CityLike,
+  CountryLike,
+  GameMode,
+  GameSession,
+  GuessInput,
+  ModeId,
+  RoundSpec,
+} from '../shared/types'
 import { centroidFromLatLng } from '../shared/distance'
 import { isCountryPinning } from '../shared/modePredicates'
 
@@ -8,7 +16,13 @@ export interface UseGameTestSeamsArgs {
   mode: GameMode | null
   byCca3: Map<string, CountryLike>
   cities: CityLike[]
-  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
+  start: (
+    modeId: ModeId,
+    firstRound: RoundSpec,
+    maxRounds: number | null,
+    attemptsPerRound?: number,
+    dailyDate?: string | null,
+  ) => void
   overrideRound: (round: RoundSpec) => void
   submitGuessInput: (input: GuessInput) => void
   /** Synchronous mirror of session.status (provided by useHashGameRouter once Phase 5 lands; until then, plumbed from GameController). */
@@ -22,7 +36,14 @@ export interface UseGameTestSeamsArgs {
  * and are still referenced by the Playwright suite.
  */
 export function useGameTestSeams({
-  session, mode, byCca3, cities, start, overrideRound, submitGuessInput, statusRef,
+  session,
+  mode,
+  byCca3,
+  cities,
+  start,
+  overrideRound,
+  submitGuessInput,
+  statusRef,
 }: UseGameTestSeamsArgs): void {
   useEffect(() => {
     if (!import.meta.env.VITE_TEST_HOOKS) return
@@ -42,7 +63,7 @@ export function useGameTestSeams({
     }
     window.__funworldmap_game.setRound = (id: string): boolean => {
       if (!mode) return false
-      let round: RoundSpec | null = null
+      let round: RoundSpec
       if (isCountryPinning(session.modeId)) {
         const country = byCca3.get(id.toUpperCase())
         if (!country) return false
