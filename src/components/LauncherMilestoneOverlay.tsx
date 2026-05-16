@@ -17,6 +17,8 @@ interface Props {
 
 export function LauncherMilestoneOverlay({ days, onDismiss }: Props) {
   const firedRef = useRef(false)
+  const onDismissRef = useRef(onDismiss)
+  onDismissRef.current = onDismiss
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   useEffect(() => {
@@ -24,9 +26,18 @@ export function LauncherMilestoneOverlay({ days, onDismiss }: Props) {
       firedRef.current = true
       track('streak_reached_milestone', { days })
     }
-    const t = window.setTimeout(onDismiss, 2500)
-    return () => { window.clearTimeout(t) }
-  }, [days, onDismiss])
+    // Read via ref so parent-re-render-induced onDismiss identity changes
+    // don't reset the 2500ms dismiss clock (see issue #60). Under 4-shard
+    // CI load this otherwise resets multiple times within the 2500ms
+    // window, blowing past the test's not.toBeAttached budget.
+    const t = window.setTimeout(() => {
+      onDismissRef.current()
+    }, 2500)
+    return () => {
+      window.clearTimeout(t)
+    }
+     
+  }, [days])
 
   return (
     <button
@@ -34,12 +45,15 @@ export function LauncherMilestoneOverlay({ days, onDismiss }: Props) {
       onClick={onDismiss}
       data-testid="launcher-milestone"
       data-animation-state={animationState}
-      onAnimationEnd={() => { setAnimationState('idle') }}
+      onAnimationEnd={() => {
+        setAnimationState('idle')
+      }}
       className="fixed inset-x-0 top-16 z-[220] mx-auto max-w-md px-6 py-3 rounded-xl shadow-2xl text-center text-sm font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-light/80 bg-teal-accessible text-white"
       style={{ animation: 'launcher-milestone-in 260ms ease-out both' }}
       aria-live="polite"
     >
-      <span aria-hidden="true">🔥 </span>{COPY[days]}
+      <span aria-hidden="true">🔥 </span>
+      {COPY[days]}
     </button>
   )
 }
