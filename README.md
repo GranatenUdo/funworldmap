@@ -1,5 +1,12 @@
 # funworldmap
 
+> **[Live demo →](https://funworldmap.com)** · Interactive political world map with daily geography puzzles.
+
+![funworldmap launcher](docs/assets/hero.png)
+
+[![CI](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml/badge.svg)](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Free, interactive political world map. Explore countries, borders, and geopolitical facts through a map-first interface.
 
 - ~249 countries with data from REST Countries and CIA World Factbook archive
@@ -62,9 +69,9 @@ Production builds can report runtime errors to Sentry. To enable:
 
 Without a DSN, the app works normally — Sentry is a no-op.
 
-## Follow-up work not yet in this branch
+## Roadmap
 
-- **Basemap failover to a second provider.** Today we detect failure and show a degraded banner; the bundled country polygons remain interactive. To add a real second provider (Stadia Maps / MapTiler), sign up for an API key and wire a `FALLBACK_BASEMAP_STYLE` in `src/lib/mapStyles.ts` and a fall-through path in `WorldMap.tsx`.
+See [docs/roadmap.md](docs/roadmap.md) for deferred work and architectural direction.
 
 ## License
 
