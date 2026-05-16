@@ -45,21 +45,37 @@ export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) 
 
   const onKey = (e: ReactKeyboardEvent<HTMLDivElement>) => {
     const active = document.activeElement as HTMLElement | null
-    if (!active || !active.hasAttribute('data-testid') || !active.getAttribute('data-testid')?.startsWith('launcher-cal-')) return
+    if (
+      !active ||
+      !active.hasAttribute('data-testid') ||
+      !active.getAttribute('data-testid')?.startsWith('launcher-cal-')
+    )
+      return
     const currentDate = active.getAttribute('data-testid')?.slice('launcher-cal-'.length)
     if (!currentDate) return
     const idx = cells.findIndex((c) => c.date === currentDate)
     if (idx < 0) return
-    let target = idx
+    let target: number
     switch (e.key) {
-      case 'ArrowLeft': target = Math.max(0, idx - 1); break
-      case 'ArrowRight': target = Math.min(cells.length - 1, idx + 1); break
-      case 'ArrowUp': target = Math.max(0, idx - 7); break
-      case 'ArrowDown': target = Math.min(cells.length - 1, idx + 7); break
-      default: return
+      case 'ArrowLeft':
+        target = Math.max(0, idx - 1)
+        break
+      case 'ArrowRight':
+        target = Math.min(cells.length - 1, idx + 1)
+        break
+      case 'ArrowUp':
+        target = Math.max(0, idx - 7)
+        break
+      case 'ArrowDown':
+        target = Math.min(cells.length - 1, idx + 7)
+        break
+      default:
+        return
     }
     e.preventDefault()
-    const el = rootRef.current?.querySelector<HTMLButtonElement>(`[data-testid="launcher-cal-${cells[target].date}"]`)
+    const el = rootRef.current?.querySelector<HTMLButtonElement>(
+      `[data-testid="launcher-cal-${cells[target].date}"]`,
+    )
     el?.focus()
   }
 
@@ -74,7 +90,9 @@ export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) 
       onKeyDown={onKey}
     >
       <div className="flex items-center justify-between mb-2">
-        <div className="text-[11px] font-semibold uppercase tracking-widest text-teal dark:text-teal-light">Past 30 days</div>
+        <div className="text-[11px] font-semibold uppercase tracking-widest text-teal dark:text-teal-light">
+          Past 30 days
+        </div>
         <button
           type="button"
           onClick={onClose}
@@ -116,11 +134,18 @@ export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) 
         data-testid="launcher-history-captions"
         className="mt-3 text-center text-[12px] text-sand-600 dark:text-dark-100 tabular-nums"
       >
-        Current: <span className="text-teal dark:text-teal-light font-semibold">{history.streak.current}</span>
+        Current:{' '}
+        <span className="text-teal dark:text-teal-light font-semibold">
+          {history.streak.current}
+        </span>
         {' · '}
-        Longest: <span className="text-teal dark:text-teal-light font-semibold">{history.streak.longest}</span>
+        Longest:{' '}
+        <span className="text-teal dark:text-teal-light font-semibold">
+          {history.streak.longest}
+        </span>
         {' · '}
-        Days played: <span className="text-teal dark:text-teal-light font-semibold">{totalDays}</span>
+        Days played:{' '}
+        <span className="text-teal dark:text-teal-light font-semibold">{totalDays}</span>
       </div>
     </div>
   )

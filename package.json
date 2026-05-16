@@ -53,7 +53,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
-    "@eslint/js": "^9.18.0",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "^4.2.2",
     "@testing-library/react": "^16.3.2",
@@ -62,9 +62,9 @@
     "@types/react-dom": "^19.1.0",
     "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^4.4.1",
-    "eslint": "^9.18.0",
-    "eslint-plugin-react-hooks": "^5.1.0",
-    "eslint-plugin-react-refresh": "^0.4.18",
+    "eslint": "^10.4.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
@@ -79,7 +79,7 @@
     "vitest": "^4.1.4"
   },
   "optionalDependencies": {
-    "@rollup/rollup-win32-x64-msvc": "^4.60.4",
+    "@rollup/rollup-win32-x64-msvc": "^4.60.1",
     "@tailwindcss/oxide-win32-x64-msvc": "^4.2.2",
     "lightningcss-win32-x64-msvc": "^1.32.0"
   },
