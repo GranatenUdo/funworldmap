@@ -20,12 +20,6 @@ import { makeSession } from '../../shared/__tests__/factories'
 import { citiesFixture, byCca3Fixture } from './fixtures'
 import type { GameMode, GuessInput } from '../../shared/types'
 
-declare global {
-  interface Window {
-    __funworldmap_game?: Record<string, unknown>
-  }
-}
-
 function makeMode(overrides: Partial<GameMode> = {}): GameMode {
   return {
     id: 'country-pinning',

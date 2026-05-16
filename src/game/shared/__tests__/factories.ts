@@ -1,4 +1,4 @@
-import type { AttemptRecord, CityRoundSpec, CountryRoundSpec, GameSession } from '../types'
+import type { AttemptRecord, CityRoundSpec, CountryReveal, CountryRoundSpec, GameSession, GuessOutcome, PointReveal } from '../types'
 
 export function makeAttempt(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
   return {
@@ -52,4 +52,33 @@ export function makeCityRound(overrides: Partial<CityRoundSpec> = {}): CityRound
     targetCentroid: [2.3522, 48.8566],
     ...overrides,
   }
+}
+
+export function makeCountryReveal(overrides: Partial<CountryReveal> = {}): CountryReveal {
+  return {
+    kind: 'country',
+    correct: false,
+    targetCca3: 'FRA',
+    clickedCca3: 'USA',
+    clickedName: 'United States',
+    distanceKm: 7000,
+    ...overrides,
+  }
+}
+
+export function makePointReveal(overrides: Partial<PointReveal> = {}): PointReveal {
+  return {
+    kind: 'point',
+    targetCentroid: [2.3522, 48.8566],
+    clickedPoint: [-74.006, 40.7128],
+    distanceKm: 5800,
+    ...overrides,
+  }
+}
+
+export function makeOutcome(
+  reveal: CountryReveal | PointReveal,
+  endsGame = false,
+): GuessOutcome {
+  return { pointsEarned: 0, livesDelta: 0, reveal, endsGame }
 }

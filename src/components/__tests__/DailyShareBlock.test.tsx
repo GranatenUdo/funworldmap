@@ -18,15 +18,9 @@ const results: ShareResults = {
 
 const streak: StreakState = { current: 3, longest: 3, lastActiveDate: '2026-04-21', lastMilestoneShown: 0 }
 
-declare global {
-  interface Window {
-    __testAnalytics?: Array<{ name: string; props: Record<string, string | number> }>
-  }
-}
-
 beforeEach(() => {
   // Enable test analytics capture (analytics.ts gates on __PLAYWRIGHT__)
-  ;(window as Window & { __PLAYWRIGHT__: boolean }).__PLAYWRIGHT__ = true
+  window.__PLAYWRIGHT__ = true
   window.__testAnalytics = []
   // Reset navigator mocks
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

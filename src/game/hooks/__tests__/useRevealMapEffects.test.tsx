@@ -9,13 +9,14 @@ import { renderHook, cleanup } from '@testing-library/react'
 import { useRevealMapEffects } from '../useRevealMapEffects'
 import {
   makeCityRound,
+  makeCountryReveal,
   makeCountryRound,
+  makeOutcome,
   makeSession,
 } from '../../shared/__tests__/factories'
 import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
 import { createFakeMapRef } from './fakeMapRef'
 import { getMode } from '../../modes'
-import type { CountryReveal, GuessOutcome } from '../../shared/types'
 
 const POOLS = { countries: countriesFixture, cities: citiesFixture }
 
@@ -41,22 +42,6 @@ function buildRevealArgs(overrides: BuildRevealArgsOverrides = {}): RevealArgs {
 
 function renderRevealHook(args: RevealArgs) {
   return renderHook(() => useRevealMapEffects(args))
-}
-
-function makeCountryReveal(overrides: Partial<CountryReveal> = {}): CountryReveal {
-  return {
-    kind: 'country',
-    correct: false,
-    targetCca3: 'FRA',
-    clickedCca3: 'USA',
-    clickedName: 'United States',
-    distanceKm: 7000,
-    ...overrides,
-  }
-}
-
-function makeOutcome(reveal: CountryReveal, endsGame = false): GuessOutcome {
-  return { pointsEarned: 0, livesDelta: 0, reveal, endsGame }
 }
 
 describe('useRevealMapEffects', () => {

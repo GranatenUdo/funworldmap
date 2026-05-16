@@ -2,23 +2,16 @@ import { render, screen, act, fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LauncherMilestoneOverlay } from '../LauncherMilestoneOverlay'
 
-declare global {
-  interface Window {
-    __PLAYWRIGHT__?: boolean
-    __testAnalytics?: Array<{ name: string; props: Record<string, string | number> }>
-  }
-}
-
 describe('LauncherMilestoneOverlay', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-    ;(window as Window).__PLAYWRIGHT__ = true
-    ;(window as Window).__testAnalytics = []
+    window.__PLAYWRIGHT__ = true
+    window.__testAnalytics = []
   })
   afterEach(() => {
     vi.useRealTimers()
-    delete (window as Window).__PLAYWRIGHT__
-    delete (window as Window).__testAnalytics
+    delete window.__PLAYWRIGHT__
+    delete window.__testAnalytics
   })
 
   it('renders milestone copy for each threshold', () => {
@@ -40,7 +33,7 @@ describe('LauncherMilestoneOverlay', () => {
 
   it('fires streak_reached_milestone on mount', () => {
     render(<LauncherMilestoneOverlay days={7} onDismiss={() => {}} />)
-    expect((window as Window).__testAnalytics).toContainEqual({
+    expect(window.__testAnalytics).toContainEqual({
       name: 'streak_reached_milestone',
       props: { days: 7 },
     })
