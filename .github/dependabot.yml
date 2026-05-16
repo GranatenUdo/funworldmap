@@ -1,0 +1,41 @@
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      eslint-ecosystem:
+        patterns:
+          - 'eslint*'
+          - '@eslint/*'
+          - 'typescript-eslint'
+      vite-ecosystem:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+      tailwind-ecosystem:
+        patterns:
+          - 'tailwindcss'
+          - '@tailwindcss/*'
+      sentry:
+        patterns:
+          - '@sentry/*'
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
+      testing:
+        patterns:
+          - 'vitest'
+          - '@testing-library/*'
+          - '@playwright/test'
+          - 'jsdom'
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
