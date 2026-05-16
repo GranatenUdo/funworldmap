@@ -8,28 +8,38 @@ const TODAY = toLocalDateString(new Date())
 test.describe('Daily streak', () => {
   test('streak pill shows current streak when localStorage has a streak', async ({ page }) => {
     await page.addInitScript((today) => {
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify({
-        version: 1,
-        streak: { current: 5, longest: 5, lastActiveDate: today, lastMilestoneShown: 3 },
-        days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
-      }))
+      localStorage.setItem(
+        'funworldmap-daily-history',
+        JSON.stringify({
+          version: 1,
+          streak: { current: 5, longest: 5, lastActiveDate: today, lastMilestoneShown: 3 },
+          days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
+        }),
+      )
     }, TODAY)
     await page.goto('/')
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     await expect(page.getByTestId('launcher-streak')).toContainText(/5-day streak/)
   })
 
-  test('streak pill shows broken-streak invite when lastActiveDate < yesterday', async ({ page }) => {
+  test('streak pill shows broken-streak invite when lastActiveDate < yesterday', async ({
+    page,
+  }) => {
     // Phase 2's updateStreak never sets current to 0 — it resets to 1 on the
     // next play after a gap. So a stale streak has current >= 1 AND a
     // lastActiveDate that's more than one day old. The "broken" UI mode is
     // derived at render time from lastActiveDate vs. yesterday.
     await page.addInitScript(() => {
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify({
-        version: 1,
-        streak: { current: 3, longest: 3, lastActiveDate: '2026-04-18', lastMilestoneShown: 3 },
-        days: { '2026-04-18': { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
-      }))
+      localStorage.setItem(
+        'funworldmap-daily-history',
+        JSON.stringify({
+          version: 1,
+          streak: { current: 3, longest: 3, lastActiveDate: '2026-04-18', lastMilestoneShown: 3 },
+          days: {
+            '2026-04-18': { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } },
+          },
+        }),
+      )
     })
     await page.goto('/')
     await expect(page.getByTestId('launcher-streak')).toHaveAttribute('data-streak-mode', 'broken')
@@ -38,11 +48,14 @@ test.describe('Daily streak', () => {
 
   test('milestone overlay fires at streak 7 with a fresh lastMilestoneShown', async ({ page }) => {
     await page.addInitScript((today) => {
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify({
-        version: 1,
-        streak: { current: 7, longest: 7, lastActiveDate: today, lastMilestoneShown: 3 },
-        days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
-      }))
+      localStorage.setItem(
+        'funworldmap-daily-history',
+        JSON.stringify({
+          version: 1,
+          streak: { current: 7, longest: 7, lastActiveDate: today, lastMilestoneShown: 3 },
+          days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
+        }),
+      )
     }, TODAY)
     await page.goto('/')
     await expect(page.getByTestId('launcher-milestone')).toBeVisible({ timeout: 5_000 })
@@ -50,19 +63,15 @@ test.describe('Daily streak', () => {
   })
 
   test('milestone overlay auto-dismisses and persists lastMilestoneShown', async ({ page }) => {
-    // CI-only quarantine: the 5_000ms `not.toBeAttached` budget after
-    // `waitForAnimationIdle` is insufficient on ubuntu-latest's headless ANGLE
-    // renderer under 4-shard load. Locally passes consistently; reproduces 3/3
-    // on CI. Underlying timing race in the dismiss flow needs component-level
-    // investigation — not in scope for the working-tree-hygiene PR that
-    // surfaced this.
-    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/60')
     await page.addInitScript((today) => {
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify({
-        version: 1,
-        streak: { current: 3, longest: 3, lastActiveDate: today, lastMilestoneShown: 0 },
-        days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
-      }))
+      localStorage.setItem(
+        'funworldmap-daily-history',
+        JSON.stringify({
+          version: 1,
+          streak: { current: 3, longest: 3, lastActiveDate: today, lastMilestoneShown: 0 },
+          days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
+        }),
+      )
     }, TODAY)
     await page.goto('/')
     const milestone = page.getByTestId('launcher-milestone')
@@ -74,7 +83,9 @@ test.describe('Daily streak', () => {
     await expect(milestone).not.toBeAttached({ timeout: 5_000 })
     const stored = await page.evaluate(() => {
       const raw = localStorage.getItem('funworldmap-daily-history')
-      return raw ? (JSON.parse(raw) as { streak: { lastMilestoneShown: number } }).streak.lastMilestoneShown : null
+      return raw
+        ? (JSON.parse(raw) as { streak: { lastMilestoneShown: number } }).streak.lastMilestoneShown
+        : null
     })
     expect(stored).toBe(3)
   })
