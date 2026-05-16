@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { DailyShareBlock } from '../DailyShareBlock'
 import type { StreakState } from '../../game/daily/types'
 import type { ShareResults } from '../../game/daily/shareText'
+import { installAnalyticsCapture, type AnalyticsCapture } from '../../test/analyticsCapture'
 
 const results: ShareResults = {
   'country-pinning': {
@@ -18,15 +19,19 @@ const results: ShareResults = {
 
 const streak: StreakState = { current: 3, longest: 3, lastActiveDate: '2026-04-21', lastMilestoneShown: 0 }
 
+let captured: AnalyticsCapture
+
 beforeEach(() => {
-  // Enable test analytics capture (analytics.ts gates on __PLAYWRIGHT__)
-  window.__PLAYWRIGHT__ = true
-  window.__testAnalytics = []
+  captured = installAnalyticsCapture()
   // Reset navigator mocks
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (navigator as any).share
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ;(navigator as any).clipboard = { writeText: vi.fn().mockResolvedValue(undefined) }
+})
+
+afterEach(() => {
+  captured.uninstall()
 })
 
 describe('DailyShareBlock', () => {
@@ -50,7 +55,7 @@ describe('DailyShareBlock', () => {
     expect(call.title).toBe('funworldmap daily')
     expect(call.text).toContain('funworldmap · 04-21')
     expect(call.url).toBe('https://funworldmap.com/#daily/2026-04-21')
-    expect(window.__testAnalytics).toEqual([
+    expect(captured.events).toEqual([
       { name: 'daily_shared', props: { date: '2026-04-21', modesPlayed: 1, method: 'share-api' } },
     ])
   })
@@ -61,7 +66,7 @@ describe('DailyShareBlock', () => {
     await new Promise((r) => setTimeout(r, 0))
     const writeText = navigator.clipboard.writeText as ReturnType<typeof vi.fn>
     expect(writeText.mock.calls[0][0]).toContain('#daily/2026-04-21')
-    expect(window.__testAnalytics?.[0]).toMatchObject({
+    expect(captured.events[0]).toMatchObject({
       name: 'daily_shared',
       props: { date: '2026-04-21', modesPlayed: 1, method: 'clipboard-text' },
     })
@@ -73,7 +78,7 @@ describe('DailyShareBlock', () => {
     await new Promise((r) => setTimeout(r, 0))
     const writeText = navigator.clipboard.writeText as ReturnType<typeof vi.fn>
     expect(writeText.mock.calls[0][0]).toBe('https://funworldmap.com/#daily/2026-04-21')
-    expect(window.__testAnalytics?.[0]).toMatchObject({
+    expect(captured.events[0]).toMatchObject({
       name: 'daily_shared',
       props: { date: '2026-04-21', modesPlayed: 1, method: 'clipboard-link' },
     })
@@ -87,7 +92,7 @@ describe('DailyShareBlock', () => {
     render(<DailyShareBlock date="2026-04-21" results={results} streak={streak} originUrl="https://funworldmap.com" />)
     fireEvent.click(screen.getByTestId('daily-share-primary'))
     await new Promise((r) => setTimeout(r, 0))
-    expect(window.__testAnalytics).toEqual([])
+    expect(captured.events).toEqual([])
   })
 
   it('dispatches funworldmap:toast on clipboard success', async () => {

@@ -1,17 +1,18 @@
 import { render, screen, act, fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { LauncherMilestoneOverlay } from '../LauncherMilestoneOverlay'
+import { installAnalyticsCapture, type AnalyticsCapture } from '../../test/analyticsCapture'
 
 describe('LauncherMilestoneOverlay', () => {
+  let captured: AnalyticsCapture
+
   beforeEach(() => {
     vi.useFakeTimers()
-    window.__PLAYWRIGHT__ = true
-    window.__testAnalytics = []
+    captured = installAnalyticsCapture()
   })
   afterEach(() => {
     vi.useRealTimers()
-    delete window.__PLAYWRIGHT__
-    delete window.__testAnalytics
+    captured.uninstall()
   })
 
   it('renders milestone copy for each threshold', () => {
@@ -33,7 +34,7 @@ describe('LauncherMilestoneOverlay', () => {
 
   it('fires streak_reached_milestone on mount', () => {
     render(<LauncherMilestoneOverlay days={7} onDismiss={() => {}} />)
-    expect(window.__testAnalytics).toContainEqual({
+    expect(captured.events).toContainEqual({
       name: 'streak_reached_milestone',
       props: { days: 7 },
     })
