@@ -62,7 +62,7 @@ describe('DailyShareBlock', () => {
 
   it('share button uses navigator.share when available', async () => {
     const shareMock = vi.fn().mockResolvedValue(undefined)
-    nav.share = shareMock as unknown as NavigatorMock['share']
+    nav.share = shareMock
     render(
       <DailyShareBlock
         date="2026-04-21"
@@ -124,7 +124,7 @@ describe('DailyShareBlock', () => {
   it('navigator.share AbortError does NOT fire daily_shared', async () => {
     const abortErr = Object.assign(new Error('cancelled'), { name: 'AbortError' })
     const shareMock = vi.fn().mockRejectedValue(abortErr)
-    nav.share = shareMock as unknown as NavigatorMock['share']
+    nav.share = shareMock
     render(
       <DailyShareBlock
         date="2026-04-21"

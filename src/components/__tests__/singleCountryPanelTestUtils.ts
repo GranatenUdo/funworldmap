@@ -37,7 +37,7 @@ export function makeCountry(overrides: Partial<CountryData> = {}): CountryData {
     continents: ['Europe'],
     _fieldSources: {},
     ...overrides,
-  } as CountryData
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -211,7 +211,7 @@ describe('useHashGameRouter', () => {
     const puzzle = {
       country: { cca3: 'USA' },
       city: { id: 'USA-new-york' },
-    } as unknown as DailyPuzzleRef
+    }
     renderRouterHook(
       buildRouterArgs({
         resume,
