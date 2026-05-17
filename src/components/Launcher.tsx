@@ -57,6 +57,7 @@ export function Launcher({
   const totalDays = useMemo(() => Object.keys(history.days).length, [history])
 
   const todayDate = new Date()
+  const todayFormatted = todayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   const today = toLocalDateString(todayDate)
   const yesterday = toLocalDateString(
     new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 1),
@@ -334,9 +335,7 @@ export function Launcher({
               className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2"
               data-testid="launcher-subtitle"
             >
-              {anchorDate
-                ? `Daily · ${anchorDate}`
-                : `${countries.length} countries. Explore or guess.`}
+              {anchorDate ? `Daily · ${anchorDate}` : `Today’s puzzle · ${todayFormatted}`}
             </p>
           </div>
 
