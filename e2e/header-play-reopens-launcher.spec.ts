@@ -45,7 +45,9 @@ async function startDailyViaLauncher(page: Page): Promise<void> {
   await page.goto('/')
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
   await waitForAppReady(page)
-  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  // Open the launcher via the header CTA (map-first posture: bare '/' no longer auto-opens launcher)
+  await page.getByTestId('header-play').click()
+  await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 5_000 })
   await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
     timeout: 10_000,
   })
@@ -112,7 +114,9 @@ test.describe('header-play reopens launcher after game completion', () => {
     })
     await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    // Open launcher via header CTA (map-first posture)
+    await page.getByTestId('header-play').click()
+    await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 5_000 })
 
     // Start free game via the shared unlimited link.
     await page.getByTestId('launcher-unlimited-link').click()

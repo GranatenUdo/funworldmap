@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import { waitForAppReady } from './helpers'
+import { waitForAppReady, openLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -15,7 +15,7 @@ test.describe('Launcher card — loading states', () => {
     await page.route('**/daily/index.json', () => new Promise(() => {}))
     await page.goto('/')
     await waitForAppReady(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
 
     // Both mode cards must be in loading state
     await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
@@ -43,7 +43,7 @@ test.describe('Launcher card — loading states', () => {
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404, body: '' }))
     await page.goto('/')
     await waitForAppReady(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
 
     // Both mode cards must be in error state
     await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
@@ -86,7 +86,7 @@ test.describe('Launcher card — loading states', () => {
     )
     await page.goto('/')
     await waitForAppReady(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
 
     // Both mode cards must be in no-puzzle-today state
     await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(

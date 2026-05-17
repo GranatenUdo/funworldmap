@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import { waitForAnimationIdle } from './helpers'
+import { waitForAnimationIdle, openLauncher } from './helpers'
 
 test.setTimeout(120_000)
 const TODAY = toLocalDateString(new Date())
@@ -18,7 +18,7 @@ test.describe('Daily streak', () => {
       )
     }, TODAY)
     await page.goto('/')
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
     await expect(page.getByTestId('launcher-streak')).toContainText(/5-day streak/)
   })
 
@@ -42,6 +42,7 @@ test.describe('Daily streak', () => {
       )
     })
     await page.goto('/')
+    await openLauncher(page)
     await expect(page.getByTestId('launcher-streak')).toHaveAttribute('data-streak-mode', 'broken')
     await expect(page.getByTestId('launcher-streak')).toContainText(
       'Your streak’s reset — back in with today’s puzzle?',
@@ -60,6 +61,7 @@ test.describe('Daily streak', () => {
       )
     }, TODAY)
     await page.goto('/')
+    await openLauncher(page)
     await expect(page.getByTestId('launcher-milestone')).toBeVisible({ timeout: 5_000 })
     await expect(page.getByTestId('launcher-milestone')).toContainText(/a full week/i)
   })
@@ -76,6 +78,7 @@ test.describe('Daily streak', () => {
       )
     }, TODAY)
     await page.goto('/')
+    await openLauncher(page)
     const milestone = page.getByTestId('launcher-milestone')
     await expect(milestone).toBeVisible({ timeout: 5_000 })
     // Wait for the 260ms entrance animation to complete before starting the

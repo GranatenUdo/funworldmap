@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher, waitForCountryTilesRendered } from './helpers'
+import { ensureLauncherDismissed, waitForCountryTilesRendered } from './helpers'
 
 // Map interaction tests need the map to FULLY load.
 // If these fail, that's a real bug — not silently skipped.
@@ -12,7 +12,7 @@ async function waitForMapReady(page: import('@playwright/test').Page) {
 test.describe('Map rendering', () => {
   test('map loads with country boundary layers', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await waitForMapReady(page)
 
     const hasLayers = await page.evaluate(() => {
@@ -36,7 +36,7 @@ test.describe('Map rendering', () => {
 
   test('GeoJSON features have valid IDs in properties', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await waitForMapReady(page)
 
     await waitForCountryTilesRendered(page)
@@ -84,7 +84,7 @@ test.describe('Map rendering', () => {
 test.describe('Country click interaction', () => {
   test('clicking a country sets URL hash and opens panel', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await waitForMapReady(page)
     await waitForCountryTilesRendered(page)
 
@@ -121,10 +121,9 @@ test.describe('Country click interaction', () => {
     await page.mouse.click(clicked!.x, clicked!.y)
 
     // Poll until the hash reflects the country selection.
-    await expect.poll(
-      () => page.evaluate(() => window.location.hash),
-      { timeout: 15_000 },
-    ).toMatch(/^#[A-Z]{3}$/)
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 15_000 })
+      .toMatch(/^#[A-Z]{3}$/)
 
     // Panel should be open
     await expect(page.getByTestId('country-panel')).toBeVisible()
@@ -133,7 +132,7 @@ test.describe('Country click interaction', () => {
   test('clicking ocean deselects country and closes panel', async ({ page }) => {
     // Start with default view (no hash)
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await waitForMapReady(page)
     await waitForCountryTilesRendered(page)
 
@@ -165,10 +164,9 @@ test.describe('Country click interaction', () => {
     await page.mouse.click(countryPoint!.x, countryPoint!.y)
 
     // Poll until the hash reflects the country selection.
-    await expect.poll(
-      () => page.evaluate(() => window.location.hash),
-      { timeout: 15_000 },
-    ).toMatch(/^#[A-Z]{3}$/)
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 15_000 })
+      .toMatch(/^#[A-Z]{3}$/)
     await expect(page.getByTestId('country-panel')).toBeVisible()
 
     // Jump camera to mid-Pacific (guaranteed ocean) without changing hash.
@@ -197,10 +195,7 @@ test.describe('Country click interaction', () => {
     await page.mouse.click(box!.x + box!.width / 2, box!.y + box!.height / 2)
 
     // Poll until deselect propagates: hash clears AND panel unmounts.
-    await expect.poll(
-      () => page.evaluate(() => window.location.hash),
-      { timeout: 15_000 },
-    ).toBe('')
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 15_000 }).toBe('')
     await expect(page.getByTestId('country-panel')).not.toBeAttached()
   })
 })
@@ -211,9 +206,7 @@ test.describe('Country selection via hash', () => {
     await waitForMapReady(page)
 
     // data-selected-country should be set
-    const attr = await page
-      .locator('[data-selected-country]')
-      .getAttribute('data-selected-country')
+    const attr = await page.locator('[data-selected-country]').getAttribute('data-selected-country')
     expect(attr).toBe('250')
 
     // The country-selected layer filter should match France's ID
@@ -233,10 +226,7 @@ test.describe('Country selection via hash', () => {
     await page.goto('/#INVALID')
 
     // Poll until the invalid-hash redirect logic clears the hash.
-    await expect.poll(
-      () => page.evaluate(() => window.location.hash),
-      { timeout: 15_000 },
-    ).toBe('')
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 15_000 }).toBe('')
     await expect(page.getByTestId('country-panel')).not.toBeAttached()
   })
 })
@@ -244,17 +234,14 @@ test.describe('Country selection via hash', () => {
 test.describe('Hover interaction', () => {
   test('hovering over a country changes cursor to pointer', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await waitForMapReady(page)
     await waitForCountryTilesRendered(page)
 
     // Find a country feature
     const point = await page.evaluate(() => {
       const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
-        queryRenderedFeatures: (
-          point: [number, number],
-          options: { layers: string[] },
-        ) => unknown[]
+        queryRenderedFeatures: (point: [number, number], options: { layers: string[] }) => unknown[]
         getCanvas: () => HTMLCanvasElement
       }
       const canvas = map.getCanvas()
@@ -280,12 +267,15 @@ test.describe('Hover interaction', () => {
     // Poll until the canvas cursor flips to 'pointer' — the mousemove handler
     // sets it via map.getCanvas().style.cursor = 'pointer' after the hover
     // event fires, which on slow CI can lag the move event.
-    await expect.poll(
-      () => page.evaluate(() => {
-        const c = document.querySelector('.maplibregl-canvas') as HTMLElement | null
-        return c?.style.cursor ?? ''
-      }),
-      { timeout: 5_000 },
-    ).toBe('pointer')
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const c = document.querySelector('.maplibregl-canvas') as HTMLElement | null
+            return c?.style.cursor ?? ''
+          }),
+        { timeout: 5_000 },
+      )
+      .toBe('pointer')
   })
 })

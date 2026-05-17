@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher, waitForAppReady } from './helpers'
+import { ensureLauncherDismissed, waitForAppReady } from './helpers'
 
 test.describe('canonical-195 dataset reduction', () => {
   // The "Launcher subtitle reflects the canonical 195 count" test was removed
@@ -8,7 +8,7 @@ test.describe('canonical-195 dataset reduction', () => {
 
   test('Palestine is searchable', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await page.getByTestId('search-input').fill('Pal')
     await expect(
       page.getByTestId('search-results').getByRole('option', { name: /Palestine/ }),
@@ -17,7 +17,7 @@ test.describe('canonical-195 dataset reduction', () => {
 
   test('dropped territories are not searchable (Greenland)', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     const input = page.getByTestId('search-input')
     await input.fill('land')
     const results = page.getByTestId('search-results')

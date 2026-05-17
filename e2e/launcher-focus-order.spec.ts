@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import { waitForAppReady, stubDailyIndex } from './helpers'
+import { waitForAppReady, stubDailyIndex, openLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -29,8 +29,8 @@ test.describe('Launcher — initial focus order', () => {
     })
     await page.goto('/')
     await waitForAppReady(page)
+    await openLauncher(page)
 
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     // Daily CTA must be visible (puzzlesStatus === 'ready', state === 'unplayed')
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
       timeout: 10_000,
@@ -48,8 +48,8 @@ test.describe('Launcher — initial focus order', () => {
     })
     await page.goto('/')
     await waitForAppReady(page)
+    await openLauncher(page)
 
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     // Confirm starting focus position before any keyboard navigation
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
       timeout: 10_000,
@@ -96,8 +96,7 @@ test.describe('Launcher — initial focus order', () => {
     })
     await page.goto('/')
     await waitForAppReady(page)
-
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
 
     // Move focus to the launcher-close button explicitly — simulating a
     // user who has tabbed to a different element before content settled.
