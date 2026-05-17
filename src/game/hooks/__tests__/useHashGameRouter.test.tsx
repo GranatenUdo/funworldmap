@@ -35,6 +35,7 @@ const noopDailyPuzzles = {
   status: 'ready' as const,
   index: null,
   byDate: (): DailyPuzzleRef | null => null,
+  refetch: vi.fn(async () => {}),
 }
 
 function buildRouterArgs(overrides: BuildRouterArgsOverrides = {}): RouterArgs {
@@ -219,6 +220,7 @@ describe('useHashGameRouter', () => {
           status: 'ready',
           index: null,
           byDate: () => puzzle,
+          refetch: vi.fn(async () => {}),
         },
       }),
     )
