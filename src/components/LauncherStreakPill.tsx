@@ -28,8 +28,8 @@ export function LauncherStreakPill({
           <span className="tabular-nums font-semibold">{current}-day streak</span>
         </span>
       )}
-      {streakMode === 'broken' && <span>Your streak's reset — back in with today's puzzle?</span>}
-      {streakMode === 'first' && <span>You haven't played today yet — start a streak?</span>}
+      {streakMode === 'broken' && <span>Your streak’s reset — back in with today’s puzzle?</span>}
+      {streakMode === 'first' && <span>You haven’t played today yet — start a streak?</span>}
 
       {totalDays > 0 && (
         <button
