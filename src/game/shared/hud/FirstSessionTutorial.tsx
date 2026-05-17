@@ -9,7 +9,7 @@ const COPY = {
     body: 'Click the country that matches the flag and name above. Three wrong countries end the game. Ocean clicks don’t count.',
   },
   'country-pinning-daily': {
-    title: 'Daily — best of 3',
+    title: 'Today’s puzzle',
     body: 'You have 3 attempts. Your highest-scoring guess wins. Press Done when you’re happy with your best so far.',
   },
   'city-guessing-free': {
@@ -17,7 +17,7 @@ const COPY = {
     body: 'Click anywhere on the map — including ocean — to guess the city’s location. Ten rounds per game.',
   },
   'city-guessing-daily': {
-    title: 'Daily — best of 3',
+    title: 'Today’s puzzle',
     body: 'You have 3 attempts to pin the city. Your closest guess wins. Press Done when you’re happy with your best so far.',
   },
 } as const
