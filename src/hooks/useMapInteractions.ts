@@ -99,12 +99,23 @@ export function useMapInteractions({
       tooltip.classList.add('visible')
     }
 
+    // Coalesce tooltip position updates to one write per animation frame.
+    // mousemove fires faster than the display refresh rate; writing
+    // style.left/top twice per event triggered redundant layout work.
+    let pendingFrame: number | null = null
+    let pendingX = 0
+    let pendingY = 0
     const mousemovePosition = (e: maplibregl.MapMouseEvent) => {
-      const tooltip = tooltipRef.current
-      if (tooltip && tooltip.classList.contains('visible')) {
-        tooltip.style.left = `${e.point.x + 15}px`
-        tooltip.style.top = `${e.point.y + 15}px`
-      }
+      pendingX = e.point.x
+      pendingY = e.point.y
+      if (pendingFrame !== null) return
+      pendingFrame = window.requestAnimationFrame(() => {
+        pendingFrame = null
+        const tooltip = tooltipRef.current
+        if (!tooltip || !tooltip.classList.contains('visible')) return
+        tooltip.style.left = `${pendingX + 15}px`
+        tooltip.style.top = `${pendingY + 15}px`
+      })
     }
 
     const mouseleaveHover = () => {
@@ -159,6 +170,7 @@ export function useMapInteractions({
     map.doubleClickZoom.disable()
 
     return () => {
+      if (pendingFrame !== null) window.cancelAnimationFrame(pendingFrame)
       map.off('mousemove', LAYER.fill, mousemoveHover)
       map.off('mousemove', mousemovePosition)
       map.off('mouseleave', LAYER.fill, mouseleaveHover)
