@@ -11,7 +11,8 @@ function zoomFromArea(areaKm2: number): number {
 
 export function flyToCountry(map: maplibregl.Map, country: CountryData): void {
   const [lat, lng] = country.latlng
-  const zoom = zoomFromArea(country.area)
+  const computed = zoomFromArea(country.area)
+  const zoom = Math.max(map.getZoom(), computed)
   const reducedMotion = prefersReducedMotion()
 
   map.flyTo({
