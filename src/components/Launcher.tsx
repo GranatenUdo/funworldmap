@@ -369,6 +369,17 @@ export function Launcher({
             ))}
           </div>
 
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => startFree(lastMode ?? 'country-pinning')}
+              data-testid="launcher-unlimited-link"
+              className="text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1"
+            >
+              Play unlimited rounds →
+            </button>
+          </div>
+
           {historyOpen && (
             <LauncherHistoryPanel
               today={today}
