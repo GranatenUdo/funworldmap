@@ -196,9 +196,8 @@ describe('useRevealMapEffects', () => {
     )
   })
 
-  it("flyTo on round-start when mode.initialCameraView === 'world'", () => {
+  it('does NOT flyTo at round-start (camera is preserved across game lifecycle)', () => {
     const fake = createFakeMapRef()
-    // city-guessing is the only mode with initialCameraView='world'.
     const session = makeSession({
       status: 'playing',
       modeId: 'city-guessing',
@@ -211,12 +210,7 @@ describe('useRevealMapEffects', () => {
         mapRef: fake.ref,
       }),
     )
-    expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
-    const firstCall = fake.calls.flyTo.mock.calls[0][0] as { zoom: number; center: number[] }
-    expect(firstCall).toMatchObject({
-      zoom: expect.any(Number) as number,
-      center: expect.any(Array) as number[],
-    })
+    expect(fake.calls.flyTo).not.toHaveBeenCalled()
   })
 
   it('attaches click handler in city-guessing playing state, detaches on unmount', () => {

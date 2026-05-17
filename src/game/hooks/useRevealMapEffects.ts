@@ -7,7 +7,6 @@ import { tessellateArc } from '../shared/distance'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCityGuessing } from '../shared/modePredicates'
 import { prefersReducedMotion } from '../../lib/motion'
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../../lib/mapStyles'
 import {
   REVEAL_MARKER_SOURCE,
   REVEAL_LINE_SOURCE,
@@ -80,7 +79,6 @@ export interface UseRevealMapEffectsArgs {
  */
 export function useRevealMapEffects({
   session,
-  mode,
   mapRef,
   byCca3,
   submitGuessInput,
@@ -327,16 +325,6 @@ export function useRevealMapEffects({
       }
     }
   }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
-
-  // Camera reset on round start when mode requests it.
-  useEffect(() => {
-    if (session.status !== 'playing' || !mode) return
-    if (mode.initialCameraView !== 'world') return
-    const map = mapRef.current
-    if (!map) return
-    const reduced = prefersReducedMotion()
-    map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: reduced ? 0 : 700 })
-  }, [session.status, session.roundIndex, mode])
 
   // City-mode any-click handler.
   useEffect(() => {

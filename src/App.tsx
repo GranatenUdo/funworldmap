@@ -11,7 +11,7 @@ import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
-import { MapProvider, useMap } from './hooks/useMap'
+import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { isCountryPinning } from './game/shared/modePredicates'
 import { DailyPuzzlesProvider, useDailyPuzzlesContext } from './game/daily/DailyPuzzlesProvider'
@@ -20,13 +20,11 @@ import { toLocalDateString, getToday, getYesterday } from './game/daily/dates'
 import { deriveStreakMode } from './game/daily/storage'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike, ModeId } from './game/shared/types'
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { parseHash } from './lib/hashState'
 import { track, type CtaState } from './lib/analytics'
 import { dispatchToast } from './lib/toast'
-import { prefersReducedMotion } from './lib/motion'
 
 export default function App() {
   const { countries, byNumeric, byCca3, sources } = useCountryData()
@@ -93,7 +91,6 @@ function AppInner({
     useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
-  const { mapRef } = useMap()
   const { session, submitGuessInput, advance, mode, finalize } = useGameSessionContext()
   const { byDate } = useDailyPuzzlesContext()
   const {
@@ -233,15 +230,10 @@ function AppInner({
     if (session.status !== 'playing' || session.roundIndex !== 0) return
     if (selected) deselect()
     setComparePickingMode(false)
-    const reduced = prefersReducedMotion()
-    mapRef.current?.flyTo({
-      center: DEFAULT_CENTER,
-      zoom: DEFAULT_ZOOM,
-      duration: reduced ? 0 : 700,
-    })
+    // No camera reset — user's view is preserved at game start.
     // Fires on the very first round of each new game — covers idle→playing
     // and game-over→Play-again transitions without needing a prev-status ref.
-  }, [session.status, session.roundIndex, selected, deselect, mapRef])
+  }, [session.status, session.roundIndex, selected, deselect])
 
   useEffect(() => {
     const name = selected?.name.common ?? null
