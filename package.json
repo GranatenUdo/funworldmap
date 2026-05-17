@@ -46,8 +46,8 @@
     "@vis.gl/react-maplibre": "^8.1.1",
     "fuse.js": "^7.3.0",
     "maplibre-gl": "^5.23.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
     "topojson-client": "^3.1.0",
     "world-atlas": "^2.0.2"
   },
