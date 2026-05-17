@@ -8,8 +8,8 @@ export default function Toast() {
       const customEvent = e as CustomEvent<string>
       setMessage(customEvent.detail)
     }
-    window.addEventListener('funworldmap:toast', handler as EventListener)
-    return () => window.removeEventListener('funworldmap:toast', handler as EventListener)
+    window.addEventListener('funworldmap:toast', handler)
+    return () => window.removeEventListener('funworldmap:toast', handler)
   }, [])
 
   useEffect(() => {

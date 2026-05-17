@@ -8,7 +8,13 @@ interface Props {
   onOpenHistory: () => void
 }
 
-export function LauncherStreakPill({ current, longest, totalDays, streakMode, onOpenHistory }: Props) {
+export function LauncherStreakPill({
+  current,
+  longest,
+  totalDays,
+  streakMode,
+  onOpenHistory,
+}: Props) {
   return (
     <div
       data-testid="launcher-streak"
@@ -22,12 +28,8 @@ export function LauncherStreakPill({ current, longest, totalDays, streakMode, on
           <span className="tabular-nums font-semibold">{current}-day streak</span>
         </span>
       )}
-      {streakMode === 'broken' && (
-        <span>Start your streak — play today's daily.</span>
-      )}
-      {streakMode === 'first' && (
-        <span>Play today's daily.</span>
-      )}
+      {streakMode === 'broken' && <span>Your streak’s reset — back in with today’s puzzle?</span>}
+      {streakMode === 'first' && <span>You haven’t played today yet — start a streak?</span>}
 
       {totalDays > 0 && (
         <button

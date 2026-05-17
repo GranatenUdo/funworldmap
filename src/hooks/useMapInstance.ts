@@ -184,7 +184,7 @@ export function useMapInstance({
       setMapErrorState((prev) => (prev === 'webgl-lost' ? null : prev))
     }
 
-    map.on('webglcontextlost', onMapContextLost as (e: object) => void)
+    map.on('webglcontextlost', onMapContextLost)
     map.on('webglcontextrestored', onMapContextRestored)
 
     const canvas = map.getCanvas()

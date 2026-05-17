@@ -6,13 +6,13 @@ import { isCountryPinning } from '../game/shared/modePredicates'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
 import { installFocusTrap } from '../lib/focusTrap'
-import { usePersonalBests } from '../game/shared/usePersonalBests'
 import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import { toLocalDateString } from '../game/daily/dates'
 import { LauncherModeCard, type LauncherCardState } from './LauncherModeCard'
 import { LauncherStreakPill } from './LauncherStreakPill'
 import { LauncherMilestoneOverlay } from './LauncherMilestoneOverlay'
+import { LauncherCountdown } from './LauncherCountdown'
 import { LauncherHistoryPanel, type HistoryCellKind } from './LauncherHistoryPanel'
 
 interface Props {
@@ -20,6 +20,7 @@ interface Props {
   anchorDate: string | null
   countries: CountryLike[]
   cities: CityLike[]
+  initialHistoryOpen?: boolean
 }
 
 function focusSearchInput(): void {
@@ -36,20 +37,25 @@ function focusSearchInput(): void {
   })
 }
 
-export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
+export function Launcher({
+  onDismiss,
+  anchorDate,
+  countries,
+  cities,
+  initialHistoryOpen = false,
+}: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const modes = useMemo(() => listModes(), [])
   const lastMode = readLastMode()
-  const { best: cpBest } = usePersonalBests('country-pinning')
-  const { best: cgBest } = usePersonalBests('city-guessing')
-  const { status: puzzlesStatus, byDate, index } = useDailyPuzzlesContext()
+  const { status: puzzlesStatus, byDate, index, refetch } = useDailyPuzzlesContext()
   const { history, get: getDay, streak, pendingMilestone, markMilestoneShown } = useDailyHistory()
-  const [historyOpen, setHistoryOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(initialHistoryOpen)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   const totalDays = useMemo(() => Object.keys(history.days).length, [history])
 
   const todayDate = new Date()
+  const todayFormatted = todayDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   const today = toLocalDateString(todayDate)
   const yesterday = toLocalDateString(
     new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 1),
@@ -65,7 +71,12 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
 
   const latestAvailableDate: string | null = useMemo(() => {
     if (!index) return null
-    return Object.keys(index.days).filter((d) => d <= today).sort().pop() ?? null
+    return (
+      Object.keys(index.days)
+        .filter((d) => d <= today)
+        .sort()
+        .pop() ?? null
+    )
   }, [index, today])
 
   function cardState(modeId: ModeId): LauncherCardState {
@@ -79,19 +90,23 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     return 'unplayed'
   }
 
-  const bestFor = (id: ModeId) => (isCountryPinning(id) ? cpBest : cgBest)
-  const playedFor = useCallback((id: ModeId) => {
-    const prior = getDay(date, id)
-    if (!prior) return undefined
-    const puzzle = byDate(date)
-    if (!puzzle) return { score: prior.score }
-    if (isCountryPinning(id)) {
-      const c = countries.find((cc) => cc.cca3 === puzzle.country.cca3)
-      return { score: prior.score, targetName: c?.name.common }
-    }
-    const city = cities.find((cc) => cc.id === puzzle.city.id)
-    return { score: prior.score, targetName: city?.name }
-  }, [getDay, date, byDate, countries, cities])
+  const bothPlayed = modes.every((m) => cardState(m.id) === 'played')
+
+  const playedFor = useCallback(
+    (id: ModeId) => {
+      const prior = getDay(date, id)
+      if (!prior) return undefined
+      const puzzle = byDate(date)
+      if (!puzzle) return { score: prior.score }
+      if (isCountryPinning(id)) {
+        const c = countries.find((cc) => cc.cca3 === puzzle.country.cca3)
+        return { score: prior.score, targetName: c?.name.common }
+      }
+      const city = cities.find((cc) => cc.id === puzzle.city.id)
+      return { score: prior.score, targetName: city?.name }
+    },
+    [getDay, date, byDate, countries, cities],
+  )
 
   const openedRef = useRef<Set<string>>(new Set())
   useEffect(() => {
@@ -101,7 +116,10 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
       if (openedRef.current.has(key)) continue
       if (!byDate(date)) continue
       openedRef.current.add(key)
-      const dateAge = Math.max(0, Math.round((new Date(today).getTime() - new Date(date).getTime()) / 86_400_000))
+      const dateAge = Math.max(
+        0,
+        Math.round((new Date(today).getTime() - new Date(date).getTime()) / 86_400_000),
+      )
       track('daily_opened', { mode: m.id, dateAge })
     }
   }, [puzzlesStatus, index, byDate, date, today, modes])
@@ -125,7 +143,10 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     const rafId = window.requestAnimationFrame(() => {
       if (cancelled) return
       const animations = root.getAnimations({ subtree: true })
-      if (animations.length === 0) { flipToIdle(); return }
+      if (animations.length === 0) {
+        flipToIdle()
+        return
+      }
       Promise.all(animations.map((a) => a.finished))
         .then(flipToIdle)
         .catch(flipToIdle)
@@ -138,8 +159,8 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     }
   }, [])
 
-  const dismissWithFocus = useCallback(() => {
-    track('launcher_dismissed', { path: 'link' })
+  const dismissWithCloseButton = useCallback(() => {
+    track('launcher_dismissed', { path: 'close' })
     onDismiss()
     focusSearchInput()
   }, [onDismiss])
@@ -208,41 +229,32 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     if (puzzlesStatus !== 'ready' && puzzlesStatus !== 'unavailable') return
 
     const active = document.activeElement
-    const isFirstFocus = active === document.body || !root.contains(active as Node)
-    // A free-link that was the only focusable element during loading is a
-    // "loading placeholder": it was auto-focused when puzzlesStatus was not
-    // ready, and should be superseded now that daily content has settled.
-    const activeIsLoadingPlaceholder =
-      active instanceof HTMLElement &&
-      root.contains(active) &&
-      /-free-link$/.test(active.getAttribute('data-testid') ?? '')
+    const isFirstFocus = active === document.body || !root.contains(active)
 
-    if (!isFirstFocus && !activeIsLoadingPlaceholder) return
+    if (!isFirstFocus) return
 
     // Priority: lastMode daily-cta → lastMode see-reveal → any daily-cta →
-    // any see-reveal → lastMode free-link → any free-link → first focusable button
+    // any see-reveal → first focusable button
     const lastModeDailyCta = lastMode
-      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-daily-cta"]:not([disabled])`)
+      ? root.querySelector<HTMLButtonElement>(
+          `[data-testid="launcher-card-${lastMode}-daily-cta"]:not([disabled])`,
+        )
       : null
     const lastModeSeeReveal = lastMode
-      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-see-reveal"]:not([disabled])`)
+      ? root.querySelector<HTMLButtonElement>(
+          `[data-testid="launcher-card-${lastMode}-see-reveal"]:not([disabled])`,
+        )
       : null
-    const lastModeFreeLink = lastMode
-      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-free-link"]:not([disabled])`)
-      : null
-    const firstDailyCta = root.querySelector<HTMLButtonElement>('[data-testid$="-daily-cta"]:not([disabled])')
-    const firstSeeReveal = root.querySelector<HTMLButtonElement>('[data-testid$="-see-reveal"]:not([disabled])')
-    const firstFreeLink = root.querySelector<HTMLButtonElement>('[data-testid$="-free-link"]:not([disabled])')
+    const firstDailyCta = root.querySelector<HTMLButtonElement>(
+      '[data-testid$="-daily-cta"]:not([disabled])',
+    )
+    const firstSeeReveal = root.querySelector<HTMLButtonElement>(
+      '[data-testid$="-see-reveal"]:not([disabled])',
+    )
     const firstFocusable = root.querySelector<HTMLButtonElement>('button:not([disabled])')
 
     const target =
-      lastModeDailyCta ??
-      lastModeSeeReveal ??
-      firstDailyCta ??
-      firstSeeReveal ??
-      lastModeFreeLink ??
-      firstFreeLink ??
-      firstFocusable
+      lastModeDailyCta ?? lastModeSeeReveal ?? firstDailyCta ?? firstSeeReveal ?? firstFocusable
     target?.focus()
   }, [puzzlesStatus, lastMode])
 
@@ -289,9 +301,27 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
           }}
         />
         <div className="relative w-full max-w-2xl mx-auto">
+          <button
+            type="button"
+            onClick={dismissWithCloseButton}
+            data-testid="launcher-close"
+            aria-label="Close"
+            className="absolute -top-2 right-0 w-9 h-9 rounded-full text-sand-50 dark:text-dark-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 flex items-center justify-center"
+          >
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
           <div
             role="presentation"
-            className="text-center mb-6"
+            className="text-center mb-6 pointer-events-none"
             style={{ animation: 'launcher-text-in 240ms ease-out 60ms both' }}
           >
             <div className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">
@@ -301,7 +331,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
               className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2"
               data-testid="launcher-subtitle"
             >
-              {anchorDate ? `Daily · ${anchorDate}` : `${countries.length} countries. Explore or guess.`}
+              {anchorDate ? `Daily · ${anchorDate}` : `Today’s puzzle · ${todayFormatted}`}
             </p>
           </div>
 
@@ -327,14 +357,27 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
                   todayDate={today}
                   state={cardState(m.id)}
                   played={playedFor(m.id)}
-                  freeBest={bestFor(m.id)}
                   latestAvailableDate={latestAvailableDate}
                   onStartDaily={() => startDaily(m.id)}
                   onStartFree={() => startFree(m.id)}
                   onSeeReveal={() => seeReveal(m.id)}
+                  onRetry={() => void refetch()}
                 />
               </div>
             ))}
+          </div>
+
+          {bothPlayed && <LauncherCountdown />}
+
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={() => startFree(lastMode ?? 'country-pinning')}
+              data-testid="launcher-unlimited-link"
+              className="text-[13px] text-white underline decoration-white/50 hover:decoration-white focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1 bg-black/40"
+            >
+              Play unlimited rounds →
+            </button>
           </div>
 
           {historyOpen && (
@@ -344,20 +387,6 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
               onCellActivate={onCellActivate}
             />
           )}
-
-          <div
-            className="mt-6 text-center"
-            style={{ animation: 'launcher-text-in 180ms ease-out 260ms both' }}
-          >
-            <button
-              type="button"
-              onClick={dismissWithFocus}
-              data-testid="launcher-dismiss"
-              className="text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1"
-            >
-              Just explore the map
-            </button>
-          </div>
         </div>
       </div>
     </>

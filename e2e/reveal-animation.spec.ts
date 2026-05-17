@@ -7,9 +7,14 @@ async function waitForMap(page: Page) {
 
 test.describe('reveal animation', () => {
   test('wrong country guess renders a tessellated line from guess → target', async ({ page }) => {
+    // Seed lastMode so the shared unlimited link routes to country-pinning.
+    await page.addInitScript(() => {
+      localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
+    })
     await page.goto('/')
     await waitForMap(page)
-    await page.getByTestId('launcher-card-country-pinning-free-link').click()
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-unlimited-link').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     // Pin France as the target, then submit Germany as the guess.
@@ -40,10 +45,17 @@ test.describe('reveal animation', () => {
     expect(center!.lat).toBeCloseTo(46, 0)
   })
 
-  test('city-guessing wrong guess renders a tessellated line from point → target', async ({ page }) => {
+  test('city-guessing wrong guess renders a tessellated line from point → target', async ({
+    page,
+  }) => {
+    // Seed lastMode so the shared unlimited link routes to city-guessing.
+    await page.addInitScript(() => {
+      localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
+    })
     await page.goto('/')
     await waitForMap(page)
-    await page.getByTestId('launcher-card-city-guessing-free-link').click()
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-unlimited-link').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     // Submit a point guess at [0, 0] — target is whatever the mode picked.

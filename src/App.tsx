@@ -87,13 +87,19 @@ function AppInner({
   cities,
 }: AppInnerProps) {
   const appReady = countries.length > 0 && cities.length > 0
-  const { selected, compareWith, select, compareSelect, clearCompare, deselect } = useSelectedCountry(byCca3)
+  const { selected, compareWith, select, compareSelect, clearCompare, deselect } =
+    useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const { mapRef } = useMap()
   const { session, submitGuessInput, advance, mode, finalize } = useGameSessionContext()
   const { byDate } = useDailyPuzzlesContext()
-  const { visible: launcherVisible, anchorDate, dismiss: dismissLauncher, show: showLauncher } = useLauncherVisibility()
+  const {
+    visible: launcherVisible,
+    anchorDate,
+    dismiss: dismissLauncher,
+    show: showLauncher,
+  } = useLauncherVisibility()
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const clearTimerRef = useRef<number | null>(null)
   const prevSelectedRef = useRef<string | null>(null)
@@ -102,7 +108,9 @@ function AppInner({
   const [hintDismissed, setHintDismissed] = useState(false)
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
-  const [revealState, setRevealState] = useState<{ date: string; modeId: ModeId | null } | null>(null)
+  const [revealState, setRevealState] = useState<{ date: string; modeId: ModeId | null } | null>(
+    null,
+  )
 
   useEffect(() => {
     const read = () => {
@@ -139,8 +147,7 @@ function AppInner({
   const roundEndTarget = useMemo(() => {
     if (session.status !== 'round-ended') return null
     if (!isCountryPinning(session.modeId)) return null
-    const isFinalOutcome =
-      session.attemptsPerRound === 1 || session.attemptsRemaining === 0
+    const isFinalOutcome = session.attemptsPerRound === 1 || session.attemptsRemaining === 0
     if (!isFinalOutcome) return null
     const reveal = session.lastOutcome?.reveal
     if (!reveal || reveal.kind !== 'country') return null
@@ -192,7 +199,16 @@ function AppInner({
         select(cca3)
       }
     },
-    [gameActive, session.modeId, poolByCca3, submitGuessInput, comparePickingMode, selected, select, compareSelect],
+    [
+      gameActive,
+      session.modeId,
+      poolByCca3,
+      submitGuessInput,
+      comparePickingMode,
+      selected,
+      select,
+      compareSelect,
+    ],
   )
 
   useEffect(() => {
@@ -263,12 +279,20 @@ function AppInner({
   useEffect(() => {
     const check = () => document.querySelector('[data-map-loaded], [data-map-error]')
     const observer = new MutationObserver(() => {
-      if (check()) { setMapReady(true); observer.disconnect() }
+      if (check()) {
+        setMapReady(true)
+        observer.disconnect()
+      }
     })
     observer.observe(document.body, {
-      subtree: true, attributes: true, attributeFilter: ['data-map-loaded', 'data-map-error'],
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-map-loaded', 'data-map-error'],
     })
-    if (check()) { setMapReady(true); observer.disconnect() }
+    if (check()) {
+      setMapReady(true)
+      observer.disconnect()
+    }
     return () => observer.disconnect()
   }, [])
 
@@ -306,8 +330,14 @@ function AppInner({
           })
           return
         }
-        if (compareWith || comparePickingMode) { exitCompare(); return }
-        if (selected) { deselect(); return }
+        if (compareWith || comparePickingMode) {
+          exitCompare()
+          return
+        }
+        if (selected) {
+          deselect()
+          return
+        }
         const searchInput = document.getElementById('search-input') as HTMLInputElement | null
         if (searchInput && searchInput.value) {
           searchInput.value = ''
@@ -325,7 +355,16 @@ function AppInner({
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [selected, compareWith, comparePickingMode, exitCompare, deselect, gameActive, launcherVisible, dismissLauncher])
+  }, [
+    selected,
+    compareWith,
+    comparePickingMode,
+    exitCompare,
+    deselect,
+    gameActive,
+    launcherVisible,
+    dismissLauncher,
+  ])
 
   return (
     <div
@@ -336,17 +375,32 @@ function AppInner({
       <button
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg"
         onClick={() => document.getElementById('search-input')?.focus()}
-      >Skip to search</button>
+      >
+        Skip to search
+      </button>
       <button
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-40 focus:z-[100] focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg"
         onClick={() => document.querySelector<HTMLDivElement>('[role="application"]')?.focus()}
-      >Skip to map</button>
+      >
+        Skip to map
+      </button>
 
-      <div ref={liveRegionRef} data-testid="announce-region" aria-live="polite" aria-atomic="true" className="sr-only" />
+      <div
+        ref={liveRegionRef}
+        data-testid="announce-region"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      />
 
       {!mapReady && (
-        <div aria-hidden="true" className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300 pointer-events-none">
-          <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">funworldmap</span>
+        <div
+          aria-hidden="true"
+          className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300 pointer-events-none"
+        >
+          <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">
+            funworldmap
+          </span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
               <div
@@ -361,8 +415,13 @@ function AppInner({
 
       <Toast />
 
-      <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-10"
-        style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.10) 100%)' }} />
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 pointer-events-none z-10"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.10) 100%)',
+        }}
+      />
 
       <main data-app-ready={appReady ? 'true' : 'false'}>
         <WorldMap
@@ -390,15 +449,25 @@ function AppInner({
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
-      {launcherVisible && <Launcher onDismiss={dismissLauncher} anchorDate={anchorDate} countries={pool} cities={cities} />}
+      {launcherVisible && (
+        <Launcher
+          onDismiss={dismissLauncher}
+          anchorDate={anchorDate}
+          countries={pool}
+          cities={cities}
+        />
+      )}
 
       <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
       {showHint && !selected && !gameActive && (
-        <div role="status"
+        <div
+          role="status"
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg"
           style={{ animation: 'fade-up 300ms ease-out' }}
-        >Explore the world</div>
+        >
+          Click a country to explore — or press / to search
+        </div>
       )}
 
       {selected && !gameActive && (
@@ -423,10 +492,16 @@ function AppInner({
           comparePickingMode={false}
           sources={sources}
           isDesktop={isDesktop}
-          onSelect={() => { /* no-op during round-end */ }}
+          onSelect={() => {
+            /* no-op during round-end */
+          }}
           onClose={advanceRoundEndPanel}
-          onEnterCompare={() => { /* no-op — hidden by inGameRound */ }}
-          onExitCompare={() => { /* no-op — hidden by inGameRound */ }}
+          onEnterCompare={() => {
+            /* no-op — hidden by inGameRound */
+          }}
+          onExitCompare={() => {
+            /* no-op — hidden by inGameRound */
+          }}
           byCca3={byCca3}
           inGameRound={true}
         />

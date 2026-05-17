@@ -19,7 +19,11 @@ function describeGameEnd(session: GameSession): string {
 }
 
 export function GameOverOverlay({
-  session, personalBest, beatPersonalBest, onPlayAgain, onBackToMap,
+  session,
+  personalBest,
+  beatPersonalBest,
+  onPlayAgain,
+  onBackToMap,
 }: Props) {
   // Freeze at first paint — record() updates the store synchronously after
   // game-over, which would otherwise flip "New personal best!" to "Best: N pts".
@@ -29,7 +33,8 @@ export function GameOverOverlay({
   const isDaily = session.dailyDate !== null
   const dailyDate = session.dailyDate
   const dailyResults = dailyDate ? (history.days[dailyDate] ?? {}) : {}
-  const hasAnyMode = isDaily && (!!dailyResults['country-pinning'] || !!dailyResults['city-guessing'])
+  const hasAnyMode =
+    isDaily && (!!dailyResults['country-pinning'] || !!dailyResults['city-guessing'])
 
   useEffect(() => {
     previousFocusRef.current = document.activeElement as HTMLElement | null
@@ -47,9 +52,7 @@ export function GameOverOverlay({
       if (canRestore) {
         target.focus({ preventScroll: true })
       } else {
-        document
-          .querySelector<HTMLElement>('[role="application"]')
-          ?.focus({ preventScroll: true })
+        document.querySelector<HTMLElement>('[role="application"]')?.focus({ preventScroll: true })
       }
     }
   }, [])
@@ -65,11 +68,16 @@ export function GameOverOverlay({
       <div className="w-full max-w-sm rounded-2xl bg-sand-50 dark:bg-dark-400 border border-sand-300/50 dark:border-dark-200/30 shadow-2xl p-6">
         <h2
           id="game-over-title"
+          data-testid="game-over-title"
           className="text-xl font-bold text-sand-900 dark:text-dark-50 mb-1"
         >
-          Game over
+          {isDaily ? 'Today’s results' : 'Game over'}
         </h2>
-        <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">{describeGameEnd(session)}</p>
+        {!isDaily && (
+          <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">
+            {describeGameEnd(session)}
+          </p>
+        )}
 
         <dl
           className={`grid ${
@@ -101,9 +109,13 @@ export function GameOverOverlay({
         {!isDaily && (
           <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
             {stableBeatPB ? (
-              <span className="font-semibold text-teal-accessible dark:text-teal-light">New personal best!</span>
+              <span className="font-semibold text-teal-accessible dark:text-teal-light">
+                New personal best!
+              </span>
             ) : (
-              <>Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak</>
+              <>
+                Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak
+              </>
             )}
           </div>
         )}

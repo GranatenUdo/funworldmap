@@ -46,7 +46,9 @@ async function startDailyViaLauncher(page: Page): Promise<void> {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
   await waitForAppReady(page)
   await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-  await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({ timeout: 10_000 })
+  await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
+    timeout: 10_000,
+  })
   await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
   await expect
     .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
@@ -55,7 +57,9 @@ async function startDailyViaLauncher(page: Page): Promise<void> {
 }
 
 test.describe('header-play reopens launcher after game completion', () => {
-  test('daily game: Back to map triggers hashchange so launcher re-appears, ▶ also works', async ({ page }) => {
+  test('daily game: Back to map triggers hashchange so launcher re-appears, ▶ also works', async ({
+    page,
+  }) => {
     await startDailyViaLauncher(page)
 
     // Submit 3 guesses to exhaust all attempts (best-of-3 daily round)
@@ -74,16 +78,14 @@ test.describe('header-play reopens launcher after game completion', () => {
     await expect(page.getByTestId('game-over')).not.toBeAttached({ timeout: 5_000 })
 
     // Hash should have cleared (writeIdleHash dispatches hashchange)
-    await expect
-      .poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 })
-      .toBe('')
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 }).toBe('')
 
     // The launcher must auto-appear: dismissed resets on idle and hash is now bare root.
     // This is the primary proof of the fix: previously currentHash stayed stale so visible=false.
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
 
     // Dismiss the launcher
-    await page.getByTestId('launcher-dismiss').click()
+    await page.getByTestId('launcher-close').click()
     await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
 
     // header-play must be in the DOM after dismiss (Header returns null while launcher visible)
@@ -94,9 +96,9 @@ test.describe('header-play reopens launcher after game completion', () => {
 
     // Launcher appears with played-state "See reveal" CTA
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
-    await expect(
-      page.getByTestId('launcher-card-country-pinning-see-reveal'),
-    ).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning-see-reveal')).toBeVisible({
+      timeout: 5_000,
+    })
   })
 
   test('free game: "End game" exits, launcher auto-appears, ▶ also works', async ({ page }) => {
@@ -104,12 +106,16 @@ test.describe('header-play reopens launcher after game completion', () => {
     await page.addInitScript(() => {
       localStorage.removeItem('funworldmap-daily-history')
     })
+    // Seed lastMode so the shared unlimited link routes to country-pinning.
+    await page.addInitScript(() => {
+      localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
+    })
     await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
-    // Start free game via launcher CTA
-    await page.getByTestId('launcher-card-country-pinning-free-link').click()
+    // Start free game via the shared unlimited link.
+    await page.getByTestId('launcher-unlimited-link').click()
     await expect
       .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
       .toContain('game/country-pinning')
@@ -131,15 +137,13 @@ test.describe('header-play reopens launcher after game completion', () => {
     await expect(page.getByTestId('game-over')).not.toBeAttached({ timeout: 5_000 })
 
     // Hash must clear
-    await expect
-      .poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 })
-      .toBe('')
+    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 }).toBe('')
 
     // Launcher auto-appears (dismissed resets when session returns to idle)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
 
     // Dismiss, then re-open via ▶
-    await page.getByTestId('launcher-dismiss').click()
+    await page.getByTestId('launcher-close').click()
     await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
     await expect(page.getByTestId('header-play')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('header-play').click()

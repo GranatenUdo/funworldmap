@@ -27,10 +27,10 @@ test.describe('Launcher — visibility', () => {
 })
 
 test.describe('Launcher — dismiss paths', () => {
-  test('clicking "Just explore the map" dismisses and focuses search', async ({ page }) => {
+  test('clicking the × close button dismisses and focuses search', async ({ page }) => {
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('launcher-dismiss').click()
+    await page.getByTestId('launcher-close').click()
     await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
     // Wait for header to re-mount after launcher unmounts, then check focus
     await expect(page.getByTestId('search-input')).toBeAttached({ timeout: 5_000 })
@@ -69,7 +69,7 @@ test.describe('Launcher — dismiss paths', () => {
 test.describe('Launcher — session scope', () => {
   test('dismissing + reloading re-shows launcher', async ({ page }) => {
     await freshTab(page)
-    await page.getByTestId('launcher-dismiss').click()
+    await page.getByTestId('launcher-close').click()
     await expect(page.getByTestId('launcher')).not.toBeVisible()
     await page.reload()
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
@@ -84,9 +84,12 @@ test.describe('Launcher — session scope', () => {
     // never sees a "stable" frame within actionTimeout. Likely needs a deeper
     // investigation into compositor frame production under CDP+ANGLE; possibly
     // resolvable by reducing per-test browser load or further animation strip.
-    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/31')
+    test.fixme(
+      !!process.env.CI,
+      'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/31',
+    )
     await freshTab(page)
-    await page.getByTestId('launcher-dismiss').click()
+    await page.getByTestId('launcher-close').click()
     await page.getByTestId('search-input').fill('France')
     // Target the France option explicitly; Fuse.js returns multiple matches
     // and .first() can race with DOM render order on slow CI.
@@ -119,14 +122,14 @@ test.describe('Launcher — header behaviour', () => {
 
   test('play + satellite restored after dismiss', async ({ page }) => {
     await freshTab(page)
-    await page.getByTestId('launcher-dismiss').click()
+    await page.getByTestId('launcher-close').click()
     await expect(page.getByTestId('header-play')).toBeVisible()
     await expect(page.getByTestId('satellite-toggle')).toBeVisible()
   })
 
   test('play button re-opens launcher', async ({ page }) => {
     await freshTab(page)
-    await page.getByTestId('launcher-dismiss').click()
+    await page.getByTestId('launcher-close').click()
     await expect(page.getByTestId('launcher')).not.toBeVisible()
     await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 3_000 })
@@ -149,19 +152,28 @@ test.describe('Launcher — daily state', () => {
     })
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'unplayed')
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'unplayed',
+    )
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible()
   })
 
   test('played daily state renders the result line', async ({ page }) => {
     const today = toLocalDateString(new Date())
-    await page.addInitScript(({ today }) => {
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify({
-        version: 1,
-        streak: { current: 1, longest: 1, lastActiveDate: today, lastMilestoneShown: 0 },
-        days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
-      }))
-    }, { today })
+    await page.addInitScript(
+      ({ today }) => {
+        localStorage.setItem(
+          'funworldmap-daily-history',
+          JSON.stringify({
+            version: 1,
+            streak: { current: 1, longest: 1, lastActiveDate: today, lastMilestoneShown: 0 },
+            days: { [today]: { 'country-pinning': { score: 87, attempts: [], completedAt: 1 } } },
+          }),
+        )
+      },
+      { today },
+    )
     await page.route('**/daily/index.json', async (route) => {
       await route.fulfill({
         status: 200,
@@ -175,27 +187,32 @@ test.describe('Launcher — daily state', () => {
     })
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'played')
-    await expect(page.getByTestId('launcher-card-country-pinning-played-result')).toContainText('87')
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'played',
+    )
+    await expect(page.getByTestId('launcher-card-country-pinning-played-result')).toContainText(
+      '87',
+    )
   })
 
   test('unavailable-error state when daily index fetch fails', async ({ page }) => {
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'unavailable-error')
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'unavailable-error',
+    )
     await expect(page.getByTestId('launcher-card-country-pinning-error')).toBeVisible()
   })
 
-  test('free-mode link starts endless free mode', async ({ page }) => {
+  test('shared unlimited link starts endless mode', async ({ page }) => {
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('launcher-card-country-pinning-free-link').click()
-    await expect(page.getByTestId('launcher')).not.toBeVisible({ timeout: 3_000 })
-    await expect
-      .poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 })
-      .toContain('game/country-pinning')
+    await page.getByTestId('launcher-unlimited-link').click()
+    await expect.poll(() => page.url()).toMatch(/#game\//)
   })
 })
 
@@ -210,26 +227,57 @@ test.describe('Launcher — accessibility', () => {
   })
 
   test('initial focus lands on last-played mode card', async ({ page }) => {
-    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
+    const today = toLocalDateString(new Date())
+    await page.route('**/daily/index.json', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          generatedAt: new Date().toISOString(),
+          window: { start: today, end: today },
+          days: { [today]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
+        }),
+      })
+    })
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
     })
     await freshTab(page)
-    await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused({ timeout: 5_000 })
+    // Focus lands on lastMode's daily-cta (city-guessing, since that is last-mode and unplayed)
+    await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused({
+      timeout: 5_000,
+    })
   })
 
-  test('Tab cycles through mode card 1, mode card 2, dismiss link, wraps', async ({ page }) => {
-    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
+  test('Tab cycles through mode card 1, mode card 2, close button, wraps', async ({ page }) => {
+    const today = toLocalDateString(new Date())
+    await page.route('**/daily/index.json', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          generatedAt: new Date().toISOString(),
+          window: { start: today, end: today },
+          days: { [today]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
+        }),
+      })
+    })
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
     })
     await freshTab(page)
-    await expect(page.getByTestId('launcher-card-country-pinning-free-link')).toBeFocused({ timeout: 5_000 })
+    // DOM order: launcher-close (absolute, first) → country-pinning-daily-cta → city-guessing-daily-cta → launcher-unlimited-link (last)
+    // Focus trap wraps last→first. Initial focus lands on lastMode daily-cta.
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused({
+      timeout: 5_000,
+    })
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused()
+    await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused()
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-dismiss')).toBeFocused()
+    await expect(page.getByTestId('launcher-unlimited-link')).toBeFocused()
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-card-country-pinning-free-link')).toBeFocused()
+    await expect(page.getByTestId('launcher-close')).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused()
   })
 })

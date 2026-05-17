@@ -7,7 +7,8 @@ async function setupWithCountryPinning(page: Page) {
   await gotoAndWaitForMap(page)
   // Clicking a launcher card auto-dismisses the launcher; no separate dismiss
   // call needed (see e2e/game-country-pinning.spec.ts for the canonical flow).
-  await page.getByTestId('launcher-card-country-pinning-free-link').click()
+  // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+  await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 }
 
@@ -38,9 +39,25 @@ async function fingerRollTap(page: Page, deltaPx: number): Promise<void> {
     const rect = canvas.getBoundingClientRect()
     const cx = rect.left + rect.width / 2
     const cy = rect.top + rect.height / 2
-    canvas.dispatchEvent(new MouseEvent('mousedown', { clientX: cx, clientY: cy, button: 0, bubbles: true }))
-    canvas.dispatchEvent(new MouseEvent('mouseup', { clientX: cx + delta, clientY: cy + delta, button: 0, bubbles: true }))
-    canvas.dispatchEvent(new MouseEvent('click', { clientX: cx + delta, clientY: cy + delta, button: 0, bubbles: true }))
+    canvas.dispatchEvent(
+      new MouseEvent('mousedown', { clientX: cx, clientY: cy, button: 0, bubbles: true }),
+    )
+    canvas.dispatchEvent(
+      new MouseEvent('mouseup', {
+        clientX: cx + delta,
+        clientY: cy + delta,
+        button: 0,
+        bubbles: true,
+      }),
+    )
+    canvas.dispatchEvent(
+      new MouseEvent('click', {
+        clientX: cx + delta,
+        clientY: cy + delta,
+        button: 0,
+        bubbles: true,
+      }),
+    )
   }, deltaPx)
 }
 
