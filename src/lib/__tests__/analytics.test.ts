@@ -56,11 +56,11 @@ describe('track', () => {
 
   it('captures to window.__testAnalytics when window.__PLAYWRIGHT__ is set', () => {
     window.__PLAYWRIGHT__ = true
-    track('launcher_dismissed', { path: 'link' })
+    track('launcher_dismissed', { path: 'escape' })
     expect(sendBeaconMock).not.toHaveBeenCalled()
     expect(fetchMock).not.toHaveBeenCalled()
     expect(window.__testAnalytics).toEqual([
-      { name: 'launcher_dismissed', props: { path: 'link' } },
+      { name: 'launcher_dismissed', props: { path: 'escape' } },
     ])
   })
 

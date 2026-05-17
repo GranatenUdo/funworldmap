@@ -17,7 +17,7 @@ export type EventSchema = {
   history_opened: Record<string, never>
   history_cell_clicked: { cellKind: 'played' | 'unplayed-in-window' | 'rolled-off' }
   streak_reached_milestone: { days: 3 | 7 | 14 | 30 | 100 }
-  launcher_dismissed: { path: 'link' | 'search' | 'escape' | 'card' | 'backdrop' | 'close' }
+  launcher_dismissed: { path: 'search' | 'escape' | 'card' | 'backdrop' | 'close' }
   // alias: "unlimited" in UI vocabulary; event name kept for analytics
   // backwards-compat with cloudflare-worker/queries/*.sql
   header_cta_clicked: { state: CtaState }
