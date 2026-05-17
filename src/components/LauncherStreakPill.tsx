@@ -1,4 +1,6 @@
-export type StreakMode = 'active' | 'broken' | 'first'
+import type { StreakMode } from '../game/daily/storage'
+
+export type { StreakMode }
 
 interface Props {
   current: number

@@ -23,3 +23,13 @@ export function parseLocalDate(s: string): Date {
 export function classifyDate(date: string, today: string): 'today' | 'past' | 'future' {
   return date === today ? 'today' : date < today ? 'past' : 'future'
 }
+
+/** Returns today's local date as a YYYY-MM-DD string. */
+export function getToday(now: Date = new Date()): string {
+  return toLocalDateString(now)
+}
+
+/** Returns yesterday's local date as a YYYY-MM-DD string. */
+export function getYesterday(now: Date = new Date()): string {
+  return toLocalDateString(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1))
+}
