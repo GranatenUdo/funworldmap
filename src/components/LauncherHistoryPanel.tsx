@@ -3,20 +3,31 @@ import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { calendarGrid } from '../game/daily/calendarGrid'
 import { parseLocalDate } from '../game/daily/dates'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
-import type { ModeId } from '../game/shared/types'
+import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
 import { LauncherCalendarCell } from './LauncherCalendarCell'
 
 export type HistoryCellKind = 'played' | 'unplayed-in-window' | 'rolled-off'
 
 interface Props {
   today: string
+  countries: CountryLike[]
+  cities: CityLike[]
   onClose: () => void
   onCellActivate: (date: string, kind: HistoryCellKind) => void
 }
 
 const DOW_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+const DOW_LABELS_FULL = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) {
+export function LauncherHistoryPanel({
+  today,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  countries: _countries, // unused in Task 1.1 — Task 1.2 will consume for memory tooltips
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  cities: _cities, // unused in Task 1.1 — Task 1.2 will consume for memory tooltips
+  onClose,
+  onCellActivate,
+}: Props) {
   const { history } = useDailyHistory()
   const cells = useMemo(() => calendarGrid(parseLocalDate(today), 30), [today])
   const rootRef = useRef<HTMLDivElement>(null)
@@ -104,10 +115,20 @@ export function LauncherHistoryPanel({ today, onClose, onCellActivate }: Props) 
         </button>
       </div>
 
-      {/* Day-of-week header row — decorative, hidden from assistive technology */}
+      {/* Day-of-week header rows — decorative, hidden from assistive technology */}
       <div
         aria-hidden="true"
-        className="grid grid-cols-7 gap-1 mb-1 text-[10px] text-sand-500 dark:text-dark-100 text-center"
+        data-testid="dow-row-full"
+        className="hidden sm:grid grid-cols-7 gap-1 mb-1 text-[10px] text-sand-500 dark:text-dark-100 text-center"
+      >
+        {DOW_LABELS_FULL.map((l, i) => (
+          <span key={i}>{l}</span>
+        ))}
+      </div>
+      <div
+        aria-hidden="true"
+        data-testid="dow-row-mobile"
+        className="sm:hidden grid grid-cols-7 gap-1 mb-1 text-[10px] text-sand-500 dark:text-dark-100 text-center"
       >
         {DOW_LABELS.map((l, i) => (
           <span key={i}>{l}</span>

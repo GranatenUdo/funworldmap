@@ -389,6 +389,8 @@ export function Launcher({
           {historyOpen && (
             <LauncherHistoryPanel
               today={today}
+              countries={countries}
+              cities={cities}
               onClose={closeHistory}
               onCellActivate={onCellActivate}
             />
