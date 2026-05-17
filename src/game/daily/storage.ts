@@ -123,3 +123,15 @@ export function withMilestoneShown(h: DailyHistoryV1, m: Milestone): DailyHistor
     streak: { ...h.streak, lastMilestoneShown: m },
   }
 }
+
+export type StreakMode = 'active' | 'broken' | 'first'
+
+/**
+ * Pure derivation of streak display mode given the last active date and
+ * yesterday's date string. Both are YYYY-MM-DD strings; yesterday may be
+ * produced by getYesterday() from dates.ts.
+ */
+export function deriveStreakMode(lastActiveDate: string | null, yesterday: string): StreakMode {
+  if (lastActiveDate === null) return 'first'
+  return lastActiveDate >= yesterday ? 'active' : 'broken'
+}
