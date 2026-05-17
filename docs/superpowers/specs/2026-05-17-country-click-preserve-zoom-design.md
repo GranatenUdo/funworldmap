@@ -17,7 +17,7 @@ Total surface: one line of logic in `src/lib/flyToCountry.ts` plus a new unit-te
 **Goals**
 
 - Selecting a country never _decreases_ the camera zoom. Re-centering on the country's centroid is preserved.
-- Behavior is consistent across all selection entry points (map click, search-bar select, URL hash, compare-pick), so the rule is "selection follows the country, never away from it" everywhere.
+- The rule applies to every hash-mediated selection change, since selection always flows through `useSelectedCountry.resolveHash` → `setSelected`. UI surfaces that ultimately write the hash (map click, search-bar select, deep-link `#cca3`, browser back/forward) are therefore covered uniformly. Compare-pick is _not_ affected — it writes `?cmp=` without changing `selected`, so `useSelectionHighlight`'s selection effect doesn't fire and `flyToCountry` is never invoked.
 - Behavior is preserved for tiny countries — Vatican, Liechtenstein, Andorra still auto-zoom in.
 
 **Non-goals**
@@ -83,6 +83,8 @@ Four cases, each renders a fake map with controllable `getZoom()`:
 3. **Large country, current < computed** — Russia, `getZoom: () => 1.5` → `flyTo` called with `zoom: 2` (the clamped lower bound from `zoomFromArea`). Default-view → re-centered-on-Russia path still zooms in slightly.
 4. **Reduced-motion** — `prefersReducedMotion()` mock returns `true`, `getZoom: () => 4`, France → `flyTo` called with `duration: 0` and `zoom: 4`. Confirms the clamp composes with the reduced-motion duration path.
 
+The tests must mock `../motion` (or wherever `prefersReducedMotion` is imported from in `flyToCountry.ts`) so case 4 can control the branch without depending on the test environment's `matchMedia` implementation. `vi.mock` at module scope, reset per case via `vi.mocked(prefersReducedMotion).mockReturnValue(...)`.
+
 ### Existing tests stay green
 
 - `src/hooks/__tests__/useSelectionHighlight.test.tsx` — mocks `flyToCountry`, so insulated.
@@ -91,11 +93,25 @@ Four cases, each renders a fake map with controllable `getZoom()`:
 
 No e2e changes required.
 
-## Risks
+## Tradeoff: search / hash auto-fit
 
-- **Search-from-zoomed-in UX shift.** A user zoomed in to Paris at zoom 6 searching for "Brazil" today zooms out to 2 and sees Brazil whole. After the change they fly to Brazil at zoom 6 — São Paulo area, not the whole country. Mitigation: this matches the click rule; if it proves wrong we can scope the clamp to click-only by threading an `origin: 'click' | 'search' | 'hash'` arg, but that's extra surface to add only on real feedback.
-- **Deep-link-from-cold-load.** First-visit cold load with `#FRA` hash: today flies to zoom 2 (the clamp). After the change, max(1.8, 2) = 2 — unchanged. No risk.
-- **Game-start `flyTo DEFAULT_CENTER/ZOOM` in `App.tsx:237`.** That call sets `zoom: DEFAULT_ZOOM` (1.8) directly — not via `flyToCountry`. Untouched by this change. Confirmed visually: the only callers of `flyToCountry` are `useSelectionHighlight`.
+The biggest deliberate cost of the uniform-clamp rule lives outside of clicks:
+
+A user zoomed in to Paris at zoom 9 who searches "Brazil" today zooms out to 2 and sees Brazil whole — the search effectively auto-fits the target country. After the change they fly to Brazil at zoom 9 — São Paulo area, not the country shape. Same for browser-back to an `#XXX` hash while currently zoomed in.
+
+**Decision: accept the cost; keep one rule.** The alternative is to scope the clamp to "click-only" by threading an `origin: 'click' | 'auto'` argument from `onMapSelect` → `select(cca3)` → hash → `resolveHash` → `setSelected`. That's three modules' worth of API change to fix a workflow we have no telemetry on. If real feedback shows search-while-zoomed-in is common enough to matter, the migration path is mechanical: thread `origin` into the existing call chain and gate the `Math.max` on `origin === 'click'`.
+
+A milder fallback worth keeping in mind: clamp only when the current zoom is "user-elevated" past `DEFAULT_ZOOM` (e.g. `current > DEFAULT_ZOOM + 0.1`), so cold-load / post-reset states still auto-fit. Doesn't solve the search-while-zoomed-in case, but reduces the surprise window. Not adopted now — the simpler unconditional rule is easier to reason about and the user's reported case is the dominant one.
+
+## Other risks
+
+- **Deep-link-from-cold-load.** First-visit cold load with `#FRA` hash: today flies to zoom 2 (the `zoomFromArea` lower clamp). After the change, `max(1.8, 2) = 2` — unchanged. No risk.
+- **Game-start `flyTo DEFAULT_CENTER/ZOOM` in `App.tsx:237`.** That call sets `zoom: DEFAULT_ZOOM` (1.8) directly — not via `flyToCountry`. Untouched by this change. Verified the only caller of `flyToCountry` is `useSelectionHighlight.ts:53` (fresh `grep -r flyToCountry src/` confirms).
+- **Rapid-click chaining.** `map.getZoom()` returns interpolated zoom mid-`flyTo`. Under rapid clicks the clamp composes sensibly (each subsequent click reads the in-flight zoom, applies max, and chains). This is a small improvement over today's behavior, not a regression.
+
+## Open questions (not in scope)
+
+- **Pitch reset on selection.** `flyToCountry` unconditionally sets `pitch: DEFAULT_PITCH` (or 0 in reduced motion). A user who has manually tilted the globe to inspect terrain loses their pitch on the next selection. Adjacent to the reported zoom-out complaint and arguably the same class of "selection shouldn't reset my camera". Not part of this fix because it wasn't reported and the right rule (preserve manual pitch? clamp like zoom? leave as-is?) isn't obvious. Flagged for a separate decision.
 
 ## Rollback
 
