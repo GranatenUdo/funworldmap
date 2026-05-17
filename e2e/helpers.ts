@@ -214,12 +214,14 @@ export async function finalizeGame(page: Page): Promise<void> {
 }
 
 /**
- * Dismiss the launcher if it is visible. No-op if the test uses a deep-link
- * URL (e.g. /#FRA) that bypasses the launcher.
+ * Dismiss the launcher if it is visible. No-op if the launcher is not visible
+ * (e.g. deep-link tests, or after the map-first PR where bare '/' no longer
+ * auto-opens the launcher).
  *
- * Call from beforeEach in any spec that relies on map-first entry via
- * page.goto('/') — after the launcher landing-state PR, '/' shows the
- * launcher by default.
+ * The new name reflects the now-correct semantics: "ensure the launcher is
+ * dismissed" — if it's already absent, this is a no-op; if it is present
+ * (because the test opened it via openLauncher or a deep-link auto-opened it),
+ * close it and wait for the header to re-mount.
  *
  * Implementation notes:
  * - Waits for waitForAppReady first so the app has committed its first
@@ -238,11 +240,11 @@ export async function finalizeGame(page: Page): Promise<void> {
  *   satellite-toggle, header-play) are safe to click. Replaces a former 150ms
  *   sleep that raced the re-mount on slow CI.
  */
-export async function dismissLauncher(page: Page): Promise<void> {
+export async function ensureLauncherDismissed(page: Page): Promise<void> {
   await waitForAppReady(page)
   const launcher = page.getByTestId('launcher')
   if (!(await launcher.isVisible())) {
-    // Deep-link test: launcher will not appear.
+    // Launcher is not visible — no-op (map-first posture or deep-link test).
     return
   }
   await page.getByTestId('launcher-close').click()
@@ -251,6 +253,19 @@ export async function dismissLauncher(page: Page): Promise<void> {
   // Wait for a known Header child to be attached before returning so callers'
   // next interaction (e.g. clicking theme-toggle) doesn't race the re-mount.
   await page.locator('#search-input').waitFor({ state: 'attached', timeout: 5_000 })
+}
+
+/**
+ * Open the launcher via the header CTA pill. Waits for the app to be ready,
+ * clicks the `header-play` button, then waits for the launcher to be visible.
+ *
+ * Use this in tests that need the launcher open after bare `/` — the
+ * map-first posture (PR2) means bare '/' no longer auto-opens the launcher.
+ */
+export async function openLauncher(page: Page): Promise<void> {
+  await waitForAppReady(page)
+  await page.getByTestId('header-play').click()
+  await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 5_000 })
 }
 
 /**
