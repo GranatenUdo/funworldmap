@@ -1,5 +1,6 @@
 import type { CalendarCellStatus } from '../game/daily/calendarGrid'
 import { parseLocalDate } from '../game/daily/dates'
+import { formatModeScore } from '../game/shared/formatScore'
 import type { ModeId } from '../game/shared/types'
 import type { CellMemory } from './LauncherHistoryPanel'
 
@@ -18,8 +19,10 @@ function dayNumber(date: string): string {
 function memoryTooltip(memory: CellMemory | undefined): string | undefined {
   if (!memory) return undefined
   const parts: string[] = []
-  if (memory.country) parts.push(`${memory.country.name} ${memory.country.score}/100`)
-  if (memory.city) parts.push(`${memory.city.name} ${memory.city.score}/1000`)
+  if (memory.country)
+    parts.push(`${memory.country.name} ${formatModeScore(memory.country.score, 'country-pinning')}`)
+  if (memory.city)
+    parts.push(`${memory.city.name} ${formatModeScore(memory.city.score, 'city-guessing')}`)
   return parts.length > 0 ? parts.join(' · ') : undefined
 }
 
