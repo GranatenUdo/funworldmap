@@ -46,6 +46,37 @@ test.describe('reveal animation', () => {
     expect(center).not.toBeNull()
     expect(center!.lng).toBeCloseTo(2, 0)
     expect(center!.lat).toBeCloseTo(46, 0)
+
+    // Advance to the next round and confirm reveal artifacts cleared.
+    // For country-pinning best-of-1, the round-end panel opens with a
+    // "Continue" button (data-testid="game-continue"). Clicking it calls
+    // advanceRoundEndPanel → advance → next round.
+    await expect(page.getByTestId('game-continue')).toBeVisible({ timeout: 5_000 })
+    await page.getByTestId('game-continue').click()
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(() => {
+            type Hook = { getSession?: () => { status: string } }
+            const g = (window as unknown as { __funworldmap_game?: Hook }).__funworldmap_game
+            return g?.getSession?.()?.status
+          }),
+        { timeout: 5_000 },
+      )
+      .toBe('playing')
+
+    // The reveal line source should now have zero features. Use the public
+    // querySourceFeatures API rather than reaching into MapLibre's private
+    // _data field. Poll until the rendered tiles catch up with the data clear.
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(
+            () => window.__funworldmap_map?.querySourceFeatures('game-reveal-line').length ?? -1,
+          ),
+        { timeout: 5_000 },
+      )
+      .toBe(0)
   })
 
   test('city-guessing wrong guess renders a tessellated line from point → target', async ({

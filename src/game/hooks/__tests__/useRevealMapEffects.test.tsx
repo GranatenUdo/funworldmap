@@ -348,6 +348,87 @@ describe('useRevealMapEffects', () => {
     expect(firstExpr[3]).toBe(0)
   })
 
+  it('clears city reveal artifacts when round transitions from round-ended to playing', () => {
+    const fake = createFakeMapRef()
+    const reveal: {
+      kind: 'point'
+      targetCentroid: [number, number]
+      clickedPoint: [number, number]
+      distanceKm: number
+    } = {
+      kind: 'point',
+      targetCentroid: [2.3522, 48.8566],
+      clickedPoint: [-10, 40],
+      distanceKm: 1500,
+    }
+    const roundEndedSession = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    const { rerender } = renderHook((args: RevealArgs) => useRevealMapEffects(args), {
+      initialProps: buildRevealArgs({ session: roundEndedSession, mapRef: fake.ref }),
+    })
+
+    // Reset the setData spy so we only observe what happens on cleanup.
+    fake.calls.setData.mockClear()
+
+    // Rerender with the next round playing — this triggers the round-ended
+    // effect cleanup.
+    const playingSession = makeSession({
+      status: 'playing',
+      modeId: 'city-guessing',
+      roundIndex: 1,
+      currentRound: makeCityRound({ targetId: 'GBR-london' }),
+    })
+    rerender(buildRevealArgs({ session: playingSession, mapRef: fake.ref }))
+
+    // After the transition, the marker AND line sources should have been
+    // setData()'d to empty FeatureCollections (clearRevealSources behavior).
+    const emptySetDataCalls = fake.calls.setData.mock.calls.filter((c) => {
+      const arg = c[0] as { features?: unknown[] }
+      return Array.isArray(arg.features) && arg.features.length === 0
+    })
+    expect(emptySetDataCalls.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('clears country reveal artifacts when round transitions from round-ended to playing', () => {
+    const fake = createFakeMapRef()
+    // Country wrong-guess with a known clickedCca3 triggers computeRevealAnimationPlan,
+    // which uses the same marker + line sources as city reveals.
+    const reveal = makeCountryReveal({
+      correct: false,
+      targetCca3: 'FRA',
+      clickedCca3: 'DEU',
+      clickedName: 'Germany',
+      distanceKm: 1500,
+    })
+    const roundEndedSession = makeSession({
+      status: 'round-ended',
+      modeId: 'country-pinning',
+      lastOutcome: makeOutcome(reveal),
+    })
+    const { rerender } = renderHook((args: RevealArgs) => useRevealMapEffects(args), {
+      initialProps: buildRevealArgs({ session: roundEndedSession, mapRef: fake.ref }),
+    })
+
+    fake.calls.setData.mockClear()
+
+    const playingSession = makeSession({
+      status: 'playing',
+      modeId: 'country-pinning',
+      roundIndex: 1,
+      currentRound: makeCountryRound({ targetCca3: 'JPN' }),
+    })
+    rerender(buildRevealArgs({ session: playingSession, mapRef: fake.ref }))
+
+    const emptySetDataCalls = fake.calls.setData.mock.calls.filter((c) => {
+      const arg = c[0] as { features?: unknown[] }
+      return Array.isArray(arg.features) && arg.features.length === 0
+    })
+    expect(emptySetDataCalls.length).toBeGreaterThanOrEqual(2)
+  })
+
   it('reduced-motion: no easeTo, jumpTo target, gradient fully revealed', () => {
     // Override the matchMedia mock to report reduced-motion preference.
     Object.defineProperty(window, 'matchMedia', {

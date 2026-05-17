@@ -141,6 +141,7 @@ export function useRevealMapEffects({
             /* no-op */
           }
         }
+        clearRevealSources(map)
       }
     }
 
@@ -248,6 +249,10 @@ export function useRevealMapEffects({
           /* no-op */
         }
       }
+      // Always clear marker + line sources. Both country wrong-guesses (when
+      // clickedCca3 is known) and city reveals draw these via
+      // computeRevealAnimationPlan, so the cleanup is mode-neutral.
+      clearRevealSources(map)
     }
   }, [session.status, session.lastOutcome, byCca3])
 
