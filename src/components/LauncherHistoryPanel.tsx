@@ -3,10 +3,16 @@ import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { calendarGrid } from '../game/daily/calendarGrid'
 import { parseLocalDate } from '../game/daily/dates'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
+import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import type { CityLike, CountryLike, ModeId } from '../game/shared/types'
 import { LauncherCalendarCell } from './LauncherCalendarCell'
 
 export type HistoryCellKind = 'played' | 'unplayed-in-window' | 'rolled-off'
+
+export interface CellMemory {
+  country?: { name: string; score: number }
+  city?: { name: string; score: number }
+}
 
 interface Props {
   today: string
@@ -19,15 +25,7 @@ interface Props {
 const DOW_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 const DOW_LABELS_FULL = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
-export function LauncherHistoryPanel({
-  today,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  countries: _countries, // unused in Task 1.1 — Task 1.2 will consume for memory tooltips
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  cities: _cities, // unused in Task 1.1 — Task 1.2 will consume for memory tooltips
-  onClose,
-  onCellActivate,
-}: Props) {
+export function LauncherHistoryPanel({ today, countries, cities, onClose, onCellActivate }: Props) {
   const { history } = useDailyHistory()
   const cells = useMemo(() => calendarGrid(parseLocalDate(today), 30), [today])
   const rootRef = useRef<HTMLDivElement>(null)
@@ -42,6 +40,29 @@ export function LauncherHistoryPanel({
     }
     return out
   }, [history])
+
+  const { byDate: puzzleByDate } = useDailyPuzzlesContext()
+
+  const cellMemories = useMemo(() => {
+    const out = new Map<string, CellMemory>()
+    for (const [date, entry] of Object.entries(history.days)) {
+      const puzzle = puzzleByDate(date)
+      if (!puzzle) continue
+      const mem: CellMemory = {}
+      const cp = entry?.['country-pinning']
+      const cg = entry?.['city-guessing']
+      if (cp) {
+        const c = countries.find((x) => x.cca3 === puzzle.country.cca3)
+        if (c) mem.country = { name: c.name.common, score: cp.score }
+      }
+      if (cg) {
+        const ci = cities.find((x) => x.id === puzzle.city.id)
+        if (ci) mem.city = { name: ci.name, score: cg.score }
+      }
+      if (mem.country || mem.city) out.set(date, mem)
+    }
+    return out
+  }, [history.days, puzzleByDate, countries, cities])
 
   const totalDays = playedByDate.size
 
@@ -144,6 +165,7 @@ export function LauncherHistoryPanel({
                 date={c.date}
                 status={c.status}
                 playedModes={playedByDate.get(c.date) ?? new Set<ModeId>()}
+                memory={cellMemories.get(c.date)}
                 onActivate={onActivate}
               />
             ))}

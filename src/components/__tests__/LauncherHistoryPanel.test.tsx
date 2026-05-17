@@ -1,7 +1,26 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ReactNode, ReactElement } from 'react'
 import { LauncherHistoryPanel } from '../LauncherHistoryPanel'
 import { __resetForTests as resetHistoryStore } from '../../game/daily/historyStore'
+import { DailyPuzzlesContext } from '../../game/daily/DailyPuzzlesProvider'
+
+const stubPuzzlesValue = {
+  status: 'ready' as const,
+  index: null,
+  byDate: () => null,
+  refetch: async () => {},
+}
+
+function Wrapper({ children }: { children: ReactNode }) {
+  return (
+    <DailyPuzzlesContext.Provider value={stubPuzzlesValue}>{children}</DailyPuzzlesContext.Provider>
+  )
+}
+
+function renderPanel(ui: ReactElement) {
+  return render(ui, { wrapper: Wrapper })
+}
 
 function seedHistory(today: string) {
   localStorage.setItem(
@@ -28,7 +47,7 @@ describe('LauncherHistoryPanel', () => {
   it('renders a grid of 35 cells', () => {
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(
+    renderPanel(
       <LauncherHistoryPanel
         today="2026-04-22"
         countries={[]}
@@ -45,7 +64,7 @@ describe('LauncherHistoryPanel', () => {
     seedHistory('2026-04-22')
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(
+    renderPanel(
       <LauncherHistoryPanel
         today="2026-04-22"
         countries={[]}
@@ -64,7 +83,7 @@ describe('LauncherHistoryPanel', () => {
     seedHistory('2026-04-22')
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(
+    renderPanel(
       <LauncherHistoryPanel
         today="2026-04-22"
         countries={[]}
@@ -80,7 +99,7 @@ describe('LauncherHistoryPanel', () => {
   it('close button fires onClose', () => {
     const onClose = vi.fn()
     const onCellActivate = vi.fn()
-    render(
+    renderPanel(
       <LauncherHistoryPanel
         today="2026-04-22"
         countries={[]}
@@ -94,7 +113,7 @@ describe('LauncherHistoryPanel', () => {
   })
 
   it('renders spelled-out day headers (desktop) and single-letter headers (mobile)', () => {
-    render(
+    renderPanel(
       <LauncherHistoryPanel
         today="2026-05-17"
         countries={[]}
