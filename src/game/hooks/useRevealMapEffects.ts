@@ -36,15 +36,17 @@ function ensureRevealSources(map: maplibregl.Map): void {
     map.addSource(REVEAL_LINE_SOURCE, {
       type: 'geojson',
       data: { type: 'FeatureCollection', features: [] },
+      lineMetrics: true,
     })
     map.addLayer({
       id: REVEAL_LINE_LAYER,
       type: 'line',
       source: REVEAL_LINE_SOURCE,
       paint: {
-        'line-color': REVEAL_WRONG,
+        'line-color': REVEAL_WRONG, // base; overridden by line-gradient per frame
         'line-width': 3,
         'line-dasharray': [2, 2],
+        'line-gradient': ['step', ['line-progress'], REVEAL_WRONG, 0, 'rgba(0,0,0,0)'],
       },
     })
   }
@@ -143,7 +145,6 @@ export function useRevealMapEffects({
     }
 
     const arc = tessellateArc(plan.from, plan.to, 64)
-    const totalPoints = arc.length
     let frameId: number | null = null
 
     try {
@@ -163,50 +164,71 @@ export function useRevealMapEffects({
         ],
       })
 
-      // Snap camera to the wrong-guess centroid; rAF loop will track the line head.
-      map.jumpTo({ center: plan.from })
+      // Full arc loaded ONCE — line-gradient masks the visible portion per
+      // frame, so no per-frame setData / tile rebuild.
+      lineSrc.setData({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: arc },
+            properties: {},
+          },
+        ],
+      })
 
       if (plan.durationMs === 0) {
-        lineSrc.setData({
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'LineString', coordinates: arc },
-              properties: {},
-            },
-          ],
-        })
+        // Reduced-motion: snap line fully visible, jump camera to target.
+        map.setPaintProperty(REVEAL_LINE_LAYER, 'line-gradient', [
+          'step',
+          ['line-progress'],
+          REVEAL_WRONG,
+          1,
+          'rgba(0,0,0,0)',
+        ])
         map.jumpTo({ center: plan.to })
       } else {
+        // Snap camera to the wrong-guess start so easeTo has a deterministic
+        // starting position regardless of where the user was looking.
+        map.jumpTo({ center: plan.from })
+        map.easeTo({
+          center: plan.to,
+          duration: plan.durationMs,
+          easing: (t) => 1 - Math.pow(1 - t, 3),
+        })
+        // Set the initial gradient synchronously (progress = 0, fully hidden)
+        // so the line is in a deterministic state before the first rAF tick.
+        try {
+          map.setPaintProperty(REVEAL_LINE_LAYER, 'line-gradient', [
+            'step',
+            ['line-progress'],
+            REVEAL_WRONG,
+            0,
+            'rgba(0,0,0,0)',
+          ])
+        } catch {
+          /* layer torn down */
+        }
         const start = performance.now()
-        let lastIdx = -1
+        let lastProgress = 0
         const step = (now: number) => {
           const linear = Math.min(1, (now - start) / plan.durationMs)
-          // Ease-out cubic on the visible-arc index so both line growth and
-          // camera tracking decelerate as they approach the target — feels
-          // less like a snap on long globe rotations.
           const eased = 1 - Math.pow(1 - linear, 3)
-          const idx = Math.max(1, Math.ceil(eased * (totalPoints - 1)))
-          // Skip setData when the visible slice hasn't changed since the last
-          // frame — saves a MapLibre tile rebuild on the final frame and on
-          // any frames where rAF fires faster than the per-point step.
-          if (idx !== lastIdx) {
-            lastIdx = idx
+          // Quantise progress to 1/64 increments to skip redundant paint-property
+          // updates when rAF fires faster than a visible change.
+          const quantised = Math.round(eased * 64) / 64
+          if (quantised !== lastProgress) {
+            lastProgress = quantised
             try {
-              lineSrc.setData({
-                type: 'FeatureCollection',
-                features: [
-                  {
-                    type: 'Feature',
-                    geometry: { type: 'LineString', coordinates: arc.slice(0, idx + 1) },
-                    properties: {},
-                  },
-                ],
-              })
-              map.jumpTo({ center: arc[idx] })
+              map.setPaintProperty(REVEAL_LINE_LAYER, 'line-gradient', [
+                'step',
+                ['line-progress'],
+                REVEAL_WRONG,
+                quantised,
+                'rgba(0,0,0,0)',
+              ])
             } catch {
-              /* source may have been torn down */
+              /* layer torn down */
             }
           }
           frameId = linear < 1 ? window.requestAnimationFrame(step) : null

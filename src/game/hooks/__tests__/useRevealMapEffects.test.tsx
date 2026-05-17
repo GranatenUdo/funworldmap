@@ -245,4 +245,153 @@ describe('useRevealMapEffects', () => {
     expect(fake.calls.getSource).toHaveBeenCalledWith('game-reveal-line')
     expect(fake.calls.setData).toHaveBeenCalled()
   })
+
+  it('calls easeTo once on city wrong-guess reveal (not jumpTo per frame)', () => {
+    const fake = createFakeMapRef()
+    // Wrong guess with a known clicked point (not at the target). Triggers
+    // the arc-animation branch of the round-ended geometry effect.
+    const clickedPoint: [number, number] = [-10, 40]
+    const reveal: {
+      kind: 'point'
+      targetCentroid: [number, number]
+      clickedPoint: [number, number]
+      distanceKm: number
+    } = {
+      kind: 'point',
+      targetCentroid: [2.3522, 48.8566], // Paris
+      clickedPoint,
+      distanceKm: 1500,
+    }
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    // easeTo should be called exactly once with center = target.
+    expect(fake.calls.easeTo).toHaveBeenCalledTimes(1)
+    const arg = fake.calls.easeTo.mock.calls[0][0] as { center: [number, number]; duration: number }
+    expect(arg.center).toEqual([2.3522, 48.8566])
+    expect(arg.duration).toBeGreaterThan(0)
+
+    // jumpTo should still be called once (to snap to the guess start), but
+    // NOT per frame.
+    expect(fake.calls.jumpTo.mock.calls.length).toBeLessThanOrEqual(1)
+  })
+
+  it('calls setData on the line source exactly once with the full tessellated arc', () => {
+    const fake = createFakeMapRef()
+    const reveal: {
+      kind: 'point'
+      targetCentroid: [number, number]
+      clickedPoint: [number, number]
+      distanceKm: number
+    } = {
+      kind: 'point',
+      targetCentroid: [2.3522, 48.8566],
+      clickedPoint: [-10, 40],
+      distanceKm: 1500,
+    }
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    // The line source's setData should be called for the LineString — once
+    // with the full arc (65 vertices = 64 tessellated segments).
+    const lineSetDataCalls = fake.calls.setData.mock.calls.filter(
+      (c) =>
+        (c[0] as { features?: Array<{ geometry?: { type: string } }> }).features?.[0]?.geometry
+          ?.type === 'LineString',
+    )
+    expect(lineSetDataCalls).toHaveLength(1)
+    const data = lineSetDataCalls[0][0] as {
+      features: Array<{ geometry: { coordinates: number[][] } }>
+    }
+    expect(data.features[0].geometry.coordinates).toHaveLength(65)
+  })
+
+  it('drives line growth via line-gradient paint property (animated path)', () => {
+    const fake = createFakeMapRef()
+    const reveal: {
+      kind: 'point'
+      targetCentroid: [number, number]
+      clickedPoint: [number, number]
+      distanceKm: number
+    } = {
+      kind: 'point',
+      targetCentroid: [2.3522, 48.8566],
+      clickedPoint: [-10, 40],
+      distanceKm: 1500,
+    }
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    // The gradient must be set at least once — on entry, with progress 0
+    // (the start of the animation). Test environments may or may not pump
+    // rAF; the entry call is the deterministic checkpoint.
+    const gradientCalls = fake.calls.setPaintProperty.mock.calls.filter(
+      (c) => c[1] === 'line-gradient',
+    )
+    expect(gradientCalls.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('reduced-motion: no easeTo, jumpTo target, gradient fully revealed', () => {
+    // Override the matchMedia mock to report reduced-motion preference.
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: query.includes('reduce'),
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      })),
+    })
+    const fake = createFakeMapRef()
+    const reveal: {
+      kind: 'point'
+      targetCentroid: [number, number]
+      clickedPoint: [number, number]
+      distanceKm: number
+    } = {
+      kind: 'point',
+      targetCentroid: [2.3522, 48.8566],
+      clickedPoint: [-10, 40],
+      distanceKm: 1500,
+    }
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    expect(fake.calls.easeTo).not.toHaveBeenCalled()
+    expect(fake.calls.jumpTo).toHaveBeenCalled()
+    const lastJumpTo = fake.calls.jumpTo.mock.calls.at(-1)?.[0] as
+      | { center: [number, number] }
+      | undefined
+    expect(lastJumpTo?.center).toEqual([2.3522, 48.8566])
+
+    // Gradient set to progress=1 (full line) at least once.
+    const fullGradient = fake.calls.setPaintProperty.mock.calls.find((c) => {
+      if (c[1] !== 'line-gradient') return false
+      const expr = c[2] as Array<unknown>
+      // ['step', ['line-progress'], color, boundary, transparent]
+      return Array.isArray(expr) && expr[0] === 'step' && expr[3] === 1
+    })
+    expect(fullGradient).toBeDefined()
+  })
 })

@@ -35,7 +35,10 @@ test.describe('reveal animation', () => {
     expect(coords[64][1]).toBeCloseTo(46, 0)
 
     // Camera ends near the target centroid (FRA = [2, 46]). 2° tolerance
-    // accommodates the final-frame quantisation of arc[idx].
+    // accommodates the easeTo duration. Wait for the camera to stop moving
+    // before reading the center (easeTo is async; line data arrives before
+    // the camera animation completes).
+    await page.waitForFunction(() => !window.__funworldmap_map?.isMoving(), { timeout: 10_000 })
     const center = await page.evaluate(() => {
       const c = window.__funworldmap_map?.getCenter()
       return c ? { lng: c.lng, lat: c.lat } : null

@@ -11,6 +11,7 @@ export function createFakeMapRef() {
   const addLayer = vi.fn()
   const on = vi.fn()
   const off = vi.fn()
+  const easeTo = vi.fn()
   const flyTo = vi.fn()
   const jumpTo = vi.fn()
   const map = {
@@ -21,6 +22,7 @@ export function createFakeMapRef() {
     addLayer,
     on,
     off,
+    easeTo,
     flyTo,
     jumpTo,
   } as unknown as maplibregl.Map
@@ -35,6 +37,7 @@ export function createFakeMapRef() {
       addLayer,
       on,
       off,
+      easeTo,
       flyTo,
       jumpTo,
       setData,
