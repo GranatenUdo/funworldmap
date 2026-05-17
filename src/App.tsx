@@ -24,7 +24,7 @@ import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { parseHash } from './lib/hashState'
-import { track } from './lib/analytics'
+import { track, type CtaState } from './lib/analytics'
 import { dispatchToast } from './lib/toast'
 import { prefersReducedMotion } from './lib/motion'
 
@@ -156,7 +156,7 @@ function AppInner({
   const todayEntry = dailyHistory.days[today] ?? {}
   const countryPlayed = !!todayEntry['country-pinning']
   const cityPlayed = !!todayEntry['city-guessing']
-  const ctaState: 'unplayed' | 'partial' | 'done' =
+  const ctaState: CtaState =
     countryPlayed && cityPlayed ? 'done' : countryPlayed || cityPlayed ? 'partial' : 'unplayed'
 
   const roundEndTarget = useMemo(() => {

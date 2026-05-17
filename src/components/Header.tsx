@@ -2,7 +2,7 @@ import SearchBar from './SearchBar'
 import ThemeToggle from './ThemeToggle'
 import type { CountryData } from '../lib/types'
 import type { Theme } from '../hooks/useTheme'
-import { track } from '../lib/analytics'
+import { track, type CtaState } from '../lib/analytics'
 
 interface Props {
   countries: CountryData[]
@@ -11,7 +11,7 @@ interface Props {
   comparePickingMode: boolean
   gameActive: boolean
   launcherVisible: boolean
-  ctaState: 'unplayed' | 'partial' | 'done'
+  ctaState: CtaState
   streakCurrent: number
   streakActive: boolean
   onSelect: (cca3: string) => void
