@@ -399,8 +399,8 @@ describe('useRevealMapEffects', () => {
     const reveal = makeCountryReveal({
       correct: false,
       targetCca3: 'FRA',
-      clickedCca3: 'DEU',
-      clickedName: 'Germany',
+      clickedCca3: 'USA',
+      clickedName: 'United States',
       distanceKm: 1500,
     })
     const roundEndedSession = makeSession({
