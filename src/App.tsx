@@ -152,12 +152,15 @@ function AppInner({
     return { today: getToday(now), yesterday: getYesterday(now) }
   }, [])
   const { history: dailyHistory, streak } = useDailyHistory()
-  const streakMode = deriveStreakMode(streak.lastActiveDate, yesterday)
-  const todayEntry = dailyHistory.days[today] ?? {}
-  const countryPlayed = !!todayEntry['country-pinning']
-  const cityPlayed = !!todayEntry['city-guessing']
-  const ctaState: CtaState =
-    countryPlayed && cityPlayed ? 'done' : countryPlayed || cityPlayed ? 'partial' : 'unplayed'
+  const { streakActive, ctaState } = useMemo(() => {
+    const mode = deriveStreakMode(streak.lastActiveDate, yesterday)
+    const todayEntry = dailyHistory.days[today] ?? {}
+    const countryPlayed = !!todayEntry['country-pinning']
+    const cityPlayed = !!todayEntry['city-guessing']
+    const state: CtaState =
+      countryPlayed && cityPlayed ? 'done' : countryPlayed || cityPlayed ? 'partial' : 'unplayed'
+    return { streakActive: mode === 'active', ctaState: state }
+  }, [streak.lastActiveDate, yesterday, dailyHistory.days, today])
 
   const roundEndTarget = useMemo(() => {
     if (session.status !== 'round-ended') return null
@@ -459,7 +462,7 @@ function AppInner({
         launcherVisible={launcherVisible}
         ctaState={ctaState}
         streakCurrent={streak.current}
-        streakActive={streakMode === 'active'}
+        streakActive={streakActive}
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
