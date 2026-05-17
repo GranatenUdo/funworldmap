@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { LauncherModeCard } from '../LauncherModeCard'
 
@@ -95,7 +95,7 @@ describe('LauncherModeCard', () => {
       />,
     )
     expect(screen.getByTestId('launcher-card-country-pinning-error').textContent).toMatch(
-      /Couldn't load/,
+      /Couldn’t load/,
     )
     expect(screen.queryByTestId('launcher-card-country-pinning-loading')).toBeNull()
   })
@@ -266,5 +266,15 @@ describe('LauncherModeCard', () => {
     expect(btn.textContent).toBe('Play')
     expect(btn.textContent).not.toContain('3 attempts')
     expect(screen.getByText('3 tries · best one counts')).toBeTruthy()
+  })
+
+  it('renders Retry button in unavailable-error state', () => {
+    const onRetry = vi.fn()
+    render(<LauncherModeCard {...defaultProps} state="unavailable-error" onRetry={onRetry} />)
+    expect(screen.getByText('Couldn’t load today’s puzzle.')).toBeTruthy()
+    expect(screen.queryByText(/Refresh to retry/)).toBeNull()
+    const btn = screen.getByTestId('launcher-card-country-pinning-retry')
+    btn.click()
+    expect(onRetry).toHaveBeenCalledTimes(1)
   })
 })

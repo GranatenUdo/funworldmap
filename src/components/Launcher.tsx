@@ -49,7 +49,7 @@ export function Launcher({
   const lastMode = readLastMode()
   const { best: cpBest } = usePersonalBests('country-pinning')
   const { best: cgBest } = usePersonalBests('city-guessing')
-  const { status: puzzlesStatus, byDate, index } = useDailyPuzzlesContext()
+  const { status: puzzlesStatus, byDate, index, refetch } = useDailyPuzzlesContext()
   const { history, get: getDay, streak, pendingMilestone, markMilestoneShown } = useDailyHistory()
   const [historyOpen, setHistoryOpen] = useState(initialHistoryOpen)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
@@ -367,6 +367,7 @@ export function Launcher({
                   onStartDaily={() => startDaily(m.id)}
                   onStartFree={() => startFree(m.id)}
                   onSeeReveal={() => seeReveal(m.id)}
+                  onRetry={() => void refetch()}
                 />
               </div>
             ))}

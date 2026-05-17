@@ -79,6 +79,7 @@ interface Props {
   onStartDaily: () => void
   onStartFree: () => void
   onSeeReveal?: () => void
+  onRetry?: () => void
 }
 
 export function LauncherModeCard({
@@ -92,6 +93,7 @@ export function LauncherModeCard({
   onStartDaily,
   onStartFree,
   onSeeReveal,
+  onRetry,
 }: Props) {
   const testIdBase = `launcher-card-${modeId}`
   return (
@@ -175,11 +177,20 @@ export function LauncherModeCard({
       )}
 
       {state === 'unavailable-error' && (
-        <div
-          className="text-sand-600 dark:text-dark-100 text-sm mb-3"
-          data-testid={`${testIdBase}-error`}
-        >
-          Couldn't load today's puzzle. Refresh to retry.
+        <div data-testid={`${testIdBase}-error`}>
+          <div className="text-sand-600 dark:text-dark-100 text-sm mb-3">
+            Couldn’t load today’s puzzle.
+          </div>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              data-testid={`${testIdBase}-retry`}
+              className="px-3 py-1.5 rounded-lg bg-teal text-white text-sm font-medium hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
 
