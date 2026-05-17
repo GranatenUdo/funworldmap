@@ -20,6 +20,7 @@ interface Props {
   anchorDate: string | null
   countries: CountryLike[]
   cities: CityLike[]
+  initialHistoryOpen?: boolean
 }
 
 function focusSearchInput(): void {
@@ -36,7 +37,13 @@ function focusSearchInput(): void {
   })
 }
 
-export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
+export function Launcher({
+  onDismiss,
+  anchorDate,
+  countries,
+  cities,
+  initialHistoryOpen = false,
+}: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const modes = useMemo(() => listModes(), [])
   const lastMode = readLastMode()
@@ -44,7 +51,7 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   const { best: cgBest } = usePersonalBests('city-guessing')
   const { status: puzzlesStatus, byDate, index } = useDailyPuzzlesContext()
   const { history, get: getDay, streak, pendingMilestone, markMilestoneShown } = useDailyHistory()
-  const [historyOpen, setHistoryOpen] = useState(false)
+  const [historyOpen, setHistoryOpen] = useState(initialHistoryOpen)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   const totalDays = useMemo(() => Object.keys(history.days).length, [history])
@@ -65,7 +72,12 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
 
   const latestAvailableDate: string | null = useMemo(() => {
     if (!index) return null
-    return Object.keys(index.days).filter((d) => d <= today).sort().pop() ?? null
+    return (
+      Object.keys(index.days)
+        .filter((d) => d <= today)
+        .sort()
+        .pop() ?? null
+    )
   }, [index, today])
 
   function cardState(modeId: ModeId): LauncherCardState {
@@ -80,18 +92,21 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
   }
 
   const bestFor = (id: ModeId) => (isCountryPinning(id) ? cpBest : cgBest)
-  const playedFor = useCallback((id: ModeId) => {
-    const prior = getDay(date, id)
-    if (!prior) return undefined
-    const puzzle = byDate(date)
-    if (!puzzle) return { score: prior.score }
-    if (isCountryPinning(id)) {
-      const c = countries.find((cc) => cc.cca3 === puzzle.country.cca3)
-      return { score: prior.score, targetName: c?.name.common }
-    }
-    const city = cities.find((cc) => cc.id === puzzle.city.id)
-    return { score: prior.score, targetName: city?.name }
-  }, [getDay, date, byDate, countries, cities])
+  const playedFor = useCallback(
+    (id: ModeId) => {
+      const prior = getDay(date, id)
+      if (!prior) return undefined
+      const puzzle = byDate(date)
+      if (!puzzle) return { score: prior.score }
+      if (isCountryPinning(id)) {
+        const c = countries.find((cc) => cc.cca3 === puzzle.country.cca3)
+        return { score: prior.score, targetName: c?.name.common }
+      }
+      const city = cities.find((cc) => cc.id === puzzle.city.id)
+      return { score: prior.score, targetName: city?.name }
+    },
+    [getDay, date, byDate, countries, cities],
+  )
 
   const openedRef = useRef<Set<string>>(new Set())
   useEffect(() => {
@@ -101,7 +116,10 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
       if (openedRef.current.has(key)) continue
       if (!byDate(date)) continue
       openedRef.current.add(key)
-      const dateAge = Math.max(0, Math.round((new Date(today).getTime() - new Date(date).getTime()) / 86_400_000))
+      const dateAge = Math.max(
+        0,
+        Math.round((new Date(today).getTime() - new Date(date).getTime()) / 86_400_000),
+      )
       track('daily_opened', { mode: m.id, dateAge })
     }
   }, [puzzlesStatus, index, byDate, date, today, modes])
@@ -125,7 +143,10 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     const rafId = window.requestAnimationFrame(() => {
       if (cancelled) return
       const animations = root.getAnimations({ subtree: true })
-      if (animations.length === 0) { flipToIdle(); return }
+      if (animations.length === 0) {
+        flipToIdle()
+        return
+      }
       Promise.all(animations.map((a) => a.finished))
         .then(flipToIdle)
         .catch(flipToIdle)
@@ -222,17 +243,29 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
     // Priority: lastMode daily-cta → lastMode see-reveal → any daily-cta →
     // any see-reveal → lastMode free-link → any free-link → first focusable button
     const lastModeDailyCta = lastMode
-      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-daily-cta"]:not([disabled])`)
+      ? root.querySelector<HTMLButtonElement>(
+          `[data-testid="launcher-card-${lastMode}-daily-cta"]:not([disabled])`,
+        )
       : null
     const lastModeSeeReveal = lastMode
-      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-see-reveal"]:not([disabled])`)
+      ? root.querySelector<HTMLButtonElement>(
+          `[data-testid="launcher-card-${lastMode}-see-reveal"]:not([disabled])`,
+        )
       : null
     const lastModeFreeLink = lastMode
-      ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-free-link"]:not([disabled])`)
+      ? root.querySelector<HTMLButtonElement>(
+          `[data-testid="launcher-card-${lastMode}-free-link"]:not([disabled])`,
+        )
       : null
-    const firstDailyCta = root.querySelector<HTMLButtonElement>('[data-testid$="-daily-cta"]:not([disabled])')
-    const firstSeeReveal = root.querySelector<HTMLButtonElement>('[data-testid$="-see-reveal"]:not([disabled])')
-    const firstFreeLink = root.querySelector<HTMLButtonElement>('[data-testid$="-free-link"]:not([disabled])')
+    const firstDailyCta = root.querySelector<HTMLButtonElement>(
+      '[data-testid$="-daily-cta"]:not([disabled])',
+    )
+    const firstSeeReveal = root.querySelector<HTMLButtonElement>(
+      '[data-testid$="-see-reveal"]:not([disabled])',
+    )
+    const firstFreeLink = root.querySelector<HTMLButtonElement>(
+      '[data-testid$="-free-link"]:not([disabled])',
+    )
     const firstFocusable = root.querySelector<HTMLButtonElement>('button:not([disabled])')
 
     const target =
@@ -301,7 +334,9 @@ export function Launcher({ onDismiss, anchorDate, countries, cities }: Props) {
               className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2"
               data-testid="launcher-subtitle"
             >
-              {anchorDate ? `Daily · ${anchorDate}` : `${countries.length} countries. Explore or guess.`}
+              {anchorDate
+                ? `Daily · ${anchorDate}`
+                : `${countries.length} countries. Explore or guess.`}
             </p>
           </div>
 
