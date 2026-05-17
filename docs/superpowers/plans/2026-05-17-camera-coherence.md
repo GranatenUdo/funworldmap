@@ -20,7 +20,7 @@ Spec: `docs/superpowers/specs/2026-05-17-camera-coherence-design.md`.
 - `src/game/hooks/useRevealMapEffects.ts` — three change zones (described per task):
   - lines 36-51 (`ensureRevealSources`): add `lineMetrics: true` and `line-gradient`.
   - lines 148-218 (round-ended geometry effect's rAF loop): replace per-frame `setData` + `jumpTo` with one-shot full-arc `setData` + `easeTo` + per-frame `setPaintProperty('line-gradient', …)`.
-  - lines 223-232 (round-ended cleanup): extend to call `clearRevealSources` for city reveals.
+  - lines 223-232 (round-ended cleanup): extend to call `clearRevealSources` unconditionally (both city reveals and country wrong-guesses draw the same sources).
   - lines 332-339 (round-start camera reset effect): delete.
 - `src/game/shared/types.ts:119` — delete `initialCameraView` property.
 - `src/game/modes/country-pinning/index.tsx:14` — delete `initialCameraView: 'preserve'` line.
@@ -141,16 +141,15 @@ useEffect(() => {
 
 Note the deps array drops `mapRef` (no longer read).
 
-If `prefersReducedMotion` is no longer referenced anywhere else in App.tsx, remove its import. Check with `Grep "prefersReducedMotion" src/App.tsx` — if only the removed `flyTo` block referenced it, drop the import line near the top:
+Remove the now-unused imports from `src/App.tsx`. The deleted flyTo was the only consumer of all three.
 
-```ts
-// Before (line 29):
-import { prefersReducedMotion } from './lib/motion'
+Verify each is unused with `Grep "<identifier>" src/App.tsx` before deleting. As of the current tree:
 
-// After: (delete the line)
-```
+- `prefersReducedMotion` (line 29 import): used only inside the deleted block → remove the import line.
+- `DEFAULT_CENTER` and `DEFAULT_ZOOM` (line 23 import): used only inside the deleted block → remove `DEFAULT_CENTER, DEFAULT_ZOOM` from the import (the import may have other named imports; if `DEFAULT_CENTER` and `DEFAULT_ZOOM` are the only ones from `./lib/mapStyles`, delete the whole line).
+- `mapRef` is from the `useMap()` hook (not an import) and is used elsewhere in App.tsx (the country-pinning flow etc.), so it stays — only its presence in the effect deps array was removed by the edit above.
 
-Same for `DEFAULT_CENTER`, `DEFAULT_ZOOM`, and `mapRef` if those become unused. Verify with `Grep` per identifier inside `src/App.tsx`. Be precise — don't blindly delete; only remove imports that have zero remaining references.
+If ESLint's `no-unused-vars` doesn't immediately fail on these, the pre-commit lint-staged hook will. Strip them in this same edit.
 
 - [ ] **Step 5: Re-run the test, confirm it passes**
 
@@ -816,9 +815,9 @@ EOF
 - Test: `src/game/hooks/__tests__/useRevealMapEffects.test.tsx` (add new test)
 - Test: `e2e/reveal-animation.spec.ts` (extend wrong-country test with post-round assertion)
 
-- [ ] **Step 1: Write the failing unit test for round-transition cleanup**
+- [ ] **Step 1: Write the failing unit tests for round-transition cleanup**
 
-Add this test to `src/game/hooks/__tests__/useRevealMapEffects.test.tsx`, inside the existing `describe`:
+Add **two** tests to `src/game/hooks/__tests__/useRevealMapEffects.test.tsx`, inside the existing `describe`. The two cases exercise the city and country pathways through the same cleanup branch — both must clear the marker + line sources because country wrong-guesses with a known `clickedCca3` also draw them via `computeRevealAnimationPlan`.
 
 ```ts
 it('clears city reveal artifacts when round transitions from round-ended to playing', () => {
@@ -864,15 +863,52 @@ it('clears city reveal artifacts when round transitions from round-ended to play
   })
   expect(emptySetDataCalls.length).toBeGreaterThanOrEqual(2)
 })
+
+it('clears country reveal artifacts when round transitions from round-ended to playing', () => {
+  const fake = createFakeMapRef()
+  // Country wrong-guess with a known clickedCca3 triggers computeRevealAnimationPlan,
+  // which uses the same marker + line sources as city reveals.
+  const reveal = makeCountryReveal({
+    correct: false,
+    targetCca3: 'FRA',
+    clickedCca3: 'DEU',
+    clickedName: 'Germany',
+    distanceKm: 1500,
+  })
+  const roundEndedSession = makeSession({
+    status: 'round-ended',
+    modeId: 'country-pinning',
+    lastOutcome: makeOutcome(reveal),
+  })
+  const { rerender } = renderHook((args: RevealArgs) => useRevealMapEffects(args), {
+    initialProps: buildRevealArgs({ session: roundEndedSession, mapRef: fake.ref }),
+  })
+
+  fake.calls.setData.mockClear()
+
+  const playingSession = makeSession({
+    status: 'playing',
+    modeId: 'country-pinning',
+    roundIndex: 1,
+    currentRound: makeCountryRound({ targetCca3: 'JPN' }),
+  })
+  rerender(buildRevealArgs({ session: playingSession, mapRef: fake.ref }))
+
+  const emptySetDataCalls = fake.calls.setData.mock.calls.filter((c) => {
+    const arg = c[0] as { features?: unknown[] }
+    return Array.isArray(arg.features) && arg.features.length === 0
+  })
+  expect(emptySetDataCalls.length).toBeGreaterThanOrEqual(2)
+})
 ```
 
-- [ ] **Step 2: Run the test, confirm it fails**
+- [ ] **Step 2: Run the tests, confirm both fail**
 
-Run: `npx vitest run src/game/hooks/__tests__/useRevealMapEffects.test.tsx -t "clears city reveal artifacts" --reporter=verbose`
+Run: `npx vitest run src/game/hooks/__tests__/useRevealMapEffects.test.tsx -t "reveal artifacts when round transitions" --reporter=verbose`
 
-Expected: FAIL with `expected length >= 2 but got <N>` where N < 2 (today's cleanup only handles country mode).
+Expected: both new tests FAIL with `expected length >= 2 but got <N>` where N < 2. Today's cleanup only clears the country-mode hoverBorder filter; the marker + line sources are untouched in both pathways.
 
-- [ ] **Step 3: Extend the round-ended cleanup**
+- [ ] **Step 3: Extend the round-ended cleanup (unconditional source clear)**
 
 Open `src/game/hooks/useRevealMapEffects.ts`. Locate the return-cleanup block at the end of the round-ended geometry effect (post-Task-3, this is the small block at the bottom of the long try/catch):
 
@@ -898,21 +934,21 @@ return () => {
     } catch {
       /* no-op */
     }
-  } else {
-    // Mirror the city setup: when the round transitions off 'round-ended',
-    // clear the marker + line sources so the next round starts clean.
-    clearRevealSources(map)
   }
+  // Always clear marker + line sources. Both country wrong-guesses (when
+  // clickedCca3 is known) and city reveals draw these via
+  // computeRevealAnimationPlan, so the cleanup is mode-neutral.
+  clearRevealSources(map)
 }
 ```
 
-`clearRevealSources` is the existing helper at line 54 — already swallows errors. No new imports needed.
+`clearRevealSources` is the existing helper at line 54 — already swallows errors and null-checks the sources, so calling it when sources were never instantiated (e.g. correct guesses that skip the arc-animation branch) is a safe no-op. No new imports needed.
 
-- [ ] **Step 4: Re-run the unit test, confirm it passes**
+- [ ] **Step 4: Re-run the unit tests, confirm both pass**
 
-Run: `npx vitest run src/game/hooks/__tests__/useRevealMapEffects.test.tsx -t "clears city reveal artifacts" --reporter=verbose`
+Run: `npx vitest run src/game/hooks/__tests__/useRevealMapEffects.test.tsx -t "reveal artifacts when round transitions" --reporter=verbose`
 
-Expected: PASS.
+Expected: both tests PASS.
 
 - [ ] **Step 5: Extend the e2e wrong-country test with the post-round assertion**
 
@@ -938,23 +974,22 @@ await expect
   )
   .toBe('playing')
 
-// The reveal line source should now be empty (zero features).
+// The reveal line source should now have zero features. Use the public
+// querySourceFeatures API rather than reaching into MapLibre's private
+// _data field.
 const lineFeatureCount = await page.evaluate(() => {
-  const src = window.__funworldmap_map?.getSource('reveal-line') as
-    | { _data?: { features?: unknown[] } }
-    | undefined
-  return src?._data?.features?.length ?? -1
+  return window.__funworldmap_map?.querySourceFeatures('game-reveal-line').length ?? -1
 })
 expect(lineFeatureCount).toBe(0)
 ```
 
-The literal source ID `'reveal-line'` matches `REVEAL_LINE_SOURCE` in `src/game/shared/revealLayers.ts` — confirm with `Grep "REVEAL_LINE_SOURCE" src/` if uncertain. If the constant has a different value, substitute it in the test.
+The literal source ID `'game-reveal-line'` matches `REVEAL_LINE_SOURCE` in `src/game/shared/revealLayers.ts:2` (verified). If that constant changes, update the literal here too.
 
 - [ ] **Step 6: Run the unit suite**
 
 Run: `npx vitest run --reporter=dot`
 
-Expected: all tests pass. Count = Task 3 total + 1 new test.
+Expected: all tests pass. Count = Task 3 total + 2 new tests (city + country cleanup).
 
 - [ ] **Step 7: Run the e2e reveal-animation spec**
 
@@ -986,14 +1021,18 @@ git commit -m "$(cat <<'EOF'
 fix(reveal): clear reveal artifacts on round transition
 
 The round-ended geometry effect's cleanup previously only cleared the
-country-mode hover-border filter. City-mode reveal (marker + dashed
-line) was left in place until the user ended the game — so the
-previous round's guess + target visibly lingered into the next round.
+country-mode hover-border filter. The marker + dashed-line sources
+were left in place until the user ended the game — so the previous
+round's guess + target visibly lingered into the next round.
 
-Extend the cleanup: when the round transitions off 'round-ended' for a
-city reveal, clearRevealSources runs. The existing 'clear on idle'
-effect at line 357 stays as defense-in-depth for end-game-from-
-round-ended-state.
+This affected both modes: city-guessing reveals draw a point marker +
+dashed arc, and country-pinning wrong-guesses with a known clickedCca3
+also draw the same marker + arc via computeRevealAnimationPlan.
+
+Extend the cleanup with an unconditional clearRevealSources call. The
+country-only hoverBorder filter clear stays for the highlight effect.
+The existing 'clear on idle' effect at line 357 stays as defense-in-
+depth for end-game-from-round-ended-state.
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 EOF
@@ -1016,4 +1055,4 @@ EOF
   - `UseRevealMapEffectsArgs` definition in Task 2 step 4 matches the destructure in step 4 and the call site in step 5.
   - The reveal-arg-fixture in Task 2 step 7 strips `mode` consistently with the interface change.
   - `createFakeMapRef`'s added `easeTo` mock is consumed by Task 3 tests.
-  - Source ID `'reveal-line'` and layer ID `'reveal-line-layer'` aren't hard-coded — Task 3 uses the existing `REVEAL_LINE_SOURCE` / `REVEAL_LINE_LAYER` constants from `src/game/shared/revealLayers.ts`; Task 4 step 5's e2e literal `'reveal-line'` is gated by a runtime check in the same step ("substitute if the constant has a different value").
+  - Source ID `'game-reveal-line'` and layer ID `'game-reveal-line-layer'` are constants — Task 3 uses the existing `REVEAL_LINE_SOURCE` / `REVEAL_LINE_LAYER` imports from `src/game/shared/revealLayers.ts:2-3`; Task 4 step 5's e2e literal `'game-reveal-line'` matches the constant's value (verified against `revealLayers.ts:2`).

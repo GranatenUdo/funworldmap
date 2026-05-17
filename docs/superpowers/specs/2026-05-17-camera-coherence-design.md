@@ -261,7 +261,7 @@ return () => {
 }
 ```
 
-The cleanup only clears the country-mode hover-border filter. City-mode reveals (marker + line sources) are left in place, lingering visually into the next round until the user ends the game (the separate "clear on idle" effect at line 357 fires).
+The cleanup only clears the country-mode hover-border filter. The marker and line sources are left in place, lingering visually into the next round until the user ends the game (the separate "clear on idle" effect at line 357 fires). This affects _both modes_: city-guessing reveals draw a point marker + dashed arc; country-pinning wrong-guesses with a known `clickedCca3` also draw the same marker + arc via `computeRevealAnimationPlan`.
 
 ### What changes
 
@@ -274,11 +274,15 @@ return () => {
     } catch {
       /* no-op */
     }
-  } else {
-    clearRevealSources(map)
   }
+  // Always clear the marker + line sources — both country wrong-guesses
+  // (when clickedCca3 is known) and city reveals draw them via
+  // computeRevealAnimationPlan, so the cleanup must be mode-neutral.
+  clearRevealSources(map)
 }
 ```
+
+The country-only `hoverBorder` filter clear stays for the country highlight effect (lines 103-112 of the same effect set the filter on round-ended; cleanup undoes it). `clearRevealSources` runs unconditionally because its no-op when sources weren't instantiated is cheap (the helper already null-checks via `map.getSource(...)?.setData(...)`).
 
 The effect's cleanup now mirrors its setup: whatever the round-ended effect drew, it tears down when status leaves `'round-ended'`. The existing "clear on idle" effect at line 357 stays as a defense-in-depth safety net for the user-ends-game-while-in-round-ended-state edge case — harmless if it runs twice.
 
