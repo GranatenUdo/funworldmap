@@ -16,7 +16,8 @@ import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSe
 import { isCountryPinning } from './game/shared/modePredicates'
 import { DailyPuzzlesProvider, useDailyPuzzlesContext } from './game/daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './game/daily/useDailyHistory'
-import { toLocalDateString } from './game/daily/dates'
+import { toLocalDateString, getToday, getYesterday } from './game/daily/dates'
+import { deriveStreakMode } from './game/daily/storage'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike, ModeId } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
@@ -127,9 +128,6 @@ function AppInner({
     window.addEventListener('hashchange', read)
     return () => window.removeEventListener('hashchange', read)
   }, [])
-  const openLauncher = useCallback(() => {
-    showLauncher()
-  }, [showLauncher])
   const openLauncherHistory = useCallback(() => {
     showLauncher({ historyOpen: true })
   }, [showLauncher])
@@ -149,12 +147,12 @@ function AppInner({
 
   const gameActive = session.status !== 'idle'
 
-  const todayDate = new Date()
-  const today = toLocalDateString(todayDate)
-  const yesterday = toLocalDateString(
-    new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 1),
-  )
+  const { today, yesterday } = useMemo(() => {
+    const now = new Date()
+    return { today: getToday(now), yesterday: getYesterday(now) }
+  }, [])
   const { history: dailyHistory, streak } = useDailyHistory()
+  const streakMode = deriveStreakMode(streak.lastActiveDate, yesterday)
   const todayEntry = dailyHistory.days[today] ?? {}
   const countryPlayed = !!todayEntry['country-pinning']
   const cityPlayed = !!todayEntry['city-guessing']
@@ -461,11 +459,11 @@ function AppInner({
         launcherVisible={launcherVisible}
         ctaState={ctaState}
         streakCurrent={streak.current}
-        streakActive={streak.lastActiveDate !== null && streak.lastActiveDate >= yesterday}
+        streakActive={streakMode === 'active'}
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
-        onOpenLauncher={openLauncher}
+        onOpenLauncher={showLauncher}
         onOpenLauncherHistory={openLauncherHistory}
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
