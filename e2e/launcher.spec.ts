@@ -1,6 +1,12 @@
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import { gotoAndWaitForMap, openLauncher, waitForAnimationIdle } from './helpers'
+import {
+  gotoAndWaitForMap,
+  openLauncher,
+  routeMapTiles,
+  waitForAnimationIdle,
+  waitForAppReady,
+} from './helpers'
 
 test.setTimeout(60_000)
 
@@ -200,8 +206,14 @@ test.describe('Launcher — daily state', () => {
   })
 
   test('unavailable-error state when daily index fetch fails', async ({ page }) => {
+    // Register routeMapTiles first, then the daily index stub — Playwright uses
+    // LIFO so the later-registered stub handler runs first for daily/index.json
+    // requests and returns 500 before routeMapTiles' continue() sees it.
+    await routeMapTiles(page)
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
-    await gotoAndWaitForMap(page, '/')
+    await page.goto('/')
+    await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+    await waitForAppReady(page)
     await openLauncher(page)
     await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
       'data-state',
@@ -211,8 +223,12 @@ test.describe('Launcher — daily state', () => {
   })
 
   test('shared unlimited link starts endless mode', async ({ page }) => {
+    // Same LIFO fix: routeMapTiles first, then the 500 stub runs first due to LIFO.
+    await routeMapTiles(page)
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
-    await gotoAndWaitForMap(page, '/')
+    await page.goto('/')
+    await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+    await waitForAppReady(page)
     await openLauncher(page)
     await page.getByTestId('launcher-unlimited-link').click()
     await expect.poll(() => page.url()).toMatch(/#game\//)

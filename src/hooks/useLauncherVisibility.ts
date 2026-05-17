@@ -19,6 +19,7 @@ export function useLauncherVisibility(): LauncherVisibility {
   const initialHash = typeof window !== 'undefined' ? window.location.hash : ''
   const [currentHash, setCurrentHash] = useState(initialHash)
   const [dismissed, setDismissed] = useState(false)
+  const [forceVisible, setForceVisible] = useState(false)
   const [initialHistoryOpen, setInitialHistoryOpen] = useState(false)
   const prevSessionStatusRef = useRef(session.status)
 
@@ -29,6 +30,8 @@ export function useLauncherVisibility(): LauncherVisibility {
   }, [])
 
   // Reset dismissal on non-idle → idle transitions (game end).
+  // Map-first: do NOT set forceVisible here — the launcher stays hidden until
+  // the user explicitly clicks the header-play button after a game ends.
   useEffect(() => {
     const prev = prevSessionStatusRef.current
     if (prev !== 'idle' && session.status === 'idle') {
@@ -40,13 +43,16 @@ export function useLauncherVisibility(): LauncherVisibility {
   const dismiss = useCallback(() => {
     setInitialHistoryOpen(false)
     setDismissed(true)
+    setForceVisible(false)
   }, [])
   const show = useCallback((opts?: { historyOpen?: boolean }) => {
     setInitialHistoryOpen(!!opts?.historyOpen)
     setDismissed(false)
+    setForceVisible(true)
   }, [])
 
-  const visible = isDailyRoot(currentHash) && !dismissed && session.status === 'idle'
+  const visible =
+    (forceVisible || isDailyRoot(currentHash)) && !dismissed && session.status === 'idle'
 
   let anchorDate: string | null = null
   if (isDailyRoot(currentHash)) {

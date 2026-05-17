@@ -1,13 +1,16 @@
 import { test, expect, type Page } from '@playwright/test'
-import { gotoAndWaitForMap, openLauncher } from './helpers'
+import { gotoAndWaitForMap, openLauncher, waitForGameTestHook } from './helpers'
 
 test.setTimeout(60_000)
 
 async function setupWithCountryPinning(page: Page) {
+  await page.addInitScript(() => {
+    localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
+  })
   await gotoAndWaitForMap(page)
   await openLauncher(page)
-  // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
-  await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+  await page.getByTestId('launcher-unlimited-link').click()
+  await waitForGameTestHook(page)
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 }
 
