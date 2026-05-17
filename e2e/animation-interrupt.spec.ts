@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForAppReady, waitForGameTestHook, getSession } from './helpers'
+import { waitForAppReady, waitForGameTestHook, getSession, openLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -18,7 +18,7 @@ async function startCountryPinningWithFRA(page: Page): Promise<void> {
   })
   await page.goto('/')
   await waitForMap(page)
-  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  await openLauncher(page)
   await page.getByTestId('launcher-unlimited-link').click()
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
   await waitForGameTestHook(page)

@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { ensureLauncherDismissed } from './helpers'
 
 test.describe('map reliability', () => {
   test('shows error overlay when basemap style is unreachable', async ({ page }) => {
     await page.route('**/tiles.openfreemap.org/**', (route) => route.abort('failed'))
 
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
 
     const overlay = page.getByTestId('map-error-overlay')
     await expect(overlay).toBeVisible({ timeout: 15_000 })
@@ -20,7 +20,7 @@ test.describe('map reliability', () => {
   test('retry button triggers reload', async ({ page }) => {
     await page.route('**/tiles.openfreemap.org/**', (route) => route.abort('failed'))
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
 
     const retry = page.getByTestId('map-error-retry')
     await expect(retry).toBeVisible({ timeout: 15_000 })
@@ -42,7 +42,7 @@ test.describe('map reliability', () => {
     })
 
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
 
     const banner = page.getByTestId('basemap-banner')
     await expect(banner).toBeVisible({ timeout: 8_000 })

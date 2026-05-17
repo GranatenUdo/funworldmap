@@ -15,14 +15,16 @@ import { MapProvider, useMap } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { isCountryPinning } from './game/shared/modePredicates'
 import { DailyPuzzlesProvider, useDailyPuzzlesContext } from './game/daily/DailyPuzzlesProvider'
-import { toLocalDateString } from './game/daily/dates'
+import { useDailyHistory } from './game/daily/useDailyHistory'
+import { toLocalDateString, getToday, getYesterday } from './game/daily/dates'
+import { deriveStreakMode } from './game/daily/storage'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike, ModeId } from './game/shared/types'
 import { DEFAULT_CENTER, DEFAULT_ZOOM } from './lib/mapStyles'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { parseHash } from './lib/hashState'
-import { track } from './lib/analytics'
+import { track, type CtaState } from './lib/analytics'
 import { dispatchToast } from './lib/toast'
 import { prefersReducedMotion } from './lib/motion'
 
@@ -97,6 +99,7 @@ function AppInner({
   const {
     visible: launcherVisible,
     anchorDate,
+    initialHistoryOpen,
     dismiss: dismissLauncher,
     show: showLauncher,
   } = useLauncherVisibility()
@@ -125,8 +128,8 @@ function AppInner({
     window.addEventListener('hashchange', read)
     return () => window.removeEventListener('hashchange', read)
   }, [])
-  const openLauncher = useCallback(() => {
-    showLauncher()
+  const openLauncherHistory = useCallback(() => {
+    showLauncher({ historyOpen: true })
   }, [showLauncher])
   const onLauncherDismissFromSearch = useCallback(() => {
     track('launcher_dismissed', { path: 'search' })
@@ -143,6 +146,18 @@ function AppInner({
   }, [clearCompare])
 
   const gameActive = session.status !== 'idle'
+
+  const { today, yesterday } = useMemo(() => {
+    const now = new Date()
+    return { today: getToday(now), yesterday: getYesterday(now) }
+  }, [])
+  const { history: dailyHistory, streak } = useDailyHistory()
+  const streakMode = deriveStreakMode(streak.lastActiveDate, yesterday)
+  const todayEntry = dailyHistory.days[today] ?? {}
+  const countryPlayed = !!todayEntry['country-pinning']
+  const cityPlayed = !!todayEntry['city-guessing']
+  const ctaState: CtaState =
+    countryPlayed && cityPlayed ? 'done' : countryPlayed || cityPlayed ? 'partial' : 'unplayed'
 
   const roundEndTarget = useMemo(() => {
     if (session.status !== 'round-ended') return null
@@ -442,10 +457,14 @@ function AppInner({
         comparePickingMode={comparePickingMode}
         gameActive={gameActive}
         launcherVisible={launcherVisible}
+        ctaState={ctaState}
+        streakCurrent={streak.current}
+        streakActive={streakMode === 'active'}
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
-        onOpenLauncher={openLauncher}
+        onOpenLauncher={showLauncher}
+        onOpenLauncherHistory={openLauncherHistory}
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
@@ -455,6 +474,7 @@ function AppInner({
           anchorDate={anchorDate}
           countries={pool}
           cities={cities}
+          initialHistoryOpen={initialHistoryOpen}
         />
       )}
 

@@ -9,9 +9,13 @@
  *
  * Fix: writeIdleHash() in GameController.tsx now dispatches a synthetic
  * hashchange event after history.replaceState, so useLauncherVisibility
- * updates currentHash to '' and:
- *   (a) the launcher auto-appears on Back to map (dismissed resets on idle)
- *   (b) after dismissing the launcher, clicking ▶ also reopens it
+ * updates currentHash to ''.
+ *
+ * Map-first posture (PR2): the launcher no longer auto-appears at bare root
+ * after game end. show() sets forceVisible=true so the ▶ pill can re-open
+ * the launcher from bare root. These tests verify:
+ *   (a) hash clears after back-to-map
+ *   (b) ▶ pill is visible and clicking it opens the launcher
  */
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
@@ -45,7 +49,9 @@ async function startDailyViaLauncher(page: Page): Promise<void> {
   await page.goto('/')
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
   await waitForAppReady(page)
-  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  // Open the launcher via the header CTA (map-first posture: bare '/' no longer auto-opens launcher)
+  await page.getByTestId('header-play').click()
+  await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 5_000 })
   await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
     timeout: 10_000,
   })
@@ -57,7 +63,7 @@ async function startDailyViaLauncher(page: Page): Promise<void> {
 }
 
 test.describe('header-play reopens launcher after game completion', () => {
-  test('daily game: Back to map triggers hashchange so launcher re-appears, ▶ also works', async ({
+  test('daily game: Back to map clears hash; ▶ pill reopens launcher with played state', async ({
     page,
   }) => {
     await startDailyViaLauncher(page)
@@ -80,18 +86,9 @@ test.describe('header-play reopens launcher after game completion', () => {
     // Hash should have cleared (writeIdleHash dispatches hashchange)
     await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 }).toBe('')
 
-    // The launcher must auto-appear: dismissed resets on idle and hash is now bare root.
-    // This is the primary proof of the fix: previously currentHash stayed stale so visible=false.
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
-
-    // Dismiss the launcher
-    await page.getByTestId('launcher-close').click()
-    await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
-
-    // header-play must be in the DOM after dismiss (Header returns null while launcher visible)
+    // Map-first posture: launcher does NOT auto-appear at bare root after game end.
+    // The ▶ pill is visible; clicking it opens the launcher (show() → forceVisible=true).
     await expect(page.getByTestId('header-play')).toBeVisible({ timeout: 5_000 })
-
-    // Click ▶ — also reopens the launcher (show() path)
     await page.getByTestId('header-play').click()
 
     // Launcher appears with played-state "See reveal" CTA
@@ -101,7 +98,7 @@ test.describe('header-play reopens launcher after game completion', () => {
     })
   })
 
-  test('free game: "End game" exits, launcher auto-appears, ▶ also works', async ({ page }) => {
+  test('free game: "End game" exits, hash clears; ▶ pill reopens launcher', async ({ page }) => {
     await stubDailyIndex(page, TODAY)
     await page.addInitScript(() => {
       localStorage.removeItem('funworldmap-daily-history')
@@ -112,7 +109,9 @@ test.describe('header-play reopens launcher after game completion', () => {
     })
     await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    // Open launcher via header CTA (map-first posture)
+    await page.getByTestId('header-play').click()
+    await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 5_000 })
 
     // Start free game via the shared unlimited link.
     await page.getByTestId('launcher-unlimited-link').click()
@@ -139,12 +138,8 @@ test.describe('header-play reopens launcher after game completion', () => {
     // Hash must clear
     await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 }).toBe('')
 
-    // Launcher auto-appears (dismissed resets when session returns to idle)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
-
-    // Dismiss, then re-open via ▶
-    await page.getByTestId('launcher-close').click()
-    await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
+    // Map-first posture: launcher does NOT auto-appear at bare root after game end.
+    // The ▶ pill is visible; clicking it re-opens the launcher.
     await expect(page.getByTestId('header-play')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('header-play').click()
 

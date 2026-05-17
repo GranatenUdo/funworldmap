@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 
-function isBareRoot(hash: string): boolean {
-  return hash === '' || hash === '#'
-}
-
 function isDailyRoot(hash: string): boolean {
   const clean = hash.startsWith('#') ? hash.slice(1) : hash
   return /^daily\/\d{4}-\d{2}-\d{2}$/.test(clean)
@@ -13,15 +9,21 @@ function isDailyRoot(hash: string): boolean {
 export interface LauncherVisibility {
   visible: boolean
   anchorDate: string | null
+  initialHistoryOpen: boolean
   dismiss: () => void
-  show: () => void
+  show: (opts?: { historyOpen?: boolean }) => void
 }
+
+type IntentState =
+  | { kind: 'default' }
+  | { kind: 'open'; historyOpen: boolean }
+  | { kind: 'dismissed' }
 
 export function useLauncherVisibility(): LauncherVisibility {
   const { session } = useGameSessionContext()
   const initialHash = typeof window !== 'undefined' ? window.location.hash : ''
   const [currentHash, setCurrentHash] = useState(initialHash)
-  const [dismissed, setDismissed] = useState(false)
+  const [intent, setIntent] = useState<IntentState>({ kind: 'default' })
   const prevSessionStatusRef = useRef(session.status)
 
   useEffect(() => {
@@ -30,22 +32,30 @@ export function useLauncherVisibility(): LauncherVisibility {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
-  // Reset dismissal on non-idle → idle transitions (game end).
+  // Reset to default on non-idle → idle transitions (game end).
+  // Map-first: do NOT set intent to 'open' here — the launcher stays hidden
+  // until the user explicitly clicks the header-play button after a game ends.
   useEffect(() => {
     const prev = prevSessionStatusRef.current
     if (prev !== 'idle' && session.status === 'idle') {
-      setDismissed(false)
+      setIntent({ kind: 'default' })
     }
     prevSessionStatusRef.current = session.status
   }, [session.status])
 
-  const dismiss = useCallback(() => setDismissed(true), [])
-  const show = useCallback(() => setDismissed(false), [])
+  const dismiss = useCallback(() => {
+    setIntent({ kind: 'dismissed' })
+  }, [])
+
+  const show = useCallback((opts?: { historyOpen?: boolean }) => {
+    setIntent({ kind: 'open', historyOpen: !!opts?.historyOpen })
+  }, [])
 
   const visible =
-    (isBareRoot(currentHash) || isDailyRoot(currentHash)) &&
-    !dismissed &&
+    (intent.kind === 'open' || (isDailyRoot(currentHash) && intent.kind !== 'dismissed')) &&
     session.status === 'idle'
+
+  const initialHistoryOpen = intent.kind === 'open' ? intent.historyOpen : false
 
   let anchorDate: string | null = null
   if (isDailyRoot(currentHash)) {
@@ -53,5 +63,5 @@ export function useLauncherVisibility(): LauncherVisibility {
     anchorDate = clean.slice('daily/'.length)
   }
 
-  return { visible, anchorDate, dismiss, show }
+  return { visible, anchorDate, initialHistoryOpen, dismiss, show }
 }

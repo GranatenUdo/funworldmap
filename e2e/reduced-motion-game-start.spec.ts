@@ -43,18 +43,17 @@ test.describe('Game start respects prefers-reduced-motion', () => {
 
     await page.goto('/')
     await waitForAppReady(page)
-    await waitForGameTestHook(page)
 
     await spyOnFlyToDuration(page)
 
-    await page.evaluate(() => { window.location.hash = 'game/country-pinning' })
+    await page.evaluate(() => {
+      window.location.hash = 'game/country-pinning'
+    })
+    await waitForGameTestHook(page)
 
     // Wait for the session to enter playing state — the flyTo fires synchronously
     // in the useEffect that watches session.status. Poll until the spy captured a call.
-    await expect.poll(
-      () => getLastFlyToDuration(page),
-      { timeout: 10_000 },
-    ).not.toBeUndefined()
+    await expect.poll(() => getLastFlyToDuration(page), { timeout: 10_000 }).not.toBeUndefined()
 
     const duration = await getLastFlyToDuration(page)
     expect(duration).toBe(0)
@@ -70,16 +69,15 @@ test.describe('Game start respects prefers-reduced-motion', () => {
 
     await page.goto('/')
     await waitForAppReady(page)
-    await waitForGameTestHook(page)
 
     await spyOnFlyToDuration(page)
 
-    await page.evaluate(() => { window.location.hash = 'game/country-pinning' })
+    await page.evaluate(() => {
+      window.location.hash = 'game/country-pinning'
+    })
+    await waitForGameTestHook(page)
 
-    await expect.poll(
-      () => getLastFlyToDuration(page),
-      { timeout: 10_000 },
-    ).not.toBeUndefined()
+    await expect.poll(() => getLastFlyToDuration(page), { timeout: 10_000 }).not.toBeUndefined()
 
     const duration = await getLastFlyToDuration(page)
     expect(duration).toBe(700)

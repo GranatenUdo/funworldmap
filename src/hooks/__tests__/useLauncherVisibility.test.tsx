@@ -31,7 +31,11 @@ function wrapper(api: GameSessionApi) {
 }
 
 function setHash(hash: string) {
-  window.history.replaceState(null, '', hash === '' ? window.location.pathname : `${window.location.pathname}${hash}`)
+  window.history.replaceState(
+    null,
+    '',
+    hash === '' ? window.location.pathname : `${window.location.pathname}${hash}`,
+  )
   window.dispatchEvent(new HashChangeEvent('hashchange'))
 }
 
@@ -44,14 +48,15 @@ describe('useLauncherVisibility', () => {
     window.history.replaceState(null, '', '/')
   })
 
-  it('visible at /', () => {
+  it('returns visible=false for bare hash (map-first)', () => {
+    history.replaceState(null, '', '/')
     const api = makeApi(makeSession())
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
-    expect(result.current.visible).toBe(true)
+    expect(result.current.visible).toBe(false)
   })
 
-  it('visible at /# (bare hash)', () => {
-    window.history.replaceState(null, '', '/#')
+  it('still returns visible=true for #daily/YYYY-MM-DD', () => {
+    history.replaceState(null, '', '/#daily/2026-05-17')
     const api = makeApi(makeSession())
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
     expect(result.current.visible).toBe(true)
@@ -71,7 +76,8 @@ describe('useLauncherVisibility', () => {
     expect(result.current.visible).toBe(false)
   })
 
-  it('dismiss() hides launcher', () => {
+  it('dismiss() hides launcher on daily route', () => {
+    window.history.replaceState(null, '', '/#daily/2026-05-17')
     const api = makeApi(makeSession())
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
     expect(result.current.visible).toBe(true)
@@ -79,7 +85,8 @@ describe('useLauncherVisibility', () => {
     expect(result.current.visible).toBe(false)
   })
 
-  it('show() re-reveals when on bare root', () => {
+  it('show() re-reveals when on daily route', () => {
+    window.history.replaceState(null, '', '/#daily/2026-05-17')
     const api = makeApi(makeSession())
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
     act(() => result.current.dismiss())
@@ -113,11 +120,12 @@ describe('useLauncherVisibility', () => {
       rerender()
     })
 
-    // dismissed has been reset by the session-status effect; at bare root, visible === true.
-    expect(result.current.visible).toBe(true)
+    // dismissed has been reset by the session-status effect; at bare root, visible === false (map-first).
+    expect(result.current.visible).toBe(false)
   })
 
-  it('hashchange from / to /#FRA hides launcher', () => {
+  it('hashchange from /#daily/2026-05-17 to /#FRA hides launcher', () => {
+    window.history.replaceState(null, '', '/#daily/2026-05-17')
     const api = makeApi(makeSession())
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
     expect(result.current.visible).toBe(true)
@@ -125,13 +133,13 @@ describe('useLauncherVisibility', () => {
     expect(result.current.visible).toBe(false)
   })
 
-  it('hashchange from /#FRA back to / with dismissed=false shows launcher', () => {
+  it('hashchange from /#FRA back to / stays hidden (bare root is map-first)', () => {
     window.history.replaceState(null, '', '/#FRA')
     const api = makeApi(makeSession())
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
     expect(result.current.visible).toBe(false)
     act(() => setHash(''))
-    expect(result.current.visible).toBe(true)
+    expect(result.current.visible).toBe(false)
   })
 
   it('isDailyRoot matches #daily/YYYY-MM-DD', () => {
@@ -148,5 +156,39 @@ describe('useLauncherVisibility', () => {
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
     expect(result.current.visible).toBe(false)
     expect(result.current.anchorDate).toBeNull()
+  })
+
+  it('show({ historyOpen: true }) sets initialHistoryOpen', () => {
+    history.replaceState(null, '', '/')
+    const api = makeApi(makeSession())
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    expect(result.current.initialHistoryOpen).toBe(false)
+    act(() => {
+      result.current.show({ historyOpen: true })
+    })
+    expect(result.current.initialHistoryOpen).toBe(true)
+  })
+
+  it('show() with no args leaves initialHistoryOpen false', () => {
+    history.replaceState(null, '', '/')
+    const api = makeApi(makeSession())
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    act(() => {
+      result.current.show()
+    })
+    expect(result.current.initialHistoryOpen).toBe(false)
+  })
+
+  it('dismiss() resets initialHistoryOpen to false', () => {
+    history.replaceState(null, '', '/')
+    const api = makeApi(makeSession())
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    act(() => {
+      result.current.show({ historyOpen: true })
+    })
+    act(() => {
+      result.current.dismiss()
+    })
+    expect(result.current.initialHistoryOpen).toBe(false)
   })
 })

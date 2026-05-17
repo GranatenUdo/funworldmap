@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { finalizeGame } from './helpers'
+import { finalizeGame, openLauncher } from './helpers'
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -8,7 +8,7 @@ async function waitForMap(page: Page) {
 // Open Country Pinning (unlimited) via the shared unlimited link.
 // The link defaults to country-pinning when no lastMode is set.
 async function openCountryPinning(page: Page) {
-  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  await openLauncher(page)
   await page.getByTestId('launcher-unlimited-link').click()
 }
 

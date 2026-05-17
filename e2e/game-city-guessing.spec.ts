@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { finalizeGame } from './helpers'
+import { finalizeGame, openLauncher } from './helpers'
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -12,7 +12,7 @@ async function openCityGuessing(page: Page) {
   })
   await page.goto('/')
   await waitForMap(page)
-  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  await openLauncher(page)
   await page.getByTestId('launcher-unlimited-link').click()
   await expect(page.getByTestId('game-hud')).toBeVisible()
   await expect(page.getByTestId('hud-round-counter')).toContainText('1')

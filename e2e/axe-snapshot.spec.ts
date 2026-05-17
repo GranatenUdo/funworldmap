@@ -25,6 +25,7 @@ import {
   seedDailyHistory,
   submitAndWait,
   finalizeGame,
+  openLauncher,
 } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
@@ -49,10 +50,7 @@ const AXE_EXCLUDES = ['.maplibregl-canvas', '.z-\\[200\\]']
  * Summarise violations to stdout in a compact table and return the list.
  * We never throw — the spec is baseline-collection-only.
  */
-function reportViolations(
-  stateName: string,
-  violations: import('axe-core').Result[],
-): void {
+function reportViolations(stateName: string, violations: import('axe-core').Result[]): void {
   if (violations.length === 0) {
     console.log(`\n[axe-snapshot] ${stateName}: No violations`)
     return
@@ -73,7 +71,7 @@ test('axe-snapshot: cold launcher', async ({ page }) => {
   await stubDailyIndex(page, TODAY)
   await page.goto('/')
   await waitForAppReady(page)
-  await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 10_000 })
+  await openLauncher(page)
 
   const results = await new AxeBuilder({ page })
     .include('[data-testid="launcher"]')

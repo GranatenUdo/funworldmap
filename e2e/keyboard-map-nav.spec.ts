@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { ensureLauncherDismissed } from './helpers'
 
 test.describe('keyboard map navigation', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await page.waitForSelector('[data-map-loaded]')
   })
 
