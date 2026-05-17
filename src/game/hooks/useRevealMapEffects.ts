@@ -14,6 +14,16 @@ import {
   REVEAL_LINE_LAYER,
 } from '../shared/revealLayers'
 
+/** Number of segments used to tessellate the reveal arc. The line-gradient
+ *  quantiser uses the same value so per-frame paint updates can never resolve
+ *  finer than the geometry itself. */
+const ARC_SEGMENTS = 64
+
+/** Transparent tail color for the line-gradient step expression — sits past
+ *  the visible-progress boundary so the un-revealed portion of the arc is
+ *  invisible. */
+const TRANSPARENT = 'rgba(0,0,0,0)'
+
 function ensureRevealSources(map: maplibregl.Map): void {
   if (!map.getSource(REVEAL_MARKER_SOURCE)) {
     map.addSource(REVEAL_MARKER_SOURCE, {
@@ -46,7 +56,7 @@ function ensureRevealSources(map: maplibregl.Map): void {
         'line-color': REVEAL_WRONG, // base; overridden by line-gradient per frame
         'line-width': 3,
         'line-dasharray': [2, 2],
-        'line-gradient': ['step', ['line-progress'], REVEAL_WRONG, 0, 'rgba(0,0,0,0)'],
+        'line-gradient': ['step', ['line-progress'], REVEAL_WRONG, 0, TRANSPARENT],
       },
     })
   }
@@ -145,7 +155,7 @@ export function useRevealMapEffects({
       }
     }
 
-    const arc = tessellateArc(plan.from, plan.to, 64)
+    const arc = tessellateArc(plan.from, plan.to, ARC_SEGMENTS)
     let frameId: number | null = null
 
     try {
@@ -185,7 +195,7 @@ export function useRevealMapEffects({
           ['line-progress'],
           REVEAL_WRONG,
           1,
-          'rgba(0,0,0,0)',
+          TRANSPARENT,
         ])
         map.jumpTo({ center: plan.to })
       } else {
@@ -205,7 +215,7 @@ export function useRevealMapEffects({
             ['line-progress'],
             REVEAL_WRONG,
             0,
-            'rgba(0,0,0,0)',
+            TRANSPARENT,
           ])
         } catch {
           /* layer torn down */
@@ -217,7 +227,7 @@ export function useRevealMapEffects({
           const eased = 1 - Math.pow(1 - linear, 3)
           // Quantise progress to 1/64 increments to skip redundant paint-property
           // updates when rAF fires faster than a visible change.
-          const quantised = Math.round(eased * 64) / 64
+          const quantised = Math.round(eased * ARC_SEGMENTS) / ARC_SEGMENTS
           if (quantised !== lastProgress) {
             lastProgress = quantised
             try {
@@ -226,7 +236,7 @@ export function useRevealMapEffects({
                 ['line-progress'],
                 REVEAL_WRONG,
                 quantised,
-                'rgba(0,0,0,0)',
+                TRANSPARENT,
               ])
             } catch {
               /* layer torn down */

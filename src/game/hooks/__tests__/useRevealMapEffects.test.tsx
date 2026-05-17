@@ -13,6 +13,7 @@ import {
   makeCountryReveal,
   makeCountryRound,
   makeOutcome,
+  makePointReveal,
   makeSession,
 } from '../../shared/__tests__/factories'
 import { byCca3Fixture } from './fixtures'
@@ -248,18 +249,7 @@ describe('useRevealMapEffects', () => {
     const fake = createFakeMapRef()
     // Wrong guess with a known clicked point (not at the target). Triggers
     // the arc-animation branch of the round-ended geometry effect.
-    const clickedPoint: [number, number] = [-10, 40]
-    const reveal: {
-      kind: 'point'
-      targetCentroid: [number, number]
-      clickedPoint: [number, number]
-      distanceKm: number
-    } = {
-      kind: 'point',
-      targetCentroid: [2.3522, 48.8566], // Paris
-      clickedPoint,
-      distanceKm: 1500,
-    }
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
     const session = makeSession({
       status: 'round-ended',
       modeId: 'city-guessing',
@@ -280,17 +270,7 @@ describe('useRevealMapEffects', () => {
 
   it('calls setData on the line source exactly once with the full tessellated arc', () => {
     const fake = createFakeMapRef()
-    const reveal: {
-      kind: 'point'
-      targetCentroid: [number, number]
-      clickedPoint: [number, number]
-      distanceKm: number
-    } = {
-      kind: 'point',
-      targetCentroid: [2.3522, 48.8566],
-      clickedPoint: [-10, 40],
-      distanceKm: 1500,
-    }
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
     const session = makeSession({
       status: 'round-ended',
       modeId: 'city-guessing',
@@ -314,17 +294,7 @@ describe('useRevealMapEffects', () => {
 
   it('drives line growth via line-gradient paint property (animated path)', () => {
     const fake = createFakeMapRef()
-    const reveal: {
-      kind: 'point'
-      targetCentroid: [number, number]
-      clickedPoint: [number, number]
-      distanceKm: number
-    } = {
-      kind: 'point',
-      targetCentroid: [2.3522, 48.8566],
-      clickedPoint: [-10, 40],
-      distanceKm: 1500,
-    }
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
     const session = makeSession({
       status: 'round-ended',
       modeId: 'city-guessing',
@@ -350,17 +320,7 @@ describe('useRevealMapEffects', () => {
 
   it('clears city reveal artifacts when round transitions from round-ended to playing', () => {
     const fake = createFakeMapRef()
-    const reveal: {
-      kind: 'point'
-      targetCentroid: [number, number]
-      clickedPoint: [number, number]
-      distanceKm: number
-    } = {
-      kind: 'point',
-      targetCentroid: [2.3522, 48.8566],
-      clickedPoint: [-10, 40],
-      distanceKm: 1500,
-    }
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
     const roundEndedSession = makeSession({
       status: 'round-ended',
       modeId: 'city-guessing',
@@ -446,17 +406,7 @@ describe('useRevealMapEffects', () => {
       })),
     })
     const fake = createFakeMapRef()
-    const reveal: {
-      kind: 'point'
-      targetCentroid: [number, number]
-      clickedPoint: [number, number]
-      distanceKm: number
-    } = {
-      kind: 'point',
-      targetCentroid: [2.3522, 48.8566],
-      clickedPoint: [-10, 40],
-      distanceKm: 1500,
-    }
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
     const session = makeSession({
       status: 'round-ended',
       modeId: 'city-guessing',

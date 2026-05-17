@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { waitForRevealLineCoords, openLauncher } from './helpers'
+import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -72,7 +73,8 @@ test.describe('reveal animation', () => {
       .poll(
         async () =>
           await page.evaluate(
-            () => window.__funworldmap_map?.querySourceFeatures('game-reveal-line').length ?? -1,
+            (sourceId) => window.__funworldmap_map?.querySourceFeatures(sourceId).length ?? -1,
+            REVEAL_LINE_SOURCE,
           ),
         { timeout: 5_000 },
       )
