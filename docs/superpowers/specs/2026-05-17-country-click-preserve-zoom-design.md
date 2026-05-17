@@ -76,7 +76,7 @@ A no-op when computed ≤ current would skip the re-center too, which is the wro
 
 ### New: `src/lib/__tests__/flyToCountry.test.ts`
 
-Three cases, each renders a fake map with controllable `getZoom()`:
+Four cases, each renders a fake map with controllable `getZoom()`:
 
 1. **Tiny country, current zoom below computed** — Vatican (`area: 0.49`), `getZoom: () => 1.8` → `flyTo` called with `zoom ≈ 11.5` (computed from area, current is lower so the max is the computed value). Existing zoom-in behavior preserved. Use a tolerance assertion (e.g. `zoom > 10`) rather than pinning the exact float so the test isn't brittle to `zoomFromArea` constant tweaks.
 2. **Large country, current > computed** — Russia (`area: 17_098_242`), `getZoom: () => 4` → `flyTo` called with `zoom: 4`. The fix: current zoom retained.
