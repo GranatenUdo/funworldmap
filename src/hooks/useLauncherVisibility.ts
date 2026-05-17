@@ -14,13 +14,16 @@ export interface LauncherVisibility {
   show: (opts?: { historyOpen?: boolean }) => void
 }
 
+type IntentState =
+  | { kind: 'default' }
+  | { kind: 'open'; historyOpen: boolean }
+  | { kind: 'dismissed' }
+
 export function useLauncherVisibility(): LauncherVisibility {
   const { session } = useGameSessionContext()
   const initialHash = typeof window !== 'undefined' ? window.location.hash : ''
   const [currentHash, setCurrentHash] = useState(initialHash)
-  const [dismissed, setDismissed] = useState(false)
-  const [forceVisible, setForceVisible] = useState(false)
-  const [initialHistoryOpen, setInitialHistoryOpen] = useState(false)
+  const [intent, setIntent] = useState<IntentState>({ kind: 'default' })
   const prevSessionStatusRef = useRef(session.status)
 
   useEffect(() => {
@@ -29,30 +32,30 @@ export function useLauncherVisibility(): LauncherVisibility {
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [])
 
-  // Reset dismissal on non-idle → idle transitions (game end).
-  // Map-first: do NOT set forceVisible here — the launcher stays hidden until
-  // the user explicitly clicks the header-play button after a game ends.
+  // Reset to default on non-idle → idle transitions (game end).
+  // Map-first: do NOT set intent to 'open' here — the launcher stays hidden
+  // until the user explicitly clicks the header-play button after a game ends.
   useEffect(() => {
     const prev = prevSessionStatusRef.current
     if (prev !== 'idle' && session.status === 'idle') {
-      setDismissed(false)
+      setIntent({ kind: 'default' })
     }
     prevSessionStatusRef.current = session.status
   }, [session.status])
 
   const dismiss = useCallback(() => {
-    setInitialHistoryOpen(false)
-    setDismissed(true)
-    setForceVisible(false)
+    setIntent({ kind: 'dismissed' })
   }, [])
+
   const show = useCallback((opts?: { historyOpen?: boolean }) => {
-    setInitialHistoryOpen(!!opts?.historyOpen)
-    setDismissed(false)
-    setForceVisible(true)
+    setIntent({ kind: 'open', historyOpen: !!opts?.historyOpen })
   }, [])
 
   const visible =
-    (forceVisible || isDailyRoot(currentHash)) && !dismissed && session.status === 'idle'
+    (intent.kind === 'open' || (isDailyRoot(currentHash) && intent.kind !== 'dismissed')) &&
+    session.status === 'idle'
+
+  const initialHistoryOpen = intent.kind === 'open' ? intent.historyOpen : false
 
   let anchorDate: string | null = null
   if (isDailyRoot(currentHash)) {
