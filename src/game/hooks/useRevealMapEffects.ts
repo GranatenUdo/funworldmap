@@ -1,6 +1,6 @@
 import { useEffect, useRef, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
-import type { CountryLike, GameMode, GameSession, GuessInput } from '../shared/types'
+import type { CountryLike, GameSession, GuessInput } from '../shared/types'
 import { LAYER } from '../../lib/mapLayers'
 import { REVEAL_CORRECT, REVEAL_WRONG, REVEAL_FAR } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
@@ -64,7 +64,6 @@ function clearRevealSources(map: maplibregl.Map): void {
 
 export interface UseRevealMapEffectsArgs {
   session: GameSession
-  mode: GameMode | null
   mapRef: RefObject<maplibregl.Map | null>
   byCca3: Map<string, CountryLike>
   submitGuessInput: (input: GuessInput) => void
@@ -72,10 +71,10 @@ export interface UseRevealMapEffectsArgs {
 
 /**
  * Drives the MapLibre reveal layer (geometry, arc animation, intermediate
- * flashes), camera resets on round start, the city-mode any-click handler,
- * and the idle-state reveal-source clear. Owns two anchor refs that track
- * "previous status" / "previous attempt count" so transitions into the
- * intermediate-flash effect don't replay already-recorded attempts on resume.
+ * flashes), the city-mode any-click handler, and the idle-state reveal-source
+ * clear. Owns two anchor refs that track "previous status" / "previous attempt
+ * count" so transitions into the intermediate-flash effect don't replay
+ * already-recorded attempts on resume.
  */
 export function useRevealMapEffects({
   session,

@@ -27,7 +27,6 @@ function makeMode(overrides: Partial<GameMode> = {}): GameMode {
     description: '',
     hashSegment: 'country-pinning',
     maxRounds: null,
-    initialCameraView: 'world',
     HudComponent: () => null,
     nextRound: () => ({
       kind: 'country-pinning',
@@ -39,7 +38,14 @@ function makeMode(overrides: Partial<GameMode> = {}): GameMode {
     onGuess: () => ({
       pointsEarned: 100,
       livesDelta: 0,
-      reveal: { kind: 'country', correct: true, targetCca3: 'USA', clickedCca3: 'USA', clickedName: 'United States', distanceKm: 0 },
+      reveal: {
+        kind: 'country',
+        correct: true,
+        targetCca3: 'USA',
+        clickedCca3: 'USA',
+        clickedName: 'United States',
+        distanceKm: 0,
+      },
     }),
     ...overrides,
   }
@@ -175,7 +181,9 @@ describe('useGameTestSeams', () => {
   it('setRound for city-guessing mode looks up city by id', () => {
     const start = vi.fn()
     const cityMode = makeMode({ id: 'city-guessing' })
-    renderSeamHook(buildTestSeamArgs({ start, modeId: 'city-guessing', status: 'idle', mode: cityMode }))
+    renderSeamHook(
+      buildTestSeamArgs({ start, modeId: 'city-guessing', status: 'idle', mode: cityMode }),
+    )
     const result = (window.__funworldmap_game!.setRound as (s: string) => boolean)('FRA-paris')
     expect(result).toBe(true)
     expect(start).toHaveBeenCalledWith(

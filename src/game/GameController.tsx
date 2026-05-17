@@ -33,7 +33,20 @@ interface Props {
 
 export function GameController({ countries, cities, byCca3 }: Props) {
   const { mapRef } = useMap()
-  const { session, mode, start, submitGuessInput, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart } = useGameSessionContext()
+  const {
+    session,
+    mode,
+    start,
+    submitGuessInput,
+    completeNow,
+    resume,
+    advance,
+    overrideRound,
+    endGame,
+    finishFree,
+    finalize,
+    restart,
+  } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
   const dailyPuzzles = useDailyPuzzlesContext()
   const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
@@ -43,18 +56,37 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const pools = useMemo(() => ({ countries, cities }), [countries, cities])
 
   const { statusRef } = useHashGameRouter({
-    session, pools,
-    dailyPuzzles, dailyHistoryGet,
-    start, resume, restart, endGame,
+    session,
+    pools,
+    dailyPuzzles,
+    dailyHistoryGet,
+    start,
+    resume,
+    restart,
+    endGame,
   })
 
-  useGameTestSeams({ session, mode, byCca3, cities, start, overrideRound, submitGuessInput, statusRef })
+  useGameTestSeams({
+    session,
+    mode,
+    byCca3,
+    cities,
+    start,
+    overrideRound,
+    submitGuessInput,
+    statusRef,
+  })
   useDailyResumePersistence(session)
   useGameAnnouncements({
-    session, mode, byCca3,
-    advance, finalize, record, recordDailyResult,
+    session,
+    mode,
+    byCca3,
+    advance,
+    finalize,
+    record,
+    recordDailyResult,
   })
-  useRevealMapEffects({ session, mode, mapRef, byCca3, submitGuessInput })
+  useRevealMapEffects({ session, mapRef, byCca3, submitGuessInput })
 
   // Escape exits.
   // Country-pinning round-ended: Escape is owned by the round-end effect above (advance, not exit).

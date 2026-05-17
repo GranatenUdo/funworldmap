@@ -15,17 +15,13 @@ import {
   makeOutcome,
   makeSession,
 } from '../../shared/__tests__/factories'
-import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
+import { byCca3Fixture } from './fixtures'
 import { createFakeMapRef } from '../../../test/fakeMapRef'
-import { getMode } from '../../modes'
-
-const POOLS = { countries: countriesFixture, cities: citiesFixture }
 
 type RevealArgs = Parameters<typeof useRevealMapEffects>[0]
 
 interface BuildRevealArgsOverrides {
   session?: RevealArgs['session']
-  mode?: RevealArgs['mode']
   mapRef?: RevealArgs['mapRef']
   byCca3?: RevealArgs['byCca3']
   submitGuessInput?: RevealArgs['submitGuessInput']
@@ -34,7 +30,6 @@ interface BuildRevealArgsOverrides {
 function buildRevealArgs(overrides: BuildRevealArgsOverrides = {}): RevealArgs {
   return {
     session: overrides.session ?? makeSession(),
-    mode: overrides.mode ?? getMode('country-pinning', POOLS),
     mapRef: overrides.mapRef ?? createFakeMapRef().ref,
     byCca3: overrides.byCca3 ?? byCca3Fixture,
     submitGuessInput: overrides.submitGuessInput ?? vi.fn(),
@@ -206,7 +201,6 @@ describe('useRevealMapEffects', () => {
     renderRevealHook(
       buildRevealArgs({
         session,
-        mode: getMode('city-guessing', POOLS),
         mapRef: fake.ref,
       }),
     )
@@ -223,7 +217,6 @@ describe('useRevealMapEffects', () => {
     const { unmount } = renderRevealHook(
       buildRevealArgs({
         session,
-        mode: getMode('city-guessing', POOLS),
         mapRef: fake.ref,
       }),
     )
