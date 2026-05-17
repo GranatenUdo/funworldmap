@@ -6,19 +6,37 @@ export type LauncherCardState =
   | 'unplayed'
   | 'played'
   | 'past-unplayed'
-  | 'loading'           // index still fetching
+  | 'loading' // index still fetching
   | 'unavailable-error' // fetch failed
-  | 'no-puzzle-today'   // index loaded, but no entry for today's date
+  | 'no-puzzle-today' // index loaded, but no entry for today's date
 
 const ICONS: Record<ModeId, React.ReactNode> = {
   'country-pinning': (
-    <svg className="w-8 h-8 text-teal dark:text-teal-light" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s-7-7.58-7-13a7 7 0 1 1 14 0c0 5.42-7 13-7 13z" />
+    <svg
+      className="w-8 h-8 text-teal dark:text-teal-light"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 22s-7-7.58-7-13a7 7 0 1 1 14 0c0 5.42-7 13-7 13z"
+      />
       <circle cx="12" cy="9" r="2.5" />
     </svg>
   ),
   'city-guessing': (
-    <svg className="w-8 h-8 text-teal dark:text-teal-light" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24" aria-hidden="true">
+    <svg
+      className="w-8 h-8 text-teal dark:text-teal-light"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M4 21V10l4-2 4 2 4-3 4 2v12H4z" />
       <path strokeLinecap="round" strokeLinejoin="round" d="M8 21v-6M12 21v-6M16 21v-6" />
     </svg>
@@ -26,14 +44,22 @@ const ICONS: Record<ModeId, React.ReactNode> = {
 }
 
 const TITLE: Record<ModeId, string> = {
-  'country-pinning': 'Country Pinning',
-  'city-guessing': 'City Guessing',
+  'country-pinning': 'Country',
+  'city-guessing': 'City',
+}
+
+const SUBTITLE: Record<ModeId, string> = {
+  'country-pinning': 'Click the right country on the map',
+  'city-guessing': 'Pin where the city is',
 }
 
 function headerLabel(modeId: ModeId, anchorDate: string | undefined, today: string): string {
   const isToday = !anchorDate || anchorDate === today
   if (isToday) return isCountryPinning(modeId) ? 'TODAY · COUNTRY' : 'TODAY · CITY'
-  const md = parseLocalDate(anchorDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const md = parseLocalDate(anchorDate).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  })
   return `${md.toUpperCase()} · ${isCountryPinning(modeId) ? 'COUNTRY' : 'CITY'}`
 }
 
@@ -44,18 +70,29 @@ interface PlayedResult {
 
 interface Props {
   modeId: ModeId
-  anchorDate?: string  // 'YYYY-MM-DD'; absent = today
-  todayDate: string    // 'YYYY-MM-DD'
+  anchorDate?: string // 'YYYY-MM-DD'; absent = today
+  todayDate: string // 'YYYY-MM-DD'
   state: LauncherCardState
   played?: PlayedResult
   freeBest: PersonalBest
-  latestAvailableDate?: string | null  // most recent past date with a daily; for 'no-puzzle-today'
+  latestAvailableDate?: string | null // most recent past date with a daily; for 'no-puzzle-today'
   onStartDaily: () => void
   onStartFree: () => void
   onSeeReveal?: () => void
 }
 
-export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played, freeBest, latestAvailableDate, onStartDaily, onStartFree, onSeeReveal }: Props) {
+export function LauncherModeCard({
+  modeId,
+  anchorDate,
+  todayDate,
+  state,
+  played,
+  freeBest,
+  latestAvailableDate,
+  onStartDaily,
+  onStartFree,
+  onSeeReveal,
+}: Props) {
   const testIdBase = `launcher-card-${modeId}`
   return (
     <div
@@ -76,6 +113,7 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
           <div className="text-lg font-bold text-sand-900 dark:text-dark-50 leading-tight">
             {TITLE[modeId]}
           </div>
+          <div className="text-xs text-sand-600 dark:text-dark-100 mt-0.5">{SUBTITLE[modeId]}</div>
         </div>
       </div>
 
@@ -104,7 +142,8 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
       {state === 'played' && (
         <div data-testid={`${testIdBase}-played-result`}>
           <div className="text-sand-900 dark:text-dark-50 text-sm mb-2">
-            ✓ {played?.targetName ?? 'Played'} · <span className="tabular-nums font-semibold">{played?.score ?? 0}</span>/100
+            ✓ {played?.targetName ?? 'Played'} ·{' '}
+            <span className="tabular-nums font-semibold">{played?.score ?? 0}</span>/100
           </div>
           {onSeeReveal && (
             <button
@@ -120,20 +159,29 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
       )}
 
       {state === 'loading' && (
-        <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-loading`}>
+        <div
+          className="text-sand-600 dark:text-dark-100 text-sm mb-3"
+          data-testid={`${testIdBase}-loading`}
+        >
           Loading…
         </div>
       )}
 
       {state === 'unavailable-error' && (
-        <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-error`}>
+        <div
+          className="text-sand-600 dark:text-dark-100 text-sm mb-3"
+          data-testid={`${testIdBase}-error`}
+        >
           Couldn't load today's puzzle. Refresh to retry.
         </div>
       )}
 
       {state === 'no-puzzle-today' && (
-        <div className="text-sand-600 dark:text-dark-100 text-sm mb-3" data-testid={`${testIdBase}-no-puzzle`}>
-          {(!anchorDate || anchorDate === todayDate)
+        <div
+          className="text-sand-600 dark:text-dark-100 text-sm mb-3"
+          data-testid={`${testIdBase}-no-puzzle`}
+        >
+          {!anchorDate || anchorDate === todayDate
             ? "Today's puzzle isn't ready yet."
             : "That day's puzzle is no longer available."}{' '}
           {latestAvailableDate && (
@@ -142,7 +190,12 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
               data-testid={`${testIdBase}-no-puzzle-link`}
               className="text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded"
             >
-              Try {parseLocalDate(latestAvailableDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}'s daily →
+              Try{' '}
+              {parseLocalDate(latestAvailableDate).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+              })}
+              's daily →
             </a>
           )}
         </div>
@@ -158,11 +211,17 @@ export function LauncherModeCard({ modeId, anchorDate, todayDate, state, played,
       </button>
 
       <div className="mt-4 pt-3 border-t border-sand-200/70 dark:border-dark-200/30 text-[11px] text-sand-600 dark:text-dark-100">
-        <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">Best (free)</span>{' '}
+        <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">
+          Best (free)
+        </span>{' '}
         <span data-testid={`${testIdBase}-free-best`} className="tabular-nums">
           {freeBest.gamesPlayed > 0
-            ? (isCountryPinning(modeId) ? `${freeBest.bestScore} pts` : `${freeBest.bestScore} / 1000`)
-            : (isCountryPinning(modeId) ? '— pts' : '— / 1000')}
+            ? isCountryPinning(modeId)
+              ? `${freeBest.bestScore} pts`
+              : `${freeBest.bestScore} / 1000`
+            : isCountryPinning(modeId)
+              ? '— pts'
+              : '— / 1000'}
         </span>
       </div>
     </div>
