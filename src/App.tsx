@@ -149,7 +149,11 @@ function AppInner({
 
   const gameActive = session.status !== 'idle'
 
-  const today = toLocalDateString(new Date())
+  const todayDate = new Date()
+  const today = toLocalDateString(todayDate)
+  const yesterday = toLocalDateString(
+    new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate() - 1),
+  )
   const { history: dailyHistory, streak } = useDailyHistory()
   const todayEntry = dailyHistory.days[today] ?? {}
   const countryPlayed = !!todayEntry['country-pinning']
@@ -457,7 +461,7 @@ function AppInner({
         launcherVisible={launcherVisible}
         ctaState={ctaState}
         streakCurrent={streak.current}
-        streakActive={streak.lastActiveDate !== null && streak.lastActiveDate >= today}
+        streakActive={streak.lastActiveDate !== null && streak.lastActiveDate >= yesterday}
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
