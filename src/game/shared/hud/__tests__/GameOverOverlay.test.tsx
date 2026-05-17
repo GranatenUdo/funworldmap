@@ -21,7 +21,7 @@ describe('GameOverOverlay', () => {
     window.location.hash = ''
   })
 
-  it('says "1 round complete." when maxRounds is 1', () => {
+  it('hides the subtitle on daily mode (was "1 round complete.")', () => {
     render(
       <GameOverOverlay
         session={{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }}
@@ -31,7 +31,34 @@ describe('GameOverOverlay', () => {
         onBackToMap={() => {}}
       />,
     )
-    expect(screen.getByText('1 round complete.')).toBeTruthy()
+    expect(screen.queryByText(/1 round complete/)).toBeNull()
+  })
+
+  it('shows "Today’s results" as the title on daily mode', () => {
+    render(
+      <GameOverOverlay
+        session={{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }}
+        personalBest={zeroBest}
+        beatPersonalBest={false}
+        onPlayAgain={() => {}}
+        onBackToMap={() => {}}
+      />,
+    )
+    expect(screen.getByTestId('game-over-title').textContent).toBe('Today’s results')
+  })
+
+  it('still says "Game over" on unlimited mode', () => {
+    render(
+      <GameOverOverlay
+        session={{ ...baseSession, maxRounds: 10, attemptsPerRound: 1, dailyDate: null }}
+        personalBest={zeroBest}
+        beatPersonalBest={false}
+        onPlayAgain={() => {}}
+        onBackToMap={() => {}}
+      />,
+    )
+    expect(screen.getByTestId('game-over-title').textContent).toBe('Game over')
+    expect(screen.getByText('10 rounds complete.')).toBeTruthy()
   })
 
   it('says "10 rounds complete." when maxRounds is 10', () => {
