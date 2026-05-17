@@ -42,24 +42,22 @@ function renderRevealHook(args: RevealArgs) {
 
 describe('useRevealMapEffects', () => {
   beforeEach(() => {
-    // prefersReducedMotion() reads window.matchMedia, which JSDOM doesn't
-    // implement by default.
-    if (!window.matchMedia) {
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        configurable: true,
-        value: vi.fn().mockImplementation((query: string) => ({
-          matches: false,
-          media: query,
-          onchange: null,
-          addEventListener: () => {},
-          removeEventListener: () => {},
-          addListener: () => {},
-          removeListener: () => {},
-          dispatchEvent: () => false,
-        })),
-      })
-    }
+    // Always reset matchMedia to non-reducing — individual tests can override
+    // for reduced-motion paths, and beforeEach restores the default afterward.
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      })),
+    })
     // The reveal-arc rAF loop calls window.requestAnimationFrame; JSDOM's
     // stub is fine but we wrap it so we can keep tests deterministic without
     // pumping frames.
@@ -341,6 +339,13 @@ describe('useRevealMapEffects', () => {
       (c) => c[1] === 'line-gradient',
     )
     expect(gradientCalls.length).toBeGreaterThanOrEqual(1)
+    // First gradient call sets boundary=0 (the line starts fully hidden).
+    // rAF isn't pumped in this test env, so only the synchronous entry call
+    // is observable here; the boundary value confirms the entry path is
+    // correct without depending on animation progress.
+    const firstExpr = gradientCalls[0][2] as Array<unknown>
+    expect(firstExpr[0]).toBe('step')
+    expect(firstExpr[3]).toBe(0)
   })
 
   it('reduced-motion: no easeTo, jumpTo target, gradient fully revealed', () => {
