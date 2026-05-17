@@ -22,6 +22,17 @@ interface Props {
   onLauncherDismiss: () => void
 }
 
+function StreakBadge({ count, className }: { count: number; className?: string }) {
+  return (
+    <span
+      className={`flex items-center gap-1 text-teal dark:text-teal-light tabular-nums ${className ?? ''}`}
+    >
+      <span aria-hidden="true">🔥</span>
+      <span className="font-semibold">{count}</span>
+    </span>
+  )
+}
+
 export default function Header({
   countries,
   theme,
@@ -68,10 +79,9 @@ export default function Header({
               onClick={onOpenLauncherHistory}
               aria-label={`Streak ${streakCurrent} days — open history`}
               data-testid="header-streak-chip"
-              className="hidden sm:flex h-10 px-2.5 rounded-xl backdrop-blur-sm border bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-sm tabular-nums items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50"
+              className="hidden sm:flex h-10 px-2.5 rounded-xl backdrop-blur-sm border bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-sm items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50"
             >
-              <span aria-hidden="true">🔥</span>
-              <span className="font-semibold text-teal dark:text-teal-light">{streakCurrent}</span>
+              <StreakBadge count={streakCurrent} />
             </button>
           )}
 
@@ -97,10 +107,7 @@ export default function Header({
               }`}
             >
               {streakActive && streakCurrent > 0 && (
-                <span className="sm:hidden flex items-center gap-1 mr-1 text-teal dark:text-teal-light tabular-nums">
-                  <span aria-hidden="true">🔥</span>
-                  <span className="font-semibold">{streakCurrent}</span>
-                </span>
+                <StreakBadge count={streakCurrent} className="sm:hidden mr-1" />
               )}
               {ctaState === 'done' ? (
                 <>
