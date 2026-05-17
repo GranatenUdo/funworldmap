@@ -3,7 +3,7 @@ import {
   gotoAndWaitForMap,
   waitForCountryTilesRendered,
   forceWebGLContextLoss,
-  dismissLauncher,
+  ensureLauncherDismissed,
 } from './helpers'
 
 test.describe('WebGL context-loss recovery', () => {
@@ -21,7 +21,7 @@ test.describe('WebGL context-loss recovery', () => {
 
   test('retry button is rendered and clickable for webgl-lost', async ({ page }) => {
     await gotoAndWaitForMap(page, '/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await waitForCountryTilesRendered(page)
 
     await forceWebGLContextLoss(page)
@@ -44,9 +44,11 @@ test.describe('WebGL context-loss recovery', () => {
     if (!navigated) {
       // If no reload, verify at minimum that the button press didn't throw.
       // The 1s timeout hasn't elapsed yet; give it time.
-      await expect(page.getByTestId('map-error-retry')).toBeVisible({ timeout: 500 }).catch(() => {
-        // overlay may have cleared
-      })
+      await expect(page.getByTestId('map-error-retry'))
+        .toBeVisible({ timeout: 500 })
+        .catch(() => {
+          // overlay may have cleared
+        })
     }
     // If navigation happened, the app reloaded — map should be available again.
     if (navigated) {

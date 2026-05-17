@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { ensureLauncherDismissed } from './helpers'
 
 test.setTimeout(30000)
 
@@ -9,7 +9,7 @@ test.describe('Theme System', () => {
     await page.goto('/')
     await page.evaluate(() => localStorage.removeItem('funworldmap-theme'))
     await page.reload()
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
   })
 
   test('defaults to system theme (no dark class if system is light)', async ({ page }) => {
@@ -32,10 +32,11 @@ test.describe('Theme System', () => {
     await toggle.click() // → light
     await toggle.click() // → dark
 
-    await expect.poll(
-      () => page.evaluate(() => document.documentElement.classList.contains('dark')),
-      { timeout: 15_000 },
-    ).toBe(true)
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.classList.contains('dark')), {
+        timeout: 15_000,
+      })
+      .toBe(true)
   })
 
   // Dropped: "theme persists across page reload"
@@ -48,9 +49,10 @@ test.describe('Theme System', () => {
     await page.emulateMedia({ colorScheme: 'dark' })
     await page.reload()
 
-    await expect.poll(
-      () => page.evaluate(() => document.documentElement.classList.contains('dark')),
-      { timeout: 15_000 },
-    ).toBe(true)
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.classList.contains('dark')), {
+        timeout: 15_000,
+      })
+      .toBe(true)
   })
 })

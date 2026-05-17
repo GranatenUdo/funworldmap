@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForRevealLineCoords } from './helpers'
+import { waitForRevealLineCoords, openLauncher } from './helpers'
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -13,7 +13,7 @@ test.describe('reveal animation', () => {
     })
     await page.goto('/')
     await waitForMap(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
     await page.getByTestId('launcher-unlimited-link').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
@@ -54,7 +54,7 @@ test.describe('reveal animation', () => {
     })
     await page.goto('/')
     await waitForMap(page)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
     await page.getByTestId('launcher-unlimited-link').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 

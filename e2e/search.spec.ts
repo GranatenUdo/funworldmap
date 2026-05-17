@@ -1,11 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { dismissLauncher, waitForAppReady } from './helpers'
+import { ensureLauncherDismissed, waitForAppReady } from './helpers'
 
 test.describe('Search', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
     await waitForAppReady(page)
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
   })
 
   test('typing shows results dropdown', async ({ page }) => {
@@ -14,7 +14,9 @@ test.describe('Search', () => {
     const results = page.getByTestId('search-results')
     await expect(results).toBeVisible()
     // Wait for options to appear
-    await expect(results.getByRole('option', { name: /^France\s/ }).first()).toBeVisible({ timeout: 10_000 })
+    await expect(results.getByRole('option', { name: /^France\s/ }).first()).toBeVisible({
+      timeout: 10_000,
+    })
     // France should be the first result
     await expect(results.getByRole('option', { name: /^France\s/ }).first()).toContainText('France')
   })
@@ -31,7 +33,9 @@ test.describe('Search', () => {
     await searchInput.press('ArrowDown')
     await searchInput.press('Enter')
 
-    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 15_000 }).toBe('#FRA')
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 15_000 })
+      .toBe('#FRA')
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 15_000 })
     await expect(panel).toContainText('France')
@@ -52,7 +56,10 @@ test.describe('Search', () => {
     // Wait for the Germany option to be present before pressing ArrowDown —
     // ensures React has committed the isOpen state that gates onKeyDown.
     await expect(
-      page.getByTestId('search-results').getByRole('option', { name: /Germany/ }).first()
+      page
+        .getByTestId('search-results')
+        .getByRole('option', { name: /Germany/ })
+        .first(),
     ).toBeVisible({ timeout: 15_000 })
 
     await input.press('ArrowDown')

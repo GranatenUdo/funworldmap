@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForRevealLineCoords } from './helpers'
+import { waitForRevealLineCoords, openLauncher } from './helpers'
 
 test.use({ colorScheme: 'dark', reducedMotion: 'reduce' })
 
@@ -22,7 +22,7 @@ test.describe('reveal animation — reduced motion', () => {
     expect(
       await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches),
     ).toBe(true)
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await openLauncher(page)
     await page.getByTestId('launcher-unlimited-link').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 

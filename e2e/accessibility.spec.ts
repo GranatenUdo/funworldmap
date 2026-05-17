@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import { dismissLauncher, waitForAppReady, seedDailyHistory, stubDailyIndex, submitAndWait } from './helpers'
+import {
+  ensureLauncherDismissed,
+  waitForAppReady,
+  seedDailyHistory,
+  stubDailyIndex,
+  submitAndWait,
+} from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
@@ -10,7 +16,7 @@ const TODAY = toLocalDateString(new Date())
 test.describe('Accessibility', () => {
   test('skip to search link works', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     // Test the skip-link's CONTRACT: when focused and activated, it moves
     // focus to the search input. Reaching it via Tab is a separate concern
     // that depends on overall tab order (map controls, launcher state,
@@ -28,7 +34,7 @@ test.describe('Accessibility', () => {
 
   test('skip to map link works', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     const skipLink = page.getByRole('button', { name: 'Skip to map' })
     await skipLink.focus()
     await expect(skipLink).toBeFocused()
@@ -42,7 +48,7 @@ test.describe('Accessibility', () => {
 
   test('ARIA live region announces country selection', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
 
     // Navigate to a country via hash
     await page.evaluate(() => {
@@ -66,7 +72,7 @@ test.describe('Accessibility', () => {
 
   test('search combobox has correct ARIA attributes', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
 
     const input = page.getByTestId('search-input')
     await expect(input).toHaveRole('combobox')
@@ -86,7 +92,7 @@ test.describe('Accessibility', () => {
 
   test('theme toggle has descriptive aria-label', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
 
     const toggle = page.getByTestId('theme-toggle')
     const label = await toggle.getAttribute('aria-label')
@@ -96,7 +102,7 @@ test.describe('Accessibility', () => {
 
   test('axe-core audit passes on home page', async ({ page }) => {
     await page.goto('/')
-    await dismissLauncher(page)
+    await ensureLauncherDismissed(page)
     await page.locator('main').waitFor({ timeout: 15_000 })
 
     const results = await new AxeBuilder({ page })
@@ -131,6 +137,7 @@ test.describe('Accessibility', () => {
   test('axe-core audit passes on launcher (idle)', async ({ page }) => {
     await page.goto('/')
     await waitForAppReady(page)
+    await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
     const results = await new AxeBuilder({ page })
       .include('[data-testid="launcher"]')
@@ -158,6 +165,7 @@ test.describe('Accessibility', () => {
     await seedDailyHistory(page, { date: TODAY })
     await page.goto('/')
     await waitForAppReady(page)
+    await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
     await expect(page.locator('[data-streak-mode="active"]')).toBeVisible({ timeout: 5_000 })
     const results = await new AxeBuilder({ page })
@@ -173,6 +181,7 @@ test.describe('Accessibility', () => {
     await seedDailyHistory(page, { date: TODAY })
     await page.goto('/')
     await waitForAppReady(page)
+    await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
     // launcher-history-link is the history open button in the streak pill
     await page.getByTestId('launcher-history-link').click()
@@ -190,10 +199,14 @@ test.describe('Accessibility', () => {
     await seedDailyHistory(page, { date: TODAY, lastMilestoneShown: 0 })
     await page.goto('/')
     await waitForAppReady(page)
+    await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher-milestone')).toBeVisible({ timeout: 5_000 })
     // Wait for the entrance animation (260ms) to complete so axe computes
     // contrast against the final fully-opaque state, not a mid-animation frame.
-    await expect(page.getByTestId('launcher-milestone')).toHaveAttribute('data-animation-state', 'idle')
+    await expect(page.getByTestId('launcher-milestone')).toHaveAttribute(
+      'data-animation-state',
+      'idle',
+    )
     const results = await new AxeBuilder({ page })
       .include('[data-testid="launcher-milestone"]')
       .exclude('.maplibregl-canvas')
@@ -235,13 +248,15 @@ test.describe('Accessibility', () => {
   test('axe-core audit passes on GameOverOverlay (daily)', async ({ page }) => {
     await stubDailyIndex(page, TODAY)
     await page.goto('/')
+    await waitForAppReady(page)
+    await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
     await expect
       .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
       .toContain(`daily/${TODAY}/country-pinning`)
-    await page.waitForFunction(
-      () => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game),
+    await page.waitForFunction(() =>
+      Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game),
     )
 
     await submitAndWait(page, 'DEU', 1)

@@ -1,5 +1,5 @@
 import { test, expect, type Locator, type Page } from '@playwright/test'
-import { dismissLauncher } from './helpers'
+import { ensureLauncherDismissed } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -42,12 +42,9 @@ test.describe('A11y + Contrast Pass', () => {
 
     test('search-result region badge is >= 11px', async ({ page }) => {
       await page.goto('/')
-      await dismissLauncher(page)
+      await ensureLauncherDismissed(page)
       await page.getByTestId('search-input').fill('Germany')
-      const firstResult = page
-        .getByTestId('search-results')
-        .getByRole('option')
-        .first()
+      const firstResult = page.getByTestId('search-results').getByRole('option').first()
       await expect(firstResult).toBeVisible({ timeout: 10_000 })
       const badge = firstResult.getByTestId('region-badge')
       const px = await computedFontSizePx(badge)

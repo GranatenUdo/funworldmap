@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import { waitForAppReady, seedDailyHistory, stubDailyIndex } from './helpers'
+import { waitForAppReady, seedDailyHistory, stubDailyIndex, openLauncher } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.setTimeout(60_000)
@@ -13,7 +13,7 @@ const TODAY = toLocalDateString(new Date())
 async function openLauncherFresh(page: Page) {
   await page.goto('/')
   await waitForAppReady(page)
-  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
+  await openLauncher(page)
 }
 
 async function openLauncherWithHistory(page: Page) {

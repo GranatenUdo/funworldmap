@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import { finalizeGame } from './helpers'
+import { finalizeGame, openLauncher, waitForAppReady } from './helpers'
 
 test.setTimeout(120_000)
 
@@ -30,8 +30,9 @@ async function withDailyStub(page: Page): Promise<void> {
  */
 async function submitAndWait(page: Page, cca3: string, expectAfter: number): Promise<void> {
   await page.evaluate((id) => {
-    ;(window as unknown as { __funworldmap_game: { submitCountryGuess(s: string): boolean } })
-      .__funworldmap_game.submitCountryGuess(id)
+    ;(
+      window as unknown as { __funworldmap_game: { submitCountryGuess(s: string): boolean } }
+    ).__funworldmap_game.submitCountryGuess(id)
   }, cca3)
   await expect
     .poll(
@@ -50,17 +51,22 @@ async function submitAndWait(page: Page, cca3: string, expectAfter: number): Pro
 }
 
 test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
-  test('clicking Play starts the daily and three guesses finalize with best-of-3', async ({ page }) => {
+  test('clicking Play starts the daily and three guesses finalize with best-of-3', async ({
+    page,
+  }) => {
     await withDailyStub(page)
     await page.goto('/')
-    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await waitForAppReady(page)
+    await openLauncher(page)
     await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
 
     await expect
       .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
       .toContain(`daily/${TODAY}/country-pinning`)
 
-    await page.waitForFunction(() => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game))
+    await page.waitForFunction(() =>
+      Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game),
+    )
     await submitAndWait(page, 'DEU', 1)
     await submitAndWait(page, 'ESP', 2)
     await submitAndWait(page, 'FRA', 3)
@@ -70,7 +76,9 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
     await expect(page.getByTestId('game-over-score')).toContainText('100')
   })
 
-  test('deep-linking to #daily/<today>/country-pinning bypasses launcher and starts', async ({ page }) => {
+  test('deep-linking to #daily/<today>/country-pinning bypasses launcher and starts', async ({
+    page,
+  }) => {
     await withDailyStub(page)
     await page.goto(`/#daily/${TODAY}/country-pinning`)
     await expect(page.getByTestId('launcher')).not.toBeVisible()
@@ -82,9 +90,15 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
   test('daily history persists: playing + reloading shows played state', async ({ page }) => {
     await withDailyStub(page)
     await page.goto('/')
-    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({ timeout: 10_000 })
+    await waitForAppReady(page)
+    await openLauncher(page)
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
+      timeout: 10_000,
+    })
     await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
-    await page.waitForFunction(() => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game))
+    await page.waitForFunction(() =>
+      Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game),
+    )
     await submitAndWait(page, 'FRA', 1)
     await submitAndWait(page, 'FRA', 2)
     await submitAndWait(page, 'FRA', 3)
@@ -110,30 +124,43 @@ test.describe('Daily puzzle — country-pinning, 3 attempts', () => {
       .not.toBeNull()
     await page.getByRole('button', { name: /back to map/i }).click()
     await page.reload()
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'played')
+    await waitForAppReady(page)
+    await openLauncher(page)
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'played',
+    )
   })
 
-  test('daily country-pinning: panel suppressed for intermediate attempts 1 + 2', async ({ page }) => {
+  test('daily country-pinning: panel suppressed for intermediate attempts 1 + 2', async ({
+    page,
+  }) => {
     await withDailyStub(page)
     await page.goto(`/#daily/${TODAY}/country-pinning`)
-    await page.waitForFunction(() => Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game))
+    await page.waitForFunction(() =>
+      Boolean((window as unknown as { __funworldmap_game?: unknown }).__funworldmap_game),
+    )
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     // Attempt 1: wrong guess. After the existing 1200ms intermediate timer fires,
     // the round advances to attempt 2 — no panel should have appeared.
     await page.evaluate(() => {
-      const game = (window as unknown as {
-        __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
-      }).__funworldmap_game
+      const game = (
+        window as unknown as {
+          __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+        }
+      ).__funworldmap_game
       game?.submitCountryGuess('USA')
     })
     await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 2_000 })
 
     // Attempt 2: wrong guess. Same expectation — no panel between attempts.
     await page.evaluate(() => {
-      const game = (window as unknown as {
-        __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
-      }).__funworldmap_game
+      const game = (
+        window as unknown as {
+          __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+        }
+      ).__funworldmap_game
       game?.submitCountryGuess('CHN')
     })
     await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 2_000 })

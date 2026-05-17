@@ -1,10 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import {
-  waitForAppReady,
-  stubDailyIndex,
-  gotoAndWaitForMap,
-} from './helpers'
+import { waitForAppReady, stubDailyIndex, gotoAndWaitForMap, openLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -20,7 +16,7 @@ async function setupFreshLaunch(page: Parameters<typeof stubDailyIndex>[0]): Pro
   })
   await gotoAndWaitForMap(page, '/')
   await waitForAppReady(page)
-  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  await openLauncher(page)
 }
 
 test.describe('Launcher — backdrop dismiss', () => {
