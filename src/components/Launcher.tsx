@@ -88,7 +88,16 @@ export function Launcher({
     return 'unplayed'
   }
 
-  const bothPlayed = modes.every((m) => cardState(m.id) === 'played')
+  const cardStates = useMemo<Record<ModeId, LauncherCardState>>(
+    () =>
+      Object.fromEntries(modes.map((m) => [m.id, cardState(m.id)])) as Record<
+        ModeId,
+        LauncherCardState
+      >,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [puzzlesStatus, date, byDate, getDay, modes],
+  )
+  const bothPlayed = modes.every((m) => cardStates[m.id] === 'played')
 
   const playedFor = useCallback(
     (id: ModeId) => {
@@ -353,7 +362,7 @@ export function Launcher({
                   modeId={m.id}
                   anchorDate={anchorDate ?? undefined}
                   todayDate={today}
-                  state={cardState(m.id)}
+                  state={cardStates[m.id]}
                   played={playedFor(m.id)}
                   latestAvailableDate={latestAvailableDate}
                   onStartDaily={() => startDaily(m.id)}
