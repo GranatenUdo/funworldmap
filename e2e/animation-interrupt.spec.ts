@@ -14,7 +14,8 @@ async function startCountryPinningWithFRA(page: Page): Promise<void> {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
   await waitForMap(page)
-  await page.getByTestId('launcher-card-country-pinning-free-link').click()
+  // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+  await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
   await waitForGameTestHook(page)
   await page.evaluate(() => window.__funworldmap_game?.setRound?.('FRA'))
@@ -27,7 +28,10 @@ test.describe('Animation interrupt: clean abort, no half-rendered state', () => 
     // and round-ended timing race. CI's reducedMotion:'reduce' baseline + MapLibre's
     // cached prefers-reduced-motion check make the mid-animation state unobservable.
     // Test stays runnable locally where animations have real duration.
-    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/47')
+    test.fixme(
+      !!process.env.CI,
+      'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/47',
+    )
     await startCountryPinningWithFRA(page)
     await page.evaluate(() => window.__funworldmap_game?.submitCountryGuess?.('DEU'))
 
@@ -37,7 +41,9 @@ test.describe('Animation interrupt: clean abort, no half-rendered state', () => 
     await panel.getByRole('button', { name: 'Continue' }).click()
 
     await expect(panel).not.toBeAttached({ timeout: 5_000 })
-    await expect.poll(async () => (await getSession(page)).status, { timeout: 5_000 }).toBe('playing')
+    await expect
+      .poll(async () => (await getSession(page)).status, { timeout: 5_000 })
+      .toBe('playing')
     await expect.poll(async () => (await getSession(page)).roundIndex, { timeout: 5_000 }).toBe(1)
   })
 
@@ -47,21 +53,30 @@ test.describe('Animation interrupt: clean abort, no half-rendered state', () => 
    * NOT abort to the launcher — the global exit handler explicitly excludes
    * country-pinning round-ended from the exit path.
    */
-  test('Escape mid-reveal (correct guess) skips the hold and advances to next round', async ({ page }) => {
+  test('Escape mid-reveal (correct guess) skips the hold and advances to next round', async ({
+    page,
+  }) => {
     // Quarantined on CI — see issue #47. The round-ended → playing transition
     // collapses under CI's reduced-motion baseline; the poll can't observe it.
-    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/47')
+    test.fixme(
+      !!process.env.CI,
+      'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/47',
+    )
     await startCountryPinningWithFRA(page)
     await page.evaluate(() => window.__funworldmap_game?.submitCountryGuess?.('FRA'))
 
-    await expect.poll(async () => (await getSession(page)).status, { timeout: 5_000 }).toBe('round-ended')
+    await expect
+      .poll(async () => (await getSession(page)).status, { timeout: 5_000 })
+      .toBe('round-ended')
 
     // Wall-clock NOT elapsed enough to trigger auto-advance (which is ~3s).
     // Escape should short-circuit the hold and advance synchronously.
     await page.keyboard.press('Escape')
 
     // Advanced to next round, not aborted.
-    await expect.poll(async () => (await getSession(page)).status, { timeout: 2_000 }).toBe('playing')
+    await expect
+      .poll(async () => (await getSession(page)).status, { timeout: 2_000 })
+      .toBe('playing')
     await expect.poll(async () => (await getSession(page)).roundIndex, { timeout: 2_000 }).toBe(1)
     // Hash still on the game route — we did NOT abort to launcher.
     expect(page.url()).toContain('#game/country-pinning')
@@ -75,7 +90,10 @@ test.describe('Animation interrupt: clean abort, no half-rendered state', () => 
    */
   test('Escape mid-panel-slide-in (wrong guess) skips the hold and advances', async ({ page }) => {
     // Quarantined on CI — see issue #47. Same root cause as Test 1.
-    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/47')
+    test.fixme(
+      !!process.env.CI,
+      'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/47',
+    )
     await startCountryPinningWithFRA(page)
     await page.evaluate(() => window.__funworldmap_game?.submitCountryGuess?.('DEU'))
 
@@ -85,7 +103,9 @@ test.describe('Animation interrupt: clean abort, no half-rendered state', () => 
     await page.keyboard.press('Escape')
 
     // Same advance contract as the correct-guess case.
-    await expect.poll(async () => (await getSession(page)).status, { timeout: 2_000 }).toBe('playing')
+    await expect
+      .poll(async () => (await getSession(page)).status, { timeout: 2_000 })
+      .toBe('playing')
     await expect.poll(async () => (await getSession(page)).roundIndex, { timeout: 2_000 }).toBe(1)
     await expect(panel).not.toBeAttached({ timeout: 5_000 })
   })

@@ -111,7 +111,8 @@ test.describe('header-play reopens launcher after game completion', () => {
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
     // Start free game via launcher CTA
-    await page.getByTestId('launcher-card-country-pinning-free-link').click()
+    // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
     await expect
       .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
       .toContain('game/country-pinning')

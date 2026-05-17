@@ -208,14 +208,11 @@ test.describe('Launcher — daily state', () => {
   })
 
   test('free-mode link starts endless free mode', async ({ page }) => {
+    // TODO: PR2 Task 3.4 will add parent-level shared free-link to test; skip for now
+    test.skip()
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
-    await page.getByTestId('launcher-card-country-pinning-free-link').click()
-    await expect(page.getByTestId('launcher')).not.toBeVisible({ timeout: 3_000 })
-    await expect
-      .poll(() => page.evaluate(() => window.location.hash), { timeout: 5_000 })
-      .toContain('game/country-pinning')
   })
 })
 
@@ -235,7 +232,9 @@ test.describe('Launcher — accessibility', () => {
       localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
     })
     await freshTab(page)
-    await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused({
+    // Per-card free-links removed in PR1 Task 3.3; focus now lands on daily CTA or first button
+    // TODO: PR2 Task 3.4 will restore focus-on-free behavior with shared parent link
+    await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused({
       timeout: 5_000,
     })
   })
@@ -246,14 +245,15 @@ test.describe('Launcher — accessibility', () => {
       localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
     })
     await freshTab(page)
-    await expect(page.getByTestId('launcher-card-country-pinning-free-link')).toBeFocused({
+    // Per-card free-links removed in PR1 Task 3.3; Tab order changes accordingly
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused({
       timeout: 5_000,
     })
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused()
+    await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused()
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-close')).toBeFocused()
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-card-country-pinning-free-link')).toBeFocused()
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused()
   })
 })

@@ -1,7 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { finalizeGame } from './helpers'
 
-
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }
@@ -9,7 +8,8 @@ async function waitForMap(page: Page) {
 async function openCityGuessing(page: Page) {
   await page.goto('/')
   await waitForMap(page)
-  await page.getByTestId('launcher-card-city-guessing-free-link').click()
+  // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+  await page.getByTestId('launcher-card-city-guessing-daily-cta').click()
   await expect(page.getByTestId('game-hud')).toBeVisible()
   await expect(page.getByTestId('hud-round-counter')).toContainText('1')
 }
@@ -27,11 +27,14 @@ async function setRoundAndWait(page: Page, id: string, expectedName: string) {
 }
 
 async function clickAt(page: Page, lng: number, lat: number) {
-  await page.evaluate((p) => {
-    type Hook = { submitGuess?: (i: { kind: 'point'; lngLat: [number, number] }) => void }
-    const g = (window as unknown as { __funworldmap_game?: Hook }).__funworldmap_game
-    g?.submitGuess?.({ kind: 'point', lngLat: [p.lng, p.lat] })
-  }, { lng, lat })
+  await page.evaluate(
+    (p) => {
+      type Hook = { submitGuess?: (i: { kind: 'point'; lngLat: [number, number] }) => void }
+      const g = (window as unknown as { __funworldmap_game?: Hook }).__funworldmap_game
+      g?.submitGuess?.({ kind: 'point', lngLat: [p.lng, p.lat] })
+    },
+    { lng, lat },
+  )
 }
 
 // Bypass the DOM click entirely — the city-skip button's rendering is
@@ -72,7 +75,7 @@ test.describe('City Guessing game', () => {
   test('far click scores low and shows distance', async ({ page }) => {
     await openCityGuessing(page)
     await setRoundAndWait(page, 'FRA-paris', 'Paris')
-    await clickAt(page, 0, 0)   // Gulf of Guinea, ~5400 km from Paris
+    await clickAt(page, 0, 0) // Gulf of Guinea, ~5400 km from Paris
     await expect(page.getByTestId('game-reveal')).toContainText('km off', { timeout: 10_000 })
     const score = await page.getByTestId('hud-score').innerText()
     expect(Number(score)).toBeGreaterThanOrEqual(0)
@@ -93,17 +96,21 @@ test.describe('City Guessing game', () => {
     // Poll for the reducer to commit round-ended.
     await expect
       .poll(
-        async () => await page.evaluate(() => {
-          type H = { getSession?: () => { status?: string; score?: number } }
-          return (window as unknown as { __funworldmap_game?: H }).__funworldmap_game?.getSession?.()?.status
-        }),
+        async () =>
+          await page.evaluate(() => {
+            type H = { getSession?: () => { status?: string; score?: number } }
+            return (
+              window as unknown as { __funworldmap_game?: H }
+            ).__funworldmap_game?.getSession?.()?.status
+          }),
         { timeout: 10_000 },
       )
       .toBe('round-ended')
     // Score should be 0 (skip earns nothing).
     const score = await page.evaluate(() => {
       type H = { getSession?: () => { score?: number } }
-      return (window as unknown as { __funworldmap_game?: H }).__funworldmap_game?.getSession?.()?.score
+      return (window as unknown as { __funworldmap_game?: H }).__funworldmap_game?.getSession?.()
+        ?.score
     })
     expect(score).toBe(0)
   })

@@ -277,4 +277,9 @@ describe('LauncherModeCard', () => {
     btn.click()
     expect(onRetry).toHaveBeenCalledTimes(1)
   })
+
+  it('no longer renders the per-card free-mode link', () => {
+    render(<LauncherModeCard {...defaultProps} state="unplayed" />)
+    expect(screen.queryByTestId('launcher-card-country-pinning-free-link')).toBeNull()
+  })
 })

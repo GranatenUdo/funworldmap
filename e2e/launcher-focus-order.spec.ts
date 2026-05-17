@@ -57,14 +57,9 @@ test.describe('Launcher — initial focus order', () => {
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused()
 
     // Each Tab step is asserted individually — never count Tabs without checking
-    await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-card-country-pinning-free-link')).toBeFocused()
-
+    // Note: per-card free-links are removed in PR1 Task 3.3; skip to next element
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused()
-
-    await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused()
 
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-close')).toBeFocused()
@@ -98,7 +93,6 @@ test.describe('Launcher — initial focus order', () => {
 
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
-    // While loading, only free-links are focusable in the mode cards.
     // Move focus to the launcher-close button explicitly — simulating a
     // user who has tabbed to a different element before content settled.
     await page.getByTestId('launcher-close').focus()

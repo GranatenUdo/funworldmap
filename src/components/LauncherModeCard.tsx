@@ -91,10 +91,12 @@ export function LauncherModeCard({
   freeBest,
   latestAvailableDate,
   onStartDaily,
-  onStartFree,
+  onStartFree,  
   onSeeReveal,
   onRetry,
 }: Props) {
+  // onStartFree kept for API compatibility; Task 3.4 will use for parent-level shared link
+  void onStartFree
   const testIdBase = `launcher-card-${modeId}`
   return (
     <div
@@ -218,15 +220,6 @@ export function LauncherModeCard({
           )}
         </div>
       )}
-
-      <button
-        type="button"
-        onClick={onStartFree}
-        data-testid={`${testIdBase}-free-link`}
-        className="mt-3 text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-1"
-      >
-        Play free mode →
-      </button>
 
       <div className="mt-4 pt-3 border-t border-sand-200/70 dark:border-dark-200/30 text-[11px] text-sand-600 dark:text-dark-100">
         <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">

@@ -9,7 +9,8 @@ test.describe('reveal animation', () => {
   test('wrong country guess renders a tessellated line from guess → target', async ({ page }) => {
     await page.goto('/')
     await waitForMap(page)
-    await page.getByTestId('launcher-card-country-pinning-free-link').click()
+    // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     // Pin France as the target, then submit Germany as the guess.
@@ -40,10 +41,13 @@ test.describe('reveal animation', () => {
     expect(center!.lat).toBeCloseTo(46, 0)
   })
 
-  test('city-guessing wrong guess renders a tessellated line from point → target', async ({ page }) => {
+  test('city-guessing wrong guess renders a tessellated line from point → target', async ({
+    page,
+  }) => {
     await page.goto('/')
     await waitForMap(page)
-    await page.getByTestId('launcher-card-city-guessing-free-link').click()
+    // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+    await page.getByTestId('launcher-card-city-guessing-daily-cta').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     // Submit a point guess at [0, 0] — target is whatever the mode picked.

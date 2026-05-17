@@ -8,7 +8,8 @@ async function waitForMap(page: Page) {
 // Open Country Pinning via the launcher mode card. The launcher is shown
 // by default on cold load at /.
 async function openCountryPinning(page: Page) {
-  await page.getByTestId('launcher-card-country-pinning-free-link').click()
+  // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+  await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
 }
 
 // Dispatch the guess via the controller's submitCountryGuess test hook
@@ -22,7 +23,8 @@ async function clickCountryPolygon(page: Page, cca3: string) {
     if (!g || typeof g.submitCountryGuess !== 'function') return false
     return g.submitCountryGuess(code)
   }, cca3)
-  if (!ok) throw new Error(`submitCountryGuess('${cca3}') returned false — not in pool or hook missing`)
+  if (!ok)
+    throw new Error(`submitCountryGuess('${cca3}') returned false — not in pool or hook missing`)
 }
 
 // Wait until the HUD shows a round (any country), then force a specific target
@@ -37,7 +39,8 @@ async function setRoundAndWait(page: Page, cca3: string, expectedName: string) {
     if (!g || typeof g.setRound !== 'function') return false
     return g.setRound(c)
   }, cca3)
-  if (!ok) throw new Error(`setRound('${cca3}') returned false — country not in pool or hook missing`)
+  if (!ok)
+    throw new Error(`setRound('${cca3}') returned false — country not in pool or hook missing`)
   await expect(page.getByTestId('game-prompt-name')).toHaveText(expectedName, { timeout: 10_000 })
 }
 
@@ -137,10 +140,9 @@ test.describe('Country Pinning game', () => {
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
     // Effect focuses the Play again button on mount.
     await expect
-      .poll(
-        () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),
-        { timeout: 5_000 },
-      )
+      .poll(() => page.evaluate(() => document.activeElement?.getAttribute('data-testid')), {
+        timeout: 5_000,
+      })
       .toBe('game-over-play-again')
   })
 
@@ -155,13 +157,16 @@ test.describe('Country Pinning game', () => {
 
     // Poll: tooltip must be hidden after hovering on ocean (no country layer
     // hit). Polling absorbs any late mousemove processing on slow CI.
-    await expect.poll(
-      () => page.evaluate(() => {
-        const t = document.querySelector('.country-tooltip')
-        return t?.classList.contains('visible') ?? false
-      }),
-      { timeout: 15_000 },
-    ).toBe(false)
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const t = document.querySelector('.country-tooltip')
+            return t?.classList.contains('visible') ?? false
+          }),
+        { timeout: 15_000 },
+      )
+      .toBe(false)
   })
 
   test('round-end on wrong guess opens target panel; Continue advances', async ({ page }) => {
@@ -171,14 +176,18 @@ test.describe('Country Pinning game', () => {
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     await page.evaluate(() => {
-      const game = (window as unknown as {
-        __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
-      }).__funworldmap_game
+      const game = (
+        window as unknown as {
+          __funworldmap_game?: { submitCountryGuess: (cca3: string) => boolean }
+        }
+      ).__funworldmap_game
       game?.submitCountryGuess('USA')
     })
 
     await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 5_000 })
-    await expect(page.locator('button[aria-label="Compare with another country"]')).not.toBeAttached()
+    await expect(
+      page.locator('button[aria-label="Compare with another country"]'),
+    ).not.toBeAttached()
     await expect(page.locator('button[aria-label="Copy link to this country"]')).not.toBeAttached()
 
     const continueBtn = page.getByTestId('game-continue')

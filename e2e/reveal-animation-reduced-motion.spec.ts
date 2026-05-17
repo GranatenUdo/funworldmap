@@ -18,7 +18,8 @@ test.describe('reveal animation — reduced motion', () => {
     expect(
       await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches),
     ).toBe(true)
-    await page.getByTestId('launcher-card-country-pinning-free-link').click()
+    // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
+    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     await page.evaluate(() => window.__funworldmap_game?.setRound?.('FRA'))

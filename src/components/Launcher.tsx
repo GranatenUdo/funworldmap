@@ -231,18 +231,11 @@ export function Launcher({
 
     const active = document.activeElement
     const isFirstFocus = active === document.body || !root.contains(active as Node)
-    // A free-link that was the only focusable element during loading is a
-    // "loading placeholder": it was auto-focused when puzzlesStatus was not
-    // ready, and should be superseded now that daily content has settled.
-    const activeIsLoadingPlaceholder =
-      active instanceof HTMLElement &&
-      root.contains(active) &&
-      /-free-link$/.test(active.getAttribute('data-testid') ?? '')
 
-    if (!isFirstFocus && !activeIsLoadingPlaceholder) return
+    if (!isFirstFocus) return
 
     // Priority: lastMode daily-cta → lastMode see-reveal → any daily-cta →
-    // any see-reveal → lastMode free-link → any free-link → first focusable button
+    // any see-reveal → first focusable button
     const lastModeDailyCta = lastMode
       ? root.querySelector<HTMLButtonElement>(
           `[data-testid="launcher-card-${lastMode}-daily-cta"]:not([disabled])`,
@@ -253,30 +246,16 @@ export function Launcher({
           `[data-testid="launcher-card-${lastMode}-see-reveal"]:not([disabled])`,
         )
       : null
-    const lastModeFreeLink = lastMode
-      ? root.querySelector<HTMLButtonElement>(
-          `[data-testid="launcher-card-${lastMode}-free-link"]:not([disabled])`,
-        )
-      : null
     const firstDailyCta = root.querySelector<HTMLButtonElement>(
       '[data-testid$="-daily-cta"]:not([disabled])',
     )
     const firstSeeReveal = root.querySelector<HTMLButtonElement>(
       '[data-testid$="-see-reveal"]:not([disabled])',
     )
-    const firstFreeLink = root.querySelector<HTMLButtonElement>(
-      '[data-testid$="-free-link"]:not([disabled])',
-    )
     const firstFocusable = root.querySelector<HTMLButtonElement>('button:not([disabled])')
 
     const target =
-      lastModeDailyCta ??
-      lastModeSeeReveal ??
-      firstDailyCta ??
-      firstSeeReveal ??
-      lastModeFreeLink ??
-      firstFreeLink ??
-      firstFocusable
+      lastModeDailyCta ?? lastModeSeeReveal ?? firstDailyCta ?? firstSeeReveal ?? firstFocusable
     target?.focus()
   }, [puzzlesStatus, lastMode])
 
