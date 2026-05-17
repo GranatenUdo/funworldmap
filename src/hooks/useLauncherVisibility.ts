@@ -1,10 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 
-function isBareRoot(hash: string): boolean {
-  return hash === '' || hash === '#'
-}
-
 function isDailyRoot(hash: string): boolean {
   const clean = hash.startsWith('#') ? hash.slice(1) : hash
   return /^daily\/\d{4}-\d{2}-\d{2}$/.test(clean)
@@ -42,10 +38,7 @@ export function useLauncherVisibility(): LauncherVisibility {
   const dismiss = useCallback(() => setDismissed(true), [])
   const show = useCallback(() => setDismissed(false), [])
 
-  const visible =
-    (isBareRoot(currentHash) || isDailyRoot(currentHash)) &&
-    !dismissed &&
-    session.status === 'idle'
+  const visible = isDailyRoot(currentHash) && !dismissed && session.status === 'idle'
 
   let anchorDate: string | null = null
   if (isDailyRoot(currentHash)) {
