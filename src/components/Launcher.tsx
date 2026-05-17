@@ -321,7 +321,7 @@ export function Launcher({
           </button>
           <div
             role="presentation"
-            className="text-center mb-6"
+            className="text-center mb-6 pointer-events-none"
             style={{ animation: 'launcher-text-in 240ms ease-out 60ms both' }}
           >
             <div className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">

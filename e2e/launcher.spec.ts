@@ -227,30 +227,54 @@ test.describe('Launcher — accessibility', () => {
   })
 
   test('initial focus lands on last-played mode card', async ({ page }) => {
-    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
+    const today = toLocalDateString(new Date())
+    await page.route('**/daily/index.json', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          generatedAt: new Date().toISOString(),
+          window: { start: today, end: today },
+          days: { [today]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
+        }),
+      })
+    })
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
     })
     await freshTab(page)
-    // Per-card free-links removed in PR1 Task 3.3; focus now lands on daily CTA or first button
-    // TODO: PR2 Task 3.4 will restore focus-on-free behavior with shared parent link
+    // Focus lands on lastMode's daily-cta (city-guessing, since that is last-mode and unplayed)
     await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused({
       timeout: 5_000,
     })
   })
 
   test('Tab cycles through mode card 1, mode card 2, close button, wraps', async ({ page }) => {
-    await page.route('**/daily/index.json', (route) => route.fulfill({ status: 404 }))
+    const today = toLocalDateString(new Date())
+    await page.route('**/daily/index.json', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          generatedAt: new Date().toISOString(),
+          window: { start: today, end: today },
+          days: { [today]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
+        }),
+      })
+    })
     await page.addInitScript(() => {
       localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
     })
     await freshTab(page)
-    // Per-card free-links removed in PR1 Task 3.3; Tab order changes accordingly
+    // DOM order: launcher-close (absolute, first) → country-pinning-daily-cta → city-guessing-daily-cta → launcher-unlimited-link (last)
+    // Focus trap wraps last→first. Initial focus lands on lastMode daily-cta.
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused({
       timeout: 5_000,
     })
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused()
+    await page.keyboard.press('Tab')
+    await expect(page.getByTestId('launcher-unlimited-link')).toBeFocused()
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-close')).toBeFocused()
     await page.keyboard.press('Tab')
