@@ -44,11 +44,15 @@ export function useLauncherVisibility(): LauncherVisibility {
   }, [session.status])
 
   const dismiss = useCallback(() => {
-    setIntent({ kind: 'dismissed' })
+    setIntent((prev) => (prev.kind === 'dismissed' ? prev : { kind: 'dismissed' }))
   }, [])
 
   const show = useCallback((opts?: { historyOpen?: boolean }) => {
-    setIntent({ kind: 'open', historyOpen: !!opts?.historyOpen })
+    const wantHistoryOpen = !!opts?.historyOpen
+    setIntent((prev) => {
+      if (prev.kind === 'open' && prev.historyOpen === wantHistoryOpen) return prev
+      return { kind: 'open', historyOpen: wantHistoryOpen }
+    })
   }, [])
 
   const visible =
