@@ -20,6 +20,19 @@ test('toast dispatched during game-over modal renders above the modal', async ({
   // Stub the daily index so the test is network-independent.
   await stubDailyIndex(page, today)
 
+  // Force the clipboard code path and mock it to succeed. In some headless
+  // Chromium builds navigator.share is available (unlike truly headless Chrome),
+  // so without the mock the handler takes the share-API path and dispatches
+  // 'Shared!' instead of 'Copied!'. Patching share to undefined forces the
+  // clipboard fallback. Also patch writeText so it resolves deterministically
+  // rather than throwing NotAllowedError.
+  await page.addInitScript(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(navigator as any).share = undefined
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(Clipboard.prototype as any).writeText = () => Promise.resolve()
+  })
+
   // Navigate to the daily game. Deep-link bypasses the launcher.
   await page.goto(`/#daily/${today}/country-pinning`)
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -64,8 +77,8 @@ test('toast dispatched during game-over modal renders above the modal', async ({
   // than the modal backdrop's. toBeVisible() does not check z-stacking, so
   // this is the load-bearing assertion for commit 47d5d89.
   const zIndices = await page.evaluate(() => {
-    const toastEl = Array.from(document.querySelectorAll('[role="status"]')).find(
-      (el) => el.textContent?.includes('Copied!'),
+    const toastEl = Array.from(document.querySelectorAll('[role="status"]')).find((el) =>
+      el.textContent?.includes('Copied!'),
     )
     const modalEl = document.querySelector('[data-testid="game-over"]')
     return {
@@ -87,7 +100,7 @@ test('toast dispatched via navigator.share (success) renders above the modal', a
 
   // Mock navigator.share BEFORE navigation to force the share-API path.
   await page.addInitScript(() => {
-    (navigator as any).share = async () => Promise.resolve()
+    ;(navigator as any).share = async () => Promise.resolve()
   })
 
   // Navigate to the daily game. Deep-link bypasses the launcher.
@@ -133,8 +146,8 @@ test('toast dispatched via navigator.share (success) renders above the modal', a
   // than the modal backdrop's. toBeVisible() does not check z-stacking, so
   // this is the load-bearing assertion for the share-API success path.
   const zIndices = await page.evaluate(() => {
-    const toastEl = Array.from(document.querySelectorAll('[role="status"]')).find(
-      (el) => el.textContent?.includes('Shared!'),
+    const toastEl = Array.from(document.querySelectorAll('[role="status"]')).find((el) =>
+      el.textContent?.includes('Shared!'),
     )
     const modalEl = document.querySelector('[data-testid="game-over"]')
     return {

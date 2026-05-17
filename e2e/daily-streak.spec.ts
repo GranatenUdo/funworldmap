@@ -43,7 +43,9 @@ test.describe('Daily streak', () => {
     })
     await page.goto('/')
     await expect(page.getByTestId('launcher-streak')).toHaveAttribute('data-streak-mode', 'broken')
-    await expect(page.getByTestId('launcher-streak')).toContainText(/start your streak/i)
+    await expect(page.getByTestId('launcher-streak')).toContainText(
+      'Your streak’s reset — back in with today’s puzzle?',
+    )
   })
 
   test('milestone overlay fires at streak 7 with a fresh lastMilestoneShown', async ({ page }) => {

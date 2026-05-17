@@ -106,13 +106,16 @@ test.describe('header-play reopens launcher after game completion', () => {
     await page.addInitScript(() => {
       localStorage.removeItem('funworldmap-daily-history')
     })
+    // Seed lastMode so the shared unlimited link routes to country-pinning.
+    await page.addInitScript(() => {
+      localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
+    })
     await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
-    // Start free game via launcher CTA
-    // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
-    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+    // Start free game via the shared unlimited link.
+    await page.getByTestId('launcher-unlimited-link').click()
     await expect
       .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
       .toContain('game/country-pinning')

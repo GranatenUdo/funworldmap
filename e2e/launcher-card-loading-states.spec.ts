@@ -18,8 +18,14 @@ test.describe('Launcher card — loading states', () => {
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
     // Both mode cards must be in loading state
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'loading')
-    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute('data-state', 'loading')
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'loading',
+    )
+    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute(
+      'data-state',
+      'loading',
+    )
 
     // Loading copy must be visible
     await expect(page.getByTestId('launcher-card-country-pinning-loading')).toBeVisible()
@@ -40,22 +46,32 @@ test.describe('Launcher card — loading states', () => {
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
     // Both mode cards must be in error state
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'unavailable-error')
-    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute('data-state', 'unavailable-error')
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'unavailable-error',
+    )
+    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute(
+      'data-state',
+      'unavailable-error',
+    )
 
     // Error copy must be visible
     await expect(page.getByTestId('launcher-card-country-pinning-error')).toBeVisible()
     await expect(page.getByTestId('launcher-card-city-guessing-error')).toBeVisible()
 
-    await expect(page.getByTestId('launcher-card-country-pinning-error')).toContainText("Couldn't load today's puzzle")
-    await expect(page.getByTestId('launcher-card-country-pinning-error')).toContainText('Refresh to retry')
+    await expect(page.getByTestId('launcher-card-country-pinning-error')).toContainText(
+      'Couldn’t load today’s puzzle.',
+    )
+    await expect(page.getByTestId('launcher-card-country-pinning-retry')).toBeVisible()
 
     // No loading or no-puzzle elements
     await expect(page.getByTestId('launcher-card-country-pinning-loading')).not.toBeAttached()
     await expect(page.getByTestId('launcher-card-country-pinning-no-puzzle')).not.toBeAttached()
   })
 
-  test('no-puzzle-today state (today path): shows "not ready yet" copy when on root', async ({ page }) => {
+  test('no-puzzle-today state (today path): shows "not ready yet" copy when on root', async ({
+    page,
+  }) => {
     // Stub index: loaded successfully but window ends before today (yesterday is latest entry)
     await page.route('**/daily/index.json', (route) =>
       route.fulfill({
@@ -73,12 +89,20 @@ test.describe('Launcher card — loading states', () => {
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
     // Both mode cards must be in no-puzzle-today state
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'no-puzzle-today')
-    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute('data-state', 'no-puzzle-today')
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'no-puzzle-today',
+    )
+    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute(
+      'data-state',
+      'no-puzzle-today',
+    )
 
     // "Not ready yet" copy must be visible (not "no longer available")
     await expect(page.getByTestId('launcher-card-country-pinning-no-puzzle')).toBeVisible()
-    await expect(page.getByTestId('launcher-card-country-pinning-no-puzzle')).toContainText("isn't ready yet")
+    await expect(page.getByTestId('launcher-card-country-pinning-no-puzzle')).toContainText(
+      "isn't ready yet",
+    )
 
     // "Try [yesterday]'s daily →" link must be present and point to the right hash
     const link = page.getByTestId('launcher-card-country-pinning-no-puzzle-link')
@@ -90,7 +114,9 @@ test.describe('Launcher card — loading states', () => {
     await expect(page.getByTestId('launcher-card-country-pinning-error')).not.toBeAttached()
   })
 
-  test('no-puzzle-today state (rolled-off path): shows "no longer available" copy when deep-linked to past date', async ({ page }) => {
+  test('no-puzzle-today state (rolled-off path): shows "no longer available" copy when deep-linked to past date', async ({
+    page,
+  }) => {
     const ROLLED_OFF_DATE = '2026-04-15'
     // Stub index: has entries but ROLLED_OFF_DATE is outside the retention window
     await page.route('**/daily/index.json', (route) =>
@@ -109,12 +135,20 @@ test.describe('Launcher card — loading states', () => {
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
     // Both mode cards must be in no-puzzle-today state
-    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute('data-state', 'no-puzzle-today')
-    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute('data-state', 'no-puzzle-today')
+    await expect(page.getByTestId('launcher-card-country-pinning')).toHaveAttribute(
+      'data-state',
+      'no-puzzle-today',
+    )
+    await expect(page.getByTestId('launcher-card-city-guessing')).toHaveAttribute(
+      'data-state',
+      'no-puzzle-today',
+    )
 
     // "No longer available" copy must be visible (not "isn't ready yet")
     await expect(page.getByTestId('launcher-card-country-pinning-no-puzzle')).toBeVisible()
-    await expect(page.getByTestId('launcher-card-country-pinning-no-puzzle')).toContainText('no longer available')
+    await expect(page.getByTestId('launcher-card-country-pinning-no-puzzle')).toContainText(
+      'no longer available',
+    )
 
     // "Try [yesterday]'s daily →" link must be present and point to the right hash
     const link = page.getByTestId('launcher-card-country-pinning-no-puzzle-link')

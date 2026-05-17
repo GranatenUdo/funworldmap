@@ -2,11 +2,9 @@ import { test, expect } from '@playwright/test'
 import { dismissLauncher, waitForAppReady } from './helpers'
 
 test.describe('canonical-195 dataset reduction', () => {
-  test('Launcher subtitle reflects the canonical 195 count', async ({ page }) => {
-    await page.goto('/')
-    await waitForAppReady(page)
-    await expect(page.getByTestId('launcher-subtitle')).toContainText('195 countries')
-  })
+  // The "Launcher subtitle reflects the canonical 195 count" test was removed
+  // in PR1 (2026-05-17). The subtitle was redesigned to show "Today's puzzle ·
+  // <date>" and no longer contains the country count — that's intentional.
 
   test('Palestine is searchable', async ({ page }) => {
     await page.goto('/')

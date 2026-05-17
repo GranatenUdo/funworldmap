@@ -5,11 +5,11 @@ async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }
 
-// Open Country Pinning via the launcher mode card. The launcher is shown
-// by default on cold load at /.
+// Open Country Pinning (unlimited) via the shared unlimited link.
+// The link defaults to country-pinning when no lastMode is set.
 async function openCountryPinning(page: Page) {
-  // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
-  await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  await page.getByTestId('launcher-unlimited-link').click()
 }
 
 // Dispatch the guess via the controller's submitCountryGuess test hook

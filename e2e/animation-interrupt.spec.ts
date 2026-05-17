@@ -12,10 +12,14 @@ async function startCountryPinningWithFRA(page: Page): Promise<void> {
   // animation actually happens. These tests assert behavior keyed on the
   // animation timing (data-animation-state='entering' and the ~3s reveal hold).
   await page.emulateMedia({ reducedMotion: 'no-preference' })
+  // Seed lastMode so the shared unlimited link routes to country-pinning.
+  await page.addInitScript(() => {
+    localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
+  })
   await page.goto('/')
   await waitForMap(page)
-  // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
-  await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+  await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+  await page.getByTestId('launcher-unlimited-link').click()
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
   await waitForGameTestHook(page)
   await page.evaluate(() => window.__funworldmap_game?.setRound?.('FRA'))

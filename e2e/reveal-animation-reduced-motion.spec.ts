@@ -13,13 +13,17 @@ test.describe('reveal animation — reduced motion', () => {
     // chromium-gpu's custom --use-gl=angle launch args, so emulate explicitly
     // and assert with matchMedia before proceeding.
     await page.emulateMedia({ reducedMotion: 'reduce' })
+    // Seed lastMode so the shared unlimited link routes to country-pinning.
+    await page.addInitScript(() => {
+      localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
+    })
     await page.goto('/')
     await waitForMap(page)
     expect(
       await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches),
     ).toBe(true)
-    // TODO: PR2 Task 3.4 will add parent-level shared free-link; use that instead
-    await page.getByTestId('launcher-card-country-pinning-daily-cta').click()
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-unlimited-link').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     await page.evaluate(() => window.__funworldmap_game?.setRound?.('FRA'))

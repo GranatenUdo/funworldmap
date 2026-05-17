@@ -57,9 +57,15 @@ test.describe('Launcher — initial focus order', () => {
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused()
 
     // Each Tab step is asserted individually — never count Tabs without checking
-    // Note: per-card free-links are removed in PR1 Task 3.3; skip to next element
+    // Note: per-card free-links are removed in PR1 Task 3.3.
+    // PR1 also added a shared launcher-unlimited-link below the cards.
+    // DOM order: launcher-close (absolute top) → CTA1 → CTA2 → unlimited-link.
+    // Initial focus is on CTA1; Tab walks: CTA2 → unlimited-link → close → (trap cycles to CTA1).
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-card-city-guessing-daily-cta')).toBeFocused()
+
+    await page.keyboard.press('Tab')
+    await expect(page.getByTestId('launcher-unlimited-link')).toBeFocused()
 
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-close')).toBeFocused()
