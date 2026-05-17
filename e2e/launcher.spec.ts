@@ -207,12 +207,12 @@ test.describe('Launcher — daily state', () => {
     await expect(page.getByTestId('launcher-card-country-pinning-error')).toBeVisible()
   })
 
-  test('free-mode link starts endless free mode', async ({ page }) => {
-    // TODO: PR2 Task 3.4 will add parent-level shared free-link to test; skip for now
-    test.skip()
+  test('shared unlimited link starts endless mode', async ({ page }) => {
     await page.route('**/daily/index.json', (route) => route.fulfill({ status: 500, body: '' }))
     await freshTab(page)
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
+    await page.getByTestId('launcher-unlimited-link').click()
+    await expect.poll(() => page.url()).toMatch(/#game\//)
   })
 })
 
