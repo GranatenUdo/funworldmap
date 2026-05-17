@@ -374,7 +374,7 @@ export function Launcher({
               type="button"
               onClick={() => startFree(lastMode ?? 'country-pinning')}
               data-testid="launcher-unlimited-link"
-              className="text-[13px] text-sand-50 underline decoration-sand-50/50 hover:decoration-sand-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1"
+              className="text-[13px] text-white underline decoration-white/50 hover:decoration-white focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1 bg-black/40"
             >
               Play unlimited rounds →
             </button>
