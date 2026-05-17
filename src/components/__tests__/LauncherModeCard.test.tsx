@@ -4,6 +4,14 @@ import { LauncherModeCard } from '../LauncherModeCard'
 
 const baseBest = { bestScore: 432, bestStreak: 5, gamesPlayed: 3 }
 
+const defaultProps = {
+  modeId: 'country-pinning' as const,
+  todayDate: '2026-05-17',
+  freeBest: baseBest,
+  onStartDaily: () => {},
+  onStartFree: () => {},
+}
+
 describe('LauncherModeCard', () => {
   it('country-pinning best is shown without /1000 denominator', () => {
     render(
@@ -250,5 +258,13 @@ describe('LauncherModeCard', () => {
     )
     expect(screen.getByText(/MAY 16/)).toBeTruthy()
     expect(screen.queryByText(/COUNTRY/)).toBeNull()
+  })
+
+  it('renders the Play button with caption', () => {
+    render(<LauncherModeCard {...defaultProps} state="unplayed" />)
+    const btn = screen.getByTestId('launcher-card-country-pinning-daily-cta')
+    expect(btn.textContent).toBe('Play')
+    expect(btn.textContent).not.toContain('3 attempts')
+    expect(screen.getByText('3 tries · best one counts')).toBeTruthy()
   })
 })

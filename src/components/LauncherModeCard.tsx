@@ -120,14 +120,19 @@ export function LauncherModeCard({
       </div>
 
       {state === 'unplayed' && (
-        <button
-          type="button"
-          onClick={onStartDaily}
-          data-testid={`${testIdBase}-daily-cta`}
-          className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
-        >
-          Play · 3 attempts
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={onStartDaily}
+            data-testid={`${testIdBase}-daily-cta`}
+            className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+          >
+            Play
+          </button>
+          <div className="text-xs text-sand-600 dark:text-dark-100 mt-1.5 text-center">
+            3 tries · best one counts
+          </div>
+        </>
       )}
 
       {state === 'past-unplayed' && onSeeReveal && (
