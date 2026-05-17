@@ -1,5 +1,7 @@
 import type { ModeId } from '../game/shared/types'
 
+export type CtaState = 'unplayed' | 'partial' | 'done'
+
 export type EventSchema = {
   daily_opened: { mode: ModeId; dateAge: number }
   daily_started: { mode: ModeId }
@@ -18,7 +20,7 @@ export type EventSchema = {
   launcher_dismissed: { path: 'link' | 'search' | 'escape' | 'card' | 'backdrop' | 'close' }
   // alias: "unlimited" in UI vocabulary; event name kept for analytics
   // backwards-compat with cloudflare-worker/queries/*.sql
-  header_cta_clicked: { state: 'unplayed' | 'partial' | 'done' }
+  header_cta_clicked: { state: CtaState }
   deep_link_opened: {
     dateKind: 'today' | 'past' | 'future'
     outcome: 'start' | 'resume' | 'reveal' | 'redirect'
