@@ -135,7 +135,9 @@ export default function Header({
           <button
             onClick={onSatelliteToggle}
             aria-label={satellite ? 'Switch to map view' : 'Switch to satellite view'}
+            title={satellite ? 'Switch to map view' : 'Switch to satellite view'}
             aria-pressed={satellite}
+            data-satellite-active={satellite}
             className={`w-10 h-10 rounded-xl backdrop-blur-sm border flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 ${
               satellite
                 ? 'bg-teal/20 dark:bg-teal-light/20 border-teal/40 dark:border-teal-light/30 text-teal dark:text-teal-light'
