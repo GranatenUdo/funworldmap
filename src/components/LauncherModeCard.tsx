@@ -1,5 +1,4 @@
-import type { ModeId, PersonalBest } from '../game/shared/types'
-import { isCountryPinning } from '../game/shared/modePredicates'
+import type { ModeId } from '../game/shared/types'
 import { parseLocalDate } from '../game/daily/dates'
 
 export type LauncherCardState =
@@ -74,7 +73,6 @@ interface Props {
   todayDate: string // 'YYYY-MM-DD'
   state: LauncherCardState
   played?: PlayedResult
-  freeBest: PersonalBest
   latestAvailableDate?: string | null // most recent past date with a daily; for 'no-puzzle-today'
   onStartDaily: () => void
   onStartFree: () => void
@@ -88,10 +86,9 @@ export function LauncherModeCard({
   todayDate,
   state,
   played,
-  freeBest,
   latestAvailableDate,
   onStartDaily,
-  onStartFree,  
+  onStartFree,
   onSeeReveal,
   onRetry,
 }: Props) {
@@ -220,21 +217,6 @@ export function LauncherModeCard({
           )}
         </div>
       )}
-
-      <div className="mt-4 pt-3 border-t border-sand-200/70 dark:border-dark-200/30 text-[11px] text-sand-600 dark:text-dark-100">
-        <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">
-          Best (free)
-        </span>{' '}
-        <span data-testid={`${testIdBase}-free-best`} className="tabular-nums">
-          {freeBest.gamesPlayed > 0
-            ? isCountryPinning(modeId)
-              ? `${freeBest.bestScore} pts`
-              : `${freeBest.bestScore} / 1000`
-            : isCountryPinning(modeId)
-              ? '— pts'
-              : '— / 1000'}
-        </span>
-      </div>
     </div>
   )
 }

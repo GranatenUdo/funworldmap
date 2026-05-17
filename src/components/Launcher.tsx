@@ -6,7 +6,6 @@ import { isCountryPinning } from '../game/shared/modePredicates'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
 import { installFocusTrap } from '../lib/focusTrap'
-import { usePersonalBests } from '../game/shared/usePersonalBests'
 import { useDailyPuzzlesContext } from '../game/daily/DailyPuzzlesProvider'
 import { useDailyHistory } from '../game/daily/useDailyHistory'
 import { toLocalDateString } from '../game/daily/dates'
@@ -47,8 +46,6 @@ export function Launcher({
   const rootRef = useRef<HTMLDivElement>(null)
   const modes = useMemo(() => listModes(), [])
   const lastMode = readLastMode()
-  const { best: cpBest } = usePersonalBests('country-pinning')
-  const { best: cgBest } = usePersonalBests('city-guessing')
   const { status: puzzlesStatus, byDate, index, refetch } = useDailyPuzzlesContext()
   const { history, get: getDay, streak, pendingMilestone, markMilestoneShown } = useDailyHistory()
   const [historyOpen, setHistoryOpen] = useState(initialHistoryOpen)
@@ -92,7 +89,6 @@ export function Launcher({
     return 'unplayed'
   }
 
-  const bestFor = (id: ModeId) => (isCountryPinning(id) ? cpBest : cgBest)
   const playedFor = useCallback(
     (id: ModeId) => {
       const prior = getDay(date, id)
@@ -358,7 +354,6 @@ export function Launcher({
                   todayDate={today}
                   state={cardState(m.id)}
                   played={playedFor(m.id)}
-                  freeBest={bestFor(m.id)}
                   latestAvailableDate={latestAvailableDate}
                   onStartDaily={() => startDaily(m.id)}
                   onStartFree={() => startFree(m.id)}
