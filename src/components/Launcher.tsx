@@ -12,6 +12,7 @@ import { toLocalDateString } from '../game/daily/dates'
 import { LauncherModeCard, type LauncherCardState } from './LauncherModeCard'
 import { LauncherStreakPill } from './LauncherStreakPill'
 import { LauncherMilestoneOverlay } from './LauncherMilestoneOverlay'
+import { LauncherCountdown } from './LauncherCountdown'
 import { LauncherHistoryPanel, type HistoryCellKind } from './LauncherHistoryPanel'
 
 interface Props {
@@ -88,6 +89,8 @@ export function Launcher({
     if (date < today) return 'past-unplayed'
     return 'unplayed'
   }
+
+  const bothPlayed = modes.every((m) => cardState(m.id) === 'played')
 
   const playedFor = useCallback(
     (id: ModeId) => {
@@ -363,6 +366,8 @@ export function Launcher({
               </div>
             ))}
           </div>
+
+          {bothPlayed && <LauncherCountdown />}
 
           <div className="mt-4 text-center">
             <button
