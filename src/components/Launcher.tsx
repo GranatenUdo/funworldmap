@@ -359,7 +359,6 @@ export function Launcher({
                   played={playedFor(m.id)}
                   latestAvailableDate={latestAvailableDate}
                   onStartDaily={() => startDaily(m.id)}
-                  onStartFree={() => startFree(m.id)}
                   onSeeReveal={() => seeReveal(m.id)}
                   onRetry={() => void refetch()}
                 />
