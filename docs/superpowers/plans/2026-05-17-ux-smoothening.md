@@ -138,7 +138,7 @@ describe('useDailyPuzzles refetch', () => {
 
 - [ ] **Step 2: Run the test — expect a TypeScript error (`refetch` doesn't exist)**
 
-Run: `npm run test -- src/game/daily/__tests__/useDailyPuzzles.refetch.test.ts`
+Run: `npm run test:unit -- src/game/daily/__tests__/useDailyPuzzles.refetch.test.ts`
 Expected: FAIL (compile or runtime; `result.current.refetch` is undefined).
 
 - [ ] **Step 3: Implement refetch**
@@ -204,12 +204,12 @@ export function useDailyPuzzles(): UseDailyPuzzles {
 
 - [ ] **Step 4: Run the test — expect PASS**
 
-Run: `npm run test -- src/game/daily/__tests__/useDailyPuzzles.refetch.test.ts`
+Run: `npm run test:unit -- src/game/daily/__tests__/useDailyPuzzles.refetch.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Run full unit suite — verify no regressions**
 
-Run: `npm run test`
+Run: `npm run test:unit`
 Expected: PASS.
 
 - [ ] **Step 6: Commit**
@@ -255,7 +255,7 @@ const [historyOpen, setHistoryOpen] = useState(initialHistoryOpen)
 
 - [ ] **Step 2: Typecheck + run launcher-related unit tests**
 
-Run: `npm run typecheck && npm run test -- src/components/__tests__/LauncherHistoryPanel.test.tsx`
+Run: `npm run typecheck && npm run test:unit -- src/components/__tests__/LauncherHistoryPanel.test.tsx`
 Expected: passes (the prop is optional, no caller changes required).
 
 - [ ] **Step 3: Commit**
@@ -317,7 +317,7 @@ describe('useNextDailyCountdown', () => {
 
 - [ ] **Step 2: Run tests — expect compile failure (no such hook)**
 
-Run: `npm run test -- src/hooks/__tests__/useNextDailyCountdown.test.ts`
+Run: `npm run test:unit -- src/hooks/__tests__/useNextDailyCountdown.test.ts`
 Expected: FAIL (module not found).
 
 - [ ] **Step 3: Implement the hook**
@@ -351,7 +351,7 @@ export function useNextDailyCountdown(): NextDailyCountdown {
 
 - [ ] **Step 4: Run tests — expect PASS**
 
-Run: `npm run test -- src/hooks/__tests__/useNextDailyCountdown.test.ts`
+Run: `npm run test:unit -- src/hooks/__tests__/useNextDailyCountdown.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -428,7 +428,7 @@ describe('LauncherStreakPill', () => {
 
 - [ ] **Step 2: Run — expect FAIL (current copy doesn't match)**
 
-Run: `npm run test -- src/components/__tests__/LauncherStreakPill.test.tsx`
+Run: `npm run test:unit -- src/components/__tests__/LauncherStreakPill.test.tsx`
 Expected: FAIL on the two new copy assertions.
 
 - [ ] **Step 3: Update copy**
@@ -446,7 +446,7 @@ Edit `src/components/LauncherStreakPill.tsx`. Replace the 'broken' and 'first' b
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- src/components/__tests__/LauncherStreakPill.test.tsx`
+Run: `npm run test:unit -- src/components/__tests__/LauncherStreakPill.test.tsx`
 Expected: PASS (all three).
 
 - [ ] **Step 5: Commit**
@@ -466,7 +466,7 @@ git commit -m "feat(launcher): rewrite streak pill empty-state copy"
 
 - [ ] **Step 1: Find any test asserting the current hint copy**
 
-Run: `npm run test -- -t "Explore the world"`
+Run: `npm run test:unit -- -t "Explore the world"`
 If a test exists, note its file. If not, this is a copy-only change with no test surface yet.
 
 - [ ] **Step 2: Update copy**
@@ -485,7 +485,7 @@ to:
 
 - [ ] **Step 3: Run full unit suite**
 
-Run: `npm run test`
+Run: `npm run test:unit`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -527,7 +527,7 @@ and
 
 - [ ] **Step 2: Run any existing tutorial tests**
 
-Run: `npm run test -- FirstSessionTutorial`
+Run: `npm run test:unit -- FirstSessionTutorial`
 Expected: PASS (or no tests exist; check via `ls src/game/shared/hud/__tests__/`).
 
 - [ ] **Step 3: Commit**
@@ -567,7 +567,7 @@ it('shows the city title with subtitle copy', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: FAIL on the new assertions.
 
 - [ ] **Step 3: Update title constants and add subtitle**
@@ -601,7 +601,7 @@ In the JSX block where the title renders (around line 76), add the subtitle afte
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -653,7 +653,7 @@ it('renders the eyebrow as the bare date for past days', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: FAIL.
 
 - [ ] **Step 3: Rewrite `headerLabel` and the eyebrow JSX**
@@ -691,7 +691,7 @@ Update the call site if the signature changed (it did — `modeId` removed from 
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -725,7 +725,7 @@ it('renders the Play button with caption', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: FAIL.
 
 - [ ] **Step 3: Restructure the unplayed branch**
@@ -754,7 +754,7 @@ In `src/components/LauncherModeCard.tsx`, replace the `state === 'unplayed'` blo
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -791,7 +791,7 @@ it('renders Retry button in unavailable-error state', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: FAIL.
 
 - [ ] **Step 3: Add `onRetry` to Props and render the button**
@@ -846,10 +846,10 @@ Then in the `LauncherModeCard` JSX (around line 324–335), pass `onRetry={refet
 
 - [ ] **Step 5: Run — expect PASS**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: PASS.
 
-Run: `npm run test`
+Run: `npm run test:unit`
 Expected: PASS (full suite).
 
 - [ ] **Step 6: Commit**
@@ -893,7 +893,7 @@ Then change the subtitle JSX:
 
 - [ ] **Step 3: Run full unit suite**
 
-Run: `npm run test`
+Run: `npm run test:unit`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -961,7 +961,7 @@ await page.getByTestId('launcher-close').click()
 
 - [ ] **Step 5: Run launcher unit tests + a few launcher e2e tests**
 
-Run: `npm run test -- Launcher`
+Run: `npm run test:unit -- Launcher`
 Expected: PASS.
 
 Run: `npm run test:e2e -- e2e/launcher.spec.ts --project=chromium`
@@ -995,7 +995,7 @@ it('no longer renders the per-card free-mode link', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: FAIL.
 
 - [ ] **Step 3: Delete the per-card unlimited link**
@@ -1017,7 +1017,7 @@ Keep `onStartFree` in the Props for now (still used by the parent — Task 3.4 r
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1108,7 +1108,7 @@ it('does not render the Best (free) footer', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: FAIL.
 
 - [ ] **Step 3: Delete the footer block**
@@ -1140,7 +1140,7 @@ In `src/components/Launcher.tsx`, remove the `freeBest={bestFor(m.id)}` prop on 
 
 - [ ] **Step 4: Run typecheck + unit suite**
 
-Run: `npm run typecheck && npm run test`
+Run: `npm run typecheck && npm run test:unit`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1181,7 +1181,7 @@ it('renders played state as a single full-width See reveal button with score', (
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: FAIL.
 
 - [ ] **Step 3: Restructure the played branch**
@@ -1212,7 +1212,7 @@ In `src/components/LauncherModeCard.tsx`, replace the `state === 'played'` block
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- LauncherModeCard`
+Run: `npm run test:unit -- LauncherModeCard`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1258,7 +1258,7 @@ describe('LauncherCountdown', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- LauncherCountdown`
+Run: `npm run test:unit -- LauncherCountdown`
 Expected: FAIL (module not found).
 
 - [ ] **Step 3: Implement the component**
@@ -1287,7 +1287,7 @@ export function LauncherCountdown() {
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- LauncherCountdown`
+Run: `npm run test:unit -- LauncherCountdown`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1329,7 +1329,7 @@ Render the countdown in the JSX after the cards grid and before the history pane
 
 - [ ] **Step 2: Typecheck + run launcher tests**
 
-Run: `npm run typecheck && npm run test -- Launcher`
+Run: `npm run typecheck && npm run test:unit -- Launcher`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -1414,7 +1414,7 @@ it('still says "Game over" on unlimited mode', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- GameOverOverlay`
+Run: `npm run test:unit -- GameOverOverlay`
 Expected: FAIL on the new daily-mode title assertion.
 
 - [ ] **Step 3: Implement the branch**
@@ -1440,7 +1440,7 @@ In `src/game/shared/hud/GameOverOverlay.tsx`, change the title and subtitle bloc
 
 - [ ] **Step 4: Run — expect PASS**
 
-Run: `npm run test -- GameOverOverlay`
+Run: `npm run test:unit -- GameOverOverlay`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1456,7 +1456,7 @@ git commit -m "feat(game-over): soften daily-mode title to 'Today’s results'"
 
 ### Task 6.1: Full unit + component suite
 
-- [ ] **Step 1:** Run `npm run test`. Expect: PASS.
+- [ ] **Step 1:** Run `npm run test:unit`. Expect: PASS.
 - [ ] **Step 2:** Run `npm run typecheck`. Expect: PASS.
 - [ ] **Step 3:** Run `npm run lint`. Expect: PASS.
 
@@ -1493,7 +1493,7 @@ Implements PR1 of docs/superpowers/specs/2026-05-17-ux-smoothening-design.md.
 PR2 (first-load posture: map-first + header CTA) is held until PR1 merges so its funnel impact can be measured against PR1 as a baseline.
 
 ## Test plan
-- [ ] `npm run test` green
+- [ ] `npm run test:unit` green
 - [ ] `npm run test:e2e -- --project=chromium --project=chromium-gpu` green
 - [ ] Manual smoke per Task 6.3
 EOF
@@ -1532,7 +1532,7 @@ it('still returns visible=true for #daily/YYYY-MM-DD', () => {
 
 - [ ] **Step 2: Run — expect FAIL**
 
-Run: `npm run test -- useLauncherVisibility`
+Run: `npm run test:unit -- useLauncherVisibility`
 Expected: FAIL (bare hash currently returns `true`).
 
 ### Task 7.2: Change the rule
@@ -1556,12 +1556,12 @@ If no other callers, remove the function declaration.
 
 - [ ] **Step 2: Run — expect PASS**
 
-Run: `npm run test -- useLauncherVisibility`
+Run: `npm run test:unit -- useLauncherVisibility`
 Expected: PASS.
 
 - [ ] **Step 3: Run full unit suite**
 
-Run: `npm run test`
+Run: `npm run test:unit`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -1879,7 +1879,7 @@ it('dismiss() resets initialHistoryOpen to false', () => {
 
 - [ ] **Step 4: Run typecheck + the visibility-hook tests**
 
-Run: `npm run typecheck && npm run test -- useLauncherVisibility`
+Run: `npm run typecheck && npm run test:unit -- useLauncherVisibility`
 Expected: PASS.
 
 ### Task 8.5: Commit Phase-8 work as one feature commit
@@ -2056,7 +2056,7 @@ git commit -m "test(e2e): rename helper, add header-cta spec, rewrite launcher s
 ### Task 10.1: Full test suite + manual smoke
 
 - [ ] **Step 1:** `npm run typecheck` — PASS.
-- [ ] **Step 2:** `npm run test` — PASS.
+- [ ] **Step 2:** `npm run test:unit` — PASS.
 - [ ] **Step 3:** `npm run test:e2e -- --project=chromium --project=chromium-gpu --project=mobile-chromium --project=mobile-webkit` — PASS. No `test.fixme` additions.
 
 ### Task 10.2: Manual smoke
@@ -2098,7 +2098,7 @@ Removing the on-load modal may lower `daily_started` per visit. Watch the 7-day 
 If funnel regresses materially, revert with `git revert` — PR2 is contained and self-revertible.
 
 ## Test plan
-- [ ] `npm run test` green
+- [ ] `npm run test:unit` green
 - [ ] `npm run test:e2e -- --project=chromium --project=chromium-gpu --project=mobile-chromium --project=mobile-webkit` green
 - [ ] Manual smoke per Task 10.2
 EOF
