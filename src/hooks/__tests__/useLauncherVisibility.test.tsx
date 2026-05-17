@@ -157,4 +157,38 @@ describe('useLauncherVisibility', () => {
     expect(result.current.visible).toBe(false)
     expect(result.current.anchorDate).toBeNull()
   })
+
+  it('show({ historyOpen: true }) sets initialHistoryOpen', () => {
+    history.replaceState(null, '', '/')
+    const api = makeApi(makeSession())
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    expect(result.current.initialHistoryOpen).toBe(false)
+    act(() => {
+      result.current.show({ historyOpen: true })
+    })
+    expect(result.current.initialHistoryOpen).toBe(true)
+  })
+
+  it('show() with no args leaves initialHistoryOpen false', () => {
+    history.replaceState(null, '', '/')
+    const api = makeApi(makeSession())
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    act(() => {
+      result.current.show()
+    })
+    expect(result.current.initialHistoryOpen).toBe(false)
+  })
+
+  it('dismiss() resets initialHistoryOpen to false', () => {
+    history.replaceState(null, '', '/')
+    const api = makeApi(makeSession())
+    const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
+    act(() => {
+      result.current.show({ historyOpen: true })
+    })
+    act(() => {
+      result.current.dismiss()
+    })
+    expect(result.current.initialHistoryOpen).toBe(false)
+  })
 })

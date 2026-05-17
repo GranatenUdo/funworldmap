@@ -9,8 +9,9 @@ function isDailyRoot(hash: string): boolean {
 export interface LauncherVisibility {
   visible: boolean
   anchorDate: string | null
+  initialHistoryOpen: boolean
   dismiss: () => void
-  show: () => void
+  show: (opts?: { historyOpen?: boolean }) => void
 }
 
 export function useLauncherVisibility(): LauncherVisibility {
@@ -18,6 +19,7 @@ export function useLauncherVisibility(): LauncherVisibility {
   const initialHash = typeof window !== 'undefined' ? window.location.hash : ''
   const [currentHash, setCurrentHash] = useState(initialHash)
   const [dismissed, setDismissed] = useState(false)
+  const [initialHistoryOpen, setInitialHistoryOpen] = useState(false)
   const prevSessionStatusRef = useRef(session.status)
 
   useEffect(() => {
@@ -35,8 +37,14 @@ export function useLauncherVisibility(): LauncherVisibility {
     prevSessionStatusRef.current = session.status
   }, [session.status])
 
-  const dismiss = useCallback(() => setDismissed(true), [])
-  const show = useCallback(() => setDismissed(false), [])
+  const dismiss = useCallback(() => {
+    setInitialHistoryOpen(false)
+    setDismissed(true)
+  }, [])
+  const show = useCallback((opts?: { historyOpen?: boolean }) => {
+    setInitialHistoryOpen(!!opts?.historyOpen)
+    setDismissed(false)
+  }, [])
 
   const visible = isDailyRoot(currentHash) && !dismissed && session.status === 'idle'
 
@@ -46,5 +54,5 @@ export function useLauncherVisibility(): LauncherVisibility {
     anchorDate = clean.slice('daily/'.length)
   }
 
-  return { visible, anchorDate, dismiss, show }
+  return { visible, anchorDate, initialHistoryOpen, dismiss, show }
 }
