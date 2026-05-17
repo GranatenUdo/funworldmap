@@ -76,7 +76,6 @@ interface Props {
   played?: PlayedResult
   latestAvailableDate?: string | null // most recent past date with a daily; for 'no-puzzle-today'
   onStartDaily: () => void
-  onStartFree: () => void
   onSeeReveal?: () => void
   onRetry?: () => void
 }
@@ -89,12 +88,9 @@ export function LauncherModeCard({
   played,
   latestAvailableDate,
   onStartDaily,
-  onStartFree,
   onSeeReveal,
   onRetry,
 }: Props) {
-  // onStartFree kept for API compatibility; Task 3.4 will use for parent-level shared link
-  void onStartFree
   const testIdBase = `launcher-card-${modeId}`
   return (
     <div

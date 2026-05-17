@@ -6,7 +6,6 @@ const defaultProps = {
   modeId: 'country-pinning' as const,
   todayDate: '2026-05-17',
   onStartDaily: () => {},
-  onStartFree: () => {},
 }
 
 describe('LauncherModeCard', () => {
@@ -17,7 +16,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="unplayed"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.queryByTestId('launcher-card-country-pinning-free-best')).toBeNull()
@@ -30,7 +28,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="unplayed"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.queryByTestId('launcher-card-city-guessing-free-best')).toBeNull()
@@ -44,7 +41,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="past-unplayed"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
         onSeeReveal={() => {}}
       />,
     )
@@ -59,7 +55,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="loading"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByTestId('launcher-card-country-pinning-loading').textContent).toMatch(
@@ -76,7 +71,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="unavailable-error"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByTestId('launcher-card-country-pinning-error').textContent).toMatch(
@@ -92,7 +86,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="no-puzzle-today"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(
@@ -109,7 +102,6 @@ describe('LauncherModeCard', () => {
         state="no-puzzle-today"
         latestAvailableDate="2026-05-01"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     const link = screen.getByTestId('launcher-card-country-pinning-no-puzzle-link')
@@ -127,7 +119,6 @@ describe('LauncherModeCard', () => {
         state="no-puzzle-today"
         latestAvailableDate="2026-05-01"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(
@@ -146,7 +137,6 @@ describe('LauncherModeCard', () => {
         state="no-puzzle-today"
         latestAvailableDate="2026-05-01"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(
@@ -166,7 +156,6 @@ describe('LauncherModeCard', () => {
         state="no-puzzle-today"
         latestAvailableDate="2026-05-01"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByTestId('launcher-card-country-pinning-no-puzzle').textContent).toMatch(
@@ -184,7 +173,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="unplayed"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByText('Country')).toBeTruthy()
@@ -198,7 +186,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-02"
         state="unplayed"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.getByText('City')).toBeTruthy()
@@ -213,7 +200,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-17"
         state="unplayed"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
       />,
     )
     expect(screen.queryByText('TODAY · COUNTRY')).toBeNull()
@@ -228,7 +214,6 @@ describe('LauncherModeCard', () => {
         todayDate="2026-05-17"
         state="past-unplayed"
         onStartDaily={() => {}}
-        onStartFree={() => {}}
         onSeeReveal={() => {}}
       />,
     )
