@@ -160,8 +160,8 @@ export function Launcher({
     }
   }, [])
 
-  const dismissWithFocus = useCallback(() => {
-    track('launcher_dismissed', { path: 'link' })
+  const dismissWithCloseButton = useCallback(() => {
+    track('launcher_dismissed', { path: 'close' })
     onDismiss()
     focusSearchInput()
   }, [onDismiss])
@@ -323,6 +323,24 @@ export function Launcher({
           }}
         />
         <div className="relative w-full max-w-2xl mx-auto">
+          <button
+            type="button"
+            onClick={dismissWithCloseButton}
+            data-testid="launcher-close"
+            aria-label="Close"
+            className="absolute -top-2 right-0 w-9 h-9 rounded-full text-sand-50 dark:text-dark-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 flex items-center justify-center"
+          >
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
           <div
             role="presentation"
             className="text-center mb-6"
@@ -379,20 +397,6 @@ export function Launcher({
               onCellActivate={onCellActivate}
             />
           )}
-
-          <div
-            className="mt-6 text-center"
-            style={{ animation: 'launcher-text-in 180ms ease-out 260ms both' }}
-          >
-            <button
-              type="button"
-              onClick={dismissWithFocus}
-              data-testid="launcher-dismiss"
-              className="text-[13px] text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded px-2 py-1"
-            >
-              Just explore the map
-            </button>
-          </div>
         </div>
       </div>
     </>

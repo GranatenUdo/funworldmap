@@ -26,11 +26,11 @@ async function openLauncherWithHistory(page: Page) {
 // ---------------------------------------------------------------------------
 
 test.describe('Keyboard-only smoke — retention v1 golden path', () => {
-  test('Enter on launcher-dismiss closes the launcher', async ({ page }) => {
+  test('Enter on launcher-close closes the launcher', async ({ page }) => {
     await openLauncherFresh(page)
-    const dismiss = page.getByTestId('launcher-dismiss')
-    await dismiss.focus()
-    await expect(dismiss).toBeFocused()
+    const close = page.getByTestId('launcher-close')
+    await close.focus()
+    await expect(close).toBeFocused()
     await page.keyboard.press('Enter')
     await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
   })
@@ -41,7 +41,9 @@ test.describe('Keyboard-only smoke — retention v1 golden path', () => {
     await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
   })
 
-  test('History panel opens via Enter on launcher-history-link and Escape closes it', async ({ page }) => {
+  test('History panel opens via Enter on launcher-history-link and Escape closes it', async ({
+    page,
+  }) => {
     await openLauncherWithHistory(page)
     const historyButton = page.getByTestId('launcher-history-link')
     await historyButton.focus()

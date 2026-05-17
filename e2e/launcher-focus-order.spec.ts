@@ -1,9 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import {
-  waitForAppReady,
-  stubDailyIndex,
-} from './helpers'
+import { waitForAppReady, stubDailyIndex } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -35,7 +32,9 @@ test.describe('Launcher — initial focus order', () => {
 
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     // Daily CTA must be visible (puzzlesStatus === 'ready', state === 'unplayed')
-    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
+      timeout: 10_000,
+    })
     // Focus must have landed on the daily CTA, not on the free-link
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused()
   })
@@ -52,7 +51,9 @@ test.describe('Launcher — initial focus order', () => {
 
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
     // Confirm starting focus position before any keyboard navigation
-    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
+      timeout: 10_000,
+    })
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused()
 
     // Each Tab step is asserted individually — never count Tabs without checking
@@ -66,14 +67,16 @@ test.describe('Launcher — initial focus order', () => {
     await expect(page.getByTestId('launcher-card-city-guessing-free-link')).toBeFocused()
 
     await page.keyboard.press('Tab')
-    await expect(page.getByTestId('launcher-dismiss')).toBeFocused()
+    await expect(page.getByTestId('launcher-close')).toBeFocused()
 
     // Focus trap must cycle back to the first focusable element
     await page.keyboard.press('Tab')
     await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeFocused()
   })
 
-  test('does not steal focus when puzzlesStatus transitions to ready while user has tabbed elsewhere', async ({ page }) => {
+  test('does not steal focus when puzzlesStatus transitions to ready while user has tabbed elsewhere', async ({
+    page,
+  }) => {
     const today = todayString()
 
     // Stub index to delay 2 s before resolving — ensures the app mounts in
@@ -96,15 +99,17 @@ test.describe('Launcher — initial focus order', () => {
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 10_000 })
 
     // While loading, only free-links are focusable in the mode cards.
-    // Move focus to the launcher-dismiss button explicitly — simulating a
+    // Move focus to the launcher-close button explicitly — simulating a
     // user who has tabbed to a different element before content settled.
-    await page.getByTestId('launcher-dismiss').focus()
-    await expect(page.getByTestId('launcher-dismiss')).toBeFocused()
+    await page.getByTestId('launcher-close').focus()
+    await expect(page.getByTestId('launcher-close')).toBeFocused()
 
     // Wait for the daily CTA to appear (puzzlesStatus transitions to 'ready')
-    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({ timeout: 10_000 })
+    await expect(page.getByTestId('launcher-card-country-pinning-daily-cta')).toBeVisible({
+      timeout: 10_000,
+    })
 
     // A11y guard: focus must NOT have been stolen to the daily CTA
-    await expect(page.getByTestId('launcher-dismiss')).toBeFocused()
+    await expect(page.getByTestId('launcher-close')).toBeFocused()
   })
 })

@@ -174,18 +174,26 @@ export async function stubDailyIndex(
  * to reflect the new attempt count.
  */
 export async function submitAndWait(page: Page, cca3: string, expectAfter: number): Promise<void> {
-  await page.evaluate(({ c }) => {
-    const game = (window as unknown as { __funworldmap_game?: { submitCountryGuess: (cca3: string) => void } })
-      .__funworldmap_game
-    game?.submitCountryGuess(c)
-  }, { c: cca3 })
+  await page.evaluate(
+    ({ c }) => {
+      const game = (
+        window as unknown as { __funworldmap_game?: { submitCountryGuess: (cca3: string) => void } }
+      ).__funworldmap_game
+      game?.submitCountryGuess(c)
+    },
+    { c: cca3 },
+  )
   await expect
     .poll(
-      () => page.evaluate(() => {
-        const game = (window as unknown as { __funworldmap_game?: { getSession: () => { currentAttempts: unknown[] } } })
-          .__funworldmap_game
-        return game?.getSession().currentAttempts.length ?? 0
-      }),
+      () =>
+        page.evaluate(() => {
+          const game = (
+            window as unknown as {
+              __funworldmap_game?: { getSession: () => { currentAttempts: unknown[] } }
+            }
+          ).__funworldmap_game
+          return game?.getSession().currentAttempts.length ?? 0
+        }),
       { timeout: 15_000 },
     )
     .toBe(expectAfter)
@@ -199,7 +207,8 @@ export async function submitAndWait(page: Page, cca3: string, expectAfter: numbe
  */
 export async function finalizeGame(page: Page): Promise<void> {
   await page.evaluate(() => {
-    const game = (window as unknown as { __funworldmap_game?: { finalize: () => void } }).__funworldmap_game
+    const game = (window as unknown as { __funworldmap_game?: { finalize: () => void } })
+      .__funworldmap_game
     game?.finalize()
   })
 }
@@ -236,7 +245,7 @@ export async function dismissLauncher(page: Page): Promise<void> {
     // Deep-link test: launcher will not appear.
     return
   }
-  await page.getByTestId('launcher-dismiss').click()
+  await page.getByTestId('launcher-close').click()
   await expect(launcher).not.toBeAttached({ timeout: 5_000 })
   // Header is conditionally rendered (returns null while launcher is visible).
   // Wait for a known Header child to be attached before returning so callers'
@@ -256,7 +265,9 @@ export async function dismissLauncher(page: Page): Promise<void> {
  * satellite-toggle, launcher mode cards) become safe to interact with.
  */
 export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<void> {
-  await page.locator('main[data-app-ready="true"]').waitFor({ state: 'attached', timeout: timeoutMs })
+  await page
+    .locator('main[data-app-ready="true"]')
+    .waitFor({ state: 'attached', timeout: timeoutMs })
 }
 
 /**
@@ -267,18 +278,22 @@ export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<v
  * specs can race past it without this wait.
  */
 export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promise<void> {
-  await expect.poll(
-    () => page.evaluate(() => {
-      const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
-      return g
-        && typeof g.submitCountryGuess === 'function'
-        && typeof g.completeNow === 'function'
-        && typeof g.finalize === 'function'
-        ? 'ready'
-        : 'not-ready'
-    }),
-    { timeout: timeoutMs },
-  ).toBe('ready')
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> })
+            .__funworldmap_game
+          return g &&
+            typeof g.submitCountryGuess === 'function' &&
+            typeof g.completeNow === 'function' &&
+            typeof g.finalize === 'function'
+            ? 'ready'
+            : 'not-ready'
+        }),
+      { timeout: timeoutMs },
+    )
+    .toBe('ready')
 }
 
 /**
@@ -302,28 +317,29 @@ export function getSession(page: Page): Promise<SessionSnapshot> {
  * Spread polling intervals avoid hammering the cross-process IPC + GPU
  * readback path on slow software-ANGLE CI.
  */
-export async function waitForCountryTilesRendered(
-  page: Page,
-  timeout = 10_000,
-): Promise<void> {
-  await expect.poll(
-    () => page.evaluate(() => {
-      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
-        getCanvas: () => HTMLCanvasElement
-        queryRenderedFeatures: (
-          point: [number, number],
-          opts: { layers: string[] },
-        ) => unknown[]
-      } | undefined
-      if (!map) return 0
-      const canvas = map.getCanvas()
-      return map.queryRenderedFeatures(
-        [canvas.clientWidth / 2, canvas.clientHeight / 2],
-        { layers: ['country-fill'] },
-      ).length
-    }),
-    { timeout, intervals: [250, 500, 1000, 1000] },
-  ).toBeGreaterThan(0)
+export async function waitForCountryTilesRendered(page: Page, timeout = 10_000): Promise<void> {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const map = (window as unknown as Record<string, unknown>).__funworldmap_map as
+            | {
+                getCanvas: () => HTMLCanvasElement
+                queryRenderedFeatures: (
+                  point: [number, number],
+                  opts: { layers: string[] },
+                ) => unknown[]
+              }
+            | undefined
+          if (!map) return 0
+          const canvas = map.getCanvas()
+          return map.queryRenderedFeatures([canvas.clientWidth / 2, canvas.clientHeight / 2], {
+            layers: ['country-fill'],
+          }).length
+        }),
+      { timeout, intervals: [250, 500, 1000, 1000] },
+    )
+    .toBeGreaterThan(0)
 }
 
 /**
@@ -355,7 +371,9 @@ export async function waitForRevealLineCoords(
       if (!map) return null
       const source = map.getSource(src) as maplibregl.GeoJSONSource | undefined
       if (!source) return null
-      const data = (source as unknown as { serialize: () => { data: GeoJSON.FeatureCollection } }).serialize().data
+      const data = (
+        source as unknown as { serialize: () => { data: GeoJSON.FeatureCollection } }
+      ).serialize().data
       if (!data?.features?.length) return null
       const g = data.features[0].geometry as GeoJSON.LineString
       if (!g || g.type !== 'LineString') return null
