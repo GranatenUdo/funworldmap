@@ -53,14 +53,14 @@ const SUBTITLE: Record<ModeId, string> = {
   'city-guessing': 'Pin where the city is',
 }
 
-function headerLabel(modeId: ModeId, anchorDate: string | undefined, today: string): string {
+function headerLabel(anchorDate: string | undefined, today: string): string | null {
   const isToday = !anchorDate || anchorDate === today
-  if (isToday) return isCountryPinning(modeId) ? 'TODAY · COUNTRY' : 'TODAY · CITY'
+  if (isToday) return null
   const md = parseLocalDate(anchorDate).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
   })
-  return `${md.toUpperCase()} · ${isCountryPinning(modeId) ? 'COUNTRY' : 'CITY'}`
+  return md.toUpperCase()
 }
 
 interface PlayedResult {
@@ -107,9 +107,11 @@ export function LauncherModeCard({
       <div className="flex items-start gap-3 mb-3">
         {ICONS[modeId]}
         <div className="min-w-0 flex-1">
-          <div className="text-[10px] font-semibold uppercase tracking-widest text-teal dark:text-teal-light">
-            {headerLabel(modeId, anchorDate, todayDate)}
-          </div>
+          {headerLabel(anchorDate, todayDate) && (
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-teal dark:text-teal-light">
+              {headerLabel(anchorDate, todayDate)}
+            </div>
+          )}
           <div className="text-lg font-bold text-sand-900 dark:text-dark-50 leading-tight">
             {TITLE[modeId]}
           </div>

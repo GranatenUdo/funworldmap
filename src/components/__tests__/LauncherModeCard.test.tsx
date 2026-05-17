@@ -218,4 +218,37 @@ describe('LauncherModeCard', () => {
     expect(screen.getByText('City')).toBeTruthy()
     expect(screen.getByText(/Pin where the city is/)).toBeTruthy()
   })
+
+  it('does not render the eyebrow label for today', () => {
+    render(
+      <LauncherModeCard
+        modeId="country-pinning"
+        anchorDate={undefined}
+        todayDate="2026-05-17"
+        state="unplayed"
+        freeBest={baseBest}
+        onStartDaily={() => {}}
+        onStartFree={() => {}}
+      />,
+    )
+    expect(screen.queryByText('TODAY · COUNTRY')).toBeNull()
+    expect(screen.queryByText('TODAY · CITY')).toBeNull()
+  })
+
+  it('renders the eyebrow as the bare date for past days', () => {
+    render(
+      <LauncherModeCard
+        modeId="country-pinning"
+        anchorDate="2026-05-16"
+        todayDate="2026-05-17"
+        state="past-unplayed"
+        freeBest={baseBest}
+        onStartDaily={() => {}}
+        onStartFree={() => {}}
+        onSeeReveal={() => {}}
+      />,
+    )
+    expect(screen.getByText(/MAY 16/)).toBeTruthy()
+    expect(screen.queryByText(/COUNTRY/)).toBeNull()
+  })
 })
