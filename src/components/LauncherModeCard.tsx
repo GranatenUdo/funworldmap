@@ -1,5 +1,6 @@
 import type { ModeId } from '../game/shared/types'
 import { parseLocalDate } from '../game/daily/dates'
+import { isCountryPinning } from '../game/shared/modePredicates'
 
 export type LauncherCardState =
   | 'unplayed'
@@ -149,18 +150,15 @@ export function LauncherModeCard({
 
       {state === 'played' && (
         <div data-testid={`${testIdBase}-played-result`}>
-          <div className="text-sand-900 dark:text-dark-50 text-sm mb-2">
-            ✓ {played?.targetName ?? 'Played'} ·{' '}
-            <span className="tabular-nums font-semibold">{played?.score ?? 0}</span>/100
-          </div>
           {onSeeReveal && (
             <button
               type="button"
               onClick={onSeeReveal}
               data-testid={`${testIdBase}-see-reveal`}
-              className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 dark:focus-visible:ring-teal-light/60"
+              className="w-full px-4 py-2 rounded-xl bg-emerald-500/90 text-white font-semibold hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
             >
-              See reveal
+              ✓ {played?.score ?? 0}
+              {isCountryPinning(modeId) ? '/100' : '/1000'} · See reveal →
             </button>
           )}
         </div>

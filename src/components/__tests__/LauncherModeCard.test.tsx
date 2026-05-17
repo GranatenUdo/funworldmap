@@ -265,4 +265,19 @@ describe('LauncherModeCard', () => {
     expect(screen.queryByText(/Unlimited best/i)).toBeNull()
     expect(screen.queryByTestId('launcher-card-country-pinning-free-best')).toBeNull()
   })
+
+  it('renders played state as a single full-width See reveal button with score', () => {
+    render(
+      <LauncherModeCard
+        {...defaultProps}
+        state="played"
+        played={{ targetName: 'France', score: 87 }}
+        onSeeReveal={vi.fn()}
+      />,
+    )
+    const btn = screen.getByTestId('launcher-card-country-pinning-see-reveal')
+    expect(btn.textContent).toMatch(/✓\s*87\s*\/\s*100\s*·\s*See reveal/)
+    // The old "✓ France · 87/100" text line should be gone (consolidated into the button)
+    expect(screen.queryByText(/France · 87/)).toBeNull()
+  })
 })
