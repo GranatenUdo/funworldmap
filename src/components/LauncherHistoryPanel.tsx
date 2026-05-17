@@ -39,11 +39,13 @@ export function LauncherHistoryPanel({ today, countries, cities, onClose, onCell
       if (modes.size > 0) out.set(date, modes)
     }
     return out
-  }, [history])
+  }, [history.days])
 
   const { byDate: puzzleByDate } = useDailyPuzzlesContext()
 
   const cellMemories = useMemo(() => {
+    const countryByCca3 = new Map<string, CountryLike>(countries.map((c) => [c.cca3, c]))
+    const cityById = new Map<string, CityLike>(cities.map((c) => [c.id, c]))
     const out = new Map<string, CellMemory>()
     for (const [date, entry] of Object.entries(history.days)) {
       const puzzle = puzzleByDate(date)
@@ -52,11 +54,11 @@ export function LauncherHistoryPanel({ today, countries, cities, onClose, onCell
       const cp = entry?.['country-pinning']
       const cg = entry?.['city-guessing']
       if (cp) {
-        const c = countries.find((x) => x.cca3 === puzzle.country.cca3)
+        const c = countryByCca3.get(puzzle.country.cca3)
         if (c) mem.country = { name: c.name.common, score: cp.score }
       }
       if (cg) {
-        const ci = cities.find((x) => x.id === puzzle.city.id)
+        const ci = cityById.get(puzzle.city.id)
         if (ci) mem.city = { name: ci.name, score: cg.score }
       }
       if (mem.country || mem.city) out.set(date, mem)
