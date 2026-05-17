@@ -13,7 +13,7 @@ describe('useDailyPuzzles refetch', () => {
           window: { start: '2026-05-17', end: '2026-05-17' },
           days: { '2026-05-17': { country: { cca3: 'FRA' }, city: { id: 'paris' } } },
         }),
-    } as unknown as Response)
+    })
     vi.stubGlobal('fetch', fetchMock)
   })
   afterEach(() => vi.unstubAllGlobals())

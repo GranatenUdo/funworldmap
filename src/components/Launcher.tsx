@@ -229,7 +229,7 @@ export function Launcher({
     if (puzzlesStatus !== 'ready' && puzzlesStatus !== 'unavailable') return
 
     const active = document.activeElement
-    const isFirstFocus = active === document.body || !root.contains(active as Node)
+    const isFirstFocus = active === document.body || !root.contains(active)
 
     if (!isFirstFocus) return
 

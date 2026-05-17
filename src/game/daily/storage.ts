@@ -29,7 +29,7 @@ export function readHistory(): DailyHistoryV1 {
     }
     return {
       version: 1,
-      streak: { ...EMPTY_STREAK, ...(parsed.streak ?? {}) } as StreakState,
+      streak: { ...EMPTY_STREAK, ...(parsed.streak ?? {}) },
       days: parsed.days ?? {},
     }
   } catch (err) {

@@ -43,9 +43,9 @@ export interface UseHashGameRouterOptions {
  * can read the current status from hashchange-event-handler closures without
  * stale-closure bugs.
  */
-export function useHashGameRouter(
-  opts: UseHashGameRouterOptions,
-): { statusRef: RefObject<GameSession['status']> } {
+export function useHashGameRouter(opts: UseHashGameRouterOptions): {
+  statusRef: RefObject<GameSession['status']>
+} {
   const { session, pools, dailyPuzzles, dailyHistoryGet, start, resume, restart, endGame } = opts
   const { countries, cities } = pools
 
@@ -70,7 +70,12 @@ export function useHashGameRouter(
   const startOrResumeDaily = useCallback(
     (id: ModeId, date: string, firstRound: RoundSpec, atomicRestart = false): void => {
       const resumed = readResume()
-      if (resumed && resumed.date === date && resumed.modeId === id && resumed.attempts.length > 0) {
+      if (
+        resumed &&
+        resumed.date === date &&
+        resumed.modeId === id &&
+        resumed.attempts.length > 0
+      ) {
         // `resume` already replaces state atomically regardless of prior status,
         // so it is safe from any state including game-over.
         resume({
@@ -153,7 +158,7 @@ export function useHashGameRouter(
         if (state.date < todayStr || alreadyPlayed) {
           // alreadyPlayed implies state.date <= todayStr; classifyDate yields today or past, never future.
           track('deep_link_opened', {
-            dateKind: classifyDate(state.date, todayStr) as 'today' | 'past',
+            dateKind: classifyDate(state.date, todayStr),
             outcome: 'redirect',
           })
           window.location.hash = `daily/${state.date}/${id}/reveal`
@@ -177,10 +182,9 @@ export function useHashGameRouter(
           if (wasGameOver) endGame()
           return
         }
-        const firstRound =
-          isCountryPinning(id)
-            ? buildCountryDailyRound(puzzle.country.cca3, countries)
-            : buildCityDailyRound(puzzle.city.id, cities)
+        const firstRound = isCountryPinning(id)
+          ? buildCountryDailyRound(puzzle.country.cca3, countries)
+          : buildCityDailyRound(puzzle.city.id, cities)
         if (!firstRound) {
           if (wasGameOver) endGame()
           dispatchToast('Daily content unavailable — try again shortly.')
@@ -233,10 +237,9 @@ export function useHashGameRouter(
       const puzzle = dailyPuzzles.byDate(state.date)
       if (!puzzle) return
       pendingStartRef.current = null
-      const firstRound =
-        isCountryPinning(pending)
-          ? buildCountryDailyRound(puzzle.country.cca3, countries)
-          : buildCityDailyRound(puzzle.city.id, cities)
+      const firstRound = isCountryPinning(pending)
+        ? buildCountryDailyRound(puzzle.country.cca3, countries)
+        : buildCityDailyRound(puzzle.city.id, cities)
       if (!firstRound) {
         dispatchToast('Daily content unavailable — try again shortly.')
         return
@@ -258,12 +261,17 @@ export function useHashGameRouter(
   const lastAttemptCountRef = useRef(0)
   const prevStatusForTelemetryRef = useRef<GameSession['status']>('idle')
   useEffect(() => {
-    const enteringPlaying = prevStatusForTelemetryRef.current !== 'playing' && session.status === 'playing'
+    const enteringPlaying =
+      prevStatusForTelemetryRef.current !== 'playing' && session.status === 'playing'
     prevStatusForTelemetryRef.current = session.status
     if (enteringPlaying) {
       lastAttemptCountRef.current = session.currentAttempts.length
     }
-    if (session.status !== 'playing' && session.status !== 'round-ended' && session.status !== 'game-over') {
+    if (
+      session.status !== 'playing' &&
+      session.status !== 'round-ended' &&
+      session.status !== 'game-over'
+    ) {
       return
     }
     const prev = lastAttemptCountRef.current
