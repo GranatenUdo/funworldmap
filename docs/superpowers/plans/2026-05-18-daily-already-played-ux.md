@@ -305,7 +305,7 @@ Expected: all 4 new played-state tests pass, plus all the previously-passing tes
 
 Run: `npx vitest run --reporter=dot`
 
-Expected: all tests pass. The previous total was 457 on `main`; this task adds 3 net tests → expect 460.
+Expected: all tests pass. The current total on `main` is **467** (verified via `npx vitest run --reporter=dot` before starting). This task replaces 1 existing test with 4 new ones (+3 net) → expect **470**.
 
 - [ ] **Step 8: Typecheck + lint touched files**
 
@@ -590,27 +590,39 @@ initialFocus?.focus()
 
 The fallback to `daily-reveal-close` is defense-in-depth — if some future rendering condition removes the Play button (e.g. a mode where unlimited isn't supported), focus still lands somewhere sensible.
 
-- [ ] **Step 5: Render the Play unlimited button + secondary Close link**
+- [ ] **Step 5: Render the new bottom Play unlimited button**
 
-Find the overlay's action area in `DailyRevealOverlay.tsx`. The existing close-button render (location varies — search for `data-testid="daily-reveal-close"` to find it) is likely a single styled button. Replace it with a stacked Play + Close pair.
+The existing close button in `DailyRevealOverlay.tsx:91-99` is a **header X icon** at the top-right of the overlay — verified by reading the file. **Do NOT modify it.** It stays as the sole close affordance. The new Play unlimited button goes in a new bottom action area, added after the share block.
 
-If the existing close button looks like:
+Concretely, find the last closing tag of the puzzle-content section in `DailyRevealOverlay.tsx` — currently the share block renders on lines 159-166:
 
 ```tsx
-<button
-  type="button"
-  onClick={onClose}
-  data-testid="daily-reveal-close"
-  className="...existing close-button classes..."
->
-  Close
-</button>
+{
+  anyPlayed && (
+    <DailyShareBlock
+      date={date}
+      results={shareResults}
+      streak={streak}
+      originUrl={window.location.origin}
+    />
+  )
+}
 ```
 
-Replace with:
+Add the new action area immediately after that block (still inside the inner `<div className="relative w-full max-w-xl ...">` container that wraps the dialog content):
 
 ```tsx
-<div className="mt-6 flex flex-col items-stretch gap-2">
+{
+  anyPlayed && (
+    <DailyShareBlock
+      date={date}
+      results={shareResults}
+      streak={streak}
+      originUrl={window.location.origin}
+    />
+  )
+}
+;<div className="mt-6">
   <button
     type="button"
     onClick={onPlayUnlimited}
@@ -619,24 +631,14 @@ Replace with:
   >
     Play unlimited rounds
   </button>
-  <button
-    type="button"
-    onClick={onClose}
-    data-testid="daily-reveal-close"
-    className="text-sm text-sand-600 dark:text-dark-100 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded text-center"
-  >
-    Close
-  </button>
 </div>
 ```
 
 Notes:
 
-- The wrapper `<div className="mt-6 flex flex-col items-stretch gap-2">` gives the action area a consistent vertical rhythm and ensures both buttons span the available width.
-- The Close button keeps its testid (`daily-reveal-close`) so existing e2e selectors continue working. Its styling drops from "primary button" to "small text link" — that's the secondary-affordance treatment.
+- The new action area renders **unconditionally** — including when `puzzle === null` ("daily no longer available") and when neither mode has been played today. In those states the CTA gives the user a clear way out via unlimited. No `{anyPlayed && ...}` guard around the action area.
+- The header X close at lines 91-99 keeps its testid `daily-reveal-close` so existing tests + e2e selectors continue to work unchanged.
 - The Play button gets the same teal styling as the launcher card's new primary button — visual consistency across the two surfaces.
-
-If the existing close-button render is wrapped in additional layout containers (e.g. a header row with both a title and an X close icon), be careful to only replace the bottom action close — search the file for ALL `data-testid="daily-reveal-close"` matches. If there are multiple, leave the header-row X alone and only replace the bottom action-row close.
 
 - [ ] **Step 6: Wire `onPlayUnlimited` in `App.tsx`**
 
@@ -689,15 +691,23 @@ Add the new prop:
 }
 ```
 
-Add the `readLastMode` import near the top of `App.tsx` if it's not already imported. Search for `readLastMode` in `App.tsx` — if zero matches, add the import:
+Both `readLastMode` and `writeHash` are **NOT currently imported** in `App.tsx` (verified by grep on the current tree — only `parseHash` is imported from `./lib/hashState` on line 25). Add the imports:
+
+```tsx
+// Existing import (line 25 today) — extend it:
+// Before:
+import { parseHash } from './lib/hashState'
+// After:
+import { parseHash, writeHash } from './lib/hashState'
+```
+
+And add a brand-new import line for `readLastMode`, near the other game-shared imports (the `ModeId` import is at line 22; place this nearby):
 
 ```tsx
 import { readLastMode } from './game/shared/lastMode'
 ```
 
-Place it near the other game-shared imports (around line 22 where `ModeId` is imported).
-
-`writeHash` is already imported (used in the `parseHash`-adjacent area).
+Verify with `grep -n "readLastMode\|writeHash" src/App.tsx` — should match the new import line(s) and the `onPlayUnlimited` callback body. No other places should reference these names.
 
 - [ ] **Step 7: Re-run the tests, confirm they pass**
 
@@ -709,7 +719,7 @@ Expected: all 7 tests pass (3 existing spoiler-gate tests + 4 new CTA tests).
 
 Run: `npx vitest run --reporter=dot`
 
-Expected: all tests pass. Previous total after Task 1 was ~460; this task adds 4 net tests → expect ~464.
+Expected: all tests pass. Previous total after Task 1 was **470**; this task adds 4 new CTA tests (the 3 existing spoiler-gate tests stay at the same count, with updated props) → expect **474**.
 
 - [ ] **Step 9: Typecheck + lint touched files**
 
@@ -742,13 +752,15 @@ After this commit, a user who lands on the daily reveal overlay
 — has a clear "play more" exit. The overlay no longer reads as a
 dead-end for someone who wants to keep playing.
 
-DailyRevealOverlay grows a required onPlayUnlimited prop. The action
-area at the bottom of the overlay renders a teal "Play unlimited
-rounds" primary button (initial focus target) plus a small text
-"Close" secondary link. App.tsx wires onPlayUnlimited to resolve the
-target mode as revealState.modeId ?? readLastMode() — explicit reveal
-preserves the user's mode choice; full-day reveal (modeId === null)
-falls back to their last-played mode.
+DailyRevealOverlay grows a required onPlayUnlimited prop and a new
+bottom action area containing only a teal "Play unlimited rounds"
+primary button (initial focus target). The existing header X close
+stays unchanged — duplicating the close affordance at the bottom
+would violate "one obvious way to close." App.tsx wires
+onPlayUnlimited to resolve the target mode as
+revealState.modeId ?? readLastMode() — explicit reveal preserves the
+user's mode choice; full-day reveal (modeId === null) falls back to
+their last-played mode.
 
 No new analytics events fired at the CTA click site — the hash
 router's existing free_started event captures the start signal on

@@ -157,11 +157,12 @@ The card already gets `onStartDaily` and `onSeeReveal`. Add `onPlayUnlimited`:
 
 ### What changes
 
-Add `onPlayUnlimited: () => void` to the overlay props. Render a primary teal button labeled **"Play unlimited rounds"** in the action area. Close becomes a smaller text link below it.
+Add `onPlayUnlimited: () => void` to the overlay props. **Add** a new bottom action area containing only the Play unlimited rounds button. The existing header X close (at lines 91-99 of `DailyRevealOverlay.tsx`) is **unchanged** — it stays as the sole close affordance, and adding a duplicate bottom close link would violate "one obvious way to close."
 
 ```tsx
-// New action row at the bottom of the overlay's content
-<div className="mt-6 flex flex-col items-stretch gap-2">
+// New bottom action area, added after the existing content (after the share block).
+// Does not modify the header X close button.
+<div className="mt-6">
   <button
     type="button"
     onClick={onPlayUnlimited}
@@ -170,18 +171,10 @@ Add `onPlayUnlimited: () => void` to the overlay props. Render a primary teal bu
   >
     Play unlimited rounds
   </button>
-  <button
-    type="button"
-    onClick={onClose}
-    data-testid="daily-reveal-close"
-    className="text-sm text-sand-600 dark:text-dark-100 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded text-center"
-  >
-    Close
-  </button>
 </div>
 ```
 
-The existing initial-focus target moves from the close button to the new Play button (line 38 today: `const close = root.querySelector<HTMLButtonElement>('[data-testid="daily-reveal-close"]')` → query `daily-reveal-play-unlimited` instead).
+The existing initial-focus target moves from the header X close to the new Play button (line 38 today: `const close = root.querySelector<HTMLButtonElement>('[data-testid="daily-reveal-close"]')` → query `daily-reveal-play-unlimited` instead, with the header X as fallback).
 
 ### Mode selection for the CTA
 
@@ -222,14 +215,17 @@ The overlay is rendered at `src/App.tsx:533-546`. Add the new prop:
 }
 ```
 
-`readLastMode` is imported from `src/game/shared/lastMode.ts`. `writeHash` is imported from `src/lib/hashState.ts`. `track` already imported. Both already used in App.tsx.
+**Required imports** in `App.tsx` (verified by `grep` on the current tree — neither is imported yet):
+
+- `readLastMode` from `./game/shared/lastMode` — add a new import line near the other game-shared imports (around the `ModeId` import).
+- `writeHash` from `./lib/hashState` — the file currently imports only `parseHash` from this module on line 25; extend that import.
 
 ### Focus / keyboard contract
 
-- Initial focus → Play button (new).
+- Initial focus → new bottom Play unlimited button (was: header X close).
 - Escape → `onClose` (unchanged from today).
-- Tab cycles through Play → Close → (rest of overlay, e.g. share-block links).
-- The existing focus trap (`installFocusTrap(root)` at line 40) continues to wrap the entire overlay, including the new button.
+- Tab cycles through the header X close, the share-block links, the new Play unlimited button (DOM order).
+- The existing focus trap (`installFocusTrap(root)` at line 40 of `DailyRevealOverlay.tsx`) continues to wrap the entire overlay, including the new button. The trap only handles `Tab` keys; it does not proactively move focus on install, so setting initial focus to the Play button before `installFocusTrap(root)` returns is safe (verified by reading `src/lib/focusTrap.ts`).
 
 ---
 
