@@ -20,9 +20,10 @@ import { toLocalDateString, getToday, getYesterday } from './game/daily/dates'
 import { deriveStreakMode } from './game/daily/storage'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike, ModeId } from './game/shared/types'
+import { readLastMode } from './game/shared/lastMode'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
-import { parseHash } from './lib/hashState'
+import { parseHash, writeHash } from './lib/hashState'
 import { track, type CtaState } from './lib/analytics'
 import { dispatchToast } from './lib/toast'
 
@@ -533,6 +534,13 @@ function AppInner({
           onClose={() => {
             history.replaceState(null, '', window.location.pathname)
             window.dispatchEvent(new HashChangeEvent('hashchange'))
+          }}
+          onPlayUnlimited={() => {
+            const id = revealState.modeId ?? readLastMode()
+            // No track() here — the hash router's free_started event fires when
+            // the game boots, which is the durable signal. Adding launcher_dismissed
+            // here would be a category error (the reveal overlay is not the launcher).
+            window.location.hash = writeHash({ kind: 'game', modeId: id })
           }}
         />
       )}

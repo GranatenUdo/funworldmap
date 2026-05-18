@@ -15,6 +15,7 @@ interface Props {
   countries: CountryLike[]
   cities: CityLike[]
   onClose: () => void
+  onPlayUnlimited: () => void
 }
 
 function scoreDot(score: number): { emoji: string; label: string } {
@@ -25,7 +26,16 @@ function scoreDot(score: number): { emoji: string; label: string } {
   return { emoji: '⬛', label: `${score}/100` }
 }
 
-export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cities, onClose }: Props) {
+export function DailyRevealOverlay({
+  date,
+  modeId,
+  puzzle,
+  today,
+  countries,
+  cities,
+  onClose,
+  onPlayUnlimited,
+}: Props) {
   const { get, streak } = useDailyHistory()
 
   const rootRef = useRef<HTMLDivElement>(null)
@@ -35,10 +45,14 @@ export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cit
     previousFocusRef.current = document.activeElement as HTMLElement | null
     const root = rootRef.current
     if (!root) return
-    const close = root.querySelector<HTMLButtonElement>('[data-testid="daily-reveal-close"]')
-    close?.focus()
+    const initialFocus =
+      root.querySelector<HTMLButtonElement>('[data-testid="daily-reveal-play-unlimited"]') ??
+      root.querySelector<HTMLButtonElement>('[data-testid="daily-reveal-close"]')
+    initialFocus?.focus()
     const cleanup = installFocusTrap(root)
-    const onEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
     window.addEventListener('keydown', onEsc)
     return () => {
       cleanup()
@@ -53,8 +67,8 @@ export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cit
   const showCountry = modeId === null || isCountryPinning(modeId)
   const showCity = modeId === null || isCityGuessing(modeId)
 
-  const country = puzzle ? countries.find((c) => c.cca3 === puzzle.country.cca3) ?? null : null
-  const city = puzzle ? cities.find((c) => c.id === puzzle.city.id) ?? null : null
+  const country = puzzle ? (countries.find((c) => c.cca3 === puzzle.country.cca3) ?? null) : null
+  const city = puzzle ? (cities.find((c) => c.id === puzzle.city.id) ?? null) : null
 
   const cpRecord = get(date, 'country-pinning')
   const cgRecord = get(date, 'city-guessing')
@@ -85,8 +99,12 @@ export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cit
       <div className="relative w-full max-w-xl mx-auto bg-sand-50 dark:bg-dark-400 rounded-2xl shadow-2xl p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-widest text-teal-accessible dark:text-teal-light">Daily reveal</div>
-            <div className="text-lg font-bold text-sand-900 dark:text-dark-50 tabular-nums">{date}</div>
+            <div className="text-[11px] font-semibold uppercase tracking-widest text-teal-accessible dark:text-teal-light">
+              Daily reveal
+            </div>
+            <div className="text-lg font-bold text-sand-900 dark:text-dark-50 tabular-nums">
+              {date}
+            </div>
           </div>
           <button
             type="button"
@@ -106,19 +124,28 @@ export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cit
         )}
 
         {puzzle && showCountry && country && (
-          <div data-testid="daily-reveal-country" className="mb-4 pb-4 border-b border-sand-200 dark:border-dark-300">
-            <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">Country</div>
+          <div
+            data-testid="daily-reveal-country"
+            className="mb-4 pb-4 border-b border-sand-200 dark:border-dark-300"
+          >
+            <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">
+              Country
+            </div>
             {hideCountryHeadline ? (
               <div className="text-sand-700 dark:text-dark-100">Finish today's daily first.</div>
             ) : (
               <>
-                <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{country.name.common}</div>
+                <div className="text-xl font-bold text-sand-900 dark:text-dark-50">
+                  {country.name.common}
+                </div>
                 {cpRecord ? (
                   <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">
                     Your attempts:{' '}
                     <span className="tabular-nums">
                       {cpRecord.attempts.map((a, i) => (
-                        <span key={i} aria-label={scoreDot(a.pointsEarned).label}>{scoreDot(a.pointsEarned).emoji}</span>
+                        <span key={i} aria-label={scoreDot(a.pointsEarned).label}>
+                          {scoreDot(a.pointsEarned).emoji}
+                        </span>
                       ))}
                     </span>{' '}
                     <span className="font-semibold">{cpRecord.score}/100</span>
@@ -133,18 +160,24 @@ export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cit
 
         {puzzle && showCity && city && (
           <div data-testid="daily-reveal-city">
-            <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">City</div>
+            <div className="text-[11px] uppercase tracking-widest text-teal-accessible dark:text-teal-light mb-1">
+              City
+            </div>
             {hideCityHeadline ? (
               <div className="text-sand-700 dark:text-dark-100">Finish today's daily first.</div>
             ) : (
               <>
-                <div className="text-xl font-bold text-sand-900 dark:text-dark-50">{city.name}, {city.countryName}</div>
+                <div className="text-xl font-bold text-sand-900 dark:text-dark-50">
+                  {city.name}, {city.countryName}
+                </div>
                 {cgRecord ? (
                   <div className="mt-2 text-sm text-sand-700 dark:text-dark-100">
                     Your attempts:{' '}
                     <span className="tabular-nums">
                       {cgRecord.attempts.map((a, i) => (
-                        <span key={i} aria-label={scoreDot(a.pointsEarned).label}>{scoreDot(a.pointsEarned).emoji}</span>
+                        <span key={i} aria-label={scoreDot(a.pointsEarned).label}>
+                          {scoreDot(a.pointsEarned).emoji}
+                        </span>
                       ))}
                     </span>{' '}
                     <span className="font-semibold">{cgRecord.score}/100</span>
@@ -164,6 +197,16 @@ export function DailyRevealOverlay({ date, modeId, puzzle, today, countries, cit
             originUrl={window.location.origin}
           />
         )}
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={onPlayUnlimited}
+            data-testid="daily-reveal-play-unlimited"
+            className="w-full px-4 py-2.5 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+          >
+            Play unlimited rounds
+          </button>
+        </div>
       </div>
     </div>
   )
