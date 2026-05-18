@@ -22,7 +22,7 @@ Spec: `docs/superpowers/specs/2026-05-18-daily-already-played-ux-design.md`.
 
 **Modify (Task 2):**
 
-- `src/components/DailyRevealOverlay.tsx` — add required `onPlayUnlimited` prop, render primary teal "Play unlimited rounds" button + secondary close link, shift initial focus from close button to Play button.
+- `src/components/DailyRevealOverlay.tsx` — add required `onPlayUnlimited` prop, add a new bottom action area containing only the primary teal "Play unlimited rounds" button, shift initial focus from the existing header X close to the new Play button. The existing header X close button (lines 91-99) is unchanged.
 - `src/App.tsx` — pass `onPlayUnlimited` to `<DailyRevealOverlay>` at lines 533-546, resolving the target mode as `revealState.modeId ?? readLastMode()`.
 - `src/components/__tests__/DailyRevealOverlay.test.tsx` — pass `onPlayUnlimited={() => {}}` to existing test callsites; add new tests for button render, initial focus, click behavior.
 
