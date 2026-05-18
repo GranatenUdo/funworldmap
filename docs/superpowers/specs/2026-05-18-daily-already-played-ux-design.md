@@ -212,7 +212,9 @@ The overlay is rendered at `src/App.tsx:533-546`. Add the new prop:
       }}
       onPlayUnlimited={() => {
         const id = revealState.modeId ?? readLastMode()
-        track('launcher_dismissed', { path: 'reveal-cta' })
+        // No track() here — the hash router's free_started event fires when
+        // the game boots, which is the durable signal. Adding launcher_dismissed
+        // here would be a category error (the reveal overlay is not the launcher).
         window.location.hash = writeHash({ kind: 'game', modeId: id })
       }}
     />
@@ -259,17 +261,16 @@ No new state, no new providers, no new effects.
 
 ## Analytics
 
-Reuse the existing `launcher_dismissed` event but add a new `path` value:
+| CTA                        | Event fired                                                        | Why                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Played-card Play button    | `launcher_dismissed { path: 'card' }` then `free_started { mode }` | The Play button calls the existing `startFree(modeId)` helper, which already fires `launcher_dismissed { path: 'card' }`. The hash router then fires `free_started` on boot. Both events already exist; no schema change.                                                                                                                                                                                                       |
+| Played-card See reveal row | `launcher_dismissed { path: 'card' }`                              | Unchanged from today — calls the existing `seeReveal(modeId)` helper.                                                                                                                                                                                                                                                                                                                                                           |
+| Reveal-overlay Play button | `free_started { mode }` only                                       | No `launcher_dismissed` fired — the reveal overlay is not the launcher, so firing that event here would be a category error. The hash-router's `free_started` event on game boot is the durable signal; downstream queries can attribute the source by checking the absence of `launcher_dismissed` immediately prior, or by adding a `source` discriminator to `free_started` in a future PR if attribution becomes important. |
 
-| CTA                        | Event                | Today's `path` | After                                        |
-| -------------------------- | -------------------- | -------------- | -------------------------------------------- |
-| Played-card Play button    | `launcher_dismissed` | (didn't exist) | `'card'` (matches the daily Play CTA's path) |
-| Played-card See reveal row | `launcher_dismissed` | `'card'`       | unchanged                                    |
-| Reveal-overlay Play button | `launcher_dismissed` | (didn't exist) | `'reveal-cta'` (new value)                   |
+Notes:
 
-The new `path: 'reveal-cta'` value flows into the `track()` schema. Verify the analytics schema accepts arbitrary `path` strings — looking at the codebase, the `launcher_dismissed` event signature in `src/lib/analytics.ts` should be flexible (existing values include `'close'`, `'backdrop'`, `'escape'`, `'search'`, `'card'`). If it's a closed union, the spec's implementation plan must extend it.
-
-The downstream `daily_started` / `free_started` events on the hash-router side fire naturally once the game boots; no changes there.
+- The existing `launcher_dismissed.path` union (`'search' | 'escape' | 'card' | 'backdrop' | 'close'`) in `src/lib/analytics.ts:20` is intentionally **not** extended in this PR. The `'card'` value continues to overload "any card-initiated dismissal" (daily Play, See-reveal, and now played-card Play-unlimited) — already true today, no regression.
+- A future analytics pass could add a `source` field to `free_started` to attribute the start path (launcher card vs launcher footer vs reveal overlay). Out of scope here.
 
 ## Testing
 
