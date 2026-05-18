@@ -11,7 +11,6 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
     description: MESSAGES.description,
     hashSegment: 'country-pinning',
     maxRounds: null,
-    initialCameraView: 'preserve',
     HudComponent: CountryPinningHud,
     nextRound: (used) => pickNextRound(used, pool),
     onGuess: (input, round) => {
@@ -20,7 +19,14 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
         return {
           pointsEarned: 0,
           livesDelta: 0,
-          reveal: { kind: 'country', correct: false, targetCca3: '', clickedCca3: null, clickedName: null, distanceKm: null },
+          reveal: {
+            kind: 'country',
+            correct: false,
+            targetCca3: '',
+            clickedCca3: null,
+            clickedName: null,
+            distanceKm: null,
+          },
         }
       }
       const clickedCentroid = input.kind === 'country' ? input.centroid : null
@@ -28,4 +34,3 @@ export function getCountryPinningMode(pool: CountryLike[]): GameMode {
     },
   }
 }
-

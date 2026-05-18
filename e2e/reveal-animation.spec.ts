@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { waitForRevealLineCoords, openLauncher } from './helpers'
+import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
@@ -35,7 +36,10 @@ test.describe('reveal animation', () => {
     expect(coords[64][1]).toBeCloseTo(46, 0)
 
     // Camera ends near the target centroid (FRA = [2, 46]). 2° tolerance
-    // accommodates the final-frame quantisation of arc[idx].
+    // accommodates the easeTo duration. Wait for the camera to stop moving
+    // before reading the center (easeTo is async; line data arrives before
+    // the camera animation completes).
+    await page.waitForFunction(() => !window.__funworldmap_map?.isMoving(), { timeout: 10_000 })
     const center = await page.evaluate(() => {
       const c = window.__funworldmap_map?.getCenter()
       return c ? { lng: c.lng, lat: c.lat } : null
@@ -43,6 +47,38 @@ test.describe('reveal animation', () => {
     expect(center).not.toBeNull()
     expect(center!.lng).toBeCloseTo(2, 0)
     expect(center!.lat).toBeCloseTo(46, 0)
+
+    // Advance to the next round and confirm reveal artifacts cleared.
+    // For country-pinning best-of-1, the round-end panel opens with a
+    // "Continue" button (data-testid="game-continue"). Clicking it calls
+    // advanceRoundEndPanel → advance → next round.
+    await expect(page.getByTestId('game-continue')).toBeVisible({ timeout: 5_000 })
+    await page.getByTestId('game-continue').click()
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(() => {
+            type Hook = { getSession?: () => { status: string } }
+            const g = (window as unknown as { __funworldmap_game?: Hook }).__funworldmap_game
+            return g?.getSession?.()?.status
+          }),
+        { timeout: 5_000 },
+      )
+      .toBe('playing')
+
+    // The reveal line source should now have zero features. Use the public
+    // querySourceFeatures API rather than reaching into MapLibre's private
+    // _data field. Poll until the rendered tiles catch up with the data clear.
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(
+            (sourceId) => window.__funworldmap_map?.querySourceFeatures(sourceId).length ?? -1,
+            REVEAL_LINE_SOURCE,
+          ),
+        { timeout: 5_000 },
+      )
+      .toBe(0)
   })
 
   test('city-guessing wrong guess renders a tessellated line from point → target', async ({

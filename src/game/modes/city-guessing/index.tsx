@@ -9,7 +9,9 @@ export const CITY_GUESSING_MAX_ROUNDS = 10
 
 // Controller injects onSkip; the HUD consumes it. Keeps the
 // shared GameMode.HudComponent signature simple.
-export const CityGuessingHudActionsContext = createContext<{ onSkip: () => void }>({ onSkip: () => {} })
+export const CityGuessingHudActionsContext = createContext<{ onSkip: () => void }>({
+  onSkip: () => {},
+})
 
 export function useCityGuessingHudActions() {
   return useContext(CityGuessingHudActionsContext)
@@ -27,7 +29,6 @@ export function getCityGuessingMode(pool: CityLike[]): GameMode {
     description: MESSAGES.description,
     hashSegment: 'city-guessing',
     maxRounds: CITY_GUESSING_MAX_ROUNDS,
-    initialCameraView: 'world',
     HudComponent: CityGuessingHudWrapper,
     nextRound: (used) => pickNextRound(used, pool),
     onGuess: (input, round) => {

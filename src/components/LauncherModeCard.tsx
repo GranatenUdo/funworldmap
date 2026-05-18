@@ -1,6 +1,6 @@
 import type { ModeId } from '../game/shared/types'
 import { parseLocalDate } from '../game/daily/dates'
-import { isCountryPinning } from '../game/shared/modePredicates'
+import { formatModeScore } from '../game/shared/formatScore'
 
 export type LauncherCardState =
   | 'unplayed'
@@ -154,8 +154,7 @@ export function LauncherModeCard({
               data-testid={`${testIdBase}-see-reveal`}
               className="w-full px-4 py-2 rounded-xl bg-emerald-500/90 text-white font-semibold hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
             >
-              ✓ {played?.score ?? 0}
-              {isCountryPinning(modeId) ? '/100' : '/1000'} · See reveal →
+              ✓ {formatModeScore(played?.score ?? 0, modeId)} · See reveal →
             </button>
           )}
         </div>

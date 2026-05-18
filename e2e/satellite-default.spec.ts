@@ -1,5 +1,10 @@
 import { test, expect } from '@playwright/test'
-import { ensureLauncherDismissed, waitForAppReady, routeMapTiles } from './helpers'
+import {
+  ensureLauncherDismissed,
+  waitForAppReady,
+  routeMapTiles,
+  gotoAndWaitForMap,
+} from './helpers'
 
 test.setTimeout(60_000)
 
@@ -56,5 +61,17 @@ test.describe('Satellite is the default basemap', () => {
     const toggle = page.getByTestId('satellite-toggle')
     await toggle.click()
     await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  test('satellite toggle has hover title reflecting the click action', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/')
+    await ensureLauncherDismissed(page)
+    const toggle = page.getByTestId('satellite-toggle')
+    // Default state: satellite ON (per src/App.tsx initial state)
+    await expect(toggle).toHaveAttribute('data-satellite-active', 'true')
+    await expect(toggle).toHaveAttribute('title', 'Switch to map view')
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('data-satellite-active', 'false')
+    await expect(toggle).toHaveAttribute('title', 'Switch to satellite view')
   })
 })

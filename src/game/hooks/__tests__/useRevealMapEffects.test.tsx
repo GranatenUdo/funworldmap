@@ -13,19 +13,16 @@ import {
   makeCountryReveal,
   makeCountryRound,
   makeOutcome,
+  makePointReveal,
   makeSession,
 } from '../../shared/__tests__/factories'
-import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
+import { byCca3Fixture } from './fixtures'
 import { createFakeMapRef } from '../../../test/fakeMapRef'
-import { getMode } from '../../modes'
-
-const POOLS = { countries: countriesFixture, cities: citiesFixture }
 
 type RevealArgs = Parameters<typeof useRevealMapEffects>[0]
 
 interface BuildRevealArgsOverrides {
   session?: RevealArgs['session']
-  mode?: RevealArgs['mode']
   mapRef?: RevealArgs['mapRef']
   byCca3?: RevealArgs['byCca3']
   submitGuessInput?: RevealArgs['submitGuessInput']
@@ -34,7 +31,6 @@ interface BuildRevealArgsOverrides {
 function buildRevealArgs(overrides: BuildRevealArgsOverrides = {}): RevealArgs {
   return {
     session: overrides.session ?? makeSession(),
-    mode: overrides.mode ?? getMode('country-pinning', POOLS),
     mapRef: overrides.mapRef ?? createFakeMapRef().ref,
     byCca3: overrides.byCca3 ?? byCca3Fixture,
     submitGuessInput: overrides.submitGuessInput ?? vi.fn(),
@@ -47,24 +43,22 @@ function renderRevealHook(args: RevealArgs) {
 
 describe('useRevealMapEffects', () => {
   beforeEach(() => {
-    // prefersReducedMotion() reads window.matchMedia, which JSDOM doesn't
-    // implement by default.
-    if (!window.matchMedia) {
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        configurable: true,
-        value: vi.fn().mockImplementation((query: string) => ({
-          matches: false,
-          media: query,
-          onchange: null,
-          addEventListener: () => {},
-          removeEventListener: () => {},
-          addListener: () => {},
-          removeListener: () => {},
-          dispatchEvent: () => false,
-        })),
-      })
-    }
+    // Always reset matchMedia to non-reducing — individual tests can override
+    // for reduced-motion paths, and beforeEach restores the default afterward.
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      })),
+    })
     // The reveal-arc rAF loop calls window.requestAnimationFrame; JSDOM's
     // stub is fine but we wrap it so we can keep tests deterministic without
     // pumping frames.
@@ -196,9 +190,8 @@ describe('useRevealMapEffects', () => {
     )
   })
 
-  it("flyTo on round-start when mode.initialCameraView === 'world'", () => {
+  it('does NOT flyTo at round-start (camera is preserved across game lifecycle)', () => {
     const fake = createFakeMapRef()
-    // city-guessing is the only mode with initialCameraView='world'.
     const session = makeSession({
       status: 'playing',
       modeId: 'city-guessing',
@@ -207,16 +200,10 @@ describe('useRevealMapEffects', () => {
     renderRevealHook(
       buildRevealArgs({
         session,
-        mode: getMode('city-guessing', POOLS),
         mapRef: fake.ref,
       }),
     )
-    expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
-    const firstCall = fake.calls.flyTo.mock.calls[0][0] as { zoom: number; center: number[] }
-    expect(firstCall).toMatchObject({
-      zoom: expect.any(Number) as number,
-      center: expect.any(Array) as number[],
-    })
+    expect(fake.calls.flyTo).not.toHaveBeenCalled()
   })
 
   it('attaches click handler in city-guessing playing state, detaches on unmount', () => {
@@ -229,7 +216,6 @@ describe('useRevealMapEffects', () => {
     const { unmount } = renderRevealHook(
       buildRevealArgs({
         session,
-        mode: getMode('city-guessing', POOLS),
         mapRef: fake.ref,
       }),
     )
@@ -257,5 +243,191 @@ describe('useRevealMapEffects', () => {
     expect(fake.calls.getSource).toHaveBeenCalledWith('game-reveal-marker')
     expect(fake.calls.getSource).toHaveBeenCalledWith('game-reveal-line')
     expect(fake.calls.setData).toHaveBeenCalled()
+  })
+
+  it('calls easeTo once on city wrong-guess reveal (not jumpTo per frame)', () => {
+    const fake = createFakeMapRef()
+    // Wrong guess with a known clicked point (not at the target). Triggers
+    // the arc-animation branch of the round-ended geometry effect.
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    // easeTo should be called exactly once with center = target.
+    expect(fake.calls.easeTo).toHaveBeenCalledTimes(1)
+    const arg = fake.calls.easeTo.mock.calls[0][0] as { center: [number, number]; duration: number }
+    expect(arg.center).toEqual([2.3522, 48.8566])
+    expect(arg.duration).toBeGreaterThan(0)
+
+    // jumpTo should still be called once (to snap to the guess start), but
+    // NOT per frame.
+    expect(fake.calls.jumpTo.mock.calls.length).toBeLessThanOrEqual(1)
+  })
+
+  it('calls setData on the line source exactly once with the full tessellated arc', () => {
+    const fake = createFakeMapRef()
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    // The line source's setData should be called for the LineString — once
+    // with the full arc (65 vertices = 64 tessellated segments).
+    const lineSetDataCalls = fake.calls.setData.mock.calls.filter(
+      (c) =>
+        (c[0] as { features?: Array<{ geometry?: { type: string } }> }).features?.[0]?.geometry
+          ?.type === 'LineString',
+    )
+    expect(lineSetDataCalls).toHaveLength(1)
+    const data = lineSetDataCalls[0][0] as {
+      features: Array<{ geometry: { coordinates: number[][] } }>
+    }
+    expect(data.features[0].geometry.coordinates).toHaveLength(65)
+  })
+
+  it('drives line growth via line-gradient paint property (animated path)', () => {
+    const fake = createFakeMapRef()
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    // The gradient must be set at least once — on entry, with progress 0
+    // (the start of the animation). Test environments may or may not pump
+    // rAF; the entry call is the deterministic checkpoint.
+    const gradientCalls = fake.calls.setPaintProperty.mock.calls.filter(
+      (c) => c[1] === 'line-gradient',
+    )
+    expect(gradientCalls.length).toBeGreaterThanOrEqual(1)
+    // First gradient call sets boundary=0 (the line starts fully hidden).
+    // rAF isn't pumped in this test env, so only the synchronous entry call
+    // is observable here; the boundary value confirms the entry path is
+    // correct without depending on animation progress.
+    const firstExpr = gradientCalls[0][2] as Array<unknown>
+    expect(firstExpr[0]).toBe('step')
+    expect(firstExpr[3]).toBe(0)
+  })
+
+  it('clears city reveal artifacts when round transitions from round-ended to playing', () => {
+    const fake = createFakeMapRef()
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
+    const roundEndedSession = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    const { rerender } = renderHook((args: RevealArgs) => useRevealMapEffects(args), {
+      initialProps: buildRevealArgs({ session: roundEndedSession, mapRef: fake.ref }),
+    })
+
+    // Reset the setData spy so we only observe what happens on cleanup.
+    fake.calls.setData.mockClear()
+
+    // Rerender with the next round playing — this triggers the round-ended
+    // effect cleanup.
+    const playingSession = makeSession({
+      status: 'playing',
+      modeId: 'city-guessing',
+      roundIndex: 1,
+      currentRound: makeCityRound({ targetId: 'GBR-london' }),
+    })
+    rerender(buildRevealArgs({ session: playingSession, mapRef: fake.ref }))
+
+    // After the transition, the marker AND line sources should have been
+    // setData()'d to empty FeatureCollections (clearRevealSources behavior).
+    const emptySetDataCalls = fake.calls.setData.mock.calls.filter((c) => {
+      const arg = c[0] as { features?: unknown[] }
+      return Array.isArray(arg.features) && arg.features.length === 0
+    })
+    expect(emptySetDataCalls.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('clears country reveal artifacts when round transitions from round-ended to playing', () => {
+    const fake = createFakeMapRef()
+    // Country wrong-guess with a known clickedCca3 triggers computeRevealAnimationPlan,
+    // which uses the same marker + line sources as city reveals.
+    const reveal = makeCountryReveal({
+      correct: false,
+      targetCca3: 'FRA',
+      clickedCca3: 'USA',
+      clickedName: 'United States',
+      distanceKm: 1500,
+    })
+    const roundEndedSession = makeSession({
+      status: 'round-ended',
+      modeId: 'country-pinning',
+      lastOutcome: makeOutcome(reveal),
+    })
+    const { rerender } = renderHook((args: RevealArgs) => useRevealMapEffects(args), {
+      initialProps: buildRevealArgs({ session: roundEndedSession, mapRef: fake.ref }),
+    })
+
+    fake.calls.setData.mockClear()
+
+    const playingSession = makeSession({
+      status: 'playing',
+      modeId: 'country-pinning',
+      roundIndex: 1,
+      currentRound: makeCountryRound({ targetCca3: 'JPN' }),
+    })
+    rerender(buildRevealArgs({ session: playingSession, mapRef: fake.ref }))
+
+    const emptySetDataCalls = fake.calls.setData.mock.calls.filter((c) => {
+      const arg = c[0] as { features?: unknown[] }
+      return Array.isArray(arg.features) && arg.features.length === 0
+    })
+    expect(emptySetDataCalls.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('reduced-motion: no easeTo, jumpTo target, gradient fully revealed', () => {
+    // Override the matchMedia mock to report reduced-motion preference.
+    Object.defineProperty(window, 'matchMedia', {
+      writable: true,
+      configurable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: query.includes('reduce'),
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      })),
+    })
+    const fake = createFakeMapRef()
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    expect(fake.calls.easeTo).not.toHaveBeenCalled()
+    expect(fake.calls.jumpTo).toHaveBeenCalled()
+    const lastJumpTo = fake.calls.jumpTo.mock.calls.at(-1)?.[0] as
+      | { center: [number, number] }
+      | undefined
+    expect(lastJumpTo?.center).toEqual([2.3522, 48.8566])
+
+    // Gradient set to progress=1 (full line) at least once.
+    const fullGradient = fake.calls.setPaintProperty.mock.calls.find((c) => {
+      if (c[1] !== 'line-gradient') return false
+      const expr = c[2] as Array<unknown>
+      // ['step', ['line-progress'], color, boundary, transparent]
+      return Array.isArray(expr) && expr[0] === 'step' && expr[3] === 1
+    })
+    expect(fullGradient).toBeDefined()
   })
 })

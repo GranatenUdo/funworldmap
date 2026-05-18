@@ -1,19 +1,28 @@
 import { useEffect, useRef, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
-import type { CountryLike, GameMode, GameSession, GuessInput } from '../shared/types'
+import type { CountryLike, GameSession, GuessInput } from '../shared/types'
 import { LAYER } from '../../lib/mapLayers'
 import { REVEAL_CORRECT, REVEAL_WRONG, REVEAL_FAR } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCityGuessing } from '../shared/modePredicates'
 import { prefersReducedMotion } from '../../lib/motion'
-import { DEFAULT_CENTER, DEFAULT_ZOOM } from '../../lib/mapStyles'
 import {
   REVEAL_MARKER_SOURCE,
   REVEAL_LINE_SOURCE,
   REVEAL_MARKER_LAYER,
   REVEAL_LINE_LAYER,
 } from '../shared/revealLayers'
+
+/** Number of segments used to tessellate the reveal arc. The line-gradient
+ *  quantiser uses the same value so per-frame paint updates can never resolve
+ *  finer than the geometry itself. */
+const ARC_SEGMENTS = 64
+
+/** Transparent tail color for the line-gradient step expression — sits past
+ *  the visible-progress boundary so the un-revealed portion of the arc is
+ *  invisible. */
+const TRANSPARENT = 'rgba(0,0,0,0)'
 
 function ensureRevealSources(map: maplibregl.Map): void {
   if (!map.getSource(REVEAL_MARKER_SOURCE)) {
@@ -37,15 +46,17 @@ function ensureRevealSources(map: maplibregl.Map): void {
     map.addSource(REVEAL_LINE_SOURCE, {
       type: 'geojson',
       data: { type: 'FeatureCollection', features: [] },
+      lineMetrics: true,
     })
     map.addLayer({
       id: REVEAL_LINE_LAYER,
       type: 'line',
       source: REVEAL_LINE_SOURCE,
       paint: {
-        'line-color': REVEAL_WRONG,
+        'line-color': REVEAL_WRONG, // base; overridden by line-gradient per frame
         'line-width': 3,
         'line-dasharray': [2, 2],
+        'line-gradient': ['step', ['line-progress'], REVEAL_WRONG, 0, TRANSPARENT],
       },
     })
   }
@@ -65,7 +76,6 @@ function clearRevealSources(map: maplibregl.Map): void {
 
 export interface UseRevealMapEffectsArgs {
   session: GameSession
-  mode: GameMode | null
   mapRef: RefObject<maplibregl.Map | null>
   byCca3: Map<string, CountryLike>
   submitGuessInput: (input: GuessInput) => void
@@ -73,14 +83,13 @@ export interface UseRevealMapEffectsArgs {
 
 /**
  * Drives the MapLibre reveal layer (geometry, arc animation, intermediate
- * flashes), camera resets on round start, the city-mode any-click handler,
- * and the idle-state reveal-source clear. Owns two anchor refs that track
- * "previous status" / "previous attempt count" so transitions into the
- * intermediate-flash effect don't replay already-recorded attempts on resume.
+ * flashes), the city-mode any-click handler, and the idle-state reveal-source
+ * clear. Owns two anchor refs that track "previous status" / "previous attempt
+ * count" so transitions into the intermediate-flash effect don't replay
+ * already-recorded attempts on resume.
  */
 export function useRevealMapEffects({
   session,
-  mode,
   mapRef,
   byCca3,
   submitGuessInput,
@@ -142,11 +151,11 @@ export function useRevealMapEffects({
             /* no-op */
           }
         }
+        clearRevealSources(map)
       }
     }
 
-    const arc = tessellateArc(plan.from, plan.to, 64)
-    const totalPoints = arc.length
+    const arc = tessellateArc(plan.from, plan.to, ARC_SEGMENTS)
     let frameId: number | null = null
 
     try {
@@ -166,50 +175,71 @@ export function useRevealMapEffects({
         ],
       })
 
-      // Snap camera to the wrong-guess centroid; rAF loop will track the line head.
-      map.jumpTo({ center: plan.from })
+      // Full arc loaded ONCE — line-gradient masks the visible portion per
+      // frame, so no per-frame setData / tile rebuild.
+      lineSrc.setData({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: arc },
+            properties: {},
+          },
+        ],
+      })
 
       if (plan.durationMs === 0) {
-        lineSrc.setData({
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'LineString', coordinates: arc },
-              properties: {},
-            },
-          ],
-        })
+        // Reduced-motion: snap line fully visible, jump camera to target.
+        map.setPaintProperty(REVEAL_LINE_LAYER, 'line-gradient', [
+          'step',
+          ['line-progress'],
+          REVEAL_WRONG,
+          1,
+          TRANSPARENT,
+        ])
         map.jumpTo({ center: plan.to })
       } else {
+        // Snap camera to the wrong-guess start so easeTo has a deterministic
+        // starting position regardless of where the user was looking.
+        map.jumpTo({ center: plan.from })
+        map.easeTo({
+          center: plan.to,
+          duration: plan.durationMs,
+          easing: (t) => 1 - Math.pow(1 - t, 3),
+        })
+        // Set the initial gradient synchronously (progress = 0, fully hidden)
+        // so the line is in a deterministic state before the first rAF tick.
+        try {
+          map.setPaintProperty(REVEAL_LINE_LAYER, 'line-gradient', [
+            'step',
+            ['line-progress'],
+            REVEAL_WRONG,
+            0,
+            TRANSPARENT,
+          ])
+        } catch {
+          /* layer torn down */
+        }
         const start = performance.now()
-        let lastIdx = -1
+        let lastProgress = 0
         const step = (now: number) => {
           const linear = Math.min(1, (now - start) / plan.durationMs)
-          // Ease-out cubic on the visible-arc index so both line growth and
-          // camera tracking decelerate as they approach the target — feels
-          // less like a snap on long globe rotations.
           const eased = 1 - Math.pow(1 - linear, 3)
-          const idx = Math.max(1, Math.ceil(eased * (totalPoints - 1)))
-          // Skip setData when the visible slice hasn't changed since the last
-          // frame — saves a MapLibre tile rebuild on the final frame and on
-          // any frames where rAF fires faster than the per-point step.
-          if (idx !== lastIdx) {
-            lastIdx = idx
+          // Quantise progress to 1/64 increments to skip redundant paint-property
+          // updates when rAF fires faster than a visible change.
+          const quantised = Math.round(eased * ARC_SEGMENTS) / ARC_SEGMENTS
+          if (quantised !== lastProgress) {
+            lastProgress = quantised
             try {
-              lineSrc.setData({
-                type: 'FeatureCollection',
-                features: [
-                  {
-                    type: 'Feature',
-                    geometry: { type: 'LineString', coordinates: arc.slice(0, idx + 1) },
-                    properties: {},
-                  },
-                ],
-              })
-              map.jumpTo({ center: arc[idx] })
+              map.setPaintProperty(REVEAL_LINE_LAYER, 'line-gradient', [
+                'step',
+                ['line-progress'],
+                REVEAL_WRONG,
+                quantised,
+                TRANSPARENT,
+              ])
             } catch {
-              /* source may have been torn down */
+              /* layer torn down */
             }
           }
           frameId = linear < 1 ? window.requestAnimationFrame(step) : null
@@ -229,6 +259,10 @@ export function useRevealMapEffects({
           /* no-op */
         }
       }
+      // Always clear marker + line sources. Both country wrong-guesses (when
+      // clickedCca3 is known) and city reveals draw these via
+      // computeRevealAnimationPlan, so the cleanup is mode-neutral.
+      clearRevealSources(map)
     }
   }, [session.status, session.lastOutcome, byCca3])
 
@@ -327,16 +361,6 @@ export function useRevealMapEffects({
       }
     }
   }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
-
-  // Camera reset on round start when mode requests it.
-  useEffect(() => {
-    if (session.status !== 'playing' || !mode) return
-    if (mode.initialCameraView !== 'world') return
-    const map = mapRef.current
-    if (!map) return
-    const reduced = prefersReducedMotion()
-    map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: reduced ? 0 : 700 })
-  }, [session.status, session.roundIndex, mode])
 
   // City-mode any-click handler.
   useEffect(() => {

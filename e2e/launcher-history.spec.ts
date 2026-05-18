@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { toLocalDateString } from '../src/game/daily/dates'
-import { openLauncher } from './helpers'
+import { openLauncher, gotoAndWaitForMap, seedDailyHistory, stubDailyIndex } from './helpers'
 
 test.setTimeout(120_000)
 const TODAY = toLocalDateString(new Date())
@@ -83,5 +83,20 @@ test.describe('Launcher history panel', () => {
       .locator('[data-status="rolled-off"]')
       .first()
     await expect(rolledOff).toHaveAttribute('disabled', '')
+  })
+
+  test('played cell exposes a memory tooltip via title attribute', async ({ page }) => {
+    const playedDate = '2026-05-15'
+    await stubDailyIndex(page, playedDate)
+    await seedDailyHistory(page, { date: playedDate, modes: ['country-pinning', 'city-guessing'] })
+    await gotoAndWaitForMap(page, '/')
+    await openLauncher(page)
+    await page.getByTestId('launcher-history-link').click()
+    const cell = page.getByTestId(`launcher-cal-${playedDate}`)
+    await expect(cell).toBeVisible()
+    const title = await cell.getAttribute('title')
+    expect(title).toBeTruthy()
+    expect(title).toMatch(/\d+\/100/)
+    expect(title).toMatch(/\d+\/1000/)
   })
 })
