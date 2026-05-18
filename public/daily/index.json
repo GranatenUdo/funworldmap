@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-05-17T19:37:18.116Z",
+  "generatedAt": "2026-05-18T04:42:39.730Z",
   "window": {
-    "start": "2026-04-18",
-    "end": "2026-05-17"
+    "start": "2026-04-19",
+    "end": "2026-05-18"
   },
   "days": {
-    "2026-04-18": {
-      "country": {
-        "cca3": "NOR"
-      },
-      "city": {
-        "id": "MEX-mexico-city"
-      }
-    },
     "2026-04-19": {
       "country": {
         "cca3": "NOR"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "USA-los-angeles"
+      }
+    },
+    "2026-05-18": {
+      "country": {
+        "cca3": "PSE"
+      },
+      "city": {
+        "id": "MEX-mexico-city"
       }
     }
   }
