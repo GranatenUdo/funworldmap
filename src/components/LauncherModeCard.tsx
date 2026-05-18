@@ -77,6 +77,7 @@ interface Props {
   latestAvailableDate?: string | null // most recent past date with a daily; for 'no-puzzle-today'
   onStartDaily: () => void
   onSeeReveal?: () => void
+  onPlayUnlimited?: () => void // required when state === 'played'; only the played branch reads it
   onRetry?: () => void
 }
 
@@ -89,6 +90,7 @@ export function LauncherModeCard({
   latestAvailableDate,
   onStartDaily,
   onSeeReveal,
+  onPlayUnlimited,
   onRetry,
 }: Props) {
   const testIdBase = `launcher-card-${modeId}`
@@ -147,12 +149,22 @@ export function LauncherModeCard({
 
       {state === 'played' && (
         <div data-testid={`${testIdBase}-played-result`}>
+          {onPlayUnlimited && (
+            <button
+              type="button"
+              onClick={onPlayUnlimited}
+              data-testid={`${testIdBase}-play-unlimited`}
+              className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+            >
+              Play {TITLE[modeId]}
+            </button>
+          )}
           {onSeeReveal && (
             <button
               type="button"
               onClick={onSeeReveal}
               data-testid={`${testIdBase}-see-reveal`}
-              className="w-full px-4 py-2 rounded-xl bg-emerald-500/90 text-white font-semibold hover:bg-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
+              className="w-full mt-2 text-sm text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 dark:hover:text-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60 rounded text-center"
             >
               ✓ {formatModeScore(played?.score ?? 0, modeId)} · See reveal →
             </button>
