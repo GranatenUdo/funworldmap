@@ -12,7 +12,7 @@ The complaint is that the played-state card looks like the entry point for "play
 
 This spec replaces the played-card's single button with a stacked primary + secondary layout, and adds a matching "Play unlimited rounds" CTA to the daily reveal overlay so anyone who does land there has a clear next-action.
 
-Total surface: one new prop on `LauncherModeCard` (`onPlayUnlimited`), one new prop on `DailyRevealOverlay` (`onPlayUnlimited`), wiring in `Launcher.tsx` and `App.tsx`, plus tests. No new state, no new routes, no new analytics events (reuses `launcher_dismissed` with a new `path` value).
+Total surface: one new prop on `LauncherModeCard` (`onPlayUnlimited`), one new prop on `DailyRevealOverlay` (`onPlayUnlimited`), wiring in `Launcher.tsx` and `App.tsx`, plus tests. No new state, no new routes, no new analytics events. The played-card Play button reuses the existing `launcher_dismissed { path: 'card' }` event (via the existing `startFree` helper); the reveal-overlay CTA fires no new event — the hash-router's existing `free_started` event already captures the start signal.
 
 ## Goals & non-goals
 
@@ -29,7 +29,7 @@ Total surface: one new prop on `LauncherModeCard` (`onPlayUnlimited`), one new p
 - No change to the past-unplayed card (still single "See reveal" button — daily can't be replayed retrospectively).
 - No change to the bottom "Play unlimited rounds →" link at the launcher footer — still serves the "skip daily entirely" use case.
 - No change to URL hash shape — still `#game/<modeId>` for unlimited entries.
-- No new analytics events; only a new `path` discriminator on the existing `launcher_dismissed` event.
+- No new analytics events and no extension of the existing `launcher_dismissed.path` union — the reveal-overlay CTA is intentionally not tracked at the click site (the hash router's `free_started` event covers it on game boot).
 - No daily-mode replay (daily stays one-shot per day per mode).
 
 ## Branch & PR
@@ -48,7 +48,7 @@ Two commits, independently revertable. Commit 1 lands the launcher-card change i
 ### Where
 
 - `src/components/LauncherModeCard.tsx` — the `state === 'played'` branch (lines 148-161 today).
-- `src/components/Launcher.tsx` — the `LauncherModeCard` instantiation inside the modes-loop (around lines 358-373) — pass the new `onPlayUnlimited` prop.
+- `src/components/Launcher.tsx` — the `LauncherModeCard` instantiation inside the modes-loop (lines 361-371) — pass the new `onPlayUnlimited` prop.
 
 ### What today
 
@@ -103,7 +103,7 @@ One emerald button doing both "I'm done" and "tap to see reveal". Mixes the affo
 ```
 
 - **Primary button** uses the same teal styling as the unplayed-state Play button. Label is `Play {TITLE[modeId]}` → `"Play City"` or `"Play Country"`, reusing the existing `TITLE` lookup at the top of the file.
-- **Secondary row** is a button (keeps it keyboard-accessible) but visually a small inline link — no background fill, emerald text matches the played indicator color.
+- **Secondary row** is a button (keeps it keyboard-accessible) but visually a small inline link — no background fill, emerald text matches the played indicator color. **Visibility fallback:** if browser smoke shows the row reads as decorative caption rather than a tap target, add a subtle tinted background (`bg-emerald-50/50 dark:bg-emerald-900/20`) and re-verify. Don't pre-emptively add the background — text-only is cleaner if it works, and the ✓ prefix + "→" arrow + center-aligned full-width footprint should signal tappability.
 
 ### New `LauncherModeCard` prop
 
@@ -149,7 +149,7 @@ The card already gets `onStartDaily` and `onSeeReveal`. Add `onPlayUnlimited`:
 ### Where
 
 - `src/components/DailyRevealOverlay.tsx` — add a primary CTA in the overlay's action area.
-- `src/App.tsx` — render the overlay (lines 533-546) and pass the new `onPlayUnlimited` callback.
+- `src/App.tsx` — the `DailyRevealOverlay` render site (around lines 533-546) — pass the new `onPlayUnlimited` callback.
 
 ### What today
 
@@ -314,9 +314,9 @@ The downstream `daily_started` / `free_started` events on the hash-router side f
 
 ## Risks
 
-- **`launcher_dismissed` schema change.** If the event's `path` field is a closed string-union, adding `'reveal-cta'` requires extending the union. Implementation plan should grep for the type definition first and update if needed. Failure mode if missed: typecheck fails at the call site.
-- **Reveal-overlay focus shift.** Moving initial focus from close-button to Play-unlimited is the right call for the new affordance, but any test or accessibility hook that reads "first focusable in the dialog" needs to expect the new behavior. The existing focus-trap utility is content-agnostic, so the change is local to the overlay.
-- **Played-card height grows.** Today's played card has one button. The new layout has a button + a small row — roughly +20 px tall. Should not push the launcher into a scrolling state on mobile (verify in the browser smoke check). If it does, the secondary row's font size can drop one notch.
+- **Mobile vertical growth.** Today's played card has one button (~40 px tall). The new layout has a teal Play button (~40 px) + 8 px gap + small See-reveal text row (~32 px) ≈ **80 px** — roughly double. On mobile (`grid-cols-1 sm:grid-cols-2` at `Launcher.tsx:355`, so 1-column on phone), two stacked played cards add ~80 px total versus today. Combined with the streak pill, the history-panel link, and the launcher footer link, this **could push the launcher into a vertical-scroll state on shorter viewports** (e.g. 667 px-tall mobile). **Mitigation:** browser smoke check on a 667-px-tall viewport with both modes played is a required step in the implementation plan. If it overflows, options in priority order: (a) shrink the secondary-row vertical padding/font, (b) drop the secondary-row mt-2 gap to mt-1, (c) compress the launcher header — only as last resort.
+- **Reveal-overlay focus shift.** Moving initial focus from the close button to the new Play-unlimited button is the right call for the new affordance. Any test or accessibility hook that reads "first focusable in the dialog" needs to expect the new behavior. The existing focus-trap utility is content-agnostic, so the change is local to the overlay's mount effect at line 38 of `DailyRevealOverlay.tsx`.
+- **Secondary-row tap-target ambiguity.** The text-only treatment (no background fill, just emerald color + ✓ prefix + "→" arrow + full-width center-aligned button) might read as decorative caption rather than tap target on dense mobile screens. The implementation plan's browser smoke check explicitly verifies the row is recognizable as tappable. If not, the documented fallback is to add a subtle tinted background (`bg-emerald-50/50 dark:bg-emerald-900/20`) without touching the rest of the layout.
 
 ## Open questions (not in scope)
 
