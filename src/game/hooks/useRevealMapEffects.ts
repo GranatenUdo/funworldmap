@@ -129,6 +129,7 @@ export function useRevealMapEffects({
         try {
           ensureRevealSources(map)
           const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
+          map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
           markerSrc.setData({
             type: 'FeatureCollection',
             features: [
@@ -164,6 +165,7 @@ export function useRevealMapEffects({
       const lineSrc = map.getSource(REVEAL_LINE_SOURCE) as maplibregl.GeoJSONSource
 
       // Target marker goes in first so it is visible from t=0.
+      map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
       markerSrc.setData({
         type: 'FeatureCollection',
         features: [
@@ -285,6 +287,7 @@ export function useRevealMapEffects({
     if (cur === 0) return
     if (cur <= prev) return
     const last = session.currentAttempts[cur - 1]
+    if (last.reveal.kind !== 'country') return // city handled by separate effect below
     const map = mapRef.current
     if (!map) return
     const reduced = prefersReducedMotion()
@@ -315,52 +318,45 @@ export function useRevealMapEffects({
         }
       }
     }
+  }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
 
-    // City mode: distance-banded marker color.
+  // City persistent intermediate marker: renders at the latest attempt's
+  // clickedPoint, replaced (not accumulated) on each subsequent attempt.
+  // No timeout — the marker persists until (a) the next click replaces it via
+  // setData, (b) the round-ended geometry effect overrides with the target
+  // marker, or (c) the idle-clear effect runs on game end.
+  useEffect(() => {
+    if (session.status !== 'playing') return
+    if (session.attemptsPerRound <= 1) return
+    if (!isCityGuessing(session.modeId)) return
+    if (session.currentAttempts.length === 0) return
+    const last = session.currentAttempts[session.currentAttempts.length - 1]
+    if (last.reveal.kind !== 'point') return
+    const point = last.reveal.clickedPoint
+    if (point === null) return
+    const map = mapRef.current
+    if (!map) return
     const d = last.reveal.distanceKm
     const colour = d < 50 ? REVEAL_CORRECT : d < 500 ? REVEAL_WRONG : REVEAL_FAR
     try {
       ensureRevealSources(map)
       const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
-      const point = last.reveal.clickedPoint
-      if (point) {
-        markerSrc.setData({
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              geometry: { type: 'Point', coordinates: point },
-              properties: { intermediate: true },
-            },
-          ],
-        })
-        try {
-          map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', colour)
-        } catch {
-          /* no-op */
-        }
-      }
+      markerSrc.setData({
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: point },
+            properties: { intermediate: true },
+          },
+        ],
+      })
+      map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', colour)
     } catch {
       /* style may still be resolving */
     }
-    const t = window.setTimeout(() => {
-      try {
-        clearRevealSources(map)
-        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
-      } catch {
-        /* no-op */
-      }
-    }, holdMs)
-    return () => {
-      window.clearTimeout(t)
-      try {
-        clearRevealSources(map)
-        map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
-      } catch {
-        /* no-op */
-      }
-    }
-  }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
+    // No cleanup, no timeout. Marker persists until externally overridden.
+  }, [session.status, session.attemptsPerRound, session.modeId, session.currentAttempts])
 
   // City-mode any-click handler.
   useEffect(() => {
