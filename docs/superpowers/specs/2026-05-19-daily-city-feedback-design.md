@@ -265,16 +265,14 @@ Where:
 
 ### Esc / focus handling
 
-`GameController`'s top-level Esc handler (lines 93-107) currently fires `endGame()` on Esc when `status !== 'idle'`. During `game-over` with the new `DailyRevealOverlay`, the overlay has its own modal Esc handler that calls `onClose` (line 53-55 of `DailyRevealOverlay`). Two Esc handlers will both fire on the same Esc keypress unless one stops propagation.
+`GameController`'s top-level Esc handler (lines 93-107) currently fires `endGame()` on Esc when `status !== 'idle'`. During `game-over` with the new `DailyRevealOverlay`, the overlay has its own modal Esc handler that calls `onClose` (line 53-55 of `DailyRevealOverlay`). Both handlers fire on the same Esc keypress.
 
-Resolution: narrow `GameController`'s Esc handler to skip when `status === 'game-over'`. `GameOverOverlay` doesn't have its own Esc handler today, but the `onBackToMap` button is the natural close affordance and Esc-to-close-game-over isn't an existing tested behavior (no `e2e/` spec asserts it). Adding the narrow is safe.
+Resolution: **keep both handlers; do not narrow.** The two effects are idempotent in this case:
 
-```ts
-// Existing block, line 95:
-if (session.status === 'round-ended' && isCountryPinning(session.modeId)) return
-// Adds:
-if (session.status === 'game-over') return // overlays own their own Esc
-```
+- `GameController` handler: `clearResume()` (removes a localStorage key — safe to call twice) + `endGame()` (reducer returns `EMPTY` regardless of input state — safe to call twice) + `writeIdleHash()` (no-ops once the hash is already clear — safe to call twice).
+- `DailyRevealOverlay`'s `onClose` is wired to `onBackToMap` = `onEndGame`, which in the game-over branch performs the same triple.
+
+Narrowing would regress Esc-to-close for free-play game-over and daily-country game-over (both still use `GameOverOverlay`, which has no Esc handler of its own). Per [`docs/testing/game-unhappy-paths.md` H3](../../testing/game-unhappy-paths.md): "Escape closes the overlay (returns to launcher)" is documented expected behaviour. The harmless dual-handler approach preserves it without touching `GameOverOverlay`.
 
 ### History recording order verified
 

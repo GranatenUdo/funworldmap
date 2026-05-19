@@ -24,7 +24,7 @@
 - `src/game/modes/city-guessing/CityGuessingHud.tsx` — extract `revealLineFor` helper; loosen the gate to include `playing + best-of-N + ≥1 attempt`.
 - `src/game/hooks/useRevealMapEffects.ts` — narrow the intermediate-flash effect to country-only; add a new city-only persistent-marker effect; reset `circle-color` in the round-end geometry effect.
 - `src/game/hooks/__tests__/useRevealMapEffects.test.tsx` — replace the "city flash hold" assertion with persistence assertions; add resume + circle-color-reset cases.
-- `src/game/GameController.tsx` — import `DailyRevealOverlay`, `toLocalDateString`, `writeHash`; add `onPlayUnlimitedFree` handler; branch the game-over render; narrow the Esc handler to skip `game-over`.
+- `src/game/GameController.tsx` — import `DailyRevealOverlay`, `toLocalDateString`, `writeHash`; add `onPlayUnlimitedFree` handler; branch the game-over render. (Esc handler stays unchanged — see Task 5 Step 4 for why.)
 - `e2e/mobile-daily-flow.spec.ts` — migrate the final `game-over` assertion to `daily-reveal`.
 - `docs/systems/daily-puzzle.md` — under Lifecycle §6, note that daily-city game-over renders `DailyRevealOverlay`; daily-country remains `GameOverOverlay`.
 
@@ -484,66 +484,41 @@ Existing country test must still PASS.
 
 - [ ] **Step 3: Implement the intermediate-effect split and the circle-color reset in `useRevealMapEffects.ts`**
 
-In `src/game/hooks/useRevealMapEffects.ts`, locate the intermediate-flash `useEffect` (starts around line 271 with `useEffect(() => { const enteringPlaying = ...`). Replace its **city branch** body with `return` and the cleanup with a no-op, OR — preferred — split it cleanly:
+In `src/game/hooks/useRevealMapEffects.ts`, locate the intermediate-flash `useEffect` (starts around line 271 with `useEffect(() => { const enteringPlaying = ...`).
 
-Find this block (the city branch inside the existing effect, around lines 318-362):
-
-```ts
-// City mode: distance-banded marker color.
-const d = last.reveal.distanceKm
-const colour = d < 50 ? REVEAL_CORRECT : d < 500 ? REVEAL_WRONG : REVEAL_FAR
-try {
-  ensureRevealSources(map)
-  const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
-  const point = last.reveal.clickedPoint
-  if (point) {
-    markerSrc.setData({
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: { type: 'Point', coordinates: point },
-          properties: { intermediate: true },
-        },
-      ],
-    })
-    try {
-      map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', colour)
-    } catch {
-      /* no-op */
-    }
-  }
-} catch {
-  /* style may still be resolving */
-}
-const t = window.setTimeout(() => {
-  try {
-    clearRevealSources(map)
-    map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
-  } catch {
-    /* no-op */
-  }
-}, holdMs)
-return () => {
-  window.clearTimeout(t)
-  try {
-    clearRevealSources(map)
-    map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
-  } catch {
-    /* no-op */
-  }
-}
-```
-
-**Delete it.** The country branch above remains as the entire body of the existing intermediate-flash effect, so add an early-return after the `last` lookup:
+**Before** — the effect looks like this (compressed):
 
 ```ts
-const last = session.currentAttempts[cur - 1]
-if (last.reveal.kind !== 'country') return // city handled by a separate effect below
-const map = mapRef.current
-if (!map) return
-// ... country-branch code unchanged from here through the existing cleanup return.
+useEffect(() => {
+  // anchor + status-change tracking ...
+  if (session.status !== 'playing') return
+  if (session.attemptsPerRound <= 1) return
+  // attempt-count anchor update + cur/prev checks ...
+  const last = session.currentAttempts[cur - 1]
+  const map = mapRef.current
+  if (!map) return
+  const reduced = prefersReducedMotion()
+  const holdMs = reduced ? 0 : 600
+
+  if (last.reveal.kind === 'country') {
+    // ... country flash: setFilter + setPaintProperty + setTimeout + cleanup return ...
+  }
+
+  // City mode: distance-banded marker color.
+  // ... full city block from line ~318 through line ~535 ...
+  // (setData, setPaintProperty(colour), setTimeout(clear), cleanup return)
+}, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
 ```
+
+**Edit 1** — insert one line. After `const last = session.currentAttempts[cur - 1]` and **before** `const map = mapRef.current`, add:
+
+```ts
+if (last.reveal.kind !== 'country') return // city handled by separate effect below
+```
+
+**Edit 2** — delete the city branch entirely. Remove the block starting with the comment `// City mode: distance-banded marker color.` (currently around line 318) through and including its `return () => { ... }` cleanup (around line 535 — about 45 lines of code). The `if (last.reveal.kind === 'country') { ... }` block above it (with its own cleanup return) becomes the only path through the effect; the early-return from Edit 1 makes the wrapper redundant but harmless.
+
+**Verification after Edits 1+2** — the remaining effect body, from `const last` through the closing `}, [...])`, should contain exactly one `if (last.reveal.kind === 'country')` block plus a final implicit fallthrough that never executes (since the early-return caught city attempts). If you see two `return () => { ... }` cleanups, you didn't delete enough.
 
 Immediately after that `useEffect` closes, **add a new `useEffect`** for the city persistent marker:
 
@@ -766,7 +741,7 @@ EOF
 
 ## Commit 2 — `feat(city): swap daily-city game-over to DailyRevealOverlay`
 
-### Task 5: GameController — overlay branch + Esc narrowing
+### Task 5: GameController — overlay branch (Esc handler unchanged)
 
 **Files:**
 
@@ -806,24 +781,7 @@ Replace with:
 import { isCityGuessing, isCountryPinning } from './shared/modePredicates'
 ```
 
-- [ ] **Step 2: Narrow the Esc handler to skip game-over**
-
-Find the Esc useEffect (currently lines 93-107). Locate the early-return block:
-
-```ts
-if (session.status === 'idle') return
-if (session.status === 'round-ended' && isCountryPinning(session.modeId)) return
-```
-
-Add immediately after the second line:
-
-```ts
-if (session.status === 'game-over') return // overlays own their own Esc
-```
-
-The dependency array stays `[session.status, session.modeId, endGame]`.
-
-- [ ] **Step 3: Add the `onPlayUnlimitedFree` handler**
+- [ ] **Step 2: Add the `onPlayUnlimitedFree` handler**
 
 Find the existing handler block (currently lines 121-127). After `const onSkip = () => submitGuessInput({ kind: 'skip' })`, add:
 
@@ -836,7 +794,7 @@ const onPlayUnlimitedFree = useCallback(() => {
 }, [session.modeId])
 ```
 
-- [ ] **Step 4: Branch the game-over render**
+- [ ] **Step 3: Branch the game-over render**
 
 Find the existing game-over render (currently lines 146-154):
 
@@ -881,6 +839,10 @@ Replace with:
     ))
 }
 ```
+
+- [ ] **Step 4: Do NOT change the Esc handler (read-only check)**
+
+The existing Esc handler in `GameController.tsx` (lines 93-107) stays exactly as-is. Both `GameController`'s handler and `DailyRevealOverlay`'s own Esc handler will fire on Esc during daily-city game-over; their side effects (`clearResume` + `endGame` + `writeIdleHash`) are idempotent, so dual-fire is harmless. Narrowing the handler to skip `game-over` would regress Esc-to-close for free-play and daily-country game-over (both still use `GameOverOverlay`, which has no Esc handler of its own). This step is listed explicitly so the implementing agent doesn't "tidy up" what looks like a leftover.
 
 - [ ] **Step 5: Run the GameController-touching test suite**
 
@@ -987,9 +949,11 @@ feat(city): swap daily-city game-over to DailyRevealOverlay
 After the final daily-city attempt, GameController renders DailyRevealOverlay
 (city name + dot summary + share + "Play unlimited") instead of
 GameOverOverlay (numeric score only). Daily country and free play keep
-GameOverOverlay — only the daily-city path swaps. Esc handler in
-GameController narrowed to skip status==='game-over' so the overlay's own
-Esc handler isn't double-fired.
+GameOverOverlay — only the daily-city path swaps. GameController's Esc
+handler stays unchanged: it fires alongside DailyRevealOverlay's own Esc
+handler, but their side effects (clearResume + endGame + writeIdleHash) are
+idempotent, so the dual-fire is harmless. Narrowing would have regressed
+Esc-to-close for free + daily-country game-over.
 
 Spec: docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md
 
@@ -1082,6 +1046,14 @@ Run: `npm run dev`
 1. Open free city (`/#game/city-guessing` or launcher's "Play unlimited" → city).
 2. Click once. **Expected:** Round-end arc + HUD text + advance to next round (no per-click intermediate text because `attemptsPerRound === 1`).
 3. Play through 10 rounds. **Expected:** `GameOverOverlay` at the end — NOT `DailyRevealOverlay`.
+
+- [ ] **Step 7: Esc-to-close regression check**
+
+1. Open daily city, complete it. **Expected:** `DailyRevealOverlay`. Press Esc. **Expected:** overlay closes, status returns to bare map, hash cleared.
+2. Open daily country, complete it. **Expected:** `GameOverOverlay`. Press Esc. **Expected:** overlay closes, hash cleared.
+3. Open free city, complete it. **Expected:** `GameOverOverlay`. Press Esc. **Expected:** overlay closes, hash cleared.
+
+Esc must work in all three game-over states. If it doesn't work in 2 or 3, you accidentally narrowed the Esc handler — undo and re-read Task 5 Step 4.
 
 ---
 
