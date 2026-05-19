@@ -320,11 +320,10 @@ export function useRevealMapEffects({
     }
   }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
 
-  // City persistent intermediate marker: renders at the latest attempt's
-  // clickedPoint, replaced (not accumulated) on each subsequent attempt.
-  // No timeout — the marker persists until (a) the next click replaces it via
-  // setData, (b) the round-ended geometry effect overrides with the target
-  // marker, or (c) the idle-clear effect runs on game end.
+  // Persistent intermediate marker (city best-of-N) — no timeout. Replaced by
+  // the next click via setData, by the round-ended geometry effect, or by the
+  // idle-clear effect on game end. The cleanup-on-timeout pattern would defeat
+  // the legibility goal (the user needs to see their guess until they pick again).
   useEffect(() => {
     if (session.status !== 'playing') return
     if (session.attemptsPerRound <= 1) return
@@ -355,7 +354,6 @@ export function useRevealMapEffects({
     } catch {
       /* style may still be resolving */
     }
-    // No cleanup, no timeout. Marker persists until externally overridden.
   }, [session.status, session.attemptsPerRound, session.modeId, session.currentAttempts])
 
   // City-mode any-click handler.

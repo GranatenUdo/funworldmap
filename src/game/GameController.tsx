@@ -128,10 +128,8 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   }
   const onBackToMap = onEndGame
   const onSkip = () => submitGuessInput({ kind: 'skip' })
-  const onPlayUnlimitedFree = useCallback(() => {
-    // Mirrors App.tsx's reveal-route handler. The hash-router detects the
-    // game-over → playable-route transition and dispatches the atomic `restart`
-    // action (bug-#32 path), avoiding the intermediate idle render.
+  const onPlayUnlimited = useCallback(() => {
+    // Atomic restart via hash-router: avoids the intermediate idle render.
     window.location.hash = writeHash({ kind: 'game', modeId: session.modeId })
   }, [session.modeId])
 
@@ -162,7 +160,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
             countries={countries}
             cities={cities}
             onClose={onBackToMap}
-            onPlayUnlimited={onPlayUnlimitedFree}
+            onPlayUnlimited={onPlayUnlimited}
           />
         ) : (
           <GameOverOverlay

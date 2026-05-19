@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { gotoAndWaitForMap, stubDailyIndex, waitForGameTestHook } from './helpers'
+import { gotoAndWaitForMap, routeMapTiles, stubDailyIndex, waitForGameTestHook } from './helpers'
 import { toLocalDateString } from '../src/game/daily/dates'
 
 test.describe('daily city per-click feedback', () => {
   test('each attempt surfaces distance + points in the HUD; marker persists', async ({ page }) => {
     const today = toLocalDateString(new Date())
+    await routeMapTiles(page)
     await stubDailyIndex(page, today, { cca3: 'FRA', cityId: 'FRA-paris' })
     await gotoAndWaitForMap(page, `/#daily/${today}/city-guessing`)
     await waitForGameTestHook(page)
