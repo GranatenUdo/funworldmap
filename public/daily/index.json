@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-05-18T20:02:50.735Z",
+  "generatedAt": "2026-05-19T04:34:15.053Z",
   "window": {
-    "start": "2026-04-19",
-    "end": "2026-05-18"
+    "start": "2026-04-20",
+    "end": "2026-05-19"
   },
   "days": {
-    "2026-04-19": {
-      "country": {
-        "cca3": "NOR"
-      },
-      "city": {
-        "id": "TUR-istanbul"
-      }
-    },
     "2026-04-20": {
       "country": {
         "cca3": "BRA"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "MEX-mexico-city"
+      }
+    },
+    "2026-05-19": {
+      "country": {
+        "cca3": "ARG"
+      },
+      "city": {
+        "id": "TUR-istanbul"
       }
     }
   }
