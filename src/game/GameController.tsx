@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import type { CityLike, CountryLike } from './shared/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
-import { isCountryPinning } from './shared/modePredicates'
+import { isCityGuessing, isCountryPinning } from './shared/modePredicates'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { useGameTestSeams } from './hooks/useGameTestSeams'
 import { useDailyResumePersistence } from './hooks/useDailyResumePersistence'
@@ -16,6 +16,9 @@ import { CityGuessingHudActionsContext } from './modes/city-guessing'
 import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './daily/useDailyHistory'
 import { clearResume } from './daily/resume'
+import { DailyRevealOverlay } from '../components/DailyRevealOverlay'
+import { toLocalDateString } from './daily/dates'
+import { writeHash } from '../lib/hashState'
 
 function writeIdleHash(): void {
   const h = window.location.hash
@@ -125,6 +128,12 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   }
   const onBackToMap = onEndGame
   const onSkip = () => submitGuessInput({ kind: 'skip' })
+  const onPlayUnlimitedFree = useCallback(() => {
+    // Mirrors App.tsx's reveal-route handler. The hash-router detects the
+    // game-over → playable-route transition and dispatches the atomic `restart`
+    // action (bug-#32 path), avoiding the intermediate idle render.
+    window.location.hash = writeHash({ kind: 'game', modeId: session.modeId })
+  }, [session.modeId])
 
   if (session.status === 'idle' || !mode) return null
 
@@ -143,15 +152,27 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       <HudShell session={session} onEndGame={onEndGame} onDone={completeNow}>
         <Hud session={session} />
       </HudShell>
-      {session.status === 'game-over' && (
-        <GameOverOverlay
-          session={session}
-          personalBest={best}
-          beatPersonalBest={beatPB}
-          onPlayAgain={onPlayAgain}
-          onBackToMap={onBackToMap}
-        />
-      )}
+      {session.status === 'game-over' &&
+        (session.dailyDate !== null && isCityGuessing(session.modeId) ? (
+          <DailyRevealOverlay
+            date={session.dailyDate}
+            modeId={session.modeId}
+            puzzle={dailyPuzzles.byDate(session.dailyDate) ?? null}
+            today={toLocalDateString(new Date())}
+            countries={countries}
+            cities={cities}
+            onClose={onBackToMap}
+            onPlayUnlimited={onPlayUnlimitedFree}
+          />
+        ) : (
+          <GameOverOverlay
+            session={session}
+            personalBest={best}
+            beatPersonalBest={beatPB}
+            onPlayAgain={onPlayAgain}
+            onBackToMap={onBackToMap}
+          />
+        ))}
     </CityGuessingHudActionsContext.Provider>
   )
 }
