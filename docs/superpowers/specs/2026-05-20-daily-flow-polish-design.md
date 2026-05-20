@@ -282,12 +282,17 @@ The window is narrow (≤ 1-3 paint frames) but real. A motivated user (or one w
 
 ### What changes
 
-Extract a `recordDailyCompletion(session)` helper. Call it from BOTH the `advanceNow` `endsGame` branch (production race fix) AND the useEffect's daily game-over branch (fallback for non-`advanceNow` paths — see "Why the fallback" below). The `recordedRef` dedup ensures only one path actually writes. Add a separate `announcedGameOverRef` so the announcement still fires once even though `recordedRef.current` is set early in the daily path.
+Extract a `recordDailyCompletion(session, recordDailyResult)` helper at **module scope** (not inside the hook), matching the existing `holdThenAdvance` pattern in the same file (line 19). Module-scope keeps it a top-level binding, so calling it inside the useEffect doesn't trigger `react-hooks/exhaustive-deps` to demand it as a dependency. Pass `recordDailyResult` as an explicit argument; `clearResume` and `track` are accessed via module imports already present.
+
+Call it from BOTH the `advanceNow` `endsGame` branch (production race fix) AND the useEffect's daily game-over branch (fallback for non-`advanceNow` paths — see "Why the fallback" below). The `recordedRef` dedup ensures only one path actually writes. Add a separate `announcedGameOverRef` so the announcement still fires once even though `recordedRef.current` is set early in the daily path.
 
 ```ts
-// Helper extracted near the top of the hook body, AFTER refs are declared.
+// Module-scope, adjacent to the existing holdThenAdvance helper.
 // Pure side-effecting; the recordedRef dedup is the responsibility of callers.
-const recordDailyCompletion = (s: GameSession) => {
+function recordDailyCompletion(
+  s: GameSession,
+  recordDailyResult: UseGameAnnouncementsArgs['recordDailyResult'],
+): void {
   if (s.dailyDate === null) return // safety guard; callers should also check
   const attempts = s.currentAttempts
   recordDailyResult(s.dailyDate, s.modeId, {
@@ -319,7 +324,7 @@ const advanceNow = () => {
     // write under a mid-race reload. See spec 2026-05-20-daily-flow-polish.
     if (session.dailyDate !== null && !recordedRef.current) {
       recordedRef.current = true
-      recordDailyCompletion(session)
+      recordDailyCompletion(session, recordDailyResult)
     }
     finalize()
     return
@@ -358,7 +363,7 @@ if (session.status === 'game-over') {
       // Fallback: advanceNow didn't run (test-seam .finalize() bypass, or any
       // future code path that dispatches `finalize` directly). The race fix
       // doesn't apply here, but the write must still happen.
-      recordDailyCompletion(session)
+      recordDailyCompletion(session, recordDailyResult)
     }
   }
   if (!announcedGameOverRef.current) {

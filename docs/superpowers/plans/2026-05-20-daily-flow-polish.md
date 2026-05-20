@@ -512,7 +512,7 @@ it('announces "Game over" exactly once even when game-over re-renders', () => {
 })
 ```
 
-Note: this test verifies the NEW `announcedGameOverRef` introduced in Task 6. It will FAIL today because the current code resets `lastAnnouncedRoundKeyRef` to null on every game-over render and re-dispatches the announcement via the round-key logic — see the implementation in Task 6 for the fix shape.
+Note: this test is a regression guard for the `announcedGameOverRef` introduced in Task 6. It passes today (today's code dedupes via the `recordedRef` gate, which only opens once). Task 6 moves the announcement OUT of that gate into a new `announcedGameOverRef` block; this test verifies that move preserves the dedup.
 
 - [ ] **Step 5: Run the tests, verify the new tests FAIL in the expected ways**
 
@@ -555,12 +555,24 @@ const announcedGameOverRef = useRef(false)
 const lastAnnouncedRoundKeyRef = useRef<string | null>(null)
 ```
 
-- [ ] **Step 2: Extract the `recordDailyCompletion` helper inside the hook body**
+- [ ] **Step 2: Extract the `recordDailyCompletion` helper at MODULE SCOPE**
 
-After the ref declarations and BEFORE the `useEffect` block (currently around line 72-73, before `useEffect(() => {`), add the helper function:
+Add the helper as a module-scope function (NOT inside the hook), placed adjacent to the existing module-scope `holdThenAdvance` helper around line 19. This matches the existing pattern in this file and avoids `react-hooks/exhaustive-deps` warnings that a hook-scope closure would trigger.
+
+In `src/game/hooks/useGameAnnouncements.ts`, find the `holdThenAdvance` helper (around lines 17-33). Below it (still at module scope), add:
 
 ```ts
-const recordDailyCompletion = (s: GameSession) => {
+// Pre-finalize daily writes. Called from two sites in the hook: advanceNow's
+// endsGame branch (production path — runs before the finalize() dispatch so
+// DailyRevealOverlay sees populated history on its first render, and so the
+// resume blob doesn't outlive the history write under a mid-race reload),
+// and the game-over useEffect's daily fallback (test-seam .finalize() bypass
+// + any future code that dispatches finalize directly).
+// Caller dedups via recordedRef — this helper does not.
+function recordDailyCompletion(
+  s: GameSession,
+  recordDailyResult: UseGameAnnouncementsArgs['recordDailyResult'],
+): void {
   if (s.dailyDate === null) return // safety guard; callers should also check
   const attempts = s.currentAttempts
   recordDailyResult(s.dailyDate, s.modeId, {
@@ -582,7 +594,9 @@ const recordDailyCompletion = (s: GameSession) => {
 }
 ```
 
-Note: the helper closes over `recordDailyResult`, `clearResume`, and `track` from the surrounding scope. `clearResume` is imported at the top of the file from `'../daily/resume'`; `track` is imported from `'../../lib/analytics'`. Both already exist as imports — verify they're present.
+The helper takes `recordDailyResult` as an explicit argument (rather than closing over it) so it stays a top-level binding — `react-hooks/exhaustive-deps` won't demand it in the useEffect's dep array. `clearResume` and `track` ARE accessed via module-import (already present at the top of the file).
+
+Verify the imports at the top of the file include `clearResume` from `'../daily/resume'` and `track` from `'../../lib/analytics'`. The `UseGameAnnouncementsArgs` interface is defined later in the same file — TypeScript hoists type-only references, so this forward reference is fine.
 
 - [ ] **Step 3: Add a daily pre-finalize call to `advanceNow`**
 
@@ -609,7 +623,7 @@ const advanceNow = () => {
     // write under a mid-race reload. See spec 2026-05-20-daily-flow-polish.
     if (session.dailyDate !== null && !recordedRef.current) {
       recordedRef.current = true
-      recordDailyCompletion(session)
+      recordDailyCompletion(session, recordDailyResult)
     }
     finalize()
     return
@@ -650,7 +664,7 @@ if (session.status === 'game-over') {
       // Fallback: advanceNow didn't run (test-seam .finalize() bypass, or any
       // future code path that dispatches `finalize` directly). The race fix
       // doesn't apply here, but the write must still happen.
-      recordDailyCompletion(session)
+      recordDailyCompletion(session, recordDailyResult)
     }
   }
   if (!announcedGameOverRef.current) {
