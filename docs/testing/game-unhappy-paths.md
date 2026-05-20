@@ -222,7 +222,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
    - After: `readHistory` (`game/daily/storage.ts:18`) catches the parse error.
    - After: Launcher renders with `streakMode: 'first'` (history reset to empty).
    - After: Daily cards show `unplayed` state for today.
-   - After: 🟠 **Risk per prior audit:** no Sentry breadcrumb is emitted — corruption is invisible to ops.
+   - After: localStorage parse failure is captured to Sentry via `captureDailyStorage('parse-failure')` in `src/game/daily/storage.ts:36`. Ops will see it as a Sentry event.
 
 ### C2. Daily history version mismatch
 
@@ -406,7 +406,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 1. **User reloads the page (F5).**
    - After: Free-play state is not persisted; game restarts from `idle` → launcher.
-   - After: 🟠 **Bug 1 from divergence report:** for free-play hash on fresh load, no game bootstraps — user sees blank map with no launcher.
+   - After: Free-play hash on fresh load bootstraps via `useHashGameRouter.ts:196-216` plus the deferred-pool drain effect at lines 229-255. Verified working.
 
 ### E5. Refresh during daily reveal (after 3 attempts, before finalize)
 
@@ -680,7 +680,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 1. **Error fires.**
    - After: Sentry captures it (DSN configured at build time).
-   - After: 🟠 **Known gap per prior audit:** localStorage corruption paths (`storage.ts`/`resume.ts`) currently do NOT emit Sentry breadcrumbs. This is a separate fix.
+   - After: localStorage corruption + write-failure paths emit Sentry breadcrumbs/events via `captureDailyStorage` and `breadcrumbDailyStorage` (`src/game/daily/storage.ts`, `src/game/daily/resume.ts`).
 
 ---
 

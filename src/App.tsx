@@ -20,7 +20,7 @@ import { toLocalDateString, getToday, getYesterday } from './game/daily/dates'
 import { deriveStreakMode } from './game/daily/storage'
 import { GameController } from './game/GameController'
 import type { CityLike, CountryLike, ModeId } from './game/shared/types'
-import { readLastMode } from './game/shared/lastMode'
+import { readLastMode, writeLastMode } from './game/shared/lastMode'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { parseHash, writeHash } from './lib/hashState'
@@ -540,6 +540,7 @@ function AppInner({
             // No track() here — the hash router's free_started event fires when
             // the game boots, which is the durable signal. Adding launcher_dismissed
             // here would be a category error (the reveal overlay is not the launcher).
+            writeLastMode(id)
             window.location.hash = writeHash({ kind: 'game', modeId: id })
           }}
         />
