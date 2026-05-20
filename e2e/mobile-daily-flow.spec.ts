@@ -27,13 +27,16 @@ test.describe('mobile — daily city flow', () => {
       })
       await expect
         .poll(
-          () => page.evaluate(() => window.__funworldmap_game?.getSession?.().currentAttempts.length ?? 0),
+          () =>
+            page.evaluate(
+              () => window.__funworldmap_game?.getSession?.().currentAttempts.length ?? 0,
+            ),
           { timeout: 10_000 },
         )
         .toBeGreaterThanOrEqual(expectedAttempts)
     }
 
     await finalizeGame(page)
-    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 15_000 })
+    await expect(page.getByTestId('daily-reveal')).toBeVisible({ timeout: 15_000 })
   })
 })

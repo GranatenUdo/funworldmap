@@ -25,9 +25,9 @@ the same calendar day.
    `funworldmap-daily-history`. The shape is typed as `DailyHistoryV1` in
    `src/game/daily/types.ts`. Client prunes entries older than 90 days.
 5. **Streak.** Same hook derives `streak: { current, longest, lastActiveDate,
-   lastMilestoneShown }`. `updateStreak` logic lives in `storage.ts`.
+lastMilestoneShown }`. `updateStreak` logic lives in `storage.ts`.
 6. **Reveal.** `#daily/YYYY-MM-DD/reveal` (both modes) and
-   `#daily/YYYY-MM-DD/<mode>/reveal` routes mount `DailyRevealOverlay`.
+   `#daily/YYYY-MM-DD/<mode>/reveal` routes mount `DailyRevealOverlay`. Daily-city game-over also renders `DailyRevealOverlay` directly (the single-attempt-feedback flow needs the reveal's city-name + dot summary, not a numeric `GameOverOverlay`); daily-country game-over continues to render `GameOverOverlay` with the share block.
 7. **Share.** `DailyShareBlock` mounts in both `GameOverOverlay` (post-game)
    and `DailyRevealOverlay` (reveal view). Uses `navigator.share` with a
    clipboard fallback. Fires the `daily_shared` analytics event.
@@ -76,26 +76,27 @@ Shape:
 ```
 
 Lifecycle:
-- *Write:* on every `attempt` action while `status === 'playing'` and
+
+- _Write:_ on every `attempt` action while `status === 'playing'` and
   `attemptsPerRound > 1`.
-- *Read:* on hash bootstrap when route is `daily/<date>/<mode>` and the
+- _Read:_ on hash bootstrap when route is `daily/<date>/<mode>` and the
   history has no entry for that day.
-- *Clear:* after `writeHistory` returns successfully on completion; on
+- _Clear:_ after `writeHistory` returns successfully on completion; on
   `endGame` dispatch (Escape, End-game button); on stale-date mismatch.
 
 ## Routing matrix
 
 All hash-based, fully static:
 
-| URL | Behaviour |
-|---|---|
-| `/` | Launcher on bare root. |
-| `/#daily/YYYY-MM-DD` | Launcher anchored to that date (header copy: "Daily · …"). |
-| `/#daily/YYYY-MM-DD/<mode>` | Today + unplayed → start daily; today + in-progress resume blob → resume; past or already-played → redirect to `.../reveal`; future → redirect to root. |
-| `/#daily/YYYY-MM-DD/reveal` | Both-mode reveal (text-only — no game). |
-| `/#daily/YYYY-MM-DD/<mode>/reveal` | Single-mode reveal. |
-| `/#<cca3>` | Country panel deep link (pre-retention-v1 behaviour). |
-| `/#game/<mode>` | Free-play game (pre-retention-v1 behaviour). |
+| URL                                | Behaviour                                                                                                                                               |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/`                                | Launcher on bare root.                                                                                                                                  |
+| `/#daily/YYYY-MM-DD`               | Launcher anchored to that date (header copy: "Daily · …").                                                                                              |
+| `/#daily/YYYY-MM-DD/<mode>`        | Today + unplayed → start daily; today + in-progress resume blob → resume; past or already-played → redirect to `.../reveal`; future → redirect to root. |
+| `/#daily/YYYY-MM-DD/reveal`        | Both-mode reveal (text-only — no game).                                                                                                                 |
+| `/#daily/YYYY-MM-DD/<mode>/reveal` | Single-mode reveal.                                                                                                                                     |
+| `/#<cca3>`                         | Country panel deep link (pre-retention-v1 behaviour).                                                                                                   |
+| `/#game/<mode>`                    | Free-play game (pre-retention-v1 behaviour).                                                                                                            |
 
 `useLauncherVisibility.ts` regex `/^daily\/\d{4}-\d{2}-\d{2}$/` is the one
 point of truth for the no-mode daily-anchor pattern.
@@ -105,19 +106,19 @@ point of truth for the no-mode daily-anchor pattern.
 All events go to `funworldmap.com/api/event` → Cloudflare Worker →
 Analytics Engine dataset `funworldmap_events`.
 
-| Event | Props used | Notes |
-|---|---|---|
-| `daily_opened` | `mode: ModeId`, `dateAge: number` | Fires once per session per mode when the launcher shows a daily card. |
-| `daily_started` | `mode` | Fires when the user clicks a daily CTA. |
-| `daily_attempted` | `mode`, `attemptIndex: 1\|2\|3`, `scoreBucket: 0-100` | Per-attempt. |
-| `daily_completed` | `mode`, `bestScoreBucket`, `attemptsUsed` | Fires at game-over. |
-| `daily_shared` | `method: 'share-api'\|'clipboard-text'\|'clipboard-link'` | `modesPlayed` is present in the app-level event but is NOT captured by the Worker's fixed blob slots — v1.1 roadmap item. |
-| `free_started` | `mode` | |
-| `history_opened` | — | |
-| `history_cell_clicked` | `cellKind: 'played'\|'unplayed-in-window'\|'rolled-off'` | |
-| `streak_reached_milestone` | `days: 3\|7\|14\|30\|100` | Fires at most once per milestone per user (dedupe via `lastMilestoneShown`). |
-| `launcher_dismissed` | `path: 'link'\|'card'\|'escape'` | |
-| `deep_link_opened` | `dateKind: 'today'\|'past'\|'future'`, `outcome: 'start'\|'resume'\|'reveal'\|'redirect'` | |
+| Event                      | Props used                                                                                | Notes                                                                                                                     |
+| -------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `daily_opened`             | `mode: ModeId`, `dateAge: number`                                                         | Fires once per session per mode when the launcher shows a daily card.                                                     |
+| `daily_started`            | `mode`                                                                                    | Fires when the user clicks a daily CTA.                                                                                   |
+| `daily_attempted`          | `mode`, `attemptIndex: 1\|2\|3`, `scoreBucket: 0-100`                                     | Per-attempt.                                                                                                              |
+| `daily_completed`          | `mode`, `bestScoreBucket`, `attemptsUsed`                                                 | Fires at game-over.                                                                                                       |
+| `daily_shared`             | `method: 'share-api'\|'clipboard-text'\|'clipboard-link'`                                 | `modesPlayed` is present in the app-level event but is NOT captured by the Worker's fixed blob slots — v1.1 roadmap item. |
+| `free_started`             | `mode`                                                                                    |                                                                                                                           |
+| `history_opened`           | —                                                                                         |                                                                                                                           |
+| `history_cell_clicked`     | `cellKind: 'played'\|'unplayed-in-window'\|'rolled-off'`                                  |                                                                                                                           |
+| `streak_reached_milestone` | `days: 3\|7\|14\|30\|100`                                                                 | Fires at most once per milestone per user (dedupe via `lastMilestoneShown`).                                              |
+| `launcher_dismissed`       | `path: 'link'\|'card'\|'escape'`                                                          |                                                                                                                           |
+| `deep_link_opened`         | `dateKind: 'today'\|'past'\|'future'`, `outcome: 'start'\|'resume'\|'reveal'\|'redirect'` |                                                                                                                           |
 
 Worker blob/double slot mapping: see
 [`cloudflare-worker/queries/README.md`](../../cloudflare-worker/queries/README.md).
@@ -144,7 +145,7 @@ built bundle.
 1. **Code revert.** `git revert <merge-commit>` on `main`. The
    `deploy.yml` Action republishes GH Pages automatically.
 2. **Worker.** Roll back the Worker separately via `cd cloudflare-worker &&
-   wrangler deployments list && wrangler rollback <deployment-id>` if the
+wrangler deployments list && wrangler rollback <deployment-id>` if the
    rollback target predates the current Worker. Usually not necessary —
    the Worker accepts forward-compatible event shapes.
 3. **Daily index.** `public/daily/index.json` is regenerated every 6 h by
@@ -193,8 +194,8 @@ the launch announcement.
      announced.
   5. Trigger milestone (e.g. play day 3) → milestone overlay announced
      before auto-dismiss.
-  If any announcement is missing or misleading, file under Retention
-  v1.1+ → Accessibility in `docs/roadmap.md` with the specific issue.
+     If any announcement is missing or misleading, file under Retention
+     v1.1+ → Accessibility in `docs/roadmap.md` with the specific issue.
 - [ ] **Launch announcement posted.** Out of engineering scope.
 - [ ] **72 h monitor opened.** Timer starts at the launch-announcement
       timestamp. Check CF + Sentry dashboards + alerts at T+24 h, +48 h,
