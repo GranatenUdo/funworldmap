@@ -208,6 +208,99 @@ describe('useGameAnnouncements', () => {
       expect(finalize).toHaveBeenCalledTimes(1)
       expect(advance).not.toHaveBeenCalled()
     })
+
+    it('records daily history and clears resume BEFORE finalize for daily completion via advanceNow', () => {
+      // Pre-seed the resume blob — simulates a daily mid-play that has just
+      // had its 3rd (final) attempt land. advanceNow must clear this before
+      // dispatching finalize so a refresh-during-race sees clean state.
+      localStorage.setItem(
+        RESUME_KEY,
+        JSON.stringify({
+          version: 1,
+          date: '2026-05-20',
+          modeId: 'city-guessing',
+          attempts: [],
+        }),
+      )
+
+      const recordDailyResult = vi.fn()
+      const finalize = vi.fn(() => {
+        // Inside finalize: the daily writes MUST already have happened. This
+        // is the load-bearing assertion — if recordDailyResult or
+        // clearResume run after finalize dispatches, the race fix is broken.
+        expect(recordDailyResult).toHaveBeenCalledTimes(1)
+        expect(localStorage.getItem(RESUME_KEY)).toBeNull()
+      })
+
+      const reveal = makePointReveal({ clickedPoint: null })
+      const session = makeSession({
+        status: 'round-ended',
+        modeId: 'city-guessing',
+        attemptsPerRound: 3,
+        attemptsRemaining: 0,
+        dailyDate: '2026-05-20',
+        score: 80,
+        currentAttempts: [
+          makeAttempt({
+            pointsEarned: 80,
+            input: { kind: 'point', lngLat: [0, 0] },
+            reveal,
+          }),
+        ],
+        lastOutcome: makeOutcome(reveal, true),
+      })
+
+      renderAnnouncementsHook(
+        buildAnnouncementsArgs({
+          session,
+          mode: getMode('city-guessing', POOLS),
+          finalize,
+          recordDailyResult,
+        }),
+      )
+
+      act(() => {
+        vi.advanceTimersByTime(2000)
+      })
+
+      expect(finalize).toHaveBeenCalledTimes(1)
+      expect(recordDailyResult).toHaveBeenCalledWith(
+        '2026-05-20',
+        'city-guessing',
+        expect.objectContaining({ score: 80 }),
+      )
+      expect(localStorage.getItem(RESUME_KEY)).toBeNull()
+    })
+
+    it('does NOT record daily history when advanceNow fires for free-play endsGame', () => {
+      const recordDailyResult = vi.fn()
+      const finalize = vi.fn()
+
+      const reveal = makePointReveal({ clickedPoint: null })
+      const session = makeSession({
+        status: 'round-ended',
+        modeId: 'city-guessing',
+        attemptsPerRound: 1,
+        dailyDate: null, // free play
+        lastOutcome: makeOutcome(reveal, true),
+      })
+
+      renderAnnouncementsHook(
+        buildAnnouncementsArgs({
+          session,
+          mode: getMode('city-guessing', POOLS),
+          finalize,
+          recordDailyResult,
+        }),
+      )
+
+      act(() => {
+        vi.advanceTimersByTime(2000)
+      })
+
+      expect(finalize).toHaveBeenCalledTimes(1)
+      expect(recordDailyResult).not.toHaveBeenCalled()
+    })
   })
 
   it('records personal best on game-over for free play (dailyDate=null)', () => {
@@ -263,5 +356,94 @@ describe('useGameAnnouncements', () => {
     })
     rerender({ s: { ...session, score: 100 } })
     expect(record).toHaveBeenCalledTimes(1)
+  })
+
+  it('dedups daily recording across the advanceNow path and the game-over useEffect', () => {
+    // Simulate the sequence: round-ended → advanceNow fires (sets refs +
+    // records) → finalize dispatches → re-render with status='game-over'.
+    // The game-over useEffect must NOT re-call recordDailyResult.
+    vi.useFakeTimers()
+    try {
+      const recordDailyResult = vi.fn()
+      const finalize = vi.fn()
+
+      localStorage.setItem(
+        RESUME_KEY,
+        JSON.stringify({
+          version: 1,
+          date: '2026-05-20',
+          modeId: 'city-guessing',
+          attempts: [],
+        }),
+      )
+
+      const reveal = makePointReveal({ clickedPoint: null })
+      const roundEndedSession = makeSession({
+        status: 'round-ended',
+        modeId: 'city-guessing',
+        attemptsPerRound: 3,
+        attemptsRemaining: 0,
+        dailyDate: '2026-05-20',
+        score: 80,
+        currentAttempts: [
+          makeAttempt({
+            pointsEarned: 80,
+            input: { kind: 'point', lngLat: [0, 0] },
+            reveal,
+          }),
+        ],
+        lastOutcome: makeOutcome(reveal, true),
+      })
+      const args = buildAnnouncementsArgs({
+        session: roundEndedSession,
+        mode: getMode('city-guessing', POOLS),
+        finalize,
+        recordDailyResult,
+      })
+
+      const { rerender } = renderHook(({ s }) => useGameAnnouncements({ ...args, session: s }), {
+        initialProps: { s: roundEndedSession },
+      })
+
+      act(() => {
+        vi.advanceTimersByTime(2000)
+      })
+
+      // advanceNow ran; recordDailyResult fired once.
+      expect(recordDailyResult).toHaveBeenCalledTimes(1)
+
+      // Now simulate the post-finalize re-render: status flips to 'game-over'.
+      // The game-over useEffect MUST NOT re-record.
+      const gameOverSession = { ...roundEndedSession, status: 'game-over' as const }
+      rerender({ s: gameOverSession })
+
+      expect(recordDailyResult).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('announces "Game over" exactly once even when game-over re-renders', () => {
+    const captured = captureAnnouncements()
+    try {
+      const session = makeSession({
+        status: 'game-over',
+        modeId: 'country-pinning',
+        score: 250,
+        dailyDate: null,
+      })
+      const args = buildAnnouncementsArgs({ session })
+      const { rerender } = renderHook(({ s }) => useGameAnnouncements({ ...args, session: s }), {
+        initialProps: { s: session },
+      })
+      // Re-render with a benign change.
+      rerender({ s: { ...session, score: 250 } })
+      rerender({ s: { ...session, score: 250 } })
+
+      const announces = captured.events.filter((e) => e.startsWith('Game over.'))
+      expect(announces.length).toBe(1)
+    } finally {
+      captured.detach()
+    }
   })
 })
