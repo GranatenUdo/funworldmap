@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-05-21T20:12:06.229Z",
+  "generatedAt": "2026-05-22T04:39:22.774Z",
   "window": {
-    "start": "2026-04-22",
-    "end": "2026-05-21"
+    "start": "2026-04-23",
+    "end": "2026-05-22"
   },
   "days": {
-    "2026-04-22": {
-      "country": {
-        "cca3": "ARG"
-      },
-      "city": {
-        "id": "GBR-london"
-      }
-    },
     "2026-04-23": {
       "country": {
         "cca3": "AUS"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "FRA-paris"
+      }
+    },
+    "2026-05-22": {
+      "country": {
+        "cca3": "EGY"
+      },
+      "city": {
+        "id": "DEU-berlin"
       }
     }
   }
