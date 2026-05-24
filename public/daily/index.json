@@ -1,18 +1,10 @@
 {
-  "generatedAt": "2026-05-23T19:38:11.246Z",
+  "generatedAt": "2026-05-24T04:39:42.816Z",
   "window": {
-    "start": "2026-04-24",
-    "end": "2026-05-23"
+    "start": "2026-04-25",
+    "end": "2026-05-24"
   },
   "days": {
-    "2026-04-24": {
-      "country": {
-        "cca3": "ITA"
-      },
-      "city": {
-        "id": "CHL-santiago"
-      }
-    },
     "2026-04-25": {
       "country": {
         "cca3": "EGY"
@@ -243,6 +235,14 @@
       },
       "city": {
         "id": "CHN-beijing"
+      }
+    },
+    "2026-05-24": {
+      "country": {
+        "cca3": "ITA"
+      },
+      "city": {
+        "id": "CHL-santiago"
       }
     }
   }
