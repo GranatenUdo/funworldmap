@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import type { AttemptRecord, CountryLike, GameMode, GameSession } from '../shared/types'
+import type { CountryLike, GameMode, GameSession } from '../shared/types'
 import type { DailyDayResult } from '../daily/types'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCountryPinning } from '../shared/modePredicates'
@@ -30,6 +30,37 @@ function holdThenAdvance(durationMs: number, advanceNow: () => void): () => void
     window.clearTimeout(t)
     window.removeEventListener('keydown', onKey)
   }
+}
+
+// Pre-finalize daily writes. Called from two sites in the hook: advanceNow's
+// endsGame branch (production path — runs before the finalize() dispatch so
+// DailyRevealOverlay sees populated history on its first render, and so the
+// resume blob doesn't outlive the history write under a mid-race reload),
+// and the game-over useEffect's daily fallback (test-seam .finalize() bypass
+// + any future code that dispatches finalize directly).
+// Caller dedups via recordedRef — this helper does not.
+function recordDailyCompletion(
+  s: GameSession,
+  recordDailyResult: UseGameAnnouncementsArgs['recordDailyResult'],
+): void {
+  if (s.dailyDate === null) return // safety guard; callers should also check
+  const attempts = s.currentAttempts
+  recordDailyResult(s.dailyDate, s.modeId, {
+    score: s.score,
+    attempts: attempts.map((a) => ({
+      pointsEarned: a.pointsEarned,
+      guessCca3: a.input.kind === 'country' ? a.input.cca3 : undefined,
+      guessLngLat: a.input.kind === 'point' ? a.input.lngLat : undefined,
+      distanceKm: a.reveal.distanceKm,
+    })),
+    completedAt: Date.now(),
+  })
+  clearResume()
+  track('daily_completed', {
+    mode: s.modeId,
+    bestScoreBucket: Math.min(4, Math.floor(s.score / 20)),
+    attemptsUsed: attempts.length,
+  })
 }
 
 export interface UseGameAnnouncementsArgs {
@@ -68,36 +99,47 @@ export function useGameAnnouncements({
   recordDailyResult,
 }: UseGameAnnouncementsArgs): void {
   const recordedRef = useRef(false)
+  const announcedGameOverRef = useRef(false)
   const lastAnnouncedRoundKeyRef = useRef<string | null>(null)
 
   useEffect(() => {
     if (!mode) return
     if (session.status === 'playing' && session.currentRound) {
-      if (session.roundIndex === 0) recordedRef.current = false
-      const key = session.currentRound.kind === 'country-pinning'
-        ? session.currentRound.targetCca3
-        : session.currentRound.targetId
+      if (session.roundIndex === 0) {
+        recordedRef.current = false
+        announcedGameOverRef.current = false
+      }
+      const key =
+        session.currentRound.kind === 'country-pinning'
+          ? session.currentRound.targetCca3
+          : session.currentRound.targetId
       if (lastAnnouncedRoundKeyRef.current !== key) {
         lastAnnouncedRoundKeyRef.current = key
         if (session.currentRound.kind === 'country-pinning') {
           dispatchAnnouncement(`Pin: ${session.currentRound.targetName}`)
         } else {
           const r = session.currentRound
-          dispatchAnnouncement(`Round ${session.roundIndex + 1}. Where is ${r.targetName}, ${r.targetCountryName}? Click anywhere on the map.`)
+          dispatchAnnouncement(
+            `Round ${session.roundIndex + 1}. Where is ${r.targetName}, ${r.targetCountryName}? Click anywhere on the map.`,
+          )
         }
       }
     }
     if (session.status === 'round-ended' && session.lastOutcome) {
-      const isFinalOutcome =
-        session.attemptsPerRound === 1 || session.attemptsRemaining === 0
+      const isFinalOutcome = session.attemptsPerRound === 1 || session.attemptsRemaining === 0
       const inCountryMode = isCountryPinning(session.modeId)
       const isCorrect =
-        session.lastOutcome.reveal?.kind === 'country'
-          ? session.lastOutcome.reveal.correct
-          : false
+        session.lastOutcome.reveal?.kind === 'country' ? session.lastOutcome.reveal.correct : false
 
       const advanceNow = () => {
         if (session.lastOutcome?.endsGame) {
+          // Daily: pre-finalize write so DailyRevealOverlay sees populated history
+          // on its first render, and so the resume blob doesn't outlive the history
+          // write under a mid-race reload. See spec 2026-05-20-daily-flow-polish.
+          if (session.dailyDate !== null && !recordedRef.current) {
+            recordedRef.current = true
+            recordDailyCompletion(session, recordDailyResult)
+          }
           finalize()
           return
         }
@@ -140,36 +182,46 @@ export function useGameAnnouncements({
       window.addEventListener('keydown', onKey)
       return () => window.removeEventListener('keydown', onKey)
     }
-    if (session.status === 'game-over' && !recordedRef.current) {
-      recordedRef.current = true
-      const dailyDate = session.dailyDate
-      if (dailyDate === null) record(session.score, session.bestStreak)
-      else {
-        const attempts: AttemptRecord[] = session.currentAttempts
-        recordDailyResult(dailyDate, session.modeId, {
-          score: session.score,
-          attempts: attempts.map((a) => ({
-            pointsEarned: a.pointsEarned,
-            guessCca3: a.input.kind === 'country' ? a.input.cca3 : undefined,
-            guessLngLat: a.input.kind === 'point' ? a.input.lngLat : undefined,
-            distanceKm: a.reveal.distanceKm,
-          })),
-          completedAt: Date.now(),
-        })
-        clearResume()
-        track('daily_completed', {
-          mode: session.modeId,
-          bestScoreBucket: Math.min(4, Math.floor(session.score / 20)),
-          attemptsUsed: attempts.length,
-        })
+    if (session.status === 'game-over') {
+      if (!recordedRef.current) {
+        recordedRef.current = true
+        if (session.dailyDate === null) {
+          record(session.score, session.bestStreak)
+        } else {
+          // Fallback: advanceNow didn't run (test-seam .finalize() bypass, or any
+          // future code path that dispatches `finalize` directly). The race fix
+          // doesn't apply here, but the write must still happen.
+          recordDailyCompletion(session, recordDailyResult)
+        }
       }
-      lastAnnouncedRoundKeyRef.current = null
-      dispatchAnnouncement(`Game over. Final score ${session.score}.`)
+      if (!announcedGameOverRef.current) {
+        announcedGameOverRef.current = true
+        lastAnnouncedRoundKeyRef.current = null
+        dispatchAnnouncement(`Game over. Final score ${session.score}.`)
+      }
     }
   }, [
-    session.status, session.roundIndex, session.lastOutcome, session.score,
-    session.bestStreak, session.lives, session.used, session.currentRound, session.modeId,
-    session.currentAttempts, session.dailyDate,
-    advance, mode, record, recordDailyResult, byCca3, finalize,
+    // session is passed whole to recordDailyCompletion; including it satisfies
+    // exhaustive-deps. The individual field list is retained for readability —
+    // it enumerates the fields actually read in the effect body — but the whole
+    // `session` reference is the load-bearing entry the linter requires.
+    session,
+    session.status,
+    session.roundIndex,
+    session.lastOutcome,
+    session.score,
+    session.bestStreak,
+    session.lives,
+    session.used,
+    session.currentRound,
+    session.modeId,
+    session.currentAttempts,
+    session.dailyDate,
+    advance,
+    mode,
+    record,
+    recordDailyResult,
+    byCca3,
+    finalize,
   ])
 }

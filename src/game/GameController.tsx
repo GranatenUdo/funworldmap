@@ -16,6 +16,7 @@ import { CityGuessingHudActionsContext } from './modes/city-guessing'
 import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
 import { useDailyHistory } from './daily/useDailyHistory'
 import { clearResume } from './daily/resume'
+import { writeLastMode } from './shared/lastMode'
 import { DailyRevealOverlay } from '../components/DailyRevealOverlay'
 import { toLocalDateString } from './daily/dates'
 import { writeHash } from '../lib/hashState'
@@ -130,6 +131,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const onSkip = () => submitGuessInput({ kind: 'skip' })
   const onPlayUnlimited = useCallback(() => {
     // Atomic restart via hash-router: avoids the intermediate idle render.
+    writeLastMode(session.modeId)
     window.location.hash = writeHash({ kind: 'game', modeId: session.modeId })
   }, [session.modeId])
 

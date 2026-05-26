@@ -82,11 +82,10 @@ export interface UseRevealMapEffectsArgs {
 }
 
 /**
- * Drives the MapLibre reveal layer (geometry, arc animation, intermediate
- * flashes), the city-mode any-click handler, and the idle-state reveal-source
- * clear. Owns two anchor refs that track "previous status" / "previous attempt
- * count" so transitions into the intermediate-flash effect don't replay
- * already-recorded attempts on resume.
+ * Drives the MapLibre reveal layer (round-end geometry + arc animation),
+ * the country-mode intermediate flash (anchor refs gate replay on resume),
+ * the city-mode persistent click marker (no anchor — re-paints latest on
+ * resume), the city click-to-guess handler, and the idle-state clear.
  */
 export function useRevealMapEffects({
   session,
