@@ -1,0 +1,249 @@
+{
+  "generatedAt": "2026-05-29T21:21:59.593Z",
+  "window": {
+    "start": "2026-04-30",
+    "end": "2026-05-29"
+  },
+  "days": {
+    "2026-04-30": {
+      "country": {
+        "cca3": "BRA"
+      },
+      "city": {
+        "id": "IDN-jakarta"
+      }
+    },
+    "2026-05-01": {
+      "country": {
+        "cca3": "USA"
+      },
+      "city": {
+        "id": "EGY-cairo"
+      }
+    },
+    "2026-05-02": {
+      "country": {
+        "cca3": "GBR"
+      },
+      "city": {
+        "id": "IDN-jakarta"
+      }
+    },
+    "2026-05-03": {
+      "country": {
+        "cca3": "CHE"
+      },
+      "city": {
+        "id": "RUS-moscow"
+      }
+    },
+    "2026-05-04": {
+      "country": {
+        "cca3": "PSE"
+      },
+      "city": {
+        "id": "BRA-rio-de-janeiro"
+      }
+    },
+    "2026-05-05": {
+      "country": {
+        "cca3": "GBR"
+      },
+      "city": {
+        "id": "DEU-berlin"
+      }
+    },
+    "2026-05-06": {
+      "country": {
+        "cca3": "IDN"
+      },
+      "city": {
+        "id": "CHN-shanghai"
+      }
+    },
+    "2026-05-07": {
+      "country": {
+        "cca3": "DEU"
+      },
+      "city": {
+        "id": "COL-bogota"
+      }
+    },
+    "2026-05-08": {
+      "country": {
+        "cca3": "JPN"
+      },
+      "city": {
+        "id": "USA-new-york"
+      }
+    },
+    "2026-05-09": {
+      "country": {
+        "cca3": "PER"
+      },
+      "city": {
+        "id": "USA-new-york"
+      }
+    },
+    "2026-05-10": {
+      "country": {
+        "cca3": "ESP"
+      },
+      "city": {
+        "id": "NGA-lagos"
+      }
+    },
+    "2026-05-11": {
+      "country": {
+        "cca3": "IDN"
+      },
+      "city": {
+        "id": "JPN-tokyo"
+      }
+    },
+    "2026-05-12": {
+      "country": {
+        "cca3": "ARG"
+      },
+      "city": {
+        "id": "GBR-london"
+      }
+    },
+    "2026-05-13": {
+      "country": {
+        "cca3": "DEU"
+      },
+      "city": {
+        "id": "IND-mumbai"
+      }
+    },
+    "2026-05-14": {
+      "country": {
+        "cca3": "MEX"
+      },
+      "city": {
+        "id": "EGY-cairo"
+      }
+    },
+    "2026-05-15": {
+      "country": {
+        "cca3": "FRA"
+      },
+      "city": {
+        "id": "EGY-cairo"
+      }
+    },
+    "2026-05-16": {
+      "country": {
+        "cca3": "IND"
+      },
+      "city": {
+        "id": "BRA-sao-paulo"
+      }
+    },
+    "2026-05-17": {
+      "country": {
+        "cca3": "GBR"
+      },
+      "city": {
+        "id": "USA-los-angeles"
+      }
+    },
+    "2026-05-18": {
+      "country": {
+        "cca3": "PSE"
+      },
+      "city": {
+        "id": "MEX-mexico-city"
+      }
+    },
+    "2026-05-19": {
+      "country": {
+        "cca3": "ARG"
+      },
+      "city": {
+        "id": "TUR-istanbul"
+      }
+    },
+    "2026-05-20": {
+      "country": {
+        "cca3": "KEN"
+      },
+      "city": {
+        "id": "BRA-sao-paulo"
+      }
+    },
+    "2026-05-21": {
+      "country": {
+        "cca3": "ZAF"
+      },
+      "city": {
+        "id": "FRA-paris"
+      }
+    },
+    "2026-05-22": {
+      "country": {
+        "cca3": "EGY"
+      },
+      "city": {
+        "id": "DEU-berlin"
+      }
+    },
+    "2026-05-23": {
+      "country": {
+        "cca3": "AUS"
+      },
+      "city": {
+        "id": "CHN-beijing"
+      }
+    },
+    "2026-05-24": {
+      "country": {
+        "cca3": "ITA"
+      },
+      "city": {
+        "id": "CHL-santiago"
+      }
+    },
+    "2026-05-25": {
+      "country": {
+        "cca3": "NOR"
+      },
+      "city": {
+        "id": "BRA-rio-de-janeiro"
+      }
+    },
+    "2026-05-26": {
+      "country": {
+        "cca3": "MEX"
+      },
+      "city": {
+        "id": "IND-kolkata"
+      }
+    },
+    "2026-05-27": {
+      "country": {
+        "cca3": "CAN"
+      },
+      "city": {
+        "id": "CHN-beijing"
+      }
+    },
+    "2026-05-28": {
+      "country": {
+        "cca3": "ESP"
+      },
+      "city": {
+        "id": "BRA-rio-de-janeiro"
+      }
+    },
+    "2026-05-29": {
+      "country": {
+        "cca3": "IDN"
+      },
+      "city": {
+        "id": "IDN-jakarta"
+      }
+    }
+  }
+}
