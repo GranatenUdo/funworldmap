@@ -131,10 +131,11 @@ jobs:
 
       - run: npm ci
 
-      - name: Seed prior window for carry-forward
+      - name: Seed prior window for carry-forward (tolerant if absent)
         run: |
           mkdir -p public/daily
-          cp .daily-data/index.json public/daily/index.json
+          cp .daily-data/index.json public/daily/index.json 2>/dev/null \
+            || echo "No prior index on data branch — generating fresh (no carry-forward)."
 
       - name: Validate pools
         run: npm run daily:validate
@@ -157,10 +158,10 @@ jobs:
           git push origin HEAD:data
 ```
 
-- [ ] **Step 2: Lint the YAML for syntax.**
+- [ ] **Step 2: Structural sanity check (tooling-free — `js-yaml` is not installed).**
 
-Run: `npx --yes js-yaml .github/workflows/daily-puzzle.yml > /dev/null && echo "YAML OK"`
-Expected: prints `YAML OK` (a parse error exits non-zero). The GitHub Actions parser is the authoritative validator on push; the post-merge `workflow_dispatch` in Task 6 is the real behavioral check.
+Run: `f=.github/workflows/daily-puzzle.yml; grep -qE '^name: Daily puzzle index' $f && grep -q 'ref: data' $f && grep -q 'git push origin HEAD:data' $f && echo "STRUCTURE OK"`
+Expected: prints `STRUCTURE OK` — confirms the `name:` is preserved (deploy's `workflow_run` matches on it), the data checkout is present, and the push targets `data`. YAML validity is enforced authoritatively by the GitHub Actions parser on push; the pre-merge `workflow_dispatch` in Task 6 is the real behavioral check.
 
 - [ ] **Step 3: Commit.**
 
@@ -175,9 +176,9 @@ git commit -m "chore(ci): daily workflow commits index to data branch"
 
 **Files:** Modify `.github/workflows/deploy.yml` — insert one step between `npm ci` and `Build`.
 
-- [ ] **Step 1: Add the fetch-from-data step.**
+- [ ] **Step 1: Insert the fetch-from-data step.**
 
-In `.github/workflows/deploy.yml`, replace this block:
+`.github/workflows/deploy.yml` currently has (lines 32–34, inside `jobs.build.steps`, indented **6 spaces**):
 
 ```yaml
 - run: npm ci
@@ -185,7 +186,7 @@ In `.github/workflows/deploy.yml`, replace this block:
   run: npm run build
 ```
 
-with:
+Insert a new step **between** `- run: npm ci` and `- name: Build`, at the same **6-space** step indentation. After the edit the region reads exactly (mind the indentation — the fenced sample below may render dedented, but the real file uses 6 spaces for `- name:` and 8 for `run:`):
 
 ```yaml
 - run: npm ci
@@ -205,7 +206,7 @@ with:
   run: npm run build
 ```
 
-(Leave the `env:` block under `Build` and every other line unchanged.)
+Do not touch the `env:` block under `Build` or any other line.
 
 - [ ] **Step 2: Verify the fetch command works locally against the real `data` branch.**
 
@@ -411,13 +412,29 @@ gh pr create --base main --title "chore(ci): daily content on a data branch" \
 
 Expected: PR URL printed. Confirm CI (fast + e2e + merge-reports) goes green on the PR.
 
+- [ ] **Step 5: Pre-merge validation of the data-branch push (de-risks the only un-local-testable part).**
+
+> ⚠️ Outward-facing: dispatches a real workflow run that pushes to the `data` branch. Get go-ahead (same as Task 1's push).
+
+This validates the Task 2 two-checkout push mechanism **before** merging, while it can do no harm to production. `daily-puzzle.yml` is already registered on `main` (this is a modification, not a new file), so it is dispatchable; `--ref` runs the feature branch's version. The run pushes to `data` (advancing the window — the intended behavior) and does **not** trigger deploy: deploy's `workflow_run` filters `branches: [main]`, and this run's head branch is the feature branch.
+
+```bash
+gh workflow run "Daily puzzle index" --ref chore/daily-content-data-branch
+# wait for it to finish, then:
+gh run list --workflow="Daily puzzle index" --branch chore/daily-content-data-branch --limit 1
+git fetch origin
+git log origin/data -1 --oneline      # new chore(data) commit (or unchanged if window current)
+git log origin/main -1 --oneline      # MUST be unchanged — no chore(daily) on main
+```
+
+Expected: the run concludes `success`; `origin/data` carries the bot commit (or is unchanged if the window was already current); `origin/main` is untouched. If the run fails at the push step, the cause is almost always credentials on the data checkout — confirm `persist-credentials`/`token` on the second `actions/checkout`, fix on the branch, and re-dispatch before merging.
+
 ---
 
 ## Post-merge verification (after the PR merges to `main`)
 
-These cannot run before merge — they exercise the live workflows. Run them once and record the result on the PR.
+The push mechanism is validated pre-merge (Step 5). These remaining checks exercise the live **deploy** path and can only run after merge. Run them once and record the result on the PR.
 
-- [ ] **Daily workflow targets `data`, not `main`.** Actions → "Daily puzzle index" → Run workflow (`workflow_dispatch`). When it finishes: `git fetch origin && git log origin/data -1 --oneline` shows a new `chore(data): update daily-puzzle window` commit (or "No changes" in the log if the window was already current), and `git log origin/main -1 --oneline` shows **no** new `chore(daily)` commit.
 - [ ] **Deploy uses the data-branch index.** The triggered "Deploy to GitHub Pages" run logs `Using data-branch index.` (not the fallback line), and `curl -fsSL https://funworldmap.com/daily/index.json | jq .window.end` equals today (UTC).
 - [ ] **Production health smoke still green.** The next scheduled `Production Health Smoke` run passes (it validates the live `index.json` window).
 
@@ -428,3 +445,5 @@ These cannot run before merge — they exercise the live workflows. Run them onc
 - **Spec coverage:** Component 1 → Task 1; Component 2 → Task 2; Component 3 → Task 3; Component 4 → Task 4; Component 5 → Task 5; verification criteria → Tasks 2/3/4 steps + Task 6 + Post-merge. All five spec components have a task.
 - **Invariants honored:** no `prebuild` hook anywhere (generation is only in `predev` + the `webServer` command); `build:e2e` generation is in the Playwright command, not an npm hook; `daily-puzzle.yml`'s `name:` is unchanged so the `workflow_run` deploy trigger still matches.
 - **Type/string consistency:** the `data` branch file is `index.json` at the branch root in every reference (Task 1 creates it, Task 2 reads/writes `.daily-data/index.json`, Task 3 reads `origin/data:index.json`).
+- **Residual risk gated:** the only part not verifiable on a local machine is the GitHub Actions two-checkout push (Task 2). Task 6 Step 5 dispatches that workflow on the feature branch _before_ merge — it pushes to `data` but cannot trigger deploy — so a credentials/auth failure surfaces pre-merge with a contained blast radius, not in production.
+- **Self-heal:** the daily workflow's seed `cp` tolerates a missing prior index (generates fresh), and `deploy.yml` falls back to generating if `data` is unreachable — neither path can ship an empty daily.
