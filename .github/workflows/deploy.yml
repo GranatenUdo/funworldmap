@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   workflow_run:
-    workflows: ["Daily puzzle index"]
+    workflows: ['Daily puzzle index']
     types: [completed]
     branches: [main]
 
@@ -30,6 +30,18 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Fetch daily index from data branch
+        run: |
+          mkdir -p public/daily
+          if git fetch origin data && git cat-file -e origin/data:index.json 2>/dev/null; then
+            git show origin/data:index.json > public/daily/index.json
+            echo "Using data-branch index."
+          else
+            echo "data branch unavailable — generating fresh."
+            npm run daily:generate
+          fi
+
       - name: Build
         run: npm run build
         env:
