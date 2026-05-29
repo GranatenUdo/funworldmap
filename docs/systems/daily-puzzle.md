@@ -12,9 +12,13 @@ the same calendar day.
 
 1. **Content generation.** A GitHub Actions workflow
    (`.github/workflows/daily-puzzle.yml`) runs four times a day to regenerate
-   `public/daily/index.json` from the curated pools in
-   `scripts/daily-content/`. The picker is deterministic: seeded by date
-   and falls through to a salted retry on collisions with the last 30 days.
+   the daily index from the curated pools in `scripts/daily-content/` and
+   commits it to the orphan **`data` branch** — not `main`, so `main`'s history
+   stays free of bot commits. The picker is deterministic: seeded by date and
+   falls through to a salted retry on collisions with the last 30 days.
+   `deploy.yml` fetches the index from the `data` branch at build time and
+   serves it as `/daily/index.json`. Locally and in e2e the index is generated
+   on demand (`predev` / the Playwright `webServer`), never committed to `main`.
 2. **Client fetch.** On load, `useDailyPuzzles` (`src/game/daily/`) fetches
    `/daily/index.json` once and exposes `byDate(YYYY-MM-DD)`.
 3. **Play.** The user opens the launcher (`Launcher.tsx`), picks a mode, and
@@ -148,10 +152,12 @@ built bundle.
 wrangler deployments list && wrangler rollback <deployment-id>` if the
    rollback target predates the current Worker. Usually not necessary —
    the Worker accepts forward-compatible event shapes.
-3. **Daily index.** `public/daily/index.json` is regenerated every 6 h by
-   the GHA workflow. To pause daily content delivery, disable the
-   `daily-puzzle.yml` workflow. To serve a specific frozen index, push it
-   to `main` and disable regeneration.
+3. **Daily index.** The index lives on the `data` branch and is regenerated
+   every 6 h by `daily-puzzle.yml`. To pause daily content delivery, disable
+   that workflow. To serve a specific frozen index, commit it to the `data`
+   branch and disable regeneration; `deploy.yml` picks it up on the next
+   deploy. See `docs/ops/runbook.md` § "Daily content (`data` branch)" for the
+   bootstrap and fallback.
 
 ### User-state inspection
 

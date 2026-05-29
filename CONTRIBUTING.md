@@ -14,6 +14,7 @@ npm run dev    # http://localhost:5173
 ```
 
 Scripts:
+
 - `npm run dev` — Vite dev server with HMR
 - `npm run build` — production build to `dist/`
 - `npm run preview` — serve the production bundle locally
@@ -23,9 +24,15 @@ Scripts:
 - `npm run test:e2e` — Playwright (two projects: `chromium` DOM, `chromium-gpu` WebGL)
 - `npm run update-data` — refresh `src/data/countries.json` from upstream sources
 
+> The daily puzzle index (`public/daily/index.json`) is a generated artifact —
+> it is not committed to `main`. `npm run dev` regenerates it automatically (via
+> the `predev` hook); in production it is served from the `data` branch. See
+> `docs/systems/daily-puzzle.md`.
+
 ## Pull Request Expectations
 
 Before opening a PR:
+
 - `npm run lint` — zero warnings
 - `tsc -b` — zero errors
 - `npm run test:unit` — all green
@@ -34,7 +41,7 @@ Before opening a PR:
 
 PR title uses the repo's observed convention: `type(scope): subject`, where `type` is one of `feat`, `fix`, `docs`, `test`, `chore`, `perf`, `refactor`, `revert`. Scope is optional but encouraged.
 
-Keep the PR description focused on *why*. The diff shows *what*.
+Keep the PR description focused on _why_. The diff shows _what_.
 
 ## Code Style
 
@@ -47,6 +54,7 @@ Keep the PR description focused on *why*. The diff shows *what*.
 funworldmap bundles `src/data/countries.json` at build time. The merge pipeline lives in `scripts/`. See `docs/systems/data-collection.md` for the full architecture.
 
 To propose a new source:
+
 1. Prefer sources with CC0 / permissive licenses. Document the license.
 2. Add a fetch module under `scripts/sources/` that returns normalized `CountryData`.
 3. Register the source key and merge priority. Update `_sources` metadata in the output.
@@ -58,6 +66,7 @@ Open an issue first if the source brings a new field shape — this helps align 
 ## Reporting Data Errors
 
 Open an issue with:
+
 - Country (name + ISO cca3)
 - Field in question
 - Current value shown by funworldmap
