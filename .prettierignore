@@ -1,0 +1,3 @@
+# Machine-generated — never reformat (the lint-staged `*.json` glob would
+# otherwise rewrite the whole lockfile on any commit that touches it).
+package-lock.json
