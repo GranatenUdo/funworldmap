@@ -67,6 +67,14 @@ for (const f of files) {
   } else if (f.startsWith('countries-') && f.endsWith('.js')) {
     asyncCountriesBytes += gzipSize(full)
     accounted.add(f)
+  } else if (f.startsWith('src-') && f.endsWith('.js')) {
+    // Rolldown (Vite 8) names a dynamically-imported split chunk after its
+    // source path, e.g. `src-*.js` for the lazy topojson-client chunk that
+    // Rollup emitted as a second `index-*.js`. It's pulled in via dynamic
+    // import (not referenced by index.html), so it counts as lazy-js, not
+    // first-paint — same role the topojson chunk always had.
+    lazyJsBytes += gzipSize(full)
+    accounted.add(f)
   }
 }
 
@@ -101,23 +109,31 @@ for (const c of checks) {
   const pct = ((c.measured / c.budget) * 100).toFixed(1)
   const status = c.measured > c.budget ? 'FAIL' : 'ok'
   if (c.measured > c.budget) failed = true
-  console.log(`${status.padEnd(4)}  ${c.name.padEnd(28)}  ${c.measured.toString().padStart(7)}  /  ${c.budget.toString().padStart(7)} bytes  (${pct}%)`)
+  console.log(
+    `${status.padEnd(4)}  ${c.name.padEnd(28)}  ${c.measured.toString().padStart(7)}  /  ${c.budget.toString().padStart(7)} bytes  (${pct}%)`,
+  )
 }
 
 // Fail closed on unaccounted assets so a future Vite chunk-split can't
 // silently bypass the budget.
 if (unaccounted.length > 0) {
-  console.error(`\nFAIL: ${unaccounted.length} asset(s) in dist/assets/ not accounted for in any budget category:`)
+  console.error(
+    `\nFAIL: ${unaccounted.length} asset(s) in dist/assets/ not accounted for in any budget category:`,
+  )
   for (const f of unaccounted) {
     const bytes = gzipSize(join(distAssets, f))
     console.error(`  ${f}  (${bytes} bytes gzip)`)
   }
-  console.error('\nAdd a new budget category (and classifier rule) in scripts/bundle-budget/check.ts and scripts/bundle-budget/budgets.json, or rename/remove the unexpected asset.')
+  console.error(
+    '\nAdd a new budget category (and classifier rule) in scripts/bundle-budget/check.ts and scripts/bundle-budget/budgets.json, or rename/remove the unexpected asset.',
+  )
   failed = true
 }
 
 if (failed) {
-  console.error('\nBundle exceeded budget. To update intentionally, raise budgets in scripts/bundle-budget/budgets.json with measurement evidence in the commit message.')
+  console.error(
+    '\nBundle exceeded budget. To update intentionally, raise budgets in scripts/bundle-budget/budgets.json with measurement evidence in the commit message.',
+  )
   process.exit(1)
 }
 console.log('\nAll budgets ok.')
