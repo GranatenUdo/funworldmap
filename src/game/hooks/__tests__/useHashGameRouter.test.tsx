@@ -13,9 +13,6 @@ import { renderHook, cleanup } from '@testing-library/react'
 import { useHashGameRouter, type UseHashGameRouterOptions } from '../useHashGameRouter'
 import { makeSession } from '../../shared/__tests__/factories'
 import { citiesFixture, countriesFixture } from './fixtures'
-import { RESUME_KEY } from '../../daily/resume'
-import { toLocalDateString } from '../../daily/dates'
-import type { DailyPuzzleRef } from '../../daily/types'
 import { installAnalyticsCapture, type AnalyticsCapture } from '../../../test/analyticsCapture'
 
 type RouterArgs = UseHashGameRouterOptions
@@ -23,29 +20,16 @@ type RouterArgs = UseHashGameRouterOptions
 interface BuildRouterArgsOverrides {
   session?: RouterArgs['session']
   pools?: RouterArgs['pools']
-  dailyPuzzles?: RouterArgs['dailyPuzzles']
-  dailyHistoryGet?: RouterArgs['dailyHistoryGet']
   start?: RouterArgs['start']
-  resume?: RouterArgs['resume']
   restart?: RouterArgs['restart']
   endGame?: RouterArgs['endGame']
-}
-
-const noopDailyPuzzles = {
-  status: 'ready' as const,
-  index: null,
-  byDate: (): DailyPuzzleRef | null => null,
-  refetch: vi.fn(async () => {}),
 }
 
 function buildRouterArgs(overrides: BuildRouterArgsOverrides = {}): RouterArgs {
   return {
     session: overrides.session ?? makeSession(),
     pools: overrides.pools ?? { countries: countriesFixture, cities: citiesFixture },
-    dailyPuzzles: overrides.dailyPuzzles ?? noopDailyPuzzles,
-    dailyHistoryGet: overrides.dailyHistoryGet ?? (() => null),
     start: overrides.start ?? vi.fn(),
-    resume: overrides.resume ?? vi.fn(),
     restart: overrides.restart ?? vi.fn(),
     endGame: overrides.endGame ?? vi.fn(),
   }
@@ -113,23 +97,6 @@ describe('useHashGameRouter', () => {
     )
   })
 
-  it('emits deep_link_opened with outcome=reveal exactly once for a reveal-route hash (dedup)', () => {
-    window.location.hash = '#daily/2026-05-13/country-pinning/reveal'
-    const session = makeSession({ status: 'idle' })
-    const args = buildRouterArgs({ session })
-    const { rerender } = renderRouterHook(args)
-    const initialCount = captured.events.filter(
-      (e) => e.name === 'deep_link_opened' && e.props.outcome === 'reveal',
-    ).length
-    expect(initialCount).toBe(1)
-    // Unrelated rerender — same hash, deps unchanged — should not re-emit.
-    rerender(buildRouterArgs({ session: makeSession({ status: 'idle', score: 42 }) }))
-    const afterCount = captured.events.filter(
-      (e) => e.name === 'deep_link_opened' && e.props.outcome === 'reveal',
-    ).length
-    expect(afterCount).toBe(1)
-  })
-
   it('dispatches restart (not start+endGame) when arriving in game-over with a playable route', () => {
     window.location.hash = '#game/country-pinning'
     const start = vi.fn()
@@ -145,144 +112,6 @@ describe('useHashGameRouter', () => {
     )
     expect(start).not.toHaveBeenCalled()
     expect(endGame).not.toHaveBeenCalled()
-  })
-
-  it('redirects future-dated daily to root', () => {
-    window.location.hash = '#daily/2099-12-31/country-pinning'
-    const start = vi.fn()
-    const endGame = vi.fn()
-    renderRouterHook(buildRouterArgs({ start, endGame }))
-    expect(window.location.hash).toBe('')
-    expect(
-      captured.events.find(
-        (e) =>
-          e.name === 'deep_link_opened' &&
-          e.props.outcome === 'redirect' &&
-          e.props.dateKind === 'future',
-      ),
-    ).toBeDefined()
-    expect(start).not.toHaveBeenCalled()
-  })
-
-  it('redirects past-dated daily to /reveal', () => {
-    window.location.hash = '#daily/2020-01-01/country-pinning'
-    const start = vi.fn()
-    renderRouterHook(buildRouterArgs({ start }))
-    expect(window.location.hash).toMatch(/\/reveal$/)
-    expect(window.location.hash).toContain('daily/2020-01-01/country-pinning/reveal')
-    expect(
-      captured.events.find(
-        (e) =>
-          e.name === 'deep_link_opened' &&
-          e.props.outcome === 'redirect' &&
-          e.props.dateKind === 'past',
-      ),
-    ).toBeDefined()
-    expect(start).not.toHaveBeenCalled()
-  })
-
-  it('resumes from localStorage when a daily resume blob matches today + mode', () => {
-    const today = toLocalDateString(new Date())
-    localStorage.setItem(
-      RESUME_KEY,
-      JSON.stringify({
-        version: 1,
-        date: today,
-        modeId: 'country-pinning',
-        attempts: [
-          {
-            input: { kind: 'country', cca3: 'USA', name: 'United States', centroid: [-97, 38] },
-            reveal: {
-              kind: 'country',
-              correct: false,
-              targetCca3: 'FRA',
-              clickedCca3: 'USA',
-              clickedName: 'United States',
-              distanceKm: 7000,
-            },
-            pointsEarned: 40,
-          },
-        ],
-      }),
-    )
-    window.location.hash = `#daily/${today}/country-pinning`
-    const resume = vi.fn()
-    const start = vi.fn()
-    const puzzle = {
-      country: { cca3: 'USA' },
-      city: { id: 'USA-new-york' },
-    }
-    renderRouterHook(
-      buildRouterArgs({
-        resume,
-        start,
-        dailyPuzzles: {
-          status: 'ready',
-          index: null,
-          byDate: () => puzzle,
-          refetch: vi.fn(async () => {}),
-        },
-      }),
-    )
-    expect(resume).toHaveBeenCalledTimes(1)
-    expect(resume).toHaveBeenCalledWith(
-      expect.objectContaining({
-        modeId: 'country-pinning',
-        dailyDate: today,
-        attemptsPerRound: 3,
-        attempts: expect.any(Array) as unknown[],
-      }),
-    )
-    expect(start).not.toHaveBeenCalled()
-    expect(
-      captured.events.find(
-        (e) =>
-          e.name === 'deep_link_opened' &&
-          e.props.outcome === 'resume' &&
-          e.props.dateKind === 'today',
-      ),
-    ).toBeDefined()
-  })
-
-  it('fires daily_attempted on intermediate attempt when attemptsPerRound > 1', () => {
-    // No hash so the bootstrap effect is inert; we only exercise the
-    // telemetry effect via session prop change. The "anchor on enter playing"
-    // path: render first with playing + zero attempts (sets the anchor), then
-    // re-render with one attempt — the count growth fires the event.
-    const playingZero = makeSession({
-      status: 'playing',
-      modeId: 'country-pinning',
-      attemptsPerRound: 3,
-      currentAttempts: [],
-    })
-    const playingOne = makeSession({
-      status: 'playing',
-      modeId: 'country-pinning',
-      attemptsPerRound: 3,
-      currentAttempts: [
-        {
-          input: { kind: 'country', cca3: 'USA', name: 'United States', centroid: [-97, 38] },
-          reveal: {
-            kind: 'country',
-            correct: false,
-            targetCca3: 'FRA',
-            clickedCca3: 'USA',
-            clickedName: 'United States',
-            distanceKm: 7000,
-          },
-          pointsEarned: 40,
-        },
-      ],
-    })
-    const { rerender } = renderRouterHook(buildRouterArgs({ session: playingZero }))
-    captured.reset()
-    rerender(buildRouterArgs({ session: playingOne }))
-    const event = captured.events.find((e) => e.name === 'daily_attempted')
-    expect(event).toBeDefined()
-    expect(event!.props).toMatchObject({
-      mode: 'country-pinning',
-      attemptIndex: 1,
-    })
   })
 
   it('calls endGame when leaving a game route while non-idle', () => {

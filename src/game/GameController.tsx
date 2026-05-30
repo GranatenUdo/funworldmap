@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { CityLike, CountryLike } from './shared/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
-import { isCityGuessing, isCountryPinning } from './shared/modePredicates'
+import { isCountryPinning } from './shared/modePredicates'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { useGameTestSeams } from './hooks/useGameTestSeams'
-import { useDailyResumePersistence } from './hooks/useDailyResumePersistence'
 import { useGameAnnouncements } from './hooks/useGameAnnouncements'
 import { useRevealMapEffects } from './hooks/useRevealMapEffects'
 import { useHashGameRouter } from './hooks/useHashGameRouter'
@@ -13,17 +12,10 @@ import { GameOverOverlay } from './shared/hud/GameOverOverlay'
 import { FirstSessionTutorial } from './shared/hud/FirstSessionTutorial'
 import { useMap } from '../hooks/useMap'
 import { CityGuessingHudActionsContext } from './modes/city-guessing'
-import { useDailyPuzzlesContext } from './daily/DailyPuzzlesProvider'
-import { useDailyHistory } from './daily/useDailyHistory'
-import { clearResume } from './daily/resume'
-import { writeLastMode } from './shared/lastMode'
-import { DailyRevealOverlay } from '../components/DailyRevealOverlay'
-import { toLocalDateString } from './daily/dates'
-import { writeHash } from '../lib/hashState'
 
 function writeIdleHash(): void {
   const h = window.location.hash
-  if (h.startsWith('#game') || h.startsWith('#daily')) {
+  if (h.startsWith('#game')) {
     history.replaceState(null, '', window.location.pathname)
     window.dispatchEvent(new HashChangeEvent('hashchange'))
   }
@@ -43,7 +35,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     start,
     submitGuessInput,
     completeNow,
-    resume,
     advance,
     overrideRound,
     endGame,
@@ -52,8 +43,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     restart,
   } = useGameSessionContext()
   const { best, record } = usePersonalBests(session.modeId || 'country-pinning')
-  const dailyPuzzles = useDailyPuzzlesContext()
-  const { record: recordDailyResult, get: dailyHistoryGet } = useDailyHistory()
 
   // Pool derivation shared with the hash-router hook (which needs `getMode` for
   // the first round ahead of the reducer running).
@@ -62,10 +51,7 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   const { statusRef } = useHashGameRouter({
     session,
     pools,
-    dailyPuzzles,
-    dailyHistoryGet,
     start,
-    resume,
     restart,
     endGame,
   })
@@ -80,7 +66,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     submitGuessInput,
     statusRef,
   })
-  useDailyResumePersistence(session)
   useGameAnnouncements({
     session,
     mode,
@@ -88,7 +73,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     advance,
     finalize,
     record,
-    recordDailyResult,
   })
   useRevealMapEffects({ session, mapRef, byCca3, submitGuessInput })
 
@@ -102,7 +86,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       const tgt = e.target as HTMLElement | null
       if (tgt && tgt.matches('input, textarea, [contenteditable]')) return
       e.preventDefault()
-      clearResume()
       endGame()
       writeIdleHash()
     }
@@ -111,14 +94,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   }, [session.status, session.modeId, endGame])
 
   const onEndGame = () => {
-    // Free games: route through game-over so the user sees their score and
-    // PB is recorded. Daily plays keep abandon-semantic (Done is the
-    // explicit save action there); idle / already game-over no-ops.
-    if (session.dailyDate === null && session.status !== 'idle' && session.status !== 'game-over') {
+    if (session.status !== 'idle' && session.status !== 'game-over') {
       finishFree()
       return
     }
-    clearResume()
     endGame()
     writeIdleHash()
   }
@@ -129,11 +108,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   }
   const onBackToMap = onEndGame
   const onSkip = () => submitGuessInput({ kind: 'skip' })
-  const onPlayUnlimited = useCallback(() => {
-    // Atomic restart via hash-router: avoids the intermediate idle render.
-    writeLastMode(session.modeId)
-    window.location.hash = writeHash({ kind: 'game', modeId: session.modeId })
-  }, [session.modeId])
 
   if (session.status === 'idle' || !mode) return null
 
@@ -152,27 +126,15 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       <HudShell session={session} onEndGame={onEndGame} onDone={completeNow}>
         <Hud session={session} />
       </HudShell>
-      {session.status === 'game-over' &&
-        (session.dailyDate !== null && isCityGuessing(session.modeId) ? (
-          <DailyRevealOverlay
-            date={session.dailyDate}
-            modeId={session.modeId}
-            puzzle={dailyPuzzles.byDate(session.dailyDate) ?? null}
-            today={toLocalDateString(new Date())}
-            countries={countries}
-            cities={cities}
-            onClose={onBackToMap}
-            onPlayUnlimited={onPlayUnlimited}
-          />
-        ) : (
-          <GameOverOverlay
-            session={session}
-            personalBest={best}
-            beatPersonalBest={beatPB}
-            onPlayAgain={onPlayAgain}
-            onBackToMap={onBackToMap}
-          />
-        ))}
+      {session.status === 'game-over' && (
+        <GameOverOverlay
+          session={session}
+          personalBest={best}
+          beatPersonalBest={beatPB}
+          onPlayAgain={onPlayAgain}
+          onBackToMap={onBackToMap}
+        />
+      )}
     </CityGuessingHudActionsContext.Provider>
   )
 }

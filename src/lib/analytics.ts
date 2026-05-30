@@ -1,9 +1,6 @@
 import type { ModeId } from '../game/shared/types'
 
 export type EventSchema = {
-  daily_started: { mode: ModeId }
-  daily_attempted: { mode: ModeId; attemptIndex: number; scoreBucket: number }
-  daily_completed: { mode: ModeId; bestScoreBucket: number; attemptsUsed: number }
   daily_shared: {
     date: string
     modesPlayed: 1 | 2
@@ -14,10 +11,6 @@ export type EventSchema = {
   streak_reached_milestone: { days: 3 | 7 | 14 | 30 | 100 }
   launcher_dismissed: { path: 'search' | 'escape' | 'card' | 'backdrop' | 'close' }
   header_cta_clicked: Record<string, never>
-  deep_link_opened: {
-    dateKind: 'today' | 'past' | 'future'
-    outcome: 'start' | 'resume' | 'reveal' | 'redirect'
-  }
 }
 
 export type EventName = keyof EventSchema

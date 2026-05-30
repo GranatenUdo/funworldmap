@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import type { GameSession, PersonalBest } from '../types'
-import { DailyShareBlock } from '../../../components/DailyShareBlock'
-import { useDailyHistory } from '../../daily/useDailyHistory'
 
 interface Props {
   session: GameSession
@@ -14,7 +12,6 @@ interface Props {
 function describeGameEnd(session: GameSession): string {
   if (session.endedEarly) return 'Game ended early.'
   if (session.maxRounds === null) return 'Three wrong guesses.'
-  if (session.maxRounds === 1) return '1 round complete.'
   return `${session.maxRounds} rounds complete.`
 }
 
@@ -29,12 +26,6 @@ export function GameOverOverlay({
   // game-over, which would otherwise flip "New personal best!" to "Best: N pts".
   const [stableBeatPB] = useState(beatPersonalBest)
   const previousFocusRef = useRef<HTMLElement | null>(null)
-  const { history, streak } = useDailyHistory()
-  const isDaily = session.dailyDate !== null
-  const dailyDate = session.dailyDate
-  const dailyResults = dailyDate ? (history.days[dailyDate] ?? {}) : {}
-  const hasAnyMode =
-    isDaily && (!!dailyResults['country-pinning'] || !!dailyResults['city-guessing'])
 
   useEffect(() => {
     previousFocusRef.current = document.activeElement as HTMLElement | null
@@ -71,13 +62,9 @@ export function GameOverOverlay({
           data-testid="game-over-title"
           className="text-xl font-bold text-sand-900 dark:text-dark-50 mb-1"
         >
-          {isDaily ? 'Today’s results' : 'Game over'}
+          Game over
         </h2>
-        {!isDaily && (
-          <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">
-            {describeGameEnd(session)}
-          </p>
-        )}
+        <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">{describeGameEnd(session)}</p>
 
         <dl
           className={`grid ${
@@ -106,31 +93,27 @@ export function GameOverOverlay({
           )}
         </dl>
 
-        {!isDaily && (
-          <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
-            {stableBeatPB ? (
-              <span className="font-semibold text-teal-accessible dark:text-teal-light">
-                New personal best!
-              </span>
-            ) : (
-              <>
-                Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak
-              </>
-            )}
-          </div>
-        )}
+        <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
+          {stableBeatPB ? (
+            <span className="font-semibold text-teal-accessible dark:text-teal-light">
+              New personal best!
+            </span>
+          ) : (
+            <>
+              Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak
+            </>
+          )}
+        </div>
 
         <div className="flex gap-2">
-          {!isDaily && (
-            <button
-              type="button"
-              onClick={onPlayAgain}
-              className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-medium hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50"
-              data-testid="game-over-play-again"
-            >
-              Play again
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onPlayAgain}
+            className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-medium hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50"
+            data-testid="game-over-play-again"
+          >
+            Play again
+          </button>
           <button
             type="button"
             onClick={onBackToMap}
@@ -140,14 +123,6 @@ export function GameOverOverlay({
             Back to map
           </button>
         </div>
-        {isDaily && hasAnyMode && dailyDate && (
-          <DailyShareBlock
-            date={dailyDate}
-            results={dailyResults}
-            streak={streak}
-            originUrl={window.location.origin}
-          />
-        )}
       </div>
     </div>
   )

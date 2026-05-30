@@ -21,32 +21,6 @@ describe('GameOverOverlay', () => {
     window.location.hash = ''
   })
 
-  it('hides the subtitle on daily mode (was "1 round complete.")', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.queryByText(/1 round complete/)).toBeNull()
-  })
-
-  it('shows "Today’s results" as the title on daily mode', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('game-over-title').textContent).toBe('Today’s results')
-  })
-
   it('still says "Game over" on unlimited mode', () => {
     render(
       <GameOverOverlay
@@ -72,20 +46,6 @@ describe('GameOverOverlay', () => {
       />,
     )
     expect(screen.getByText('10 rounds complete.')).toBeTruthy()
-  })
-
-  it('hides the personal-best block on daily plays', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, dailyDate: '2026-04-27' }}
-        personalBest={zeroBest}
-        beatPersonalBest={true}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.queryByTestId('game-over-pb')).toBeNull()
-    expect(screen.queryByText(/personal best/i)).toBeNull()
   })
 
   it('shows the personal-best block on free plays', () => {
