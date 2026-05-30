@@ -1,7 +1,7 @@
 {
   "name": "funworldmap",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Interactive political world map with daily geography puzzles. Fully client-side; deployable to any static host.",
   "homepage": "https://funworldmap.com",
