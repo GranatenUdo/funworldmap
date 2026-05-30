@@ -26,7 +26,9 @@ Scripts:
 
 > The daily puzzle index (`public/daily/index.json`) is a generated artifact —
 > it is not committed to `main`. `npm run dev` regenerates it automatically (via
-> the `predev` hook); in production it is served from the `data` branch. See
+> the `predev` hook); in production it is served from the `data` branch. If you
+> run `npm run build` / `preview` / `build:e2e` directly without having run
+> `npm run dev` first, run `npm run daily:generate` once to produce it. See
 > `docs/systems/daily-puzzle.md`.
 
 ## Pull Request Expectations

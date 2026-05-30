@@ -69,14 +69,21 @@ The generated daily index (`/daily/index.json`) is **not** committed to `main`. 
 
 **Bootstrap (one-time / recovery).** If the `data` branch is lost, recreate it:
 
+Recreate it from a throwaway repo so your working tree is never touched.
+(Do **not** use `git switch --orphan data` + `git rm -rf .` in place: that
+strips your tracked files — including `.gitignore` — and leaves untracked
+artifacts that a stray `git add -A` could commit into the branch.)
+
 ```bash
-npm run daily:generate                              # produces public/daily/index.json
-cp public/daily/index.json /tmp/seed-index.json
-git switch --orphan data
-git rm -rf . >/dev/null 2>&1 || true
-cp /tmp/seed-index.json index.json
-git add index.json && git commit -m "chore(data): seed daily-index branch"
-git push -u origin data
+npm run daily:generate                          # produce a current public/daily/index.json
+tmp=$(mktemp -d)
+cp public/daily/index.json "$tmp/index.json"
+git -C "$tmp" init -q
+git -C "$tmp" add index.json
+git -C "$tmp" -c user.name='funworldmap-bot' -c user.email='bot@funworldmap.com' \
+  commit -qm "chore(data): seed daily-index branch"
+git -C "$tmp" push "$(git remote get-url origin)" HEAD:data
+rm -rf "$tmp"
 ```
 
 **Fallback.** If `deploy.yml` cannot read `origin/data:index.json`, it generates a fresh index at build time so the site never ships without a daily — but that index is not recorded on the `data` branch. A deploy log line `data branch unavailable — generating fresh.` means the `data` branch needs re-bootstrapping.
