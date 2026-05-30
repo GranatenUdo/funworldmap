@@ -162,7 +162,6 @@ export function useGameAnnouncements({
     session.currentRound,
     session.modeId,
     session.currentAttempts,
-    session.dailyDate,
     advance,
     mode,
     record,

@@ -1,11 +1,10 @@
 /**
- * Characterization tests for useHashGameRouter — covers the major branches of
- * the hash bootstrap, deferred-pool drain, deep-link analytics, intermediate-
- * attempt telemetry, and the wasGameOver/atomicRestart bug-#32 workaround.
+ * Characterization tests for useHashGameRouter — covers the free-play (`#game`)
+ * hash bootstrap, the deferred-pool drain, the hashchange listener, and the
+ * wasGameOver/atomicRestart bug-#32 workaround.
  *
- * Tests observable behaviour only: mock dispatcher calls (start/resume/
- * restart/endGame), captured analytics events on window.__testAnalytics, and
- * window.location.hash side-effects. No assertions on internal hook state.
+ * Tests observable behaviour only: mock dispatcher calls (start/restart/endGame)
+ * and window.location.hash side-effects. No assertions on internal hook state.
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
