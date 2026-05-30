@@ -12,6 +12,7 @@ import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { useMapReady } from './hooks/useMapReady'
+import { useFirstVisitHint } from './hooks/useFirstVisitHint'
 import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { isCountryPinning } from './game/shared/modePredicates'
@@ -106,8 +107,11 @@ function AppInner({
   const clearTimerRef = useRef<number | null>(null)
   const prevSelectedRef = useRef<string | null>(null)
   const mapReady = useMapReady()
-  const [showHint, setShowHint] = useState(false)
-  const [hintDismissed, setHintDismissed] = useState(false)
+  const { showHint } = useFirstVisitHint({
+    mapReady,
+    hasSelection: !!selected,
+    gameActive: session.status !== 'idle',
+  })
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
   const [revealState, setRevealState] = useState<{ date: string; modeId: ModeId | null } | null>(
@@ -287,23 +291,6 @@ function AppInner({
       }
     }
   }, [selected])
-
-  useEffect(() => {
-    if (!mapReady || selected || hintDismissed || gameActive) return
-    if (sessionStorage.getItem('funworldmap-hint-shown')) return
-    const timer = setTimeout(() => {
-      setShowHint(true)
-      sessionStorage.setItem('funworldmap-hint-shown', '1')
-    }, 1500)
-    return () => clearTimeout(timer)
-  }, [mapReady, selected, hintDismissed, gameActive])
-
-  useEffect(() => {
-    if ((selected || gameActive) && showHint) {
-      setShowHint(false)
-      setHintDismissed(true)
-    }
-  }, [selected, gameActive, showHint])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
