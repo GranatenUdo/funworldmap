@@ -66,10 +66,10 @@ and a permissively-licensed stack with no account or API key.
 ## Decision
 
 Render with **MapLibre GL JS** (the open-source fork of Mapbox GL JS) over an
-**OpenFreeMap "Positron" vector basemap**. MapLibre requires a WebGL2 context; before
-creating the map the app probes for one (`canvas.getContext('webgl2')` in
-`useMapInstance`) and, when unavailable, renders a "WebGL2 Not Supported" overlay
-(`WorldMap.tsx`) instead of a blank canvas.
+**OpenFreeMap "Positron" vector basemap**. MapLibre requires a WebGL2 context; when it is
+unavailable the `maplibregl.Map` constructor throws, which `useMapInstance` catches
+to render a "WebGL2 Not Supported" overlay (`WorldMap.tsx`) instead of a blank
+canvas.
 
 ## Consequences
 
@@ -294,14 +294,14 @@ git commit -m "docs(adr): reconcile backfill note with filing convention"
 
 **Files:** Modify `docs/systems/overview.md`, `CONTRIBUTING.md`.
 
-Two pre-existing inaccuracies: `maplibregl.supported()` was removed in MapLibre v5 (the repo is on `^5.23.0`; the real check is `canvas.getContext('webgl2')` in `useMapInstance.ts:226`), and the e2e projects were consolidated away from the old `chromium`/`chromium-gpu` split. ADR 0001 now states the correct mechanism, so the system docs must match.
+Two pre-existing inaccuracies: `maplibregl.supported()` was removed in MapLibre v5 (the repo is on `^5.23.0`; WebGL2 support is actually detected by the `maplibregl.Map` constructor throwing, caught in `useMapInstance.ts`), and the e2e projects were consolidated away from the old `chromium`/`chromium-gpu` split. ADR 0001 now states the correct mechanism, so the system docs must match.
 
 - [ ] **Step 1: Fix `overview.md`'s two `maplibregl.supported()` mentions.**
 
 In `docs/systems/overview.md`:
 
-- Line ~56 — replace `MapLibre GL creates WebGL2 context (with \`maplibregl.supported()\` check — see Error Handling)`with`MapLibre GL creates a WebGL2 context (the app first probes for one via \`canvas.getContext('webgl2')\` — see Error Handling)`.
-- Line ~110 (Error Handling table) — replace the cell's `\`maplibregl.supported()\` returns false →`with`the \`canvas.getContext('webgl2')\` probe in \`useMapInstance\` fails →`, leaving the rest of the cell (browser-upgrade guidance, WebGL1 note) unchanged.
+- Line ~56 — replace `MapLibre GL creates WebGL2 context (with \`maplibregl.supported()\` check — see Error Handling)`with`MapLibre GL creates a WebGL2 context; if the browser lacks WebGL2 the \`maplibregl.Map\` constructor throws and the app shows an unsupported message (see Error Handling)`.
+- Line ~110 (Error Handling table) — replace the cell's `\`maplibregl.supported()\` returns false →`with`the \`maplibregl.Map\` constructor throws (caught in \`useMapInstance\`) →`, leaving the rest of the cell (browser-upgrade guidance, WebGL1 note) unchanged.
 
 - [ ] **Step 2: Fix `CONTRIBUTING.md`'s stale e2e-projects line.**
 

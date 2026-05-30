@@ -13,10 +13,10 @@ and a permissively-licensed stack with no account or API key.
 ## Decision
 
 Render with **MapLibre GL JS** (the open-source fork of Mapbox GL JS) over an
-**OpenFreeMap "Positron" vector basemap**. MapLibre requires a WebGL2 context; before
-creating the map the app probes for one (`canvas.getContext('webgl2')` in
-`useMapInstance`) and, when unavailable, renders a "WebGL2 Not Supported" overlay
-(`WorldMap.tsx`) instead of a blank canvas.
+**OpenFreeMap "Positron" vector basemap**. MapLibre requires a WebGL2 context; when it is
+unavailable the `maplibregl.Map` constructor throws, which `useMapInstance` catches
+to render a "WebGL2 Not Supported" overlay (`WorldMap.tsx`) instead of a blank
+canvas.
 
 ## Consequences
 

@@ -54,7 +54,7 @@ Flag images and country metadata are bundled — no other external fetches at ru
 ### On Page Load
 
 1. Browser loads static HTML + JS + CSS from CDN
-2. React initializes, MapLibre GL creates a WebGL2 context (the app first probes for one via `canvas.getContext('webgl2')` — see Error Handling)
+2. React initializes, MapLibre GL creates a WebGL2 context; if the browser lacks WebGL2 the `maplibregl.Map` constructor throws and the app shows an unsupported message (see Error Handling)
 3. Basemap tiles stream from OpenFreeMap as user pans/zooms
 4. world-atlas TopoJSON loads asynchronously (Vite code-split chunk). While it loads, the user sees the basemap without country boundaries — no loading indicator is shown, as the basemap provides immediate visual content and country polygons appear within seconds.
 5. TopoJSON converted to GeoJSON via `topojson-client`, added as map source
@@ -108,14 +108,14 @@ When the hash is cleared (clicking ocean, closing the panel, or reset view), `us
 
 ## Error Handling
 
-| Failure                              | Behavior                                                                                                                                                                                                                                                 |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **WebGL2 not supported**             | the `canvas.getContext('webgl2')` probe in `useMapInstance` fails → show error message with browser upgrade guidance instead of blank canvas. Note: MapLibre GL JS requires WebGL2, not just WebGL1 — some older browsers support WebGL1 but not WebGL2. |
-| **Invalid URL hash**                 | Hash contains an unrecognized cca3 code (e.g., `#INVALID`) → `byCca3` lookup returns no match → hash is silently cleared, no country selected, default view shown.                                                                                       |
-| **Basemap tiles fail to load**       | Map canvas renders with country polygons from bundled data, but no underlying geography (no water, labels, roads). Functional but visually sparse.                                                                                                       |
-| **TopoJSON fails to load/parse**     | Map shows basemap only with no interactive country layers. Error state displayed: "Country data unavailable." Search and panel non-functional.                                                                                                           |
-| **Country ID has no metadata match** | Panel shows country name from world-atlas `properties.name` with note "Limited data available." No crash. See [Data System — Unmatched Territories](data.md).                                                                                            |
-| **WebGL2 context lost mid-session**  | MapLibre fires `webglcontextlost` event. Display "Map temporarily unavailable" overlay. Attempt restore on `webglcontextrestored`.                                                                                                                       |
+| Failure                              | Behavior                                                                                                                                                                                                                                                    |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **WebGL2 not supported**             | the `maplibregl.Map` constructor throws (caught in `useMapInstance`) → show error message with browser upgrade guidance instead of blank canvas. Note: MapLibre GL JS requires WebGL2, not just WebGL1 — some older browsers support WebGL1 but not WebGL2. |
+| **Invalid URL hash**                 | Hash contains an unrecognized cca3 code (e.g., `#INVALID`) → `byCca3` lookup returns no match → hash is silently cleared, no country selected, default view shown.                                                                                          |
+| **Basemap tiles fail to load**       | Map canvas renders with country polygons from bundled data, but no underlying geography (no water, labels, roads). Functional but visually sparse.                                                                                                          |
+| **TopoJSON fails to load/parse**     | Map shows basemap only with no interactive country layers. Error state displayed: "Country data unavailable." Search and panel non-functional.                                                                                                              |
+| **Country ID has no metadata match** | Panel shows country name from world-atlas `properties.name` with note "Limited data available." No crash. See [Data System — Unmatched Territories](data.md).                                                                                               |
+| **WebGL2 context lost mid-session**  | MapLibre fires `webglcontextlost` event. Display "Map temporarily unavailable" overlay. Attempt restore on `webglcontextrestored`.                                                                                                                          |
 
 ## Bundle Size Budget
 
