@@ -26,14 +26,14 @@ describe('track', () => {
   })
 
   it('dispatches via sendBeacon when available', () => {
-    track('daily_opened', { mode: 'country-pinning', dateAge: 0 })
+    track('free_started', { mode: 'country-pinning' })
     expect(sendBeaconMock).toHaveBeenCalledTimes(1)
     const [url, body] = sendBeaconMock.mock.calls[0] as [string, string]
     expect(url).toBe('https://funworldmap.com/api/event')
     expect(typeof body).toBe('string')
     expect(JSON.parse(body)).toEqual({
-      name: 'daily_opened',
-      props: { mode: 'country-pinning', dateAge: 0 },
+      name: 'free_started',
+      props: { mode: 'country-pinning' },
     })
     expect(fetchMock).not.toHaveBeenCalled()
   })
@@ -49,7 +49,7 @@ describe('track', () => {
 
   it('is a no-op when navigator.doNotTrack is "1"', () => {
     Object.defineProperty(navigator, 'doNotTrack', { configurable: true, value: '1' })
-    track('daily_opened', { mode: 'country-pinning', dateAge: 0 })
+    track('free_started', { mode: 'country-pinning' })
     expect(sendBeaconMock).not.toHaveBeenCalled()
     expect(fetchMock).not.toHaveBeenCalled()
   })
@@ -66,7 +66,7 @@ describe('track', () => {
 
   it('is a no-op when VITE_ANALYTICS_ENDPOINT is empty', () => {
     vi.stubEnv('VITE_ANALYTICS_ENDPOINT', '')
-    track('daily_opened', { mode: 'country-pinning', dateAge: 0 })
+    track('free_started', { mode: 'country-pinning' })
     expect(sendBeaconMock).not.toHaveBeenCalled()
     expect(fetchMock).not.toHaveBeenCalled()
   })

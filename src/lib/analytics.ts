@@ -1,9 +1,6 @@
 import type { ModeId } from '../game/shared/types'
 
-export type CtaState = 'unplayed' | 'partial' | 'done'
-
 export type EventSchema = {
-  daily_opened: { mode: ModeId; dateAge: number }
   daily_started: { mode: ModeId }
   daily_attempted: { mode: ModeId; attemptIndex: number; scoreBucket: number }
   daily_completed: { mode: ModeId; bestScoreBucket: number; attemptsUsed: number }
@@ -14,13 +11,9 @@ export type EventSchema = {
   }
   daily_done_low_score_prompt: { mode: ModeId; bestScore: number; attemptsRemaining: number }
   free_started: { mode: ModeId }
-  history_opened: Record<string, never>
-  history_cell_clicked: { cellKind: 'played' | 'unplayed-in-window' | 'rolled-off' }
   streak_reached_milestone: { days: 3 | 7 | 14 | 30 | 100 }
   launcher_dismissed: { path: 'search' | 'escape' | 'card' | 'backdrop' | 'close' }
-  // alias: "unlimited" in UI vocabulary; event name kept for analytics
-  // backwards-compat with cloudflare-worker/queries/*.sql
-  header_cta_clicked: { state: CtaState }
+  header_cta_clicked: Record<string, never>
   deep_link_opened: {
     dateKind: 'today' | 'past' | 'future'
     outcome: 'start' | 'resume' | 'reveal' | 'redirect'

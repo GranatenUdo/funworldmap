@@ -2,7 +2,7 @@ import SearchBar from './SearchBar'
 import ThemeToggle from './ThemeToggle'
 import type { CountryData } from '../lib/types'
 import type { Theme } from '../hooks/useTheme'
-import { track, type CtaState } from '../lib/analytics'
+import { track } from '../lib/analytics'
 
 interface Props {
   countries: CountryData[]
@@ -11,14 +11,10 @@ interface Props {
   comparePickingMode: boolean
   gameActive: boolean
   launcherVisible: boolean
-  ctaState: CtaState
-  streakCurrent: number
-  streakActive: boolean
   onSelect: (cca3: string) => void
   onThemeCycle: () => void
   onSatelliteToggle: () => void
   onOpenLauncher: () => void
-  onOpenLauncherHistory: () => void
   onLauncherDismiss: () => void
 }
 
@@ -29,14 +25,10 @@ export default function Header({
   comparePickingMode,
   gameActive,
   launcherVisible,
-  ctaState,
-  streakCurrent,
-  streakActive,
   onSelect,
   onThemeCycle,
   onSatelliteToggle,
   onOpenLauncher,
-  onOpenLauncherHistory,
   onLauncherDismiss,
 }: Props) {
   if (launcherVisible) return null
@@ -62,73 +54,21 @@ export default function Header({
         )}
 
         <div className="pointer-events-auto ml-3 flex items-center gap-2">
-          {!gameActive && streakActive && streakCurrent > 0 && (
-            <button
-              type="button"
-              onClick={onOpenLauncherHistory}
-              aria-label={`Streak ${streakCurrent} days — open history`}
-              data-testid="header-streak-chip"
-              className="hidden sm:flex h-10 px-2.5 rounded-xl backdrop-blur-sm border bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-sm items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50"
-            >
-              <span className="flex items-center gap-1 text-teal dark:text-teal-light tabular-nums">
-                <span aria-hidden="true">🔥</span>
-                <span className="font-semibold">{streakCurrent}</span>
-              </span>
-            </button>
-          )}
-
           {!gameActive && (
             <button
               type="button"
               onClick={() => {
-                track('header_cta_clicked', { state: ctaState })
+                track('header_cta_clicked', {})
                 onOpenLauncher()
               }}
-              aria-label={
-                ctaState === 'done'
-                  ? 'Today’s puzzle complete'
-                  : ctaState === 'partial'
-                    ? 'Play today (1 mode remaining)'
-                    : 'Play today'
-              }
+              aria-label="Play"
               data-testid="header-play"
-              data-state={ctaState}
-              className={`h-10 px-3 rounded-xl backdrop-blur-sm border flex items-center gap-2 font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 ${
-                ctaState === 'done'
-                  ? 'bg-sand-100/60 dark:bg-dark-400/60 border-sand-300/40 dark:border-dark-200/30 text-sand-700 dark:text-dark-100'
-                  : 'bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-teal dark:text-teal-light hover:bg-sand-200/90 dark:hover:bg-dark-300/80'
-              }`}
+              className="h-10 px-3 rounded-xl backdrop-blur-sm border flex items-center gap-2 font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-teal dark:text-teal-light hover:bg-sand-200/90 dark:hover:bg-dark-300/80"
             >
-              {streakActive && streakCurrent > 0 && (
-                <span className="sm:hidden mr-1 flex items-center gap-1 text-teal dark:text-teal-light tabular-nums">
-                  <span aria-hidden="true">🔥</span>
-                  <span className="font-semibold">{streakCurrent}</span>
-                </span>
-              )}
-              {ctaState === 'done' ? (
-                <>
-                  <span aria-hidden="true">&#x2713;</span>
-                  <span className="hidden sm:inline">Today done</span>
-                </>
-              ) : (
-                <>
-                  <svg
-                    className="w-4 h-4"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                  <span className="hidden sm:inline">Play today</span>
-                  <span
-                    aria-hidden="true"
-                    className={`w-2 h-2 rounded-full ${
-                      ctaState === 'partial' ? 'border-2 border-teal bg-transparent' : 'bg-teal'
-                    }`}
-                  />
-                </>
-              )}
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span className="hidden sm:inline">Play</span>
             </button>
           )}
 
