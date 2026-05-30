@@ -88,6 +88,7 @@ test('axe-snapshot: game-over modal', async ({ page }) => {
   await waitForGameTestHook(page)
 
   // End game → game-over via "End game" button
+  await expect(page.getByTestId('game-end')).toBeVisible({ timeout: 5_000 })
   await page.getByTestId('game-end').click()
   await page.getByTestId('game-over').waitFor({ state: 'visible', timeout: 10_000 })
 

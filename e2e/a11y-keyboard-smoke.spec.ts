@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test'
-import { waitForAppReady, openLauncher, gotoAndWaitForMap } from './helpers'
+import { openLauncher, gotoAndWaitForMap } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -9,7 +9,6 @@ test.setTimeout(60_000)
 
 async function openLauncherFresh(page: Page) {
   await gotoAndWaitForMap(page, '/')
-  await waitForAppReady(page)
   await openLauncher(page)
 }
 
