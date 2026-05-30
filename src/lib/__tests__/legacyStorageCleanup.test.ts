@@ -21,5 +21,7 @@ describe('cleanupLegacyDailyStorage', () => {
       cleanupLegacyDailyStorage()
       cleanupLegacyDailyStorage()
     }).not.toThrow()
+    expect(localStorage.getItem('funworldmap-daily-history')).toBeNull()
+    expect(localStorage.getItem('funworldmap-daily-resume')).toBeNull()
   })
 })
