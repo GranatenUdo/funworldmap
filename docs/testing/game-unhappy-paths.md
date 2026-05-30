@@ -522,7 +522,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 ### G1. WebGL2 not supported
 
-**Pre:** Browser does not support WebGL2 (`maplibregl.supported()` returns false).
+**Pre:** Browser does not support WebGL2 (the `maplibregl.Map` constructor throws, caught in `useMapInstance`).
 
 1. **User opens `/`.**
    - After: Map canvas does not initialize.

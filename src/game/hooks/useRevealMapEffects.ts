@@ -265,7 +265,7 @@ export function useRevealMapEffects({
       // computeRevealAnimationPlan, so the cleanup is mode-neutral.
       clearRevealSources(map)
     }
-  }, [session.status, session.lastOutcome, byCca3])
+  }, [session.status, session.lastOutcome, byCca3, mapRef])
 
   // Intermediate reveal between attempts (daily only): correctness-coloured
   // guess highlight + score toast.
@@ -317,7 +317,13 @@ export function useRevealMapEffects({
         }
       }
     }
-  }, [session.status, session.attemptsPerRound, session.attemptsRemaining, session.currentAttempts])
+  }, [
+    session.status,
+    session.attemptsPerRound,
+    session.attemptsRemaining,
+    session.currentAttempts,
+    mapRef,
+  ])
 
   // Persistent intermediate marker (city best-of-N) — no timeout. Replaced by
   // the next click via setData, by the round-ended geometry effect, or by the
@@ -353,7 +359,7 @@ export function useRevealMapEffects({
     } catch {
       /* style may still be resolving */
     }
-  }, [session.status, session.attemptsPerRound, session.modeId, session.currentAttempts])
+  }, [session.status, session.attemptsPerRound, session.modeId, session.currentAttempts, mapRef])
 
   // City-mode any-click handler.
   useEffect(() => {
@@ -368,12 +374,12 @@ export function useRevealMapEffects({
     return () => {
       map.off('click', onClick)
     }
-  }, [session.status, session.modeId, submitGuessInput])
+  }, [session.status, session.modeId, submitGuessInput, mapRef])
 
   // Clear reveal geometry on every transition into idle.
   useEffect(() => {
     if (session.status !== 'idle') return
     const map = mapRef.current
     if (map) clearRevealSources(map)
-  }, [session.status])
+  }, [session.status, mapRef])
 }

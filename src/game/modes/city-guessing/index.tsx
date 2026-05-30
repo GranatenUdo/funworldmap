@@ -17,6 +17,7 @@ export function useCityGuessingHudActions() {
   return useContext(CityGuessingHudActionsContext)
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 const CityGuessingHudWrapper: GameMode['HudComponent'] = ({ session }) => {
   const { onSkip } = useCityGuessingHudActions()
   return <CityGuessingHud session={session} onSkip={onSkip} />

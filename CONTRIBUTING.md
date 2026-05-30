@@ -21,7 +21,7 @@ Scripts:
 - `npm run lint` — ESLint
 - `tsc -b` — TypeScript build/check
 - `npm run test:unit` — Vitest (jsdom environment)
-- `npm run test:e2e` — Playwright (two projects: `chromium` DOM, `chromium-gpu` WebGL)
+- `npm run test:e2e` — Playwright (chromium on CI; mobile + firefox projects available locally — see `playwright.config.ts`)
 - `npm run update-data` — refresh `src/data/countries.json` from upstream sources
 
 > The daily puzzle index (`public/daily/index.json`) is a generated artifact —
