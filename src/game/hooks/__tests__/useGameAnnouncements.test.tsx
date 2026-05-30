@@ -186,7 +186,6 @@ describe('useGameAnnouncements', () => {
       modeId: 'country-pinning',
       score: 250,
       bestStreak: 4,
-      dailyDate: null,
     })
     renderAnnouncementsHook(buildAnnouncementsArgs({ session, record }))
     expect(record).toHaveBeenCalledWith(250, 4)
@@ -198,7 +197,6 @@ describe('useGameAnnouncements', () => {
       status: 'game-over',
       modeId: 'country-pinning',
       score: 100,
-      dailyDate: null,
     })
     const args = buildAnnouncementsArgs({ session, record })
     const { rerender } = renderHook(({ s }) => useGameAnnouncements({ ...args, session: s }), {
@@ -215,7 +213,6 @@ describe('useGameAnnouncements', () => {
         status: 'game-over',
         modeId: 'country-pinning',
         score: 250,
-        dailyDate: null,
       })
       const args = buildAnnouncementsArgs({ session })
       const { rerender } = renderHook(({ s }) => useGameAnnouncements({ ...args, session: s }), {

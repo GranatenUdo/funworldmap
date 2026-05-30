@@ -1,13 +1,11 @@
-import type { AttemptRecord, CityRoundSpec, CountryReveal, CountryRoundSpec, GameSession, GuessOutcome, PointReveal } from '../types'
-
-export function makeAttempt(overrides: Partial<AttemptRecord> = {}): AttemptRecord {
-  return {
-    pointsEarned: 0,
-    input: { kind: 'country', cca3: 'USA', name: 'United States', centroid: [-97, 38] },
-    reveal: { kind: 'country', correct: false, targetCca3: 'FRA', clickedCca3: 'USA', clickedName: 'United States', distanceKm: 7000 },
-    ...overrides,
-  }
-}
+import type {
+  CityRoundSpec,
+  CountryReveal,
+  CountryRoundSpec,
+  GameSession,
+  GuessOutcome,
+  PointReveal,
+} from '../types'
 
 export function makeSession(overrides: Partial<GameSession> = {}): GameSession {
   return {
@@ -19,12 +17,8 @@ export function makeSession(overrides: Partial<GameSession> = {}): GameSession {
     bestStreak: 0,
     roundIndex: 0,
     maxRounds: null,
-    attemptsPerRound: 1,
-    attemptsRemaining: 1,
-    currentAttempts: [],
     currentRound: null,
     lastOutcome: null,
-    dailyDate: null,
     endedEarly: false,
     used: new Set(),
     ...overrides,
@@ -76,9 +70,6 @@ export function makePointReveal(overrides: Partial<PointReveal> = {}): PointReve
   }
 }
 
-export function makeOutcome(
-  reveal: CountryReveal | PointReveal,
-  endsGame = false,
-): GuessOutcome {
+export function makeOutcome(reveal: CountryReveal | PointReveal, endsGame = false): GuessOutcome {
   return { pointsEarned: 0, livesDelta: 0, reveal, endsGame }
 }

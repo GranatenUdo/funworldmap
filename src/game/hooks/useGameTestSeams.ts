@@ -16,13 +16,7 @@ export interface UseGameTestSeamsArgs {
   mode: GameMode | null
   byCca3: Map<string, CountryLike>
   cities: CityLike[]
-  start: (
-    modeId: ModeId,
-    firstRound: RoundSpec,
-    maxRounds: number | null,
-    attemptsPerRound?: number,
-    dailyDate?: string | null,
-  ) => void
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) => void
   overrideRound: (round: RoundSpec) => void
   submitGuessInput: (input: GuessInput) => void
   /** Synchronous mirror of session.status (provided by useHashGameRouter once Phase 5 lands; until then, plumbed from GameController). */

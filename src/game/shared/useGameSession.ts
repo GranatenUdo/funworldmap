@@ -1,27 +1,21 @@
 import { useCallback, useReducer } from 'react'
-import type { AttemptRecord, GameSession, GuessInput, ModeGuessResult, ModeId, RoundSpec } from './types'
+import type { GameSession, GuessInput, ModeGuessResult, ModeId, RoundSpec } from './types'
 
 /**
- * Reducer action set. The collapsed `attempt` action subsumes the old
- * `recordAttempt` / `submitGuess` split. `completeNow` is the user-driven
- * early-end for best-of-N rounds. `resume` rehydrates a daily session from
- * persisted state.
- *
- * Configuration guard: the combination `attemptsPerRound > 1 && maxRounds === null`
- * is structurally unsupported (lives never decrement; endsGame falls through
- * to a permanently-false condition). The `start` action rejects this combo.
+ * Reducer action set. One attempt per round — the round ends immediately on
+ * each guess. `finalize` advances round-ended → game-over when
+ * `lastOutcome.endsGame` is true. `finishFree` ends an in-progress free-play
+ * session early (endedEarly=true).
  */
 type Action =
-  | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number; dailyDate: string | null }
+  | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null }
   | { type: 'attempt'; input: GuessInput; result: ModeGuessResult }
-  | { type: 'completeNow' }
-  | { type: 'resume'; modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
   | { type: 'endGame' }
   | { type: 'finishFree' }
   | { type: 'finalize' }
-  | { type: 'restart'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null; attemptsPerRound: number; dailyDate: string | null }
+  | { type: 'restart'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null }
 
 const EMPTY: GameSession = {
   modeId: 'country-pinning',
@@ -32,12 +26,8 @@ const EMPTY: GameSession = {
   bestStreak: 0,
   roundIndex: 0,
   maxRounds: null,
-  attemptsPerRound: 1,
-  attemptsRemaining: 1,
-  currentAttempts: [],
   currentRound: null,
   lastOutcome: null,
-  dailyDate: null,
   endedEarly: false,
   used: new Set(),
 }
@@ -46,101 +36,38 @@ function roundKey(round: RoundSpec): string {
   return round.kind === 'country-pinning' ? round.targetCca3 : round.targetId
 }
 
-export function deriveBest(attempts: AttemptRecord[]): AttemptRecord {
-  return attempts.reduce((best, a) => (a.pointsEarned > best.pointsEarned ? a : best), attempts[0])
-}
-
-function endOfRound(state: GameSession, attempts: AttemptRecord[], finalResult: ModeGuessResult | null): GameSession {
-  const best = deriveBest(attempts)
-  const livesDelta = state.attemptsPerRound === 1 && finalResult ? finalResult.livesDelta : 0
-  const nextLives = Math.max(0, state.lives + livesDelta) as GameSession['lives']
-  const nextStreak = best.pointsEarned >= 100 ? state.streak + 1 : 0
-  const endsGame =
-    state.maxRounds !== null
-      ? state.roundIndex + 1 >= state.maxRounds
-      : nextLives <= 0
-  return {
-    ...state,
-    status: 'round-ended',
-    lives: nextLives,
-    score: state.score + best.pointsEarned,
-    streak: nextStreak,
-    bestStreak: Math.max(state.bestStreak, nextStreak),
-    attemptsRemaining: 0,
-    currentAttempts: attempts,
-    lastOutcome: {
-      pointsEarned: best.pointsEarned,
-      livesDelta,
-      endsGame,
-      reveal: best.reveal,
-    },
-  }
-}
-
 function reducer(state: GameSession, action: Action): GameSession {
   switch (action.type) {
     case 'start': {
-      if (action.attemptsPerRound > 1 && action.maxRounds === null) {
-        if (typeof console !== 'undefined') {
-          console.error('useGameSession: attemptsPerRound>1 with maxRounds=null is unsupported')
-        }
-        return state
-      }
       return {
         ...EMPTY,
         modeId: action.modeId,
         status: 'playing',
         maxRounds: action.maxRounds,
-        attemptsPerRound: action.attemptsPerRound,
-        attemptsRemaining: action.attemptsPerRound,
         currentRound: action.firstRound,
-        dailyDate: action.dailyDate,
         used: new Set([roundKey(action.firstRound)]),
       }
     }
 
     case 'attempt': {
       if (state.status !== 'playing' || !state.currentRound) return state
-      if (state.attemptsRemaining <= 0) return state
-      const newAttempt: AttemptRecord = {
-        pointsEarned: action.result.pointsEarned,
-        input: action.input,
-        reveal: action.result.reveal,
-      }
-      const attemptsAfter = [...state.currentAttempts, newAttempt]
-      const remaining = state.attemptsRemaining - 1
-      const roundEnds = state.attemptsPerRound === 1 || remaining === 0
-      if (!roundEnds) {
-        return {
-          ...state,
-          currentAttempts: attemptsAfter,
-          attemptsRemaining: remaining,
-        }
-      }
-      return endOfRound(state, attemptsAfter, action.result)
-    }
-
-    case 'completeNow': {
-      if (state.status !== 'playing') return state
-      if (state.attemptsPerRound <= 1) return state
-      if (state.currentAttempts.length === 0) return state
-      return endOfRound(state, state.currentAttempts, null)
-    }
-
-    case 'resume': {
-      if (action.attemptsPerRound <= 1) return state
-      if (action.attempts.length >= action.attemptsPerRound) return state
+      const nextLives = Math.max(0, state.lives + action.result.livesDelta) as GameSession['lives']
+      const nextStreak = action.result.pointsEarned >= 100 ? state.streak + 1 : 0
+      const endsGame =
+        state.maxRounds !== null ? state.roundIndex + 1 >= state.maxRounds : nextLives <= 0
       return {
-        ...EMPTY,
-        modeId: action.modeId,
-        status: 'playing',
-        maxRounds: 1,
-        attemptsPerRound: action.attemptsPerRound,
-        attemptsRemaining: action.attemptsPerRound - action.attempts.length,
-        currentAttempts: action.attempts,
-        currentRound: action.round,
-        dailyDate: action.dailyDate,
-        used: new Set([roundKey(action.round)]),
+        ...state,
+        status: 'round-ended',
+        lives: nextLives,
+        score: state.score + action.result.pointsEarned,
+        streak: nextStreak,
+        bestStreak: Math.max(state.bestStreak, nextStreak),
+        lastOutcome: {
+          pointsEarned: action.result.pointsEarned,
+          livesDelta: action.result.livesDelta,
+          endsGame,
+          reveal: action.result.reveal,
+        },
       }
     }
 
@@ -152,8 +79,6 @@ function reducer(state: GameSession, action: Action): GameSession {
         currentRound: action.nextRound,
         used: new Set([...state.used, roundKey(action.nextRound)]),
         roundIndex: state.roundIndex + 1,
-        attemptsRemaining: state.attemptsPerRound,
-        currentAttempts: [],
         lastOutcome: null,
       }
     }
@@ -167,8 +92,6 @@ function reducer(state: GameSession, action: Action): GameSession {
         currentRound: action.round,
         used: new Set([...state.used, roundKey(action.round)]),
         roundIndex: isAdvancing ? state.roundIndex + 1 : state.roundIndex,
-        attemptsRemaining: state.attemptsPerRound,
-        currentAttempts: [],
         lastOutcome: null,
       }
     }
@@ -179,7 +102,6 @@ function reducer(state: GameSession, action: Action): GameSession {
 
     case 'finishFree': {
       if (state.status === 'idle' || state.status === 'game-over') return state
-      if (state.dailyDate !== null) return state
       return { ...state, status: 'game-over', endedEarly: true }
     }
 
@@ -195,21 +117,12 @@ function reducer(state: GameSession, action: Action): GameSession {
       // a single dispatch avoids the intermediate `status='idle'` render that
       // would otherwise unmount the HUD between the two reducer ticks — the
       // root cause of bug #32 (game-over → hash-mode-switch race).
-      if (action.attemptsPerRound > 1 && action.maxRounds === null) {
-        if (typeof console !== 'undefined') {
-          console.error('useGameSession: attemptsPerRound>1 with maxRounds=null is unsupported')
-        }
-        return state
-      }
       return {
         ...EMPTY,
         modeId: action.modeId,
         status: 'playing',
         maxRounds: action.maxRounds,
-        attemptsPerRound: action.attemptsPerRound,
-        attemptsRemaining: action.attemptsPerRound,
         currentRound: action.firstRound,
-        dailyDate: action.dailyDate,
         used: new Set([roundKey(action.firstRound)]),
       }
     }
@@ -218,42 +131,40 @@ function reducer(state: GameSession, action: Action): GameSession {
 
 export function useGameSession(): {
   session: GameSession
-  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
+  start: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) => void
   attempt: (input: GuessInput, result: ModeGuessResult) => void
-  completeNow: () => void
-  resume: (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) => void
   advance: (nextRound: RoundSpec) => void
   overrideRound: (round: RoundSpec) => void
   endGame: () => void
   finishFree: () => void
   finalize: () => void
-  restart: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound?: number, dailyDate?: string | null) => void
+  restart: (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) => void
 } {
   const [session, dispatch] = useReducer(reducer, EMPTY)
   const start = useCallback(
-    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound = 1, dailyDate: string | null = null) =>
-      dispatch({ type: 'start', modeId, firstRound, maxRounds, attemptsPerRound, dailyDate }),
+    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) =>
+      dispatch({ type: 'start', modeId, firstRound, maxRounds }),
     [],
   )
   const attempt = useCallback(
     (input: GuessInput, result: ModeGuessResult) => dispatch({ type: 'attempt', input, result }),
     [],
   )
-  const completeNow = useCallback(() => dispatch({ type: 'completeNow' }), [])
-  const resume = useCallback(
-    (payload: { modeId: ModeId; round: RoundSpec; attemptsPerRound: number; attempts: AttemptRecord[]; dailyDate: string }) =>
-      dispatch({ type: 'resume', ...payload }),
+  const advance = useCallback(
+    (nextRound: RoundSpec) => dispatch({ type: 'advance', nextRound }),
     [],
   )
-  const advance = useCallback((nextRound: RoundSpec) => dispatch({ type: 'advance', nextRound }), [])
-  const overrideRound = useCallback((round: RoundSpec) => dispatch({ type: 'overrideRound', round }), [])
+  const overrideRound = useCallback(
+    (round: RoundSpec) => dispatch({ type: 'overrideRound', round }),
+    [],
+  )
   const endGame = useCallback(() => dispatch({ type: 'endGame' }), [])
   const finishFree = useCallback(() => dispatch({ type: 'finishFree' }), [])
   const finalize = useCallback(() => dispatch({ type: 'finalize' }), [])
   const restart = useCallback(
-    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null, attemptsPerRound = 1, dailyDate: string | null = null) =>
-      dispatch({ type: 'restart', modeId, firstRound, maxRounds, attemptsPerRound, dailyDate }),
+    (modeId: ModeId, firstRound: RoundSpec, maxRounds: number | null) =>
+      dispatch({ type: 'restart', modeId, firstRound, maxRounds }),
     [],
   )
-  return { session, start, attempt, completeNow, resume, advance, overrideRound, endGame, finishFree, finalize, restart }
+  return { session, start, attempt, advance, overrideRound, endGame, finishFree, finalize, restart }
 }
