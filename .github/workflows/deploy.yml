@@ -24,6 +24,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # The daily index lives on the orphan `data` branch. Obtain it with a real
+      # checkout — NOT `git fetch origin data` + `git show origin/data:...`:
+      # actions/checkout configures a single-branch refspec, so a bare
+      # `git fetch origin data` only updates FETCH_HEAD and never creates the
+      # `origin/data` ref. `git show origin/data:...` would then fail and the
+      # index would be silently regenerated every deploy instead of served from
+      # `data`. `continue-on-error` lets a missing `data` branch fall through to
+      # the generate fallback below. (Same pattern as daily-puzzle.yml.)
+      - name: Check out daily index from data branch
+        uses: actions/checkout@v6
+        continue-on-error: true
+        with:
+          ref: data
+          path: .daily-data
+
       - uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -31,11 +46,11 @@ jobs:
 
       - run: npm ci
 
-      - name: Fetch daily index from data branch
+      - name: Provide daily index (from data branch, else generate)
         run: |
           mkdir -p public/daily
-          if git fetch origin data && git cat-file -e origin/data:index.json 2>/dev/null; then
-            git show origin/data:index.json > public/daily/index.json
+          if [ -f .daily-data/index.json ]; then
+            cp .daily-data/index.json public/daily/index.json
             echo "Using data-branch index."
           else
             echo "data branch unavailable — generating fresh."
