@@ -45,13 +45,13 @@ export interface UseGameAnnouncementsArgs {
  *    "Game over. Final score N." on terminal transition. Deduped by round key
  *    so re-renders that touch unrelated session fields don't re-announce.
  * 2. Auto-advance timing from `round-ended` → `playing` (or `game-over` when
- *    the outcome ends the game). Six branches: country-pinning non-final,
- *    city-mode, country-pinning final + correct, country-pinning final +
- *    wrong + intra-game (Esc-only), country-pinning final + wrong +
- *    end-of-game, and the reveal-animation override for any of those.
- * 3. Game-over recording: personal best for free play, daily-history (with
- *    resume cleanup) for daily play. Deduped via a `recordedRef` so a
- *    rerender while still game-over doesn't double-record.
+ *    the outcome ends the game). Five branches: city-mode, country-pinning
+ *    final + correct, country-pinning final + wrong + intra-game (Esc-only),
+ *    country-pinning final + wrong + end-of-game, and the reveal-animation
+ *    override for any of those.
+ * 3. Game-over recording: calls `record(score, bestStreak)` once per game-over
+ *    transition. Deduped via a `recordedRef` so a rerender while still
+ *    game-over doesn't double-record.
  */
 export function useGameAnnouncements({
   session,
@@ -150,7 +150,6 @@ export function useGameAnnouncements({
     session.lastOutcome,
     session.score,
     session.bestStreak,
-    session.lives,
     session.used,
     session.currentRound,
     session.modeId,
