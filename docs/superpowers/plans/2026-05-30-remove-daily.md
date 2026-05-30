@@ -184,7 +184,6 @@ Expected: FAIL — current `LauncherModeCard` requires daily props (`state`, `on
 import type { ModeId } from '../game/shared/types'
 import { isCountryPinning } from '../game/shared/modePredicates'
 import { usePersonalBests } from '../game/shared/usePersonalBests'
-import { formatModeScore } from '../game/shared/formatScore'
 
 const ICONS: Record<ModeId, React.ReactNode> = {
   'country-pinning': (
@@ -269,7 +268,10 @@ export function LauncherModeCard({ modeId, onPlay }: Props) {
       >
         {hasPlayed ? (
           <>
-            Best {formatModeScore(best.bestScore, modeId)}
+            {/* bestScore is cumulative (country accrues 100/round, city sums 10 rounds),
+                so show the raw number + "pts" — matching GameOverOverlay — NOT formatModeScore,
+                which is a per-round "/100"/"/1000" denominator formatter. */}
+            Best {best.bestScore.toLocaleString()} pts
             {isCountryPinning(modeId) && <> · {best.bestStreak} streak</>} · {best.gamesPlayed}{' '}
             {best.gamesPlayed === 1 ? 'game' : 'games'}
           </>
@@ -541,6 +543,8 @@ Update `src/hooks/__tests__/useLauncherVisibility.test.tsx`: remove the daily-ro
 
 Remove these keys from `EventSchema`: `daily_opened`, `history_opened`, `history_cell_clicked`. Remove the `export type CtaState`. Change `header_cta_clicked` to `header_cta_clicked: Record<string, never>`. (Leave `daily_started`, `daily_attempted`, `daily_completed`, `daily_shared`, `daily_done_low_score_prompt`, `streak_reached_milestone`, `deep_link_opened` for later tasks — their call sites still exist.)
 
+Also update `src/lib/__tests__/analytics.test.ts`: it uses `track('daily_opened', …)` as the example payload for the generic-mechanism tests (sendBeacon, doNotTrack, test-buffer) — repoint those to a surviving event, e.g. `track('free_started', { mode: 'country-pinning' })`. Leave the `deep_link_opened` test for A3.
+
 - [ ] **Step 10: Verify + commit**
 
 Run: `npm run typecheck` → clean. `npx vitest run src/components/__tests__/LauncherModeCard.test.tsx src/hooks/__tests__/useLauncherVisibility.test.tsx` → PASS.
@@ -638,7 +642,7 @@ Remove the `DailyShareBlock`/`useDailyHistory` imports and the `isDaily`/`dailyD
 
 - [ ] **Step 7: Remove the daily-flow telemetry types**
 
-In `analytics.ts` remove `daily_started`, `daily_attempted`, `daily_completed`, `deep_link_opened` from `EventSchema`. (`daily_shared`, `streak_reached_milestone` remain — their call sites are in `src/game/daily/` files, deleted in A4. `daily_done_low_score_prompt` remains for Phase B.)
+In `analytics.ts` remove `daily_started`, `daily_attempted`, `daily_completed`, `deep_link_opened` from `EventSchema`. (`daily_shared`, `streak_reached_milestone` remain — their call sites are in `src/game/daily/` files, deleted in A4. `daily_done_low_score_prompt` remains for Phase B.) Update `src/lib/__tests__/analytics.test.ts`: delete the `'emits deep_link_opened with all four outcome values'` test.
 
 - [ ] **Step 8: Verify + commit**
 
@@ -688,9 +692,11 @@ git rm src/components/LauncherCalendarCell.tsx src/components/__tests__/Launcher
 git rm src/components/LauncherMilestoneOverlay.tsx src/components/__tests__/LauncherMilestoneOverlay.test.tsx
 git rm src/game/hooks/useDailyResumePersistence.ts src/game/hooks/__tests__/useDailyResumePersistence.test.tsx
 git rm src/hooks/useNextDailyCountdown.ts src/hooks/__tests__/useNextDailyCountdown.test.tsx
+git rm src/game/shared/formatScore.ts            # orphaned: only the old card + LauncherCalendarCell used it
+git rm src/game/shared/__tests__/formatScore.test.ts   # if present
 ```
 
-(Adjust any path that differs; use `git status` to confirm the working tree matches.)
+(Adjust any path that differs; use `git status` to confirm the working tree matches.) Add `formatModeScore` to the Step 1 `git grep` to prove `formatScore.ts` is orphaned before deleting it.
 
 - [ ] **Step 3: Remove the last daily telemetry types**
 
@@ -809,9 +815,12 @@ test.describe('Launcher (free-play hub)', () => {
 
   Follow CLAUDE.md e2e rules: use `waitForAnimationIdle`/state waits, never `waitForTimeout` or `force:true`.
 
-- [ ] **Step 5: Edit the free-play game specs + cold-load**
+- [ ] **Step 5: Guard — confirm no KEPT spec imports a removed daily helper**
 
-In `cold-load-deep-link.spec.ts`, `game-country-pinning.spec.ts`, `game-city-guessing.spec.ts`: delete any `expect(session.dailyDate)...` assertions and any `#daily/...` navigation. (Phase B removes `dailyDate` from the session object, so these would otherwise reference `undefined`.)
+Run: `git grep -nE "seedDailyHistory|stubDailyIndex|seedPlayedDaily|#daily" -- e2e`
+Expected: no matches (all were in the deleted daily specs/helpers). If any kept spec matches, fix it now.
+
+Note: `cold-load-deep-link.spec.ts` (asserts `session.attemptsPerRound`/`dailyDate`) and `toast-above-modal.spec.ts` (drives `__funworldmap_game.completeNow()`) still **pass in Phase A** — those fields/seams exist until Phase B. They are edited in **Phase B** (its e2e/helpers task), not here. `game-country-pinning.spec.ts`/`game-city-guessing.spec.ts` reference no removed symbols and need no edit.
 
 - [ ] **Step 6: Verify + commit**
 
@@ -828,7 +837,19 @@ git commit -m "test(e2e): remove daily specs; rewrite launcher/header specs for 
 
 # Phase B — Delete the dead best-of-N machinery (test-first)
 
-With the daily gone, `attemptsPerRound` is always 1, `completeNow` is a no-op, and `resume` is never dispatched. Remove readers first, then the fields.
+With the daily gone, `attemptsPerRound` is always 1, `completeNow` is a no-op, and `resume` is never dispatched. **Remove every reader before deleting the fields.** A code sweep found readers in more places than the HUD shell — they must all be handled or B4 (the field removal) breaks `typecheck`:
+
+| Reader                                                                                                                                                                                   | What it reads                                                                               | Task |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---- |
+| `hud/HudShell.tsx`, `hud/AttemptsIndicator.tsx`                                                                                                                                          | `attemptsPerRound`, `currentAttempts`, `attemptsRemaining`, `deriveBest`                    | B1   |
+| `hooks/useRevealMapEffects.ts`                                                                                                                                                           | `attemptsPerRound`/`attemptsRemaining`/`currentAttempts` (intermediate-attempt marker)      | B2   |
+| `modes/city-guessing/CityGuessingHud.tsx`, `modes/country-pinning/CountryPinningHud.tsx`                                                                                                 | `attemptsPerRound > 1` reveal branches                                                      | B2   |
+| `hud/FirstSessionTutorial.tsx` (+ `GameController` prop)                                                                                                                                 | `attemptsPerRound` → `-daily`/`-free` copy variant                                          | B2   |
+| `App.tsx` `roundEndTarget`, `useGameAnnouncements.ts`, `GameSessionProvider.tsx` (API + seams)                                                                                           | `attemptsPerRound`/`attemptsRemaining`/`currentAttempts`/`dailyDate`/`completeNow`/`resume` | B3   |
+| `shared/__tests__/factories.ts` + several `*.test.*`                                                                                                                                     | session-shape literals                                                                      | B4   |
+| `e2e/helpers.ts` `waitForGameTestHook` (probes `completeNow`!) + `submitAndWait` (`currentAttempts`); `e2e/toast-above-modal.spec.ts` (`completeNow`); `e2e/cold-load-deep-link.spec.ts` | seams / fields                                                                              | B5   |
+
+`finalize` is **not** best-of-N — it stays.
 
 ## Task B1: Strip best-of-N from the HUD
 
@@ -927,7 +948,38 @@ git commit -m "refactor(hud): remove best-of-N Done/attempts UI from the HUD"
 
 ---
 
-## Task B2: Remove remaining best-of-N readers
+## Task B2: Strip best-of-N from mode HUDs, reveal effects, and the tutorial
+
+These all key off `attemptsPerRound > 1` (daily) vs `=== 1` (free). After removal the daily branch is dead and the free branch is unconditional. They still compile against the present fields, so do this task before B4.
+
+**Files:**
+
+- Modify: `src/game/hooks/useRevealMapEffects.ts` + `src/game/hooks/__tests__/useRevealMapEffects.test.tsx`
+- Modify: `src/game/modes/city-guessing/CityGuessingHud.tsx` + `src/game/modes/city-guessing/__tests__/CityGuessingHud.test.tsx`
+- Modify: `src/game/modes/country-pinning/CountryPinningHud.tsx`
+- Modify: `src/game/shared/hud/FirstSessionTutorial.tsx`
+- Modify: `src/game/GameController.tsx`
+
+- [ ] **Step 1: `useRevealMapEffects.ts`** — remove the intermediate-attempt marker logic. The effect(s) guarded by `if (session.attemptsPerRound <= 1) return` (the country-mode intermediate flash and the city resume re-paint) exist only for best-of-N; delete those effects/branches and the `attemptsPerRound`/`attemptsRemaining`/`currentAttempts` reads and deps. Keep the round-end reveal animation that free play uses (driven by `lastOutcome`/`status`). Read the file first; the round-end vs intermediate-attempt effects are separate — remove only the intermediate ones. Update `useRevealMapEffects.test.tsx`: delete the intermediate-attempt/resume marker cases (those building `attemptsPerRound: 3`), keep the round-end reveal cases.
+
+- [ ] **Step 2: `CityGuessingHud.tsx`** — remove the `session.attemptsPerRound > 1` reveal branch (lines ~43–48) and the `attemptsPerRound === 1` guard (line ~74, now always true → render unconditionally). Drop the `AttemptRecord` import and the `latestPointAttempt(session.currentAttempts)` helper. Update `CityGuessingHud.test.tsx`: drop the `attemptsPerRound>1` cases; keep the free-play (`attemptsPerRound: 1`) render case (rewritten to not set the field once B4 lands — for now it can still set it).
+
+- [ ] **Step 3: `CountryPinningHud.tsx`** — remove the `session.attemptsPerRound > 1` branch (line ~19) and its dep; the reveal is shown based on `reveal`/`status` only.
+
+- [ ] **Step 4: `FirstSessionTutorial.tsx`** — remove the `attemptsPerRound` prop; the COPY variant is always `${modeId}-free`. Delete the `${modeId}-daily` entries from the `COPY` map. In `GameController.tsx`, change `<FirstSessionTutorial modeId={session.modeId} attemptsPerRound={session.attemptsPerRound} firstAttemptMade={…} />` to drop the `attemptsPerRound` prop.
+
+- [ ] **Step 5: Verify + commit**
+
+Run: `npm run typecheck` → clean. `npm run test:unit` → PASS.
+
+```bash
+git add -A
+git commit -m "refactor(game): remove best-of-N branches from mode HUDs, reveal effects, tutorial"
+```
+
+---
+
+## Task B3: Remove remaining best-of-N reads in app, announcements, provider
 
 **Files:**
 
@@ -970,13 +1022,16 @@ git commit -m "refactor(game): drop best-of-N reads in app, announcements, provi
 
 ---
 
-## Task B3: Simplify the reducer (remove best-of-N + daily fields)
+## Task B4: Simplify the reducer + the session type, factory, and dependent tests
 
 **Files:**
 
 - Modify: `src/game/shared/useGameSession.ts`
-- Modify: `src/game/shared/types.ts` (the `GameSession` type)
+- Modify: `src/game/shared/types.ts` (`GameSession` + delete `AttemptRecord`)
 - Modify: `src/game/shared/__tests__/useGameSession.test.ts`
+- Modify: `src/game/shared/__tests__/factories.ts` (shared session factory)
+- Modify: `src/game/shared/hud/__tests__/GameOverOverlay.test.tsx`
+- Modify: `src/hooks/__tests__/useLauncherVisibility.test.tsx` (mock API)
 - Modify: `src/game/hooks/useGameTestSeams.ts` (signature only)
 
 - [ ] **Step 1: Update the reducer tests first**
@@ -987,7 +1042,7 @@ Run: `npx vitest run src/game/shared/__tests__/useGameSession.test.ts` → FAIL 
 
 - [ ] **Step 2: Edit the `GameSession` type** in `src/game/shared/types.ts`
 
-Remove fields `attemptsPerRound`, `attemptsRemaining`, `currentAttempts`, and `dailyDate` from `GameSession`. (Keep `lives`, `score`, `streak`, `bestStreak`, `roundIndex`, `maxRounds`, `currentRound`, `lastOutcome`, `endedEarly`, `used`, `modeId`, `status`.) Leave `AttemptRecord` defined if still referenced by `lastOutcome.reveal`/HUD; otherwise remove it too.
+Remove fields `attemptsPerRound`, `attemptsRemaining`, `currentAttempts`, and `dailyDate` from `GameSession`. (Keep `lives`, `score`, `streak`, `bestStreak`, `roundIndex`, `maxRounds`, `currentRound`, `lastOutcome`, `endedEarly`, `used`, `modeId`, `status`.) Also **delete the `AttemptRecord` type** — after B1–B3 its only users (`currentAttempts`, `deriveBest`, the daily resume payload, `CityGuessingHud`) are gone. `lastOutcome` uses `GuessOutcome`/reveal, not `AttemptRecord`. (Confirm with `git grep AttemptRecord` → only the definition + soon-to-be-edited test factory remain.)
 
 - [ ] **Step 3: Rewrite `useGameSession.ts`**
 
@@ -1021,11 +1076,16 @@ Trim `start`/`restart` to set `{ ...EMPTY, modeId, status:'playing', maxRounds, 
 
 - [ ] **Step 4: `useGameTestSeams.ts`** — trim the `start` signature in `UseGameTestSeamsArgs` to `(modeId, firstRound, maxRounds)` (drop `attemptsPerRound`/`dailyDate`).
 
-- [ ] **Step 5: Run + verify**
+- [ ] **Step 5: Update the shared factory + dependent tests**
+  - `src/game/shared/__tests__/factories.ts`: remove `attemptsPerRound: 1`, `attemptsRemaining: 1`, `currentAttempts: []` from the base session object, and delete the `makeAttempt` helper (it returns `AttemptRecord`). Many tests build sessions via this factory — this is the single point that fixes most of them.
+  - `src/game/shared/hud/__tests__/GameOverOverlay.test.tsx`: remove `attemptsPerRound`/`attemptsRemaining`/`dailyDate` from the inline session literals, and delete the daily ("Today's results"/share) test (already non-functional after A3's `GameOverOverlay` rewrite).
+  - `src/hooks/__tests__/useLauncherVisibility.test.tsx`: remove `completeNow: () => {}` and `resume: () => {}` from the mock `GameSessionApi` value (the API dropped them in B3).
 
-Run: `npx vitest run src/game/shared/__tests__/useGameSession.test.ts` → PASS. Then `npm run typecheck` → clean (no readers of the removed fields remain after B1/B2). `npm run test:unit` → PASS.
+- [ ] **Step 6: Run + verify**
 
-- [ ] **Step 6: Commit**
+Run: `npx vitest run src/game/shared/__tests__/useGameSession.test.ts` → PASS. Then `npm run typecheck` → clean (no readers of the removed fields remain after B1–B3). `npm run test:unit` → PASS.
+
+- [ ] **Step 7: Commit**
 
 ```bash
 git add -A
@@ -1034,14 +1094,30 @@ git commit -m "refactor(reducer): remove best-of-N and daily fields from game se
 
 ---
 
-## Task B4: Phase B e2e + final sweep
+## Task B5: Phase B e2e + helpers + final sweep
+
+This is the task that fixes the e2e seams. **`waitForGameTestHook` gates on `completeNow`, which B3 removed — every game spec using it would time out** until this is fixed.
 
 **Files:**
 
+- Modify: `e2e/helpers.ts`
+- Modify: `e2e/toast-above-modal.spec.ts`
+- Modify: `e2e/cold-load-deep-link.spec.ts`
+- Modify: `e2e/test-globals.d.ts`
 - Delete: `e2e/done-confirm-low-score.spec.ts`
 - Modify: `playwright.config.ts`
 
-- [ ] **Step 1: Delete the best-of-N e2e + config entry**
+- [ ] **Step 1: Fix `e2e/helpers.ts`**
+  - `waitForGameTestHook`: delete the `typeof g.completeNow === 'function' &&` clause from the readiness probe (keep `submitCountryGuess` + `finalize`). Update its doc comment to drop `completeNow`.
+  - `submitAndWait`: it polls `getSession().currentAttempts.length`. With `currentAttempts` gone, change it to poll a surviving signal — for a single-attempt round, a submitted guess transitions to `round-ended` with `lastOutcome !== null`. Replace the poll body with `getSession().lastOutcome !== null ? 1 : 0` (or assert `status === 'round-ended'`), and check callers still pass `expectAfter: 1`. If only deleted daily specs used it, delete the helper instead.
+
+- [ ] **Step 2: Rework `e2e/toast-above-modal.spec.ts`** — it drives `__funworldmap_game.completeNow()` to reach a state where a toast overlays the modal. `completeNow` is gone; reach the same end state via free play: submit guesses (or `End game` → `finishFree` → game-over), then trigger the toast. Read the spec first to see which toast it asserts, then re-derive the path without `completeNow`.
+
+- [ ] **Step 3: `e2e/cold-load-deep-link.spec.ts`** — remove the `expect(session.attemptsPerRound).toBe(1)` and `expect(session.dailyDate).toBeNull()` assertions (both fields removed in B4).
+
+- [ ] **Step 4: `e2e/test-globals.d.ts`** — update the `getSession` return type to drop `currentAttempts` (and `completeNow` from the `__funworldmap_game` shape if declared there).
+
+- [ ] **Step 5: Delete the best-of-N spec + config entry**
 
 ```bash
 git rm e2e/done-confirm-low-score.spec.ts
@@ -1049,12 +1125,12 @@ git rm e2e/done-confirm-low-score.spec.ts
 
 Remove `'done-confirm-low-score.spec.ts'` from `playwright.config.ts` `testMatch` and from the CI `testIgnore`.
 
-- [ ] **Step 2: Final grep sweep**
+- [ ] **Step 6: Final grep sweep**
 
 Run: `git grep -niE "daily|streak_reached|attemptsPerRound|best-of|completeNow|deriveBest|currentAttempts|stubDailyIndex|seedDailyHistory" -- src e2e scripts .github cloudflare-worker docs/systems docs/adr`
 Expected: only incidental, non-functional matches (e.g. the word "streak" in `bestStreak`/`StreakBadge`, which are free-play concepts and correct to keep). Investigate anything else.
 
-- [ ] **Step 3: Full verification**
+- [ ] **Step 7: Full verification**
 
 Run, in order:
 
@@ -1064,11 +1140,11 @@ Run, in order:
 - `npm run build` → succeeds
 - `npm run test:e2e` → green
 
-- [ ] **Step 4: Manual smoke (both modes)**
+- [ ] **Step 8: Manual smoke (both modes)**
 
 `npm run dev`, then: header **Play** → launcher → **Country** → play a few rounds → 3 wrong → game-over shows score + longest streak + PB → **Play again** works; back to map; header **Play** → **City** → play 10 rounds → game-over shows score + PB. Refresh mid-game: no errors, no `/daily/index.json` 404 in the console.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
 git add -A
@@ -1079,8 +1155,10 @@ git commit -m "test(e2e): remove best-of-N done-confirm spec; final daily-remova
 
 ## Self-review notes (for the executor)
 
-- **Spec coverage:** every spec section maps to a task — launcher hub (A2), header (A2), daily module/components/hooks (A3–A4), routing (A3), telemetry (A2–A4, B1), build/content/deploy (A5), docs (A5), storage cleanup (A1), reducer/best-of-N (B1–B3), e2e (A6, B4).
-- **Type-coupling rule:** each telemetry event type is removed in the same commit as its last call site (A2/A3/A4/B1) — never earlier, or the build breaks mid-task.
-- **Reader-before-symbol rule (Phase B):** HUD (B1) and other readers (B2) are emptied before the reducer fields are deleted (B3).
+- **Spec coverage:** every spec section maps to a task — launcher hub (A2), header (A2), daily module/components/hooks (A3–A4), routing (A3), telemetry (A2–A4, B1), build/content/deploy (A5), docs (A5), storage cleanup (A1), reducer/best-of-N (B1–B4), e2e (A6, B5).
+- **Type-coupling rule:** each telemetry event type is removed in the same commit as its last call site (A2/A3/A4/B1) — never earlier, or the build breaks mid-task. The `analytics.test.ts` assertions are updated alongside (A2 `daily_opened`, A3 `deep_link_opened`).
+- **Reader-before-symbol rule (Phase B):** ALL readers are emptied before B4 deletes the fields — HUD shell (B1), mode HUDs + reveal effects + tutorial (B2), app/announcements/provider (B3), then the type + factory + dependent tests (B4), then e2e seams/helpers (B5). A `git grep` for each doomed symbol after its reader-task should return only the definition/factory.
+- **e2e seam trap:** `waitForGameTestHook` (helpers.ts) gates on `completeNow`; B5 must drop that clause or the whole game e2e suite times out. `toast-above-modal.spec.ts` and `submitAndWait` also depend on removed seams/fields — all handled in B5.
+- **Phase B is large** (≈8 source files + 6 test files + 4 e2e files). It is pure dead-code deletion gated behind the shippable Phase A — consider landing Phase A and Phase B as **two separate PRs**.
 - **`finalize` stays; `completeNow`/`resume` go.** Do not remove `finalize` — free play depends on it (`App.tsx`, city/country end-of-game, the e2e `__funworldmap_game.finalize()` seam).
 - If `npm run test:unit` is used as a gate in A3 before A4 deletes the daily unit tests, scope it to `src/game/hooks src/components src/lib` as noted, to avoid a spurious red from soon-to-be-deleted tests.
