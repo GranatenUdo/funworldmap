@@ -4,8 +4,10 @@ import * as Sentry from '@sentry/react'
 import './index.css'
 import App from './App'
 import { initSentry } from './lib/initSentry'
+import { cleanupLegacyDailyStorage } from './lib/legacyStorageCleanup'
 
 initSentry(import.meta.env.VITE_SENTRY_DSN as string | undefined)
+cleanupLegacyDailyStorage()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
