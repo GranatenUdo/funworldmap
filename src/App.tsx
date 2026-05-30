@@ -13,6 +13,7 @@ import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { useMapReady } from './hooks/useMapReady'
 import { useFirstVisitHint } from './hooks/useFirstVisitHint'
+import { useLiveAnnouncements } from './hooks/useLiveAnnouncements'
 import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { isCountryPinning } from './game/shared/modePredicates'
@@ -103,15 +104,13 @@ function AppInner({
     dismiss: dismissLauncher,
     show: showLauncher,
   } = useLauncherVisibility()
-  const liveRegionRef = useRef<HTMLDivElement>(null)
-  const clearTimerRef = useRef<number | null>(null)
-  const prevSelectedRef = useRef<string | null>(null)
   const mapReady = useMapReady()
   const { showHint } = useFirstVisitHint({
     mapReady,
     hasSelection: !!selected,
     gameActive: session.status !== 'idle',
   })
+  const liveRegionRef = useLiveAnnouncements(selected?.name.common ?? null)
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
   const [revealState, setRevealState] = useState<{ date: string; modeId: ModeId | null } | null>(
@@ -240,33 +239,6 @@ function AppInner({
     // Fires on the very first round of each new game — covers idle→playing
     // and game-over→Play-again transitions without needing a prev-status ref.
   }, [session.status, session.roundIndex, selected, deselect])
-
-  useEffect(() => {
-    const name = selected?.name.common ?? null
-    const prevName = prevSelectedRef.current
-    if (liveRegionRef.current) {
-      if (name && name !== prevName) liveRegionRef.current.textContent = `${name} selected`
-      else if (!name && prevName) liveRegionRef.current.textContent = 'Country panel closed'
-    }
-    prevSelectedRef.current = name
-  }, [selected])
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent<string>).detail
-      if (!liveRegionRef.current || !detail) return
-      liveRegionRef.current.textContent = detail
-      if (clearTimerRef.current !== null) window.clearTimeout(clearTimerRef.current)
-      clearTimerRef.current = window.setTimeout(() => {
-        if (liveRegionRef.current) liveRegionRef.current.textContent = ''
-      }, 8000)
-    }
-    window.addEventListener('funworldmap:announce', handler)
-    return () => {
-      window.removeEventListener('funworldmap:announce', handler)
-      if (clearTimerRef.current !== null) window.clearTimeout(clearTimerRef.current)
-    }
-  }, [])
 
   const focusReturnRef = useRef<HTMLElement | null>(null)
   const panelWasOpenRef = useRef(false)
