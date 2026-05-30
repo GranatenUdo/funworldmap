@@ -7,9 +7,11 @@
 Start with the purpose, then read the system overview for architecture context, then dive into individual systems as needed.
 
 ### Project
+
 - [Purpose](purpose.md) — what funworldmap is, who it's for, core principles, scope
 
 ### Systems
+
 - [System Overview](systems/overview.md) — architecture, external dependencies, data flows, error handling
 - [Data System](systems/data.md) — data sources, join strategy, enriched data model with source attribution
 - [Data Collection](systems/data-collection.md) — multi-source data collection tool, aggregation pipeline, flag bundling
@@ -20,16 +22,15 @@ Start with the purpose, then read the system overview for architecture context, 
 - [Testing](systems/testing.md) — Playwright two-tier strategy, WebGL2 headless, fixtures
 - [Build & Deploy](systems/build.md) — Vite, Tailwind 4, build output, deployment
 
-### Game
-- [Game System Overview](systems/overview.md#game-system) — reducer model, modes, daily layer
-- [Daily Puzzle](systems/daily-puzzle.md) — content generation, storage, telemetry
-
 ### Operations
+
 - [Runbook](ops/runbook.md) — bandwidth watch, data freshness, basemap degradation, incident response
 
 ### Decisions
+
 - [ADR README](adr/README.md) — architecture decision record filing convention
 
 ### Process
+
 - [Superpowers Workspace](superpowers/README.md) — planning convention for `plans/` and `specs/`
 - [Roadmap](roadmap.md) — deferred work from shipped specs, organised by area
