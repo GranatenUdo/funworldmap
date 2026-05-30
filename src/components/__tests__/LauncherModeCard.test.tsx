@@ -32,4 +32,12 @@ describe('LauncherModeCard (free-play)', () => {
     expect(best).toMatch(/1,?240/)
     expect(best).toMatch(/31/) // longest streak surfaced for country-pinning
   })
+
+  it('shows the best score for city-guessing without a streak line', () => {
+    record('city-guessing', 920, 0)
+    render(<LauncherModeCard modeId="city-guessing" onPlay={vi.fn()} />)
+    const best = screen.getByTestId('launcher-card-city-guessing-best').textContent ?? ''
+    expect(best).toMatch(/920/)
+    expect(best).not.toMatch(/streak/i) // streak is country-pinning only
+  })
 })

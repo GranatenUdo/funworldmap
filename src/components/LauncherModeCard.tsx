@@ -85,9 +85,10 @@ export function LauncherModeCard({ modeId, onPlay }: Props) {
       >
         {hasPlayed ? (
           <>
-            {/* bestScore is cumulative (country accrues 100/round, city sums 10 rounds),
-                so show the raw number + "pts" — matching GameOverOverlay — NOT formatModeScore,
-                which is a per-round "/100"/"/1000" denominator formatter. */}
+            {/* bestScore is the best single-game total (country accrues 100/round over an
+                endless run; city sums up to 10 rounds), so show the raw number + "pts" —
+                matching GameOverOverlay — NOT formatModeScore, which is a per-round
+                "/100"/"/1000" denominator formatter. */}
             Best {best.bestScore.toLocaleString()} pts
             {isCountryPinning(modeId) && <> · {best.bestStreak} streak</>} · {best.gamesPlayed}{' '}
             {best.gamesPlayed === 1 ? 'game' : 'games'}

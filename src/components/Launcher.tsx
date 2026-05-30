@@ -25,7 +25,6 @@ function focusSearchInput(): void {
 export function Launcher({ onDismiss }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const modes = useMemo(() => listModes(), [])
-  const lastMode = readLastMode()
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   const dismissWithCloseButton = useCallback(() => {
@@ -85,11 +84,14 @@ export function Launcher({ onDismiss }: Props) {
   }, [])
 
   // Focus the last-played mode's Play button, else the first Play button.
+  // Runs once on mount; lastMode is read here (not as a dep) because it cannot
+  // change during the launcher's lifetime — its only writer, startFree, unmounts.
   useEffect(() => {
     const root = rootRef.current
     if (!root || !root.isConnected) return
     const active = document.activeElement
     if (active !== document.body && root.contains(active)) return
+    const lastMode = readLastMode()
     const preferred = lastMode
       ? root.querySelector<HTMLButtonElement>(`[data-testid="launcher-card-${lastMode}-play"]`)
       : null
@@ -99,7 +101,7 @@ export function Launcher({ onDismiss }: Props) {
       firstPlay ??
       root.querySelector<HTMLButtonElement>('button:not([disabled])')
     )?.focus()
-  }, [lastMode])
+  }, [])
 
   useEffect(() => {
     const root = rootRef.current
