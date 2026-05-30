@@ -54,6 +54,8 @@ Workstreams are independent; this order is a recommendation, not a hard dependen
 
 ## Workstream B — Lazy-load Sentry
 
+**Status: DEFERRED (2026-05-30).** A measurement-gate spike (alias-stub build, baseline 483,527 B → Sentry-stripped 477,746 B gzip) found Sentry's real main-chunk cost is **~5.8 KB gzip, not ~60 KB** — `@sentry/react` v10 tree-shakes to a small core since the app uses only `init` / `ErrorBoundary` / `captureException` / `addBreadcrumb` with tracing and replay disabled. The L effort below (hand-rolled error boundary + 3-site restructure + crash-reporting-latency tradeoff) is not justified by a ~1.2% reduction. Deferred unless the initial-chunk size later becomes a hard constraint. The ~60 KB estimate that motivated B has been corrected in `overview.md`. _The original design is retained below for the record._
+
 **Size:** L (larger than first scoped — see below). **Risk:** medium (must preserve crash-recovery UI and the daily error telemetry).
 
 **Today:** `@sentry/react` is statically imported at **three** sites, so its ~60 KB gzip ships in the initial chunk even when `VITE_SENTRY_DSN` is unset (local/CI/most prod builds):
