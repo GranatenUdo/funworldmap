@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Populate `docs/adr/` with four foundational Architecture Decision Records and reconcile the ADR README so its guidance no longer contradicts the backfilled records.
+**Goal:** Populate `docs/adr/` with four foundational Architecture Decision Records, reconcile the ADR README so its guidance no longer contradicts the backfilled records, and correct two stale doc references (`overview.md`, `CONTRIBUTING.md`) that the corrected ADR 0001 would otherwise contradict.
 
 **Architecture:** Pure documentation. Four new markdown files following the repo's ADR convention (`NNNN-slug.md`; Context / Decision / Consequences / Alternatives / Status / Date), plus a one-paragraph note in `docs/adr/README.md`. No code, no tests; verification is link integrity + prettier formatting (husky runs prettier on `*.md` at commit).
 
@@ -66,9 +66,10 @@ and a permissively-licensed stack with no account or API key.
 ## Decision
 
 Render with **MapLibre GL JS** (the open-source fork of Mapbox GL JS) over an
-**OpenFreeMap "Positron" vector basemap**. MapLibre requires a WebGL2 context; the
-app probes `maplibregl.supported()` on init and, when unsupported, shows a
-browser-upgrade message instead of a blank canvas.
+**OpenFreeMap "Positron" vector basemap**. MapLibre requires a WebGL2 context; before
+creating the map the app probes for one (`canvas.getContext('webgl2')` in
+`useMapInstance`) and, when unavailable, renders a "WebGL2 Not Supported" overlay
+(`WorldMap.tsx`) instead of a blank canvas.
 
 ## Consequences
 
@@ -285,6 +286,36 @@ Expected: "reconcile note present"; all `OK` lines, no `MISSING`.
 ```bash
 git add docs/adr/README.md
 git commit -m "docs(adr): reconcile backfill note with filing convention"
+```
+
+---
+
+## Task 3: Fix stale doc references the ADRs would contradict
+
+**Files:** Modify `docs/systems/overview.md`, `CONTRIBUTING.md`.
+
+Two pre-existing inaccuracies: `maplibregl.supported()` was removed in MapLibre v5 (the repo is on `^5.23.0`; the real check is `canvas.getContext('webgl2')` in `useMapInstance.ts:226`), and the e2e projects were consolidated away from the old `chromium`/`chromium-gpu` split. ADR 0001 now states the correct mechanism, so the system docs must match.
+
+- [ ] **Step 1: Fix `overview.md`'s two `maplibregl.supported()` mentions.**
+
+In `docs/systems/overview.md`:
+
+- Line ~56 — replace `MapLibre GL creates WebGL2 context (with \`maplibregl.supported()\` check — see Error Handling)`with`MapLibre GL creates a WebGL2 context (the app first probes for one via \`canvas.getContext('webgl2')\` — see Error Handling)`.
+- Line ~110 (Error Handling table) — replace the cell's `\`maplibregl.supported()\` returns false →`with`the \`canvas.getContext('webgl2')\` probe in \`useMapInstance\` fails →`, leaving the rest of the cell (browser-upgrade guidance, WebGL1 note) unchanged.
+
+- [ ] **Step 2: Fix `CONTRIBUTING.md`'s stale e2e-projects line.**
+
+In `CONTRIBUTING.md`, replace:
+`- \`npm run test:e2e\` — Playwright (two projects: \`chromium\` DOM, \`chromium-gpu\` WebGL)`with:`- \`npm run test:e2e\` — Playwright (chromium on CI; mobile + firefox projects available locally — see \`playwright.config.ts\`)`
+
+- [ ] **Step 3: Verify + commit.**
+
+Run: `grep -rn "maplibregl.supported\|chromium-gpu" docs/systems/overview.md CONTRIBUTING.md || echo "NONE remain"`
+Expected: `NONE remain`.
+
+```bash
+git add docs/systems/overview.md CONTRIBUTING.md
+git commit -m "docs: fix stale WebGL2-detection + e2e-project references"
 ```
 
 ---

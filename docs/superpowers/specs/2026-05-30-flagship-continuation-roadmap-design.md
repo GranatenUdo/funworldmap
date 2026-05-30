@@ -46,7 +46,9 @@ Workstreams are independent; this order is a recommendation, not a hard dependen
 
 **Convention reconcile:** `docs/adr/README.md` currently lists "historical backfill for decisions nobody is contesting" as a _poor reason_. Because 0001–0003 are exactly that kind of backfill, add a short note to the README acknowledging that a small set of foundational decisions were recorded once for discoverability, so the guidance and the directory contents don't contradict each other.
 
-**Acceptance:** 4 ADRs present and well-formed; `docs/adr/README.md` no longer contradicts the directory; README's "Decision Records" link resolves to real content; no broken cross-links.
+**Also in A (surfaced during plan review):** fix two stale doc references the ADRs would otherwise contradict — `docs/systems/overview.md` cites `maplibregl.supported()` (removed in MapLibre v5; the real check is `canvas.getContext('webgl2')` in `useMapInstance`), and `CONTRIBUTING.md` describes the old `chromium`/`chromium-gpu` e2e split (since consolidated). Both are in the workstream-A plan, Task 3.
+
+**Acceptance:** 4 ADRs present and well-formed; `docs/adr/README.md` no longer contradicts the directory; README's "Decision Records" link resolves to real content; no broken cross-links; no `maplibregl.supported()` / `chromium-gpu` references remain in the touched docs.
 
 ---
 
@@ -64,6 +66,7 @@ DSN-gating the init alone does **not** remove Sentry from the bundle: the always
 
 **Change (real approach):**
 
+- (0) **Measurement gate (do first).** Build and measure Sentry's actual contribution to `main-js-gzip` (e.g. inspect the chunk / temporarily strip Sentry and diff the budget). The ~60 KB is an estimate from the 2026-04-19 budget; the installed `@sentry/react ^10.x` may differ. If the real saving is materially below ~60 KB, descope to (c)-only or defer — don't spend L effort on an unverified payoff.
 - (a) Replace `Sentry.ErrorBoundary` with a small dependency-free error boundary that always renders the fallback UI, and forwards the error to Sentry only if/when Sentry has been loaded. This is the crux — without it, the chunk won't split.
 - (b) Lazy-load `@sentry/react` via dynamic `import()` inside `initSentry`, only when a DSN is present.
 - (c) In the daily-storage telemetry path, dynamic-import Sentry inside the (rare) error branch rather than at module top.
@@ -108,9 +111,19 @@ Two **independent** parts (different files); land lint first (smaller/lower-risk
 
 **Size:** S. **Risk:** none.
 
-After A–C merge: set `package.json` `version` to `1.0.0`, create an annotated git tag `v1.0.0` on `main`, and publish a GitHub Release whose notes summarize the shipped state (retention-v1 daily puzzles, the `data`-branch architecture, the cleanup, and this polish pass). This gives the "launch-prep" work a versioning narrative.
+After A–C merge: set `package.json` `version` to `1.0.0`, create an annotated git tag `v1.0.0` on `main`, and publish a GitHub Release whose notes summarize the shipped state (retention-v1 daily puzzles, the `data`-branch architecture, the cleanup, and this polish pass). This gives the "launch-prep" work a versioning narrative. (`v1.0.0` signals a stable public launch; if you'd rather signal pre-stable, `0.1.0` is the alternative — owner's call, decided when D is planned.)
 
 **Acceptance:** `package.json` shows `1.0.0`; `git tag` lists `v1.0.0` pointing at the post-C `main`; a GitHub Release exists with notes; README/docs version references (if any) are consistent.
+
+---
+
+## Workstream E — Resolve the open dependency PRs (optional, independent)
+
+**Size:** S–M (depends on the upgrade). **Risk:** low.
+
+Two dependabot PRs are open; the `vite-ecosystem` group bump (#84) has been failing CI for weeks. A perpetually-red PR is a visible blemish on a flagship repo's PR list — surfaced during this review, not in the original assessment's five items. Investigate why the bump fails (likely a breaking change in the Vite/Vitest ecosystem needing a small config/code adjustment), then either land it or close it with a one-line rationale. The `actions/cache` bump (#83) is likely a clean merge. Independent of A–D; can run anytime.
+
+**Acceptance:** no open red PRs — each dependabot PR is either merged (CI green) or closed with a documented reason.
 
 ---
 
