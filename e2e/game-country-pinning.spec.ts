@@ -5,11 +5,10 @@ async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
 }
 
-// Open Country Pinning (unlimited) via the shared unlimited link.
-// The link defaults to country-pinning when no lastMode is set.
+// Open Country Pinning via the launcher mode card Play button.
 async function openCountryPinning(page: Page) {
   await openLauncher(page)
-  await page.getByTestId('launcher-unlimited-link').click()
+  await page.getByTestId('launcher-card-country-pinning-play').click()
 }
 
 // Dispatch the guess via the controller's submitCountryGuess test hook
