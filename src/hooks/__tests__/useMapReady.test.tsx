@@ -9,13 +9,16 @@ describe('useMapReady', () => {
       .forEach((el) => el.remove())
   })
 
-  it('starts false and flips true once a [data-map-loaded] element appears', async () => {
+  it('starts false and flips true when [data-map-loaded] is set on an in-DOM element', async () => {
     const { result } = renderHook(() => useMapReady())
     expect(result.current).toBe(false)
+    // Mirror production: WorldMap renders `data-map-loaded={loaded || undefined}`,
+    // so the attribute is toggled on an element already in the DOM — an
+    // *attributes* mutation, which the observer watches.
+    const el = document.createElement('div')
+    document.body.appendChild(el)
     act(() => {
-      const el = document.createElement('div')
       el.setAttribute('data-map-loaded', 'true')
-      document.body.appendChild(el)
     })
     await vi.waitFor(() => expect(result.current).toBe(true))
   })

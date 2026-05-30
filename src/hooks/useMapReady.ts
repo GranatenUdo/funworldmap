@@ -17,7 +17,6 @@ export function useMapReady(): boolean {
     })
     observer.observe(document.body, {
       subtree: true,
-      childList: true,
       attributes: true,
       attributeFilter: ['data-map-loaded', 'data-map-error'],
     })
