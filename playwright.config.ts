@@ -136,7 +136,13 @@ export default defineConfig({
           args: ['--use-gl=angle', '--use-angle=default'],
         },
       },
-      testMatch: ['mobile-smoke.spec.ts', 'mobile-tap.spec.ts', 'mobile-daily-flow.spec.ts', 'mobile-free-play.spec.ts', 'tutorial-first-click.spec.ts'],
+      testMatch: [
+        'mobile-smoke.spec.ts',
+        'mobile-tap.spec.ts',
+        'mobile-daily-flow.spec.ts',
+        'mobile-free-play.spec.ts',
+        'tutorial-first-click.spec.ts',
+      ],
     },
     {
       name: 'mobile-webkit',
@@ -168,8 +174,7 @@ export default defineConfig({
         defaultBrowserType: 'firefox',
         viewport: { width: 412, height: 839 },
         hasTouch: true,
-        userAgent:
-          'Mozilla/5.0 (Android 14; Mobile; rv:128.0) Gecko/128.0 Firefox/128.0',
+        userAgent: 'Mozilla/5.0 (Android 14; Mobile; rv:128.0) Gecko/128.0 Firefox/128.0',
         // Firefox rejects 'clipboard-read'/'clipboard-write' from the
         // top-level `use.permissions` (Unknown permission). Override to empty
         // for this project — the mobile smoke spec doesn't use clipboard.
@@ -189,7 +194,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build:e2e && npm run preview -- --port 5173 --strictPort',
+    command:
+      'npm run daily:generate && npm run build:e2e && npm run preview -- --port 5173 --strictPort',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
