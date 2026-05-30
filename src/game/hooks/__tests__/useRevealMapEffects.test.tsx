@@ -7,7 +7,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, cleanup } from '@testing-library/react'
 import { useRevealMapEffects } from '../useRevealMapEffects'
-import { REVEAL_CORRECT, REVEAL_FAR, REVEAL_WRONG } from '../../../lib/mapPalette'
+import { REVEAL_CORRECT, REVEAL_WRONG } from '../../../lib/mapPalette'
 import {
   makeCityRound,
   makeCountryReveal,
@@ -141,53 +141,6 @@ describe('useRevealMapEffects', () => {
       ['get', 'id'],
       '',
     ])
-  })
-
-  it('flashes clicked country with correctness colour on intermediate attempt (best-of-N)', () => {
-    const fake = createFakeMapRef()
-    // Daily best-of-3: attemptsPerRound>1, status='playing', currentAttempts
-    // grows from 0 → 1 across rerenders. Initial render captures the
-    // attempt-count anchor (0); the rerender to count=1 paints the flash.
-    const baseSession = makeSession({
-      status: 'playing',
-      modeId: 'country-pinning',
-      attemptsPerRound: 3,
-      attemptsRemaining: 2,
-      currentAttempts: [],
-    })
-    const args = buildRevealArgs({ session: baseSession, mapRef: fake.ref })
-    const { rerender } = renderHook(({ s }) => useRevealMapEffects({ ...args, session: s }), {
-      initialProps: { s: baseSession },
-    })
-    fake.calls.setFilter.mockClear()
-    fake.calls.setPaintProperty.mockClear()
-    const wrongAttempt = {
-      pointsEarned: 0,
-      input: {
-        kind: 'country' as const,
-        cca3: 'USA',
-        name: 'United States',
-        centroid: [-97, 38] as [number, number],
-      },
-      reveal: makeCountryReveal({ correct: false, clickedCca3: 'USA' }),
-    }
-    rerender({
-      s: makeSession({
-        ...baseSession,
-        currentAttempts: [wrongAttempt],
-        attemptsRemaining: 1,
-      }),
-    })
-    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-hover-border', [
-      '==',
-      ['get', 'id'],
-      'USA',
-    ])
-    expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
-      'country-hover-border',
-      'line-color',
-      REVEAL_WRONG,
-    )
   })
 
   it('does NOT flyTo at round-start (camera is preserved across game lifecycle)', () => {
@@ -432,112 +385,7 @@ describe('useRevealMapEffects', () => {
   })
 })
 
-describe('useRevealMapEffects — city persistent marker', () => {
-  it('renders marker at the latest attempt during playing best-of-N (city)', () => {
-    const fake = createFakeMapRef()
-    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 750 })
-    const session = makeSession({
-      status: 'playing',
-      modeId: 'city-guessing',
-      attemptsPerRound: 3,
-      attemptsRemaining: 2,
-      currentAttempts: [
-        {
-          pointsEarned: 0,
-          input: { kind: 'point', lngLat: [-10, 40] },
-          reveal,
-        },
-      ],
-      currentRound: makeCityRound(),
-    })
-    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
-
-    // Marker source got the latest clickedPoint.
-    const markerSetData = fake.calls.setData.mock.calls.find((c) => {
-      const arg = c[0] as {
-        features?: Array<{ geometry?: { type: string; coordinates?: number[] } }>
-      }
-      return arg.features?.[0]?.geometry?.type === 'Point'
-    })
-    expect(markerSetData).toBeDefined()
-    const data = markerSetData?.[0] as { features: Array<{ geometry: { coordinates: number[] } }> }
-    expect(data.features[0].geometry.coordinates).toEqual([-10, 40])
-
-    // circle-color matches the band (>500km → REVEAL_FAR for 750km).
-    expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
-      'game-reveal-marker-layer',
-      'circle-color',
-      REVEAL_FAR,
-    )
-  })
-
-  it('does NOT schedule a timeout to clear the city intermediate marker', () => {
-    vi.useFakeTimers()
-    try {
-      const fake = createFakeMapRef()
-      const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 750 })
-      const session = makeSession({
-        status: 'playing',
-        modeId: 'city-guessing',
-        attemptsPerRound: 3,
-        attemptsRemaining: 2,
-        currentAttempts: [
-          {
-            pointsEarned: 0,
-            input: { kind: 'point', lngLat: [-10, 40] },
-            reveal,
-          },
-        ],
-        currentRound: makeCityRound(),
-      })
-      const setTimeoutSpy = vi.spyOn(window, 'setTimeout')
-      renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
-      // The city branch must not schedule a timeout to clear the marker.
-      // (The country branch still does in a separate effect — covered by the
-      // existing "flashes clicked country" test.)
-      const cityTimeouts = setTimeoutSpy.mock.calls.filter(([, ms]) => ms === 600 || ms === 0)
-      expect(cityTimeouts.length).toBe(0)
-    } finally {
-      vi.useRealTimers()
-    }
-  })
-
-  it('re-paints the marker on resume (initial render with currentAttempts > 0)', () => {
-    const fake = createFakeMapRef()
-    // Simulates resume: hook mounts directly with status=playing and 2 attempts.
-    const reveal = makePointReveal({ clickedPoint: [5, 50], distanceKm: 600 })
-    const session = makeSession({
-      status: 'playing',
-      modeId: 'city-guessing',
-      attemptsPerRound: 3,
-      attemptsRemaining: 1,
-      currentAttempts: [
-        {
-          pointsEarned: 0,
-          input: { kind: 'point', lngLat: [-10, 40] },
-          reveal: makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 }),
-        },
-        {
-          pointsEarned: 0,
-          input: { kind: 'point', lngLat: [5, 50] },
-          reveal,
-        },
-      ],
-      currentRound: makeCityRound(),
-    })
-    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
-
-    // Initial mount renders the marker at the LATEST attempt's clickedPoint.
-    const markerSetData = fake.calls.setData.mock.calls.find((c) => {
-      const arg = c[0] as {
-        features?: Array<{ geometry?: { type: string; coordinates?: number[] } }>
-      }
-      return arg.features?.[0]?.geometry?.type === 'Point'
-    })
-    const data = markerSetData?.[0] as { features: Array<{ geometry: { coordinates: number[] } }> }
-    expect(data.features[0].geometry.coordinates).toEqual([5, 50])
-  })
-
+describe('useRevealMapEffects — city reveal', () => {
   it('round-end geometry effect resets circle-color to REVEAL_WRONG before painting target marker', () => {
     const fake = createFakeMapRef()
     // City skip-only path: clickedPoint=null, distanceKm=MAX. plan returns null,

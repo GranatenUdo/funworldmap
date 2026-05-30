@@ -118,11 +118,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
       {(session.status === 'playing' || session.status === 'round-ended') && (
         <FirstSessionTutorial
           modeId={session.modeId}
-          attemptsPerRound={session.attemptsPerRound}
-          // Free play is single-attempt-per-round: the first guess resolves the
-          // round and sets lastOutcome, so this alone signals "first guess made".
-          // (The old `currentAttempts.length > 0` term only mattered for best-of-N,
-          // which is unreachable now and removed in Phase B.)
           firstAttemptMade={session.lastOutcome !== null}
         />
       )}

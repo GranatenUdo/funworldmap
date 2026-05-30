@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from 'react'
-import type { AttemptRecord, GameSession, PointReveal, RoundSpec } from '../../shared/types'
+import type { GameSession, PointReveal, RoundSpec } from '../../shared/types'
 import { MESSAGES } from './messages'
 
 interface Props {
@@ -20,32 +20,17 @@ function revealLineFor(
   return MESSAGES.revealFar(d, pts, name)
 }
 
-function latestPointAttempt(
-  attempts: readonly AttemptRecord[],
-): { reveal: PointReveal; pointsEarned: number } | null {
-  if (attempts.length === 0) return null
-  const last = attempts[attempts.length - 1]
-  if (last.reveal.kind !== 'point') return null
-  return { reveal: last.reveal, pointsEarned: last.pointsEarned }
-}
-
 function CityGuessingHud({ session, onSkip }: Props) {
   const round = session.currentRound
   const outcome = session.lastOutcome
 
   const revealLine = useMemo<ReactNode | null>(() => {
-    // Round-ended: read from the outcome's best/only attempt reveal.
+    // Round-ended: read from the outcome reveal.
     if (session.status === 'round-ended' && outcome && outcome.reveal.kind === 'point') {
       return revealLineFor(outcome.reveal, outcome.pointsEarned, round)
     }
-    // Playing + best-of-N + ≥1 attempt: read from the latest attempt so each
-    // click produces legible feedback before round-ended.
-    if (session.status === 'playing' && session.attemptsPerRound > 1) {
-      const latest = latestPointAttempt(session.currentAttempts)
-      if (latest) return revealLineFor(latest.reveal, latest.pointsEarned, round)
-    }
     return null
-  }, [session.status, session.attemptsPerRound, session.currentAttempts, outcome, round])
+  }, [session.status, outcome, round])
 
   if (!round || round.kind !== 'city-guessing') return null
 
@@ -71,7 +56,7 @@ function CityGuessingHud({ session, onSkip }: Props) {
         </div>
       </div>
 
-      {session.status === 'playing' && session.attemptsPerRound === 1 && (
+      {session.status === 'playing' && (
         <button
           type="button"
           onClick={onSkip}
