@@ -1,7 +1,6 @@
 import type { ModeId } from '../game/shared/types'
 
 export type EventSchema = {
-  daily_done_low_score_prompt: { mode: ModeId; bestScore: number; attemptsRemaining: number }
   free_started: { mode: ModeId }
   launcher_dismissed: { path: 'search' | 'escape' | 'card' | 'backdrop' | 'close' }
   header_cta_clicked: Record<string, never>

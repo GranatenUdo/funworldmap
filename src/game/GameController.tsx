@@ -34,7 +34,6 @@ export function GameController({ countries, cities, byCca3 }: Props) {
     mode,
     start,
     submitGuessInput,
-    completeNow,
     advance,
     overrideRound,
     endGame,
@@ -120,10 +119,10 @@ export function GameController({ countries, cities, byCca3 }: Props) {
         <FirstSessionTutorial
           modeId={session.modeId}
           attemptsPerRound={session.attemptsPerRound}
-          firstAttemptMade={session.currentAttempts.length > 0 || session.lastOutcome !== null}
+          firstAttemptMade={session.lastOutcome !== null}
         />
       )}
-      <HudShell session={session} onEndGame={onEndGame} onDone={completeNow}>
+      <HudShell session={session} onEndGame={onEndGame}>
         <Hud session={session} />
       </HudShell>
       {session.status === 'game-over' && (
