@@ -11,6 +11,7 @@ import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
+import { useMapReady } from './hooks/useMapReady'
 import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { isCountryPinning } from './game/shared/modePredicates'
@@ -104,7 +105,7 @@ function AppInner({
   const liveRegionRef = useRef<HTMLDivElement>(null)
   const clearTimerRef = useRef<number | null>(null)
   const prevSelectedRef = useRef<string | null>(null)
-  const [mapReady, setMapReady] = useState(false)
+  const mapReady = useMapReady()
   const [showHint, setShowHint] = useState(false)
   const [hintDismissed, setHintDismissed] = useState(false)
   const [satellite, setSatellite] = useState(true)
@@ -286,26 +287,6 @@ function AppInner({
       }
     }
   }, [selected])
-
-  useEffect(() => {
-    const check = () => document.querySelector('[data-map-loaded], [data-map-error]')
-    const observer = new MutationObserver(() => {
-      if (check()) {
-        setMapReady(true)
-        observer.disconnect()
-      }
-    })
-    observer.observe(document.body, {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['data-map-loaded', 'data-map-error'],
-    })
-    if (check()) {
-      setMapReady(true)
-      observer.disconnect()
-    }
-    return () => observer.disconnect()
-  }, [])
 
   useEffect(() => {
     if (!mapReady || selected || hintDismissed || gameActive) return
