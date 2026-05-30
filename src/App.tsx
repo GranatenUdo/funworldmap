@@ -120,19 +120,10 @@ function AppInner({
   const roundEndTarget = useMemo(() => {
     if (session.status !== 'round-ended') return null
     if (!isCountryPinning(session.modeId)) return null
-    const isFinalOutcome = session.attemptsPerRound === 1 || session.attemptsRemaining === 0
-    if (!isFinalOutcome) return null
     const reveal = session.lastOutcome?.reveal
     if (!reveal || reveal.kind !== 'country') return null
     return byCca3.get(reveal.targetCca3) ?? null
-  }, [
-    session.status,
-    session.modeId,
-    session.attemptsPerRound,
-    session.attemptsRemaining,
-    session.lastOutcome,
-    byCca3,
-  ])
+  }, [session.status, session.modeId, session.lastOutcome, byCca3])
 
   const advanceRoundEndPanel = useCallback(() => {
     if (session.status !== 'round-ended' || !mode) return

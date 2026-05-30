@@ -13,8 +13,6 @@ function makeApi(session: GameSession): GameSessionApi {
     mode: null,
     start: () => {},
     submitGuessInput: () => {},
-    completeNow: () => {},
-    resume: () => {},
     advance: () => {},
     overrideRound: () => {},
     endGame: () => {},

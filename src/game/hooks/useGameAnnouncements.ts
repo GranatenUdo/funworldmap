@@ -4,7 +4,6 @@ import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCountryPinning } from '../shared/modePredicates'
 import { prefersReducedMotion } from '../../lib/motion'
 
-const REVEAL_MS_COUNTRY = 1200
 const REVEAL_MS_CITY = 2000
 
 function dispatchAnnouncement(text: string): void {
@@ -90,7 +89,6 @@ export function useGameAnnouncements({
       }
     }
     if (session.status === 'round-ended' && session.lastOutcome) {
-      const isFinalOutcome = session.attemptsPerRound === 1 || session.attemptsRemaining === 0
       const inCountryMode = isCountryPinning(session.modeId)
       const isCorrect =
         session.lastOutcome.reveal?.kind === 'country' ? session.lastOutcome.reveal.correct : false
@@ -111,11 +109,6 @@ export function useGameAnnouncements({
         : null
       const animatedMs = plan ? Math.max(plan.durationMs + 300, 1800) : null
 
-      if (inCountryMode && !isFinalOutcome) {
-        const ms = animatedMs ?? REVEAL_MS_COUNTRY
-        const t = window.setTimeout(advanceNow, ms)
-        return () => window.clearTimeout(t)
-      }
       if (!inCountryMode) {
         const ms = animatedMs ?? REVEAL_MS_CITY
         const t = window.setTimeout(advanceNow, ms)
@@ -161,7 +154,6 @@ export function useGameAnnouncements({
     session.used,
     session.currentRound,
     session.modeId,
-    session.currentAttempts,
     advance,
     mode,
     record,

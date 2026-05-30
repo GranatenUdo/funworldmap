@@ -11,7 +11,6 @@ import { renderHook, cleanup, act } from '@testing-library/react'
 import { useGameAnnouncements } from '../useGameAnnouncements'
 import {
   makeCityRound,
-  makeCountryReveal,
   makeCountryRound,
   makeOutcome,
   makePointReveal,
@@ -151,32 +150,6 @@ describe('useGameAnnouncements', () => {
 
     afterEach(() => {
       vi.useRealTimers()
-    })
-
-    it('auto-advances country-pinning non-final round-end after REVEAL_MS_COUNTRY (1200ms) when no animation plan', () => {
-      const advance = vi.fn()
-      // Reveal with clickedCca3=null yields no animation plan (skip / no-guess).
-      const reveal = makeCountryReveal({ correct: false, clickedCca3: null, distanceKm: null })
-      // attemptsPerRound>1 + attemptsRemaining>0 → isFinalOutcome=false, so the
-      // country-pinning non-final branch fires (the one that hits REVEAL_MS_COUNTRY).
-      const session = makeSession({
-        status: 'round-ended',
-        modeId: 'country-pinning',
-        attemptsPerRound: 3,
-        attemptsRemaining: 2,
-        lastOutcome: makeOutcome(reveal, false),
-        roundIndex: 0,
-        maxRounds: 5,
-      })
-      renderAnnouncementsHook(buildAnnouncementsArgs({ session, advance }))
-      act(() => {
-        vi.advanceTimersByTime(1199)
-      })
-      expect(advance).not.toHaveBeenCalled()
-      act(() => {
-        vi.advanceTimersByTime(1)
-      })
-      expect(advance).toHaveBeenCalledTimes(1)
     })
 
     it('calls finalize() instead of advance() when lastOutcome.endsGame is true and not country-pinning', () => {
