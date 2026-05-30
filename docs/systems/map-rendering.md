@@ -16,9 +16,11 @@
 The basemap provides the underlying geographic context — landmasses, water, country labels, major geographic features. It comes from **OpenFreeMap**, a free vector tile service.
 
 ### Style
+
 **Positron** — clean, minimal, light background. Used as the base style. In dark mode, basemap layer colors are modified programmatically (see Dark Mode below).
 
 ### Resilience
+
 The basemap URL is a single constant in `lib/mapStyles.ts`. If OpenFreeMap becomes unavailable, switching to another provider (MapTiler, Stadia Maps, or any MapLibre-compatible style URL) requires changing one line.
 
 If tiles fail to load, the map canvas still renders. Country boundary polygons (from bundled data) display regardless of basemap availability. The user sees countries but without the underlying geographic context.
@@ -28,6 +30,7 @@ If tiles fail to load, the map canvas still renders. Country boundary polygons (
 Country boundary polygons come from **Natural Earth** data, packaged as **world-atlas** (TopoJSON format), installed via npm and bundled by Vite.
 
 ### Data Pipeline
+
 ```
 Natural Earth (public domain)
     ↓ pre-processed by
@@ -43,11 +46,11 @@ MapLibre GL as a GeoJSON source with multiple layers
 
 Three visual layers render on top of the basemap:
 
-| Layer | Purpose | Style |
-|-------|---------|-------|
-| `country-fill` | Clickable area, hover feedback | Semi-transparent fill. Opacity increases on hover via `feature-state`. |
-| `country-borders` | Political boundary lines | Thin gray/white lines. |
-| `country-selected` | Selected country highlight | Thicker border + stronger fill. Filtered to show only the selected country ID. |
+| Layer              | Purpose                        | Style                                                                          |
+| ------------------ | ------------------------------ | ------------------------------------------------------------------------------ |
+| `country-fill`     | Clickable area, hover feedback | Semi-transparent fill. Opacity increases on hover via `feature-state`.         |
+| `country-borders`  | Political boundary lines       | Thin gray/white lines.                                                         |
+| `country-selected` | Selected country highlight     | Thicker border + stronger fill. Filtered to show only the selected country ID. |
 
 ### Interaction Model
 
@@ -88,13 +91,13 @@ flyTo({
 
 **Zoom calculation**: The zoom level is derived from the country's area in km² using a logarithmic scale. Approximate targets:
 
-| Country | Area (km²) | Approximate Zoom |
-|---------|-----------|-----------------|
-| Russia | 17,098,242 | ~3 |
-| Brazil | 8,515,767 | ~4 |
-| France | 551,695 | ~6 |
-| Luxembourg | 2,586 | ~10 |
-| Vatican City | 0.44 | ~15 |
+| Country      | Area (km²) | Approximate Zoom |
+| ------------ | ---------- | ---------------- |
+| Russia       | 17,098,242 | ~3               |
+| Brazil       | 8,515,767  | ~4               |
+| France       | 551,695    | ~6               |
+| Luxembourg   | 2,586      | ~10              |
+| Vatican City | 0.44       | ~15              |
 
 Exact values are tuned during implementation to feel natural at each scale.
 
@@ -105,7 +108,9 @@ Exact values are tuned during implementation to feel natural at each scale.
 In dark mode, the basemap is darkened using MapLibre's native `setPaintProperty()` API. This modifies individual basemap layer colors at runtime without destroying layers or sources.
 
 ### Approach
+
 On theme toggle, iterate over known basemap layers and modify their paint properties:
+
 - Background → dark gray
 - Water layers → dark blue
 - Land/landuse layers → dark tones
@@ -115,10 +120,13 @@ On theme toggle, iterate over known basemap layers and modify their paint proper
 This uses `map.setPaintProperty(layerId, property, value)` which is non-destructive — all sources, layers, and state are preserved. No style reload occurs.
 
 ### Why Not CSS Filter
+
 A CSS filter on `.maplibregl-canvas` would transform the entire canvas — including our country overlay layers (fills, borders, selection highlight). Overlay colors would become unpredictable and uncontrollable. The `setPaintProperty` approach keeps basemap and overlay layers independent.
 
 ### Overlay Layer Adaptation
+
 Country overlay layers (country-fill, country-borders, country-selected) are independently adjusted for dark mode:
+
 - Fill colors use lighter, more muted tones
 - Border lines use brighter colors for visibility
 - Selected country highlight uses a contrasting accent
@@ -126,8 +134,9 @@ Country overlay layers (country-fill, country-borders, country-selected) are ind
 These changes are applied through the same `setPaintProperty` calls, fully independent of basemap darkening.
 
 ### Fallback
+
 The specific basemap layer IDs to modify depend on OpenFreeMap's positron style spec. If layer IDs cannot be identified (e.g., style spec changes), the basemap remains light while UI chrome (header, sidebar) still darkens. This is a graceful degradation — dark UI with a light map is functional.
 
 ## WebGL2 Requirement
 
-MapLibre GL JS requires WebGL2 support in the browser. Before rendering the map, the application checks `maplibregl.supported()`. If WebGL2 is not available (rare — mainly enterprise browsers with GPU disabled, or very old devices), a fallback message is shown with browser upgrade guidance instead of a blank canvas. Note that some older browsers support WebGL1 but not WebGL2 — the error message should specifically mention WebGL2. See [System Overview — Error Handling](overview.md).
+MapLibre GL JS requires WebGL2 support in the browser. The `maplibregl.Map` constructor throws when WebGL2 is unavailable; `useMapInstance` catches it and shows a fallback message with browser-upgrade guidance instead of a blank canvas (rare — mainly enterprise browsers with GPU disabled, or very old devices). Note that some older browsers support WebGL1 but not WebGL2 — the error message specifically mentions WebGL2. See [System Overview — Error Handling](overview.md).

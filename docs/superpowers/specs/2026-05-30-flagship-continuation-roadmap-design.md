@@ -46,7 +46,7 @@ Workstreams are independent; this order is a recommendation, not a hard dependen
 
 **Convention reconcile:** `docs/adr/README.md` currently lists "historical backfill for decisions nobody is contesting" as a _poor reason_. Because 0001–0003 are exactly that kind of backfill, add a short note to the README acknowledging that a small set of foundational decisions were recorded once for discoverability, so the guidance and the directory contents don't contradict each other.
 
-**Also in A (surfaced during plan review):** fix two stale doc references the ADRs would otherwise contradict — `docs/systems/overview.md` cites `maplibregl.supported()` (removed in MapLibre v5; the real check is `canvas.getContext('webgl2')` in `useMapInstance`), and `CONTRIBUTING.md` describes the old `chromium`/`chromium-gpu` e2e split (since consolidated). Both are in the workstream-A plan, Task 3.
+**Also in A (surfaced during plan review):** fix two stale doc references the ADRs would otherwise contradict — `docs/systems/overview.md` cites `maplibregl.supported()` (removed in MapLibre v5; the real check is the `maplibregl.Map` constructor throwing, caught in `useMapInstance`), and `CONTRIBUTING.md` describes the old `chromium`/`chromium-gpu` e2e split (since consolidated). Both are in the workstream-A plan, Task 3.
 
 **Acceptance:** 4 ADRs present and well-formed; `docs/adr/README.md` no longer contradicts the directory; README's "Decision Records" link resolves to real content; no broken cross-links; no `maplibregl.supported()` / `chromium-gpu` references remain in the touched docs.
 

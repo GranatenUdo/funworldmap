@@ -144,7 +144,7 @@ The per-component figures are estimates summing to the measured totals. MapLibre
 ## Game system
 
 The game runs on a single `useGameSession` reducer with a small action set
-(`start | attempt | completeNow | resume | advance | overrideRound | endGame`).
+(`start | attempt | completeNow | resume | advance | overrideRound | endGame | finishFree | finalize | restart`).
 Best-of-N rounds (daily mode) are supported via `attemptsPerRound > 1`; the
 reducer derives the round-end outcome from the best of all attempts so score
 and reveal animation always agree. Modes plug in via the `GameMode` contract
