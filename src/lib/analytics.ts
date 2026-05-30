@@ -1,14 +1,8 @@
 import type { ModeId } from '../game/shared/types'
 
 export type EventSchema = {
-  daily_shared: {
-    date: string
-    modesPlayed: 1 | 2
-    method: 'share-api' | 'clipboard-text' | 'clipboard-link'
-  }
   daily_done_low_score_prompt: { mode: ModeId; bestScore: number; attemptsRemaining: number }
   free_started: { mode: ModeId }
-  streak_reached_milestone: { days: 3 | 7 | 14 | 30 | 100 }
   launcher_dismissed: { path: 'search' | 'escape' | 'card' | 'backdrop' | 'close' }
   header_cta_clicked: Record<string, never>
 }
