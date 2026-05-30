@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Interactive political world map with daily geography puzzles. Fully client-side; deployable to any static host.",
+  "description": "Interactive political world map with country-pinning and city-guessing games. Fully client-side; deployable to any static host.",
   "homepage": "https://funworldmap.com",
   "repository": {
     "type": "git",
@@ -17,13 +17,11 @@
     "geography",
     "maplibre",
     "react",
-    "daily-puzzle",
     "wcag-aa"
   ],
   "license": "MIT",
   "author": "Tobias Ens",
   "scripts": {
-    "predev": "npm run daily:generate",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "build:e2e": "tsc -b && vite build --mode e2e",
@@ -35,8 +33,6 @@
     "format": "prettier --write src/",
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
-    "daily:generate": "tsx scripts/daily-content/generate-index.ts",
-    "daily:validate": "tsx scripts/daily-content/validate-pools.ts",
     "update-data": "tsx scripts/fetch-countries.ts",
     "fetch-cities": "tsx scripts/fetch-cities.ts",
     "prepare": "husky"

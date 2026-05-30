@@ -6,14 +6,13 @@ If you find yourself wanting to do something this file forbids, **stop and ask**
 
 ## Project documentation
 
-| Doc | What it covers |
-|---|---|
-| [`docs/purpose.md`](docs/purpose.md) | What funworldmap is, audience, scope |
-| [`docs/systems/overview.md`](docs/systems/overview.md) | Architecture, data flow, error handling |
-| [`docs/systems/daily-puzzle.md`](docs/systems/daily-puzzle.md) | Retention layer (daily, streak, share, history) |
-| [`docs/systems/testing.md`](docs/systems/testing.md) | Two-tier test strategy (DOM + map-via-page.evaluate) |
-| [`docs/superpowers/specs/`](docs/superpowers/specs/) | Design docs (per-feature, dated) |
-| [`docs/superpowers/plans/`](docs/superpowers/plans/) | Implementation plans (per-feature, dated) |
+| Doc                                                    | What it covers                                       |
+| ------------------------------------------------------ | ---------------------------------------------------- |
+| [`docs/purpose.md`](docs/purpose.md)                   | What funworldmap is, audience, scope                 |
+| [`docs/systems/overview.md`](docs/systems/overview.md) | Architecture, data flow, error handling              |
+| [`docs/systems/testing.md`](docs/systems/testing.md)   | Two-tier test strategy (DOM + map-via-page.evaluate) |
+| [`docs/superpowers/specs/`](docs/superpowers/specs/)   | Design docs (per-feature, dated)                     |
+| [`docs/superpowers/plans/`](docs/superpowers/plans/)   | Implementation plans (per-feature, dated)            |
 
 When you start a non-trivial change, write the spec/plan first; commit before code. See `docs/superpowers/README.md` for the workflow.
 
@@ -45,7 +44,7 @@ await page.getByTestId('panel-close').click({ force: true })
 
 // ✅ Do
 await expect(page.getByTestId('search-results')).not.toBeAttached() // the overlay
-await page.getByTestId('panel-close').click()                        // now safe
+await page.getByTestId('panel-close').click() // now safe
 ```
 
 **❌ Sleeping through CSS transitions.** A `transition: opacity 300ms` or `animation: fade-in 260ms` is wallclock-non-deterministic on slow CI. Don't `waitForTimeout(400)` to ride out an animation:
@@ -60,7 +59,7 @@ await page.getByTestId('launcher-dismiss').click()
 await expect(page.getByTestId('launcher')).not.toBeAttached()
 ```
 
-If the component conditionally renders during animation (e.g. `<AnimatePresence>`), `not.toBeAttached` works. **If the component stays mounted during animation, use the `data-animation-state` attribute** that the launcher (`Launcher.tsx`), country-panel (`SingleCountryPanel.tsx`), and milestone-overlay (`LauncherMilestoneOverlay.tsx`) components expose. Wait on it via the helper:
+If the component conditionally renders during animation (e.g. `<AnimatePresence>`), `not.toBeAttached` works. **If the component stays mounted during animation, use the `data-animation-state` attribute** that the launcher (`Launcher.tsx`) and country-panel (`SingleCountryPanel.tsx`) components expose. Wait on it via the helper:
 
 ```ts
 import { waitForAnimationIdle } from './helpers'
@@ -76,7 +75,10 @@ Driven by `Element.getAnimations({ subtree: true })` so it tracks every CSS anim
 await page.getByTestId('search-results').getByRole('option').first().click()
 
 // ✅ Do
-await page.getByTestId('search-results').getByRole('option', { name: /^France\s/ }).click()
+await page
+  .getByTestId('search-results')
+  .getByRole('option', { name: /^France\s/ })
+  .click()
 ```
 
 **❌ Asserting focus position after N Tab presses** without an intermediate check. Tab order can change when you add a focusable element (e.g. a Daily CTA), and the failure mode is silent:
@@ -98,16 +100,15 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 
 **✅ Use the readiness helpers in `e2e/helpers.ts`:**
 
-| Helper | Use when |
-|---|---|
-| `waitForAppReady(page)` | After every `page.goto('/')` — ensures bundled `countries` + `cities` are present and the first React commit happened |
-| `waitForGameTestHook(page)` | After landing on a game/daily route, before calling `__funworldmap_game.*` test seams — ensures the seam is registered |
-| `waitForCountryTilesRendered(page)` | After map-loaded, before `queryRenderedFeatures` — ensures the GPU has actually rasterised the tiles |
-| `waitForAnimationIdle(locator)` | After an animated component enters or before clicking through it — replaces `waitForTimeout(N)` for CSS-transition timing. Component must expose `data-animation-state="idle"` when its animations complete. |
-| `dismissLauncher(page)` | When the test runs against `/` (which now shows the launcher by default) and you need a clean map state |
-| `gotoAndWaitForMap(page, path)` | Combined: navigates, waits for `data-map-loaded`. Prefer over manual `goto + waitForSelector('[data-map-loaded]')` |
-| `stubDailyIndex(page, date)` / `seedDailyHistory(page, opts)` | When the test depends on daily content or play history. Avoids hitting the real `/daily/index.json` and avoids cross-test localStorage leaks |
-| `routeMapTiles(page)` | When the test doesn't need real basemap tiles — stubs them to avoid network flake |
+| Helper                              | Use when                                                                                                                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `waitForAppReady(page)`             | After every `page.goto('/')` — ensures bundled `countries` + `cities` are present and the first React commit happened                                                                                        |
+| `waitForGameTestHook(page)`         | After landing on a game/daily route, before calling `__funworldmap_game.*` test seams — ensures the seam is registered                                                                                       |
+| `waitForCountryTilesRendered(page)` | After map-loaded, before `queryRenderedFeatures` — ensures the GPU has actually rasterised the tiles                                                                                                         |
+| `waitForAnimationIdle(locator)`     | After an animated component enters or before clicking through it — replaces `waitForTimeout(N)` for CSS-transition timing. Component must expose `data-animation-state="idle"` when its animations complete. |
+| `dismissLauncher(page)`             | When the test navigates to `/` and the launcher is open (opened via header Play) and you need a clean map state                                                                                              |
+| `gotoAndWaitForMap(page, path)`     | Combined: navigates, waits for `data-map-loaded`. Prefer over manual `goto + waitForSelector('[data-map-loaded]')`                                                                                           |
+| `routeMapTiles(page)`               | When the test doesn't need real basemap tiles — stubs them to avoid network flake                                                                                                                            |
 
 **✅ Auto-retrying assertions over manual polls.** `expect(locator).toBeVisible()`, `expect(locator).toHaveCount(N)`, `expect.poll(...)` all retry up to a timeout. Reach for these instead of writing your own polling loops.
 
@@ -115,14 +116,14 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 
 **✅ Test seams over UI driving for game/daily flows.** Use `__funworldmap_game.submitCountryGuess(cca3)`, `completeNow()`, etc. (exposed in `src/game/GameController.tsx` under `VITE_TEST_HOOKS`). They dispatch the same reducer actions a real click would, but skip the click-actionability dance.
 
-**✅ Synthetic map clicks via `__funworldmap_map.fire('click', ...)` for ocean/off-globe paths.** Real `page.mouse.click(x, y)` depends on viewport-specific water coordinates that change with camera state. The synthetic form is camera-agnostic. Always pair with a `queryRenderedFeatures` precondition assertion to fail loudly if the canvas point ever lands on a country (see `e2e/daily-survives-ocean-click.spec.ts`).
+**✅ Synthetic map clicks via `__funworldmap_map.fire('click', ...)` for ocean/off-globe paths.** Real `page.mouse.click(x, y)` depends on viewport-specific water coordinates that change with camera state. The synthetic form is camera-agnostic. Always pair with a `queryRenderedFeatures` precondition assertion to fail loudly if the canvas point ever lands on a country.
 
 ### Before adding a new e2e test
 
-1. **Does it need to run against `chromium`** (Software ANGLE), or is `chromium-gpu` enough? Map-rendering and GPU-dependent tests go in `chromium-gpu` (registered in `playwright.config.ts`'s `testMatch`). Pure DOM tests can live in `chromium` (faster, but more flake-prone).
-2. **Does an existing helper cover the readiness wait?** Check `e2e/helpers.ts` first. If you're tempted to write `await page.waitForTimeout(...)`, look for the helper. If none exists for your case, *add* one to `helpers.ts` rather than inlining the wait.
+1. **All tests run in the consolidated `chromium` project** (real-GPU-backed ANGLE). Add your spec's filename to the `chromium` `testMatch` in `playwright.config.ts`. If it is also appropriate for mobile or Firefox touch, add it to those projects too.
+2. **Does an existing helper cover the readiness wait?** Check `e2e/helpers.ts` first. If you're tempted to write `await page.waitForTimeout(...)`, look for the helper. If none exists for your case, _add_ one to `helpers.ts` rather than inlining the wait.
 3. **Are you about to use `force: true`?** Stop. Find what's blocking the click and wait for it to be gone instead.
-4. **Does the test depend on animations?** If yes, the component needs an `data-animation-state` (or similar) signal — don't guess durations.
+4. **Does the test depend on animations?** If yes, the component needs a `data-animation-state` (or similar) signal — don't guess durations.
 
 ### When CI flakes
 
@@ -165,4 +166,4 @@ This project carries cross-session conventions in `~/.claude/projects/E--polworl
 
 ## When in doubt
 
-Ask. The cost of pausing to confirm is low; the cost of an unwanted change can be high (an admin-merged CI failure, a polluted PB store, a daily that doesn't save). Match the scope of your action to what was asked.
+Ask. The cost of pausing to confirm is low; the cost of an unwanted change can be high (an admin-merged CI failure, a polluted personal-bests store). Match the scope of your action to what was asked.

@@ -4,9 +4,12 @@
 
 **Playwright** — browser automation framework for end-to-end testing. Tests run against the Vite preview server (`npm run build:e2e && npm run preview`) in a real browser (Chromium). The test seams (`window.__funworldmap_map` and `window.__funworldmap_game`) are only exposed when `import.meta.env.VITE_TEST_HOOKS` is true at build time (see Exposing the Map Instance below).
 
+Build the e2e bundle: `npm run build:e2e` (no daily-content generation step; the app is fully client-side).
+
 ## The Canvas Challenge
 
 MapLibre GL JS renders everything to a WebGL2 `<canvas>`. Unlike DOM-based UIs, you cannot:
+
 - Query elements inside the canvas with CSS selectors
 - Assert CSS states (hover, active) on rendered features
 - Use standard Playwright locators to find map features
@@ -20,6 +23,7 @@ This shapes the entire testing strategy.
 Test everything outside the canvas — panels, search, header, theme toggle, URL routing.
 
 **Techniques:**
+
 - `data-testid` attributes on React components
 - Standard Playwright locators (`getByRole`, `getByText`, `getByTestId`)
 - Data attributes reflecting map state on the app root:
@@ -28,6 +32,7 @@ Test everything outside the canvas — panels, search, header, theme toggle, URL
 - URL hash assertions for deep linking
 
 **Examples:**
+
 - Search bar accepts input and shows dropdown
 - Clicking a search result opens the panel with correct data
 - Panel shows formatted population, flag, capital
@@ -39,6 +44,7 @@ Test everything outside the canvas — panels, search, header, theme toggle, URL
 Test map state by reaching into the MapLibre API through the browser's JavaScript context.
 
 **Techniques:**
+
 - `page.evaluate(() => (window as any).__funworldmap_map.getZoom())` — verify zoom level
 - `page.evaluate(() => (window as any).__funworldmap_map.getCenter())` — verify camera position
 - `page.evaluate(([x, y]) => (window as any).__funworldmap_map.queryRenderedFeatures([x, y]), [x, y])` — check what features exist at a pixel
@@ -46,6 +52,7 @@ Test map state by reaching into the MapLibre API through the browser's JavaScrip
 - `expect(page).toHaveScreenshot()` — visual regression testing
 
 **Examples:**
+
 - Zoom in button increases `map.getZoom()`
 - Clicking at France's coordinates selects France
 - After selecting France, `map.getCenter()` is near France
@@ -71,9 +78,13 @@ if (import.meta.env.VITE_TEST_HOOKS) {
 ```
 
 Tests access them via:
+
 ```ts
 const zoom = await page.evaluate(() => (window as any).__funworldmap_map.getZoom())
-const success = await page.evaluate(([cca3]) => (window as any).__funworldmap_game.submitCountryGuess(cca3), ['FRA'])
+const success = await page.evaluate(
+  ([cca3]) => (window as any).__funworldmap_game.submitCountryGuess(cca3),
+  ['FRA'],
+)
 ```
 
 The seams are gated behind `import.meta.env.VITE_TEST_HOOKS`, which is only set at build time:
@@ -84,6 +95,8 @@ The seams are gated behind `import.meta.env.VITE_TEST_HOOKS`, which is only set 
 
 This is deliberate: the funworldmap site has no backend, no auth, and no sensitive runtime state, so exposing a map reference for testing is acceptable. The gating ensures production users never see these seams.
 
+Note: unlike earlier versions, `npm run build:e2e` does not regenerate a daily content index — there is no daily feature. The preview server is fully self-contained.
+
 ## WebGL2 in Headless Browsers
 
 MapLibre needs WebGL2, which requires GPU access. Headless Chromium doesn't have a GPU by default.
@@ -93,6 +106,7 @@ MapLibre needs WebGL2, which requires GPU access. Headless Chromium doesn't have
 The previous backend was Software ANGLE (`--use-gl=swiftshader` / SwiftShader), dropped 2026-05-02 — it ran 5–10× slower than real-GPU ANGLE and was the documented largest contributor to the chromium e2e flake regression (see `docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`).
 
 **Playwright config:**
+
 ```ts
 use: {
   launchOptions: {
@@ -120,17 +134,18 @@ e2e/
 
 `e2e/fixtures/map-helpers.ts` provides reusable helpers:
 
-| Helper | Purpose |
-|--------|---------|
-| `waitForMapLoad(page)` | Waits for `[data-map-loaded="true"]` |
-| `getMapZoom(page)` | Returns current zoom via page.evaluate |
-| `getMapCenter(page)` | Returns current center [lng, lat] |
+| Helper                       | Purpose                                   |
+| ---------------------------- | ----------------------------------------- |
+| `waitForMapLoad(page)`       | Waits for `[data-map-loaded="true"]`      |
+| `getMapZoom(page)`           | Returns current zoom via page.evaluate    |
+| `getMapCenter(page)`         | Returns current center [lng, lat]         |
 | `clickMapAt(page, lng, lat)` | Converts geo coordinates to pixel, clicks |
-| `getSelectedCountry(page)` | Reads `data-selected-country` attribute |
+| `getSelectedCountry(page)`   | Reads `data-selected-country` attribute   |
 
 ## Visual Regression
 
 Screenshot tests (`expect(page).toHaveScreenshot()`) capture the map at specific states:
+
 - Initial world view
 - Zoomed to Europe
 - Country selected with panel open
@@ -143,9 +158,9 @@ These catch unintended visual changes but are sensitive to rendering differences
 **@axe-core/playwright** runs automated WCAG audits:
 
 ```ts
-import AxeBuilder from '@axe-core/playwright';
-const results = await new AxeBuilder({ page }).analyze();
-expect(results.violations).toEqual([]);
+import AxeBuilder from '@axe-core/playwright'
+const results = await new AxeBuilder({ page }).analyze()
+expect(results.violations).toEqual([])
 ```
 
 This catches: missing alt text, insufficient color contrast, missing ARIA attributes, broken label associations, and other WCAG AA violations.

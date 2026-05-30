@@ -65,9 +65,6 @@ export default defineConfig({
         'reveal-animation.spec.ts',
         'reveal-animation-reduced-motion.spec.ts',
         'tutorial-first-click.spec.ts',
-        'daily-share-block-immediate.spec.ts',
-        'daily-survives-ocean-click.spec.ts',
-        'daily-reveal-on-final-attempt.spec.ts',
         // formerly chromium (DOM-only, run on real-GPU now to consolidate):
         'scaffold.spec.ts',
         'canonical-195.spec.ts',
@@ -83,17 +80,8 @@ export default defineConfig({
         'a11y-keyboard-smoke.spec.ts',
         'launcher.spec.ts',
         'launcher-focus-order.spec.ts',
-        'daily-puzzle.spec.ts',
-        'daily-best-of-3.spec.ts',
-        'daily-streak.spec.ts',
-        'daily-reveal.spec.ts',
-        'daily-share.spec.ts',
-        'share-branches.spec.ts',
-        'daily-deep-link.spec.ts',
-        'launcher-history.spec.ts',
         'launcher-card-loading-states.spec.ts',
         'launcher-backdrop-dismiss.spec.ts',
-        'telemetry-deep-link.spec.ts',
         'toast-above-modal.spec.ts',
         'axe-snapshot.spec.ts',
         'label-contrast.spec.ts',
@@ -102,7 +90,6 @@ export default defineConfig({
         'source-tooltip-edge.spec.ts',
         'source-tooltip-keyboard.spec.ts',
         'header-play-reopens-launcher.spec.ts',
-        'done-confirm-low-score.spec.ts',
       ],
       // Specs that consistently flake on free GitHub-hosted ubuntu-latest runners
       // due to cold-WebGL slowness (no real GPU; SwiftShader/llvmpipe is 5-10x
@@ -114,14 +101,11 @@ export default defineConfig({
         ? [
             'label-contrast.spec.ts',
             'header-play-reopens-launcher.spec.ts',
-            'daily-puzzle.spec.ts',
-            'daily-best-of-3.spec.ts',
             'panel-focus.spec.ts',
             'accessibility.spec.ts',
             'axe-snapshot.spec.ts',
             'reveal-animation.spec.ts',
             'search.spec.ts',
-            'done-confirm-low-score.spec.ts',
             'game-country-pinning.spec.ts',
             'theme-and-responsive.spec.ts',
             'source-tooltip-edge.spec.ts',
@@ -139,7 +123,6 @@ export default defineConfig({
       testMatch: [
         'mobile-smoke.spec.ts',
         'mobile-tap.spec.ts',
-        'mobile-daily-flow.spec.ts',
         'mobile-free-play.spec.ts',
         'tutorial-first-click.spec.ts',
       ],
@@ -194,8 +177,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command:
-      'npm run daily:generate && npm run build:e2e && npm run preview -- --port 5173 --strictPort',
+    command: 'npm run build:e2e && npm run preview -- --port 5173 --strictPort',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
