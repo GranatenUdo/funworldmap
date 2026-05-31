@@ -10,9 +10,7 @@ test.describe('Cold-load deep links bootstrap their target state', () => {
     const session = await getSession(page)
     expect(session.status).toBe('playing')
     expect(session.modeId).toBe('country-pinning')
-    expect(session.attemptsPerRound).toBe(1)
     expect(session.maxRounds).toBeNull()
-    expect(session.dailyDate).toBeNull()
 
     await expect(page.getByTestId('game-prompt-name')).toBeVisible()
     await expect(page.getByTestId('launcher')).not.toBeAttached()
@@ -26,9 +24,7 @@ test.describe('Cold-load deep links bootstrap their target state', () => {
     const session = await getSession(page)
     expect(session.status).toBe('playing')
     expect(session.modeId).toBe('city-guessing')
-    expect(session.attemptsPerRound).toBe(1)
     expect(session.maxRounds).toBe(10)
-    expect(session.dailyDate).toBeNull()
 
     await expect(page.getByTestId('game-prompt-name')).toBeVisible()
     await expect(page.getByTestId('launcher')).not.toBeAttached()

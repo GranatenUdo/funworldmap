@@ -45,8 +45,8 @@ test.describe('reveal animation', () => {
     expect(center!.lat).toBeCloseTo(46, 0)
 
     // Advance to the next round and confirm reveal artifacts cleared.
-    // For country-pinning best-of-1, the round-end panel opens with a
-    // "Continue" button (data-testid="game-continue"). Clicking it calls
+    // The round-end panel opens with a "Continue" button
+    // (data-testid="game-continue"). Clicking it calls
     // advanceRoundEndPanel → advance → next round.
     await expect(page.getByTestId('game-continue')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-continue').click()

@@ -11,10 +11,14 @@ import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
 export type SessionSnapshot = Omit<GameSession, 'used'>
 
 /**
- * Submit a country guess via the game's exposed API and wait for the session
- * to reflect the new attempt count.
+ * Submit a country guess via the game's exposed API and wait for the round to
+ * end. In free play each round ends after a single attempt, so the session
+ * transitions to `round-ended` with `lastOutcome !== null`.
+ *
+ * The `expectAfter` parameter is kept for call-site compatibility but is no
+ * longer used — `currentAttempts` was removed from the session type in B4.
  */
-export async function submitAndWait(page: Page, cca3: string, expectAfter: number): Promise<void> {
+export async function submitAndWait(page: Page, cca3: string, _expectAfter: number): Promise<void> {
   await page.evaluate(
     ({ c }) => {
       const game = (
@@ -30,14 +34,16 @@ export async function submitAndWait(page: Page, cca3: string, expectAfter: numbe
         page.evaluate(() => {
           const game = (
             window as unknown as {
-              __funworldmap_game?: { getSession: () => { currentAttempts: unknown[] } }
+              __funworldmap_game?: {
+                getSession: () => { lastOutcome: unknown; status: string }
+              }
             }
           ).__funworldmap_game
-          return game?.getSession().currentAttempts.length ?? 0
+          return game?.getSession().lastOutcome !== null
         }),
       { timeout: 15_000 },
     )
-    .toBe(expectAfter)
+    .toBe(true)
 }
 
 /**
@@ -128,10 +134,10 @@ export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<v
 
 /**
  * Poll until the game test hook (`window.__funworldmap_game`) is mounted with
- * the seams the daily/free specs use (`submitCountryGuess`, `completeNow`,
- * `finalize`). The hook is registered inside a `useEffect` in
- * `GameSessionProvider` / `GameController` after first render, so deep-link
- * specs can race past it without this wait.
+ * the seams the free-play specs use (`submitCountryGuess`, `finalize`). The
+ * hook is registered inside a `useEffect` in `GameSessionProvider` /
+ * `GameController` after first render, so deep-link specs can race past it
+ * without this wait.
  */
 export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promise<void> {
   await expect
@@ -140,10 +146,7 @@ export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promi
         page.evaluate(() => {
           const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> })
             .__funworldmap_game
-          return g &&
-            typeof g.submitCountryGuess === 'function' &&
-            typeof g.completeNow === 'function' &&
-            typeof g.finalize === 'function'
+          return g && typeof g.submitCountryGuess === 'function' && typeof g.finalize === 'function'
             ? 'ready'
             : 'not-ready'
         }),

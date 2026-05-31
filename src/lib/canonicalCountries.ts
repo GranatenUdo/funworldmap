@@ -13,10 +13,9 @@ import countriesData from '../data/countries.json'
  * This module is the single source of truth used by:
  *   - `useCountryData` — filters the in-memory country lookup
  *   - `loadCountryGeojson` — filters the rendered geometry
- *   - `dailyPool` — bounds daily-puzzle eligibility
  *
- * Adding a country to this list means it shows on the map, can be guessed,
- * and is eligible for the daily. Be deliberate.
+ * Adding a country to this list means it shows on the map and can be guessed.
+ * Be deliberate.
  *
  * NOTE: the `ReadonlySet` typing is type-only. At runtime these are regular
  * `Set` instances. Consumers MUST treat them as read-only — only call `.has()`

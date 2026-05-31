@@ -5,9 +5,9 @@
 
 ## Context
 
-The app must support deep-linkable country selection (e.g. `#FRA`), shareable daily
-and game routes (`#daily/<date>/<mode>`, `#game/<mode>`), and working browser
-back/forward — all on a static host with no server-side routing.
+The app must support deep-linkable country selection (e.g. `#FRA`), shareable game
+routes (`#game/<mode>`), and working browser back/forward — all on a static host with
+no server-side routing.
 
 ## Decision
 

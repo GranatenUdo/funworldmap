@@ -82,7 +82,6 @@ export default defineConfig({
         'launcher-focus-order.spec.ts',
         'launcher-card-loading-states.spec.ts',
         'launcher-backdrop-dismiss.spec.ts',
-        'toast-above-modal.spec.ts',
         'axe-snapshot.spec.ts',
         'label-contrast.spec.ts',
         'mobile-panel-header.spec.ts',
