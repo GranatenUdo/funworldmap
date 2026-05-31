@@ -9,6 +9,9 @@ import type { GameSession, GuessInput, ModeGuessResult, ModeId, RoundSpec } from
  */
 type Action =
   | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null }
+  // `input` is the guess that produced `result`; the reducer only consumes
+  // `result`, but the action carries `input` as its event record (kept for
+  // analytics/replay seams — it is intentionally not stored in session state).
   | { type: 'attempt'; input: GuessInput; result: ModeGuessResult }
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
