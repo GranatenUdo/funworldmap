@@ -9,12 +9,13 @@
 
 Free, interactive political world map. Explore countries, borders, and geopolitical facts through a map-first interface — and beat your personal best in two geography game modes.
 
-- ~249 countries with data from REST Countries and CIA World Factbook archive
+- 195 sovereign states (193 UN members + Vatican + Palestine), with data from REST Countries and CIA World Factbook archive
 - Fuzzy search by name, capital, region, or country code
 - Per-field source attribution (every data point shows where it came from)
+- Satellite imagery + 3D terrain by default, with a one-tap switch to a clean vector map
 - Light/dark/system theme with basemap adaptation
 - WCAG AA accessible: keyboard navigation, screen reader support, skip links
-- Fully client-side — no backend, deployable to any CDN
+- Client-side SPA — deployable to any static host; no application backend required to run it (an optional, cookieless analytics Worker records anonymous usage counts — see [docs/systems/analytics.md](docs/systems/analytics.md))
 - **Country Pinning** — click the right country; three lives, unlimited rounds, personal-best tracked
 - **City Guessing** — pin where the city is; 10 rounds, distance-scored, personal-best tracked
 
@@ -35,11 +36,11 @@ No content-generation step is required before building or running tests — the 
 
 ## Architecture
 
-- **Map**: MapLibre GL JS with OpenFreeMap basemap (Positron style)
-- **Data**: REST Countries v3.1 + CIA World Factbook archive, merged with field-level source attribution
+- **Map**: MapLibre GL JS — satellite imagery (EOX Sentinel-2) with 3D terrain by default; OpenFreeMap vector tiles (Positron) as the toggle-off map view
+- **Data**: REST Countries v3.1 + CIA World Factbook archive, merged with field-level source attribution; rendered set filtered to the canonical 195
 - **Search**: Fuse.js fuzzy search with weighted fields
-- **Stack**: Vite 6, React 19, TypeScript, Tailwind CSS 4
-- **Testing**: Playwright e2e (SwiftShader for headless WebGL2), Vitest unit tests
+- **Stack**: Vite 8 (Rolldown), React 19, TypeScript, Tailwind CSS 4
+- **Testing**: Playwright e2e (ANGLE-backed WebGL2 — real GPU with software fallback), Vitest unit tests
 
 ## Documentation
 

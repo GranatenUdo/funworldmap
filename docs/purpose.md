@@ -24,9 +24,9 @@ Typing a country name, capital, or region immediately narrows results. Fuzzy mat
 
 ### No Barriers
 
-- No backend to maintain, scale, or pay for
+- No application backend required to run it — the site is static files; the only server-side piece is an optional, free-tier analytics Worker (see [Analytics](systems/analytics.md))
 - No API keys or accounts required to use
-- No external runtime dependencies beyond basemap tiles
+- Runtime network use is limited to map tiles (basemap, satellite, terrain), plus optional cookieless analytics and error reporting
 - Everything delivered as static files — deployable to any CDN
 - Works on any modern browser, any device
 
@@ -53,13 +53,13 @@ funworldmap is for everyone, but these users inform design decisions:
 - Not a GIS tool — no custom layers, projections, or spatial analysis
 - Not a news platform — no real-time data, events, or editorial content
 - Not a historical atlas — shows current political boundaries only
-- Not opinionated — disputed territories displayed neutrally using de facto boundaries
+- Not a complete territorial gazetteer — the selectable set is the 195 UN-recognized sovereign states (193 members + the Vatican and Palestine, both observer states); partially-recognized or contested territories (Kosovo, Taiwan, Western Sahara, …) are out of scope for v1
 
 ## Scope (Initial Release)
 
 The first version focuses on countries:
 
-- 249 countries and territories (194 independent)
+- 195 sovereign states (193 UN members + the Vatican and Palestine, both UN observer states)
 - Per country: name, flag, capital, region, population, area, government type, languages, currencies, timezones, UN membership, neighboring countries
 - Data sourced from multiple authorities (REST Countries, CIA World Factbook archive). Every data point shows its source via tooltip — transparency about where information comes from
 - English-only interface (data supports future internationalization)

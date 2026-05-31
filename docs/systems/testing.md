@@ -2,7 +2,7 @@
 
 ## Tool
 
-**Playwright** — browser automation framework for end-to-end testing. Tests run against the Vite preview server (`npm run build:e2e && npm run preview`) in a real browser (Chromium). The test seams (`window.__funworldmap_map` and `window.__funworldmap_game`) are only exposed when `import.meta.env.VITE_TEST_HOOKS` is true at build time (see Exposing the Map Instance below).
+**Playwright** — browser automation framework for end-to-end testing. Tests run against the Vite preview server (`npm run build:e2e && npm run preview`) across four Playwright projects — `chromium` (real-GPU ANGLE), `mobile-chromium`, `mobile-webkit`, and `desktop-firefox-touch` (see `playwright.config.ts`). The test seams (`window.__funworldmap_map` and `window.__funworldmap_game`) are only exposed when `import.meta.env.VITE_TEST_HOOKS` is true at build time (see Exposing the Map Instance below).
 
 Build the e2e bundle: `npm run build:e2e` (no daily-content generation step; the app is fully client-side).
 
@@ -93,7 +93,7 @@ The seams are gated behind `import.meta.env.VITE_TEST_HOOKS`, which is only set 
 - **E2e builds** (`npm run build:e2e`): Vite uses `--mode e2e`, loads `.env.e2e` (which sets `VITE_TEST_HOOKS=1`), and exposes the seams.
 - **Standard dev server** (`npm run dev`): Does not set `VITE_TEST_HOOKS` — seams are not available. E2e tests therefore require the built e2e bundle: `npm run build:e2e && npm run preview`.
 
-This is deliberate: the funworldmap site has no backend, no auth, and no sensitive runtime state, so exposing a map reference for testing is acceptable. The gating ensures production users never see these seams.
+This is deliberate: the funworldmap site has no user accounts, no auth, and no sensitive runtime state, so exposing a map reference for testing is acceptable. The gating ensures production users never see these seams.
 
 Note: unlike earlier versions, `npm run build:e2e` does not regenerate a daily content index — there is no daily feature. The preview server is fully self-contained.
 
@@ -119,28 +119,38 @@ use: {
 
 ```
 e2e/
-  fixtures/
-    map-helpers.ts              # waitForMapLoad(), getMapZoom(), clickMapAt(), etc.
-  scaffold.spec.ts              # Phase 0: app renders, Tailwind works
-  map-and-countries.spec.ts     # Phase 1: map loads, countries render, click/hover
-  panel-and-deeplink.spec.ts    # Phase 2: panel content, deep linking, responsive layout
-  search.spec.ts                # Phase 3: autocomplete, fuzzy matching, keyboard nav
-  theme-and-responsive.spec.ts  # Phase 4: dark mode, responsive breakpoints
-  accessibility.spec.ts         # Phase 5: keyboard nav, ARIA, axe-core audit
-  compare-view-dimming.spec.ts  # Compare + satellite: dimmed borders must restore on exit
+  helpers.ts                    # shared readiness/interaction helpers (see below)
+  test-globals.d.ts             # window.__funworldmap_* seam typings
+  scaffold.spec.ts              # app renders, Tailwind works
+  map-and-countries.spec.ts     # map loads, countries render, click/hover
+  panel-and-deeplink.spec.ts    # panel content, deep linking, responsive layout
+  search.spec.ts                # autocomplete, fuzzy matching, keyboard nav
+  theme-and-responsive.spec.ts  # dark mode, responsive breakpoints
+  accessibility.spec.ts         # keyboard nav, ARIA (axe via a11y-*.spec.ts / axe-snapshot.spec.ts)
+  game-country-pinning.spec.ts  # country-pinning flow via the __funworldmap_game seam
+  game-city-guessing.spec.ts    # city-guessing flow
+  satellite-default.spec.ts     # boots into satellite mode
+  compare-view-dimming.spec.ts  # compare + satellite: dimmed borders restore on exit
+  …                             # ~39 specs total — see playwright.config.ts testMatch
 ```
 
-## Shared Fixtures
+## Shared Helpers
 
-`e2e/fixtures/map-helpers.ts` provides reusable helpers:
+There is no `e2e/fixtures/` directory. Reusable readiness and interaction helpers live in `e2e/helpers.ts`. Prefer these over hand-rolled waits — `waitForTimeout` is banned (see the repo CLAUDE.md):
 
-| Helper                       | Purpose                                   |
-| ---------------------------- | ----------------------------------------- |
-| `waitForMapLoad(page)`       | Waits for `[data-map-loaded="true"]`      |
-| `getMapZoom(page)`           | Returns current zoom via page.evaluate    |
-| `getMapCenter(page)`         | Returns current center [lng, lat]         |
-| `clickMapAt(page, lng, lat)` | Converts geo coordinates to pixel, clicks |
-| `getSelectedCountry(page)`   | Reads `data-selected-country` attribute   |
+| Helper                                                                  | Purpose                                                                     |
+| ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `waitForAppReady(page)`                                                 | Waits for bundled data + first React commit (`data-app-ready`)              |
+| `gotoAndWaitForMap(page, path)`                                         | Navigates and waits for `[data-map-loaded]`                                 |
+| `waitForCountryTilesRendered(page)`                                     | Waits for the GPU to rasterise country tiles before `queryRenderedFeatures` |
+| `waitForGameTestHook(page)`                                             | Waits for the `__funworldmap_game` seam to register                         |
+| `waitForAnimationIdle(locator)`                                         | Waits for `data-animation-state="idle"` (replaces animation timeouts)       |
+| `openLauncher(page)` / `ensureLauncherDismissed(page)`                  | Open / close the launcher deterministically                                 |
+| `submitAndWait(page, cca3)` / `finalizeGame(page)` / `getSession(page)` | Drive game flow through the test seams                                      |
+| `routeMapTiles(page)`                                                   | Stubs basemap tiles to avoid network flake                                  |
+| `forceWebGLContextLoss(page)`                                           | Triggers WebGL context-loss for the recovery test                           |
+
+For the full list and signatures, read `e2e/helpers.ts` directly.
 
 ## Visual Regression
 
