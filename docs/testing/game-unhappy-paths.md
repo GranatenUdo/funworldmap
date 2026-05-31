@@ -212,14 +212,6 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 1. **Test seam dispatches a second `submitGuess(…)` without clicking Continue.**
    - After: Reducer rejects. State unchanged. No double-scoring.
 
-### C4. `restart` with `attemptsPerRound > 1 && maxRounds === null`
-
-**Pre:** Any state.
-
-1. **Test seam dispatches `restart(modeId, round, null, 3)`.**
-   - After: Reducer rejects (`useGameSession.ts:198-202`), logs error.
-   - After: State unchanged.
-
 ---
 
 ## D. Concurrency & race conditions

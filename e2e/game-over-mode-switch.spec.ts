@@ -10,20 +10,28 @@ async function waitForMap(page: Page) {
 async function waitForGameReady(page: Page) {
   // Wait for the HUD to appear and be in playing state (game session started).
   await expect(page.getByTestId('game-hud')).toBeVisible({ timeout: 30_000 })
-  await expect(page.getByTestId('game-hud')).toHaveAttribute('data-game-status', 'playing', { timeout: 15_000 })
+  await expect(page.getByTestId('game-hud')).toHaveAttribute('data-game-status', 'playing', {
+    timeout: 15_000,
+  })
   // Then wait for the submitCountryGuess test hook to be registered.
-  await expect.poll(
-    () => page.evaluate(() => {
-      const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
-      if (!g) return 'no-object'
-      return typeof g.submitCountryGuess === 'function' ? 'ready' : Object.keys(g).join(',')
-    }),
-    { timeout: 15_000 },
-  ).toBe('ready')
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> })
+            .__funworldmap_game
+          if (!g) return 'no-object'
+          return typeof g.submitCountryGuess === 'function' ? 'ready' : Object.keys(g).join(',')
+        }),
+      { timeout: 15_000 },
+    )
+    .toBe('ready')
 }
 
 test.describe('game-over → new mode', () => {
-  test('hash-changing to a different #game URL during game-over starts the new mode', async ({ page }) => {
+  test('hash-changing to a different #game URL during game-over starts the new mode', async ({
+    page,
+  }) => {
     // Quarantined on CI pending tracking issue #32 — atomic restart reducer
     // (commit 3ad9055) fixed the post-hash race per its source-level diagnosis,
     // but the test still exhausts its 60s budget at line 67 (page.evaluate
@@ -33,7 +41,10 @@ test.describe('game-over → new mode', () => {
     // workers=2. Needs a budget rework — either bump test.setTimeout above the
     // project default's 120s OR drive the pre-hash sequence via a single
     // test-seam call instead of UI-driven attempts.
-    test.fixme(!!process.env.CI, 'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/32')
+    test.fixme(
+      !!process.env.CI,
+      'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/32',
+    )
     await page.goto('/#game/country-pinning')
     await waitForMap(page)
     await waitForGameReady(page)
@@ -42,16 +53,21 @@ test.describe('game-over → new mode', () => {
     // on #3 the session is already game-over and the *other* Escape handler
     // (exit) would clear it, so skip Escape on the final iteration.
     for (let i = 0; i < 2; i++) {
-      await submitAndWait(page, 'USA', 1)
+      await submitAndWait(page, 'USA')
       // Wait for the round-ended effect to register the advance Escape
       // handler — otherwise Escape can race against the previous-state
       // EXIT handler and end the game instead of advancing the round.
       await expect
         .poll(
-          () => page.evaluate(() => {
-            const g = (window as unknown as { __funworldmap_game?: { getSession: () => { status: string } } }).__funworldmap_game
-            return g?.getSession().status ?? 'no-game'
-          }),
+          () =>
+            page.evaluate(() => {
+              const g = (
+                window as unknown as {
+                  __funworldmap_game?: { getSession: () => { status: string } }
+                }
+              ).__funworldmap_game
+              return g?.getSession().status ?? 'no-game'
+            }),
           { timeout: 15_000 },
         )
         .toBe('round-ended')
@@ -59,15 +75,20 @@ test.describe('game-over → new mode', () => {
       // Wait for advance to the next round (status flips back to 'playing').
       await expect
         .poll(
-          () => page.evaluate(() => {
-            const g = (window as unknown as { __funworldmap_game?: { getSession: () => { status: string } } }).__funworldmap_game
-            return g?.getSession().status ?? 'no-game'
-          }),
+          () =>
+            page.evaluate(() => {
+              const g = (
+                window as unknown as {
+                  __funworldmap_game?: { getSession: () => { status: string } }
+                }
+              ).__funworldmap_game
+              return g?.getSession().status ?? 'no-game'
+            }),
           { timeout: 15_000 },
         )
         .toBe('playing')
     }
-    await submitAndWait(page, 'USA', 1)
+    await submitAndWait(page, 'USA')
 
     await finalizeGame(page)
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 15_000 })
@@ -83,16 +104,21 @@ test.describe('game-over → new mode', () => {
     // is sensitive to React render-commit latency on slow CI; the seam reads
     // the reducer directly and is render-cycle-independent. Same semantics
     // (modeId='city-guessing', status='playing'), strictly more reliable.
-    await expect.poll(
-      () => page.evaluate(() => {
-        const g = (window as unknown as {
-          __funworldmap_game?: { getSession: () => { modeId: string; status: string } }
-        }).__funworldmap_game
-        const s = g?.getSession()
-        return { modeId: s?.modeId ?? '', status: s?.status ?? '' }
-      }),
-      { timeout: 15_000 },
-    ).toEqual({ modeId: 'city-guessing', status: 'playing' })
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const g = (
+              window as unknown as {
+                __funworldmap_game?: { getSession: () => { modeId: string; status: string } }
+              }
+            ).__funworldmap_game
+            const s = g?.getSession()
+            return { modeId: s?.modeId ?? '', status: s?.status ?? '' }
+          }),
+        { timeout: 15_000 },
+      )
+      .toEqual({ modeId: 'city-guessing', status: 'playing' })
     // Single DOM confirmation that React committed (overlay unmounted).
     await expect(page.getByTestId('game-over')).not.toBeAttached()
   })

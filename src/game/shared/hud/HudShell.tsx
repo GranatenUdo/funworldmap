@@ -34,7 +34,7 @@ export function HudShell({ session, onEndGame, children }: Props) {
             <LivesIndicator lives={session.lives} />
           )}
           <div className="flex items-center gap-2">
-            <ScoreBadge score={session.score} pending={false} />
+            <ScoreBadge score={session.score} />
             {fixedRounds ? null : <StreakBadge streak={session.streak} />}
           </div>
           <button

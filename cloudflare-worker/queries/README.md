@@ -3,20 +3,21 @@
 These queries target the `funworldmap_events` dataset written by
 `cloudflare-worker/index.ts`. They power the CF analytics dashboard.
 
+No saved `.sql` queries currently live here — the retention/daily funnels were
+removed with the daily feature. Add new queries for the surviving events as
+needed.
+
 ## Blob / double slot mapping
 
-From `cloudflare-worker/index.ts`:
+From `cloudflare-worker/index.ts`. Canonical reference: `docs/systems/analytics.md`.
 
-| Slot      | Field                                      |
-| --------- | ------------------------------------------ |
-| `index1`  | event name                                 |
-| `blob1`   | event name (duplicate for blob-only reads) |
-| `blob2`   | `mode` (ModeId)                            |
-| `blob3`   | `path`                                     |
-| `blob4`   | `method` (launcher-dismiss)                |
-| `blob5`   | `outcome`                                  |
-| `double1` | `scoreBucket`                              |
-| `double2` | `bestScoreBucket`                          |
+| Slot                                 | Field                                                                                |
+| ------------------------------------ | ------------------------------------------------------------------------------------ |
+| `index1`                             | event name                                                                           |
+| `blob1`                              | event name (duplicate for blob-only reads)                                           |
+| `blob2`                              | `mode` (ModeId) — `free_started`                                                     |
+| `blob3`                              | `path` — `launcher_dismissed`                                                        |
+| `blob4`–`blob7`, `double1`–`double6` | _reserved_ — legacy daily slots, kept empty/zero (never reused per migration policy) |
 
 Automatic columns: `_timestamp`, `_sample_interval`.
 

@@ -14,11 +14,8 @@ export type SessionSnapshot = Omit<GameSession, 'used'>
  * Submit a country guess via the game's exposed API and wait for the round to
  * end. In free play each round ends after a single attempt, so the session
  * transitions to `round-ended` with `lastOutcome !== null`.
- *
- * The `expectAfter` parameter is kept for call-site compatibility but is no
- * longer used — `currentAttempts` was removed from the session type in B4.
  */
-export async function submitAndWait(page: Page, cca3: string, _expectAfter: number): Promise<void> {
+export async function submitAndWait(page: Page, cca3: string): Promise<void> {
   await page.evaluate(
     ({ c }) => {
       const game = (

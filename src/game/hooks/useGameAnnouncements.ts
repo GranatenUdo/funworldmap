@@ -143,20 +143,8 @@ export function useGameAnnouncements({
         dispatchAnnouncement(`Game over. Final score ${session.score}.`)
       }
     }
-  }, [
-    session,
-    session.status,
-    session.roundIndex,
-    session.lastOutcome,
-    session.score,
-    session.bestStreak,
-    session.used,
-    session.currentRound,
-    session.modeId,
-    advance,
-    mode,
-    record,
-    byCca3,
-    finalize,
-  ])
+    // `session` (whole) is the load-bearing dep — a new reference on every
+    // reducer update covers every field the effect reads. The individual
+    // `session.X` projections it superseded are intentionally omitted.
+  }, [session, advance, mode, record, byCca3, finalize])
 }

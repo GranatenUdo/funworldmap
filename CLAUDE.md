@@ -103,10 +103,11 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 | Helper                              | Use when                                                                                                                                                                                                     |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `waitForAppReady(page)`             | After every `page.goto('/')` — ensures bundled `countries` + `cities` are present and the first React commit happened                                                                                        |
-| `waitForGameTestHook(page)`         | After landing on a game/daily route, before calling `__funworldmap_game.*` test seams — ensures the seam is registered                                                                                       |
+| `waitForGameTestHook(page)`         | After landing on a game route, before calling `__funworldmap_game.*` test seams — ensures the seam is registered                                                                                             |
 | `waitForCountryTilesRendered(page)` | After map-loaded, before `queryRenderedFeatures` — ensures the GPU has actually rasterised the tiles                                                                                                         |
 | `waitForAnimationIdle(locator)`     | After an animated component enters or before clicking through it — replaces `waitForTimeout(N)` for CSS-transition timing. Component must expose `data-animation-state="idle"` when its animations complete. |
-| `dismissLauncher(page)`             | When the test navigates to `/` and the launcher is open (opened via header Play) and you need a clean map state                                                                                              |
+| `openLauncher(page)`                | When the test needs the launcher open — clicks the header Play button and waits for it to be visible (cold load is map-first; the launcher does not auto-open)                                               |
+| `ensureLauncherDismissed(page)`     | When the launcher may be open and you need a clean map state — closes it if visible, else no-op                                                                                                              |
 | `gotoAndWaitForMap(page, path)`     | Combined: navigates, waits for `data-map-loaded`. Prefer over manual `goto + waitForSelector('[data-map-loaded]')`                                                                                           |
 | `routeMapTiles(page)`               | When the test doesn't need real basemap tiles — stubs them to avoid network flake                                                                                                                            |
 
@@ -114,7 +115,7 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 
 **✅ Pair every "click overlay-occluded element" with a "wait for occluder to be gone" step.** The dropdown / modal / portal that was over your target needs to actually unmount before the click. `expect(occluder).not.toBeAttached()` is the deterministic signal.
 
-**✅ Test seams over UI driving for game/daily flows.** Use `__funworldmap_game.submitCountryGuess(cca3)`, `completeNow()`, etc. (exposed in `src/game/GameController.tsx` under `VITE_TEST_HOOKS`). They dispatch the same reducer actions a real click would, but skip the click-actionability dance.
+**✅ Test seams over UI driving for game flows.** Use `__funworldmap_game.submitCountryGuess(cca3)`, `setRound(id)`, `finalize()`, `getSession()`, etc. (exposed in `src/game/hooks/useGameTestSeams.ts` and `src/game/shared/GameSessionProvider.tsx` under `VITE_TEST_HOOKS`). They dispatch the same reducer actions a real click would, but skip the click-actionability dance.
 
 **✅ Synthetic map clicks via `__funworldmap_map.fire('click', ...)` for ocean/off-globe paths.** Real `page.mouse.click(x, y)` depends on viewport-specific water coordinates that change with camera state. The synthetic form is camera-agnostic. Always pair with a `queryRenderedFeatures` precondition assertion to fail loudly if the canvas point ever lands on a country.
 

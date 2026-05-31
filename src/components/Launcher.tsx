@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { listModes } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 import type { ModeId } from '../game/shared/types'
@@ -24,7 +24,8 @@ function focusSearchInput(): void {
 
 export function Launcher({ onDismiss }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
-  const modes = useMemo(() => listModes(), [])
+  // Static two-element list; cheap to call per render, no memo needed.
+  const modes = listModes()
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   const dismissWithCloseButton = useCallback(() => {
