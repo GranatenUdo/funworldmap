@@ -8,7 +8,7 @@ describe('ScoreBadge', () => {
     expect(screen.getByTestId('hud-score').textContent).toBe('42')
   })
 
-  it('marks the badge as pending when running best-of-N', () => {
+  it('marks the badge as pending when the pending prop is set', () => {
     render(<ScoreBadge score={75} pending />)
     const badge = screen.getByTestId('hud-score')
     expect(badge.getAttribute('data-pending')).toBe('true')

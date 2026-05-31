@@ -144,17 +144,12 @@ The per-component figures are estimates summing to the measured totals. MapLibre
 ## Game system
 
 The game runs on a single `useGameSession` reducer with a small action set
-(`start | attempt | completeNow | resume | advance | overrideRound | endGame | finishFree | finalize | restart`).
-Best-of-N rounds (daily mode) are supported via `attemptsPerRound > 1`; the
-reducer derives the round-end outcome from the best of all attempts so score
-and reveal animation always agree. Modes plug in via the `GameMode` contract
-(`src/game/modes/{country-pinning,city-guessing}/index.tsx`); the daily layer
-adds session resume (`src/game/daily/resume.ts`) and history persistence
-(`src/game/daily/storage.ts`).
+(`start | attempt | advance | overrideRound | endGame | finishFree | finalize | restart`).
+Modes plug in via the `GameMode` contract
+(`src/game/modes/{country-pinning,city-guessing}/index.tsx`).
 
 Key files:
 
 - `src/game/shared/useGameSession.ts` — reducer
 - `src/game/shared/GameSessionProvider.tsx` — context API + computed mode
 - `src/game/GameController.tsx` — hash bootstrap, reveal effects, telemetry
-- `src/game/daily/` — daily-specific puzzle, history, resume, share

@@ -15,12 +15,15 @@ The goal is not to be an exhaustive database or an analytical platform. It is to
 ## Core Principles
 
 ### Navigation First
+
 The map is the interface. Pan, zoom, click — every interaction should feel instant and natural. Smooth fly-to animations maintain spatial context when jumping between countries. The user should never feel lost.
 
 ### Search First
+
 Typing a country name, capital, or region immediately narrows results. Fuzzy matching forgives typos. Selecting a result flies the map to that country and opens its information. Search is the keyboard-driven complement to the map's visual navigation.
 
 ### No Barriers
+
 - No backend to maintain, scale, or pay for
 - No API keys or accounts required to use
 - No external runtime dependencies beyond basemap tiles
@@ -28,6 +31,7 @@ Typing a country name, capital, or region immediately narrows results. Fuzzy mat
 - Works on any modern browser, any device
 
 ### Accessible to Everyone
+
 - Keyboard navigable end to end
 - Screen reader compatible
 - Respects reduced motion preferences
@@ -62,15 +66,14 @@ The first version focuses on countries:
 - Light and dark themes
 
 ### Future Vision
+
 - Multi-language support, regional groupings (EU, NATO, ASEAN), sub-national divisions, economic comparisons, historical boundary timelines.
 
-## Daily puzzle
+## Game modes
 
-A daily layer turns both modes into a returnable habit. Each calendar day,
-every visitor sees the same country and the same city puzzle; results
-persist locally and feed a cross-session streak counter, a 30-day history
-calendar, and a text share artifact. No backend required — content is
-regenerated via GitHub Actions four times a day, scores never leave the
-user's browser except as anonymous aggregate telemetry.
+Two playable modes are available via the launcher (opened from the header Play button):
 
-System details: [`systems/daily-puzzle.md`](systems/daily-puzzle.md).
+- **Country Pinning** — identify a country by clicking its polygon on the map. Three lives, unlimited rounds. Score is distance-weighted; each correct guess contributes to a running streak.
+- **City Guessing** — locate a named city by clicking anywhere on the map. 10 rounds per game, scored by distance from the true centroid. Ocean clicks are valid.
+
+Personal bests (best score, best streak, games played) are stored locally and surfaced in the launcher as motivation to replay.

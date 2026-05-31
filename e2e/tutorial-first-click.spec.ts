@@ -23,9 +23,9 @@ test.describe('first-session tutorial', () => {
     await page.evaluate(() => window.__funworldmap_game?.submitCountryGuess?.('USA'))
 
     await expect(page.getByTestId('game-tutorial')).toBeHidden()
-    // country-pinning uses attemptsPerRound=1: `attempt` runs once, `endOfRound`
-    // derives lastOutcome.reveal, and currentAttempts is populated only at round-end
-    // then cleared on `advance`. Use lastOutcome to confirm the guess was processed.
+    // `attempt` runs once and immediately ends the round; lastOutcome is set
+    // when the round transitions to `round-ended`. Use it to confirm the guess
+    // was processed before asserting the tutorial state.
     const guessProcessed = await page.evaluate(
       () => window.__funworldmap_game?.getSession?.().lastOutcome !== null,
     )

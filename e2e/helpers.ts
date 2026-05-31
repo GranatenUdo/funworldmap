@@ -1,6 +1,6 @@
 import { expect, type Page, type JSHandle } from '@playwright/test'
 import { Buffer } from 'node:buffer'
-import type { GameSession, ModeId } from '../src/game/shared/types'
+import type { GameSession } from '../src/game/shared/types'
 import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
 
 /**
@@ -10,170 +10,15 @@ import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
  */
 export type SessionSnapshot = Omit<GameSession, 'used'>
 
-export interface SeedHistoryOptions {
-  date: string
-  lastMilestoneShown?: 0 | 3 | 7 | 14 | 30 | 100
-  modes?: ReadonlyArray<ModeId>
-}
-
 /**
- * Seed `funworldmap-daily-history` in localStorage BEFORE page.goto, so the
- * launcher / reveal overlay renders with a known history state.
- * Defaults: country-pinning mode only, lastMilestoneShown=3 (prevents the
- * milestone overlay from firing in tests that aren't about it).
- */
-export async function seedDailyHistory(
-  page: Page,
-  { date, lastMilestoneShown = 3, modes = ['country-pinning'] }: SeedHistoryOptions,
-): Promise<void> {
-  await page.addInitScript(
-    ({ d, ms, mods }) => {
-      const days: Record<string, Record<string, unknown>> = {}
-      const dayEntries: Record<string, unknown> = {}
-      if (mods.includes('country-pinning')) {
-        dayEntries['country-pinning'] = {
-          score: 87,
-          attempts: [
-            { pointsEarned: 42, distanceKm: 1200 },
-            { pointsEarned: 63, distanceKm: 400 },
-            { pointsEarned: 91, distanceKm: 0 },
-          ],
-          completedAt: 1,
-        }
-      }
-      if (mods.includes('city-guessing')) {
-        dayEntries['city-guessing'] = {
-          score: 81,
-          attempts: [
-            { pointsEarned: 34, distanceKm: 1500 },
-            { pointsEarned: 78, distanceKm: 200 },
-            { pointsEarned: 95, distanceKm: 10 },
-          ],
-          completedAt: 2,
-        }
-      }
-      days[d] = dayEntries
-      const history = {
-        version: 1,
-        streak: { current: 3, longest: 3, lastActiveDate: d, lastMilestoneShown: ms },
-        days,
-      }
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify(history))
-    },
-    { d: date, ms: lastMilestoneShown, mods: Array.from(modes) },
-  )
-}
-
-/**
- * Seed a played country-pinning daily for `date` and stub /daily/index.json
- * to serve a one-day index. Optionally enables the analytics test seam
- * via window.__PLAYWRIGHT__.
+ * Submit a country guess via the game's exposed API and wait for the round to
+ * end. In free play each round ends after a single attempt, so the session
+ * transitions to `round-ended` with `lastOutcome !== null`.
  *
- * Pre-fills history with a 3-attempt result (score=87) so the reveal overlay
- * renders the share block immediately on goto.
+ * The `expectAfter` parameter is kept for call-site compatibility but is no
+ * longer used — `currentAttempts` was removed from the session type in B4.
  */
-export async function seedPlayedDaily(
-  page: Page,
-  date: string,
-  opts: { captureAnalytics?: boolean } = {},
-): Promise<void> {
-  const { captureAnalytics = false } = opts
-  await page.addInitScript(
-    ({ d, capture }) => {
-      if (capture) {
-        ;(window as unknown as { __PLAYWRIGHT__: boolean }).__PLAYWRIGHT__ = true
-      }
-      const index = {
-        generatedAt: new Date().toISOString(),
-        window: { start: d, end: d },
-        days: { [d]: { country: { cca3: 'FRA' }, city: { id: 'FRA-paris' } } },
-      }
-      const history = {
-        version: 1,
-        streak: { current: 3, longest: 3, lastActiveDate: d, lastMilestoneShown: 0 },
-        days: {
-          [d]: {
-            'country-pinning': {
-              score: 87,
-              attempts: [
-                { pointsEarned: 42, distanceKm: 1200 },
-                { pointsEarned: 63, distanceKm: 400 },
-                { pointsEarned: 91, distanceKm: 0 },
-              ],
-              completedAt: 1,
-            },
-          },
-        },
-      }
-      localStorage.setItem('funworldmap-daily-history', JSON.stringify(history))
-      ;(window as unknown as { __seededIndex?: unknown }).__seededIndex = index
-    },
-    { d: date, capture: captureAnalytics },
-  )
-  await page.route('**/daily/index.json', async (route) => {
-    const seeded = await page.evaluate(
-      () => (window as unknown as { __seededIndex?: unknown }).__seededIndex,
-    )
-    await route.fulfill({ contentType: 'application/json', body: JSON.stringify(seeded) })
-  })
-}
-
-/**
- * Install a controllable navigator.share stub for share-branches tests.
- * 'success' resolves and records the call to window.__lastShare.
- * 'abort'   rejects with an AbortError (user cancelled the share sheet).
- * 'fail'    rejects with a non-Abort error (some other failure).
- */
-export async function installShareStub(
-  page: Page,
-  behavior: 'success' | 'abort' | 'fail',
-): Promise<void> {
-  await page.addInitScript((b: string) => {
-    ;(window as unknown as { __lastShare?: unknown }).__lastShare = undefined
-    // @ts-expect-error — test-time installation
-    navigator.share = async (data: { title: string; text: string; url: string }) => {
-      if (b === 'success') {
-        ;(window as unknown as { __lastShare?: unknown }).__lastShare = data
-        return
-      }
-      if (b === 'abort') {
-        const err = new Error('user cancelled') as Error & { name: string }
-        err.name = 'AbortError'
-        throw err
-      }
-      throw new Error('share not allowed')
-    }
-  }, behavior)
-}
-
-/**
- * Stub `/daily/index.json` with a one-day index containing France + Paris.
- * Call BEFORE page.goto. Defaults to FRA/FRA-paris; other IDs can be
- * supplied if a test needs them.
- */
-export async function stubDailyIndex(
-  page: Page,
-  date: string,
-  opts: { cca3?: string; cityId?: string } = {},
-): Promise<void> {
-  const { cca3 = 'FRA', cityId = 'FRA-paris' } = opts
-  await page.route('**/daily/index.json', (route) =>
-    route.fulfill({
-      contentType: 'application/json',
-      body: JSON.stringify({
-        generatedAt: `${date}T00:00:00.000Z`,
-        window: { start: date, end: date },
-        days: { [date]: { country: { cca3 }, city: { id: cityId } } },
-      }),
-    }),
-  )
-}
-
-/**
- * Submit a country guess via the game's exposed API and wait for the session
- * to reflect the new attempt count.
- */
-export async function submitAndWait(page: Page, cca3: string, expectAfter: number): Promise<void> {
+export async function submitAndWait(page: Page, cca3: string, _expectAfter: number): Promise<void> {
   await page.evaluate(
     ({ c }) => {
       const game = (
@@ -189,14 +34,16 @@ export async function submitAndWait(page: Page, cca3: string, expectAfter: numbe
         page.evaluate(() => {
           const game = (
             window as unknown as {
-              __funworldmap_game?: { getSession: () => { currentAttempts: unknown[] } }
+              __funworldmap_game?: {
+                getSession: () => { lastOutcome: unknown; status: string }
+              }
             }
           ).__funworldmap_game
-          return game?.getSession().currentAttempts.length ?? 0
+          return game?.getSession().lastOutcome !== null
         }),
       { timeout: 15_000 },
     )
-    .toBe(expectAfter)
+    .toBe(true)
 }
 
 /**
@@ -287,10 +134,10 @@ export async function waitForAppReady(page: Page, timeoutMs = 15_000): Promise<v
 
 /**
  * Poll until the game test hook (`window.__funworldmap_game`) is mounted with
- * the seams the daily/free specs use (`submitCountryGuess`, `completeNow`,
- * `finalize`). The hook is registered inside a `useEffect` in
- * `GameSessionProvider` / `GameController` after first render, so deep-link
- * specs can race past it without this wait.
+ * the seams the free-play specs use (`submitCountryGuess`, `finalize`). The
+ * hook is registered inside a `useEffect` in `GameSessionProvider` /
+ * `GameController` after first render, so deep-link specs can race past it
+ * without this wait.
  */
 export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promise<void> {
   await expect
@@ -299,10 +146,7 @@ export async function waitForGameTestHook(page: Page, timeoutMs = 15_000): Promi
         page.evaluate(() => {
           const g = (window as unknown as { __funworldmap_game?: Record<string, unknown> })
             .__funworldmap_game
-          return g &&
-            typeof g.submitCountryGuess === 'function' &&
-            typeof g.completeNow === 'function' &&
-            typeof g.finalize === 'function'
+          return g && typeof g.submitCountryGuess === 'function' && typeof g.finalize === 'function'
             ? 'ready'
             : 'not-ready'
         }),

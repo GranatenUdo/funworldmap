@@ -24,13 +24,6 @@ Scripts:
 - `npm run test:e2e` — Playwright (chromium on CI; mobile + firefox projects available locally — see `playwright.config.ts`)
 - `npm run update-data` — refresh `src/data/countries.json` from upstream sources
 
-> The daily puzzle index (`public/daily/index.json`) is a generated artifact —
-> it is not committed to `main`. `npm run dev` regenerates it automatically (via
-> the `predev` hook); in production it is served from the `data` branch. If you
-> run `npm run build` / `preview` / `build:e2e` directly without having run
-> `npm run dev` first, run `npm run daily:generate` once to produce it. See
-> `docs/systems/daily-puzzle.md`.
-
 ## Pull Request Expectations
 
 Before opening a PR:

@@ -1,14 +1,6 @@
 import type { ModeId } from '../game/shared/types'
-import { parseLocalDate } from '../game/daily/dates'
-import { formatModeScore } from '../game/shared/formatScore'
-
-export type LauncherCardState =
-  | 'unplayed'
-  | 'played'
-  | 'past-unplayed'
-  | 'loading' // index still fetching
-  | 'unavailable-error' // fetch failed
-  | 'no-puzzle-today' // index loaded, but no entry for today's date
+import { isCountryPinning } from '../game/shared/modePredicates'
+import { usePersonalBests } from '../game/shared/usePersonalBests'
 
 const ICONS: Record<ModeId, React.ReactNode> = {
   'country-pinning': (
@@ -53,66 +45,24 @@ const SUBTITLE: Record<ModeId, string> = {
   'city-guessing': 'Pin where the city is',
 }
 
-function headerLabel(anchorDate: string | undefined, today: string): string | null {
-  const isToday = !anchorDate || anchorDate === today
-  if (isToday) return null
-  const md = parseLocalDate(anchorDate).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  })
-  return md.toUpperCase()
-}
-
-interface PlayedResult {
-  targetName?: string
-  score: number
-}
-
 interface Props {
   modeId: ModeId
-  anchorDate?: string // 'YYYY-MM-DD'; absent = today
-  todayDate: string // 'YYYY-MM-DD'
-  state: LauncherCardState
-  played?: PlayedResult
-  latestAvailableDate?: string | null // most recent past date with a daily; for 'no-puzzle-today'
-  onStartDaily: () => void
-  onSeeReveal?: () => void
-  onPlayUnlimited?: () => void // required when state === 'played'; only the played branch reads it
-  onRetry?: () => void
+  onPlay: () => void
 }
 
-export function LauncherModeCard({
-  modeId,
-  anchorDate,
-  todayDate,
-  state,
-  played,
-  latestAvailableDate,
-  onStartDaily,
-  onSeeReveal,
-  onPlayUnlimited,
-  onRetry,
-}: Props) {
+export function LauncherModeCard({ modeId, onPlay }: Props) {
   const testIdBase = `launcher-card-${modeId}`
-  const label = headerLabel(anchorDate, todayDate)
+  const { best } = usePersonalBests(modeId)
+  const hasPlayed = best.gamesPlayed > 0
+
   return (
     <div
       data-testid={testIdBase}
-      data-state={state}
-      className={`p-5 rounded-2xl bg-sand-50/95 dark:bg-dark-400/95 border shadow-lg transition-all duration-150 ${
-        state === 'played'
-          ? 'border-emerald-400/60 dark:border-emerald-500/40'
-          : 'border-sand-300/50 dark:border-dark-200/30'
-      }`}
+      className="p-5 rounded-2xl bg-sand-50/95 dark:bg-dark-400/95 border border-sand-300/50 dark:border-dark-200/30 shadow-lg transition-all duration-150"
     >
       <div className="flex items-start gap-3 mb-3">
         {ICONS[modeId]}
         <div className="min-w-0 flex-1">
-          {label && (
-            <div className="text-[10px] font-semibold uppercase tracking-widest text-teal dark:text-teal-light">
-              {label}
-            </div>
-          )}
           <div className="text-lg font-bold text-sand-900 dark:text-dark-50 leading-tight">
             {TITLE[modeId]}
           </div>
@@ -120,109 +70,33 @@ export function LauncherModeCard({
         </div>
       </div>
 
-      {state === 'unplayed' && (
-        <>
-          <button
-            type="button"
-            onClick={onStartDaily}
-            data-testid={`${testIdBase}-daily-cta`}
-            className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
-          >
-            Play
-          </button>
-          <div className="text-xs text-sand-600 dark:text-dark-100 mt-1.5 text-center">
-            3 tries · best one counts
-          </div>
-        </>
-      )}
+      <button
+        type="button"
+        onClick={onPlay}
+        data-testid={`${testIdBase}-play`}
+        className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+      >
+        Play
+      </button>
 
-      {state === 'past-unplayed' && onSeeReveal && (
-        <button
-          type="button"
-          onClick={onSeeReveal}
-          data-testid={`${testIdBase}-see-reveal`}
-          className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 dark:focus-visible:ring-teal-light/60"
-        >
-          See reveal
-        </button>
-      )}
-
-      {state === 'played' && (
-        <div data-testid={`${testIdBase}-played-result`}>
-          {onPlayUnlimited && (
-            <button
-              type="button"
-              onClick={onPlayUnlimited}
-              data-testid={`${testIdBase}-play-unlimited`}
-              className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
-            >
-              Play {TITLE[modeId]}
-            </button>
-          )}
-          {onSeeReveal && (
-            <button
-              type="button"
-              onClick={onSeeReveal}
-              data-testid={`${testIdBase}-see-reveal`}
-              className="w-full mt-2 text-sm text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 dark:hover:text-emerald-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60 rounded text-center"
-            >
-              ✓ {formatModeScore(played?.score ?? 0, modeId)} · See reveal →
-            </button>
-          )}
-        </div>
-      )}
-
-      {state === 'loading' && (
-        <div
-          className="text-sand-600 dark:text-dark-100 text-sm mb-3"
-          data-testid={`${testIdBase}-loading`}
-        >
-          Loading…
-        </div>
-      )}
-
-      {state === 'unavailable-error' && (
-        <div data-testid={`${testIdBase}-error`}>
-          <div className="text-sand-600 dark:text-dark-100 text-sm mb-3">
-            Couldn’t load today’s puzzle.
-          </div>
-          {onRetry && (
-            <button
-              type="button"
-              onClick={onRetry}
-              data-testid={`${testIdBase}-retry`}
-              className="px-3 py-1.5 rounded-lg bg-teal text-white text-sm font-medium hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
-            >
-              Retry
-            </button>
-          )}
-        </div>
-      )}
-
-      {state === 'no-puzzle-today' && (
-        <div
-          className="text-sand-600 dark:text-dark-100 text-sm mb-3"
-          data-testid={`${testIdBase}-no-puzzle`}
-        >
-          {!anchorDate || anchorDate === todayDate
-            ? "Today's puzzle isn't ready yet."
-            : "That day's puzzle is no longer available."}{' '}
-          {latestAvailableDate && (
-            <a
-              href={`#daily/${latestAvailableDate}/reveal`}
-              data-testid={`${testIdBase}-no-puzzle-link`}
-              className="text-teal dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded"
-            >
-              Try{' '}
-              {parseLocalDate(latestAvailableDate).toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-              })}
-              's daily →
-            </a>
-          )}
-        </div>
-      )}
+      <div
+        className="text-xs text-sand-600 dark:text-dark-100 mt-2 text-center tabular-nums"
+        data-testid={`${testIdBase}-best`}
+      >
+        {hasPlayed ? (
+          <>
+            {/* bestScore is the best single-game total (country accrues 100/round over an
+                endless run; city sums up to 10 rounds), so show the raw number + "pts" —
+                matching GameOverOverlay — NOT formatModeScore, which is a per-round
+                "/100"/"/1000" denominator formatter. */}
+            Best {best.bestScore.toLocaleString()} pts
+            {isCountryPinning(modeId) && <> · {best.bestStreak} streak</>} · {best.gamesPlayed}{' '}
+            {best.gamesPlayed === 1 ? 'game' : 'games'}
+          </>
+        ) : (
+          'No games yet — play your first'
+        )}
+      </div>
     </div>
   )
 }

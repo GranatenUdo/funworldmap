@@ -6,14 +6,10 @@ async function waitForMap(page: Page) {
 }
 
 async function openCityGuessing(page: Page) {
-  // Seed lastMode so the shared unlimited link routes to city-guessing.
-  await page.addInitScript(() => {
-    localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
-  })
   await page.goto('/')
   await waitForMap(page)
   await openLauncher(page)
-  await page.getByTestId('launcher-unlimited-link').click()
+  await page.getByTestId('launcher-card-city-guessing-play').click()
   await expect(page.getByTestId('game-hud')).toBeVisible()
   await expect(page.getByTestId('hud-round-counter')).toContainText('1')
 }

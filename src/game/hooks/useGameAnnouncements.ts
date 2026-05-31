@@ -1,13 +1,9 @@
 import { useEffect, useRef } from 'react'
 import type { CountryLike, GameMode, GameSession } from '../shared/types'
-import type { DailyDayResult } from '../daily/types'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCountryPinning } from '../shared/modePredicates'
 import { prefersReducedMotion } from '../../lib/motion'
-import { clearResume } from '../daily/resume'
-import { track } from '../../lib/analytics'
 
-const REVEAL_MS_COUNTRY = 1200
 const REVEAL_MS_CITY = 2000
 
 function dispatchAnnouncement(text: string): void {
@@ -32,37 +28,6 @@ function holdThenAdvance(durationMs: number, advanceNow: () => void): () => void
   }
 }
 
-// Pre-finalize daily writes. Called from two sites in the hook: advanceNow's
-// endsGame branch (production path — runs before the finalize() dispatch so
-// DailyRevealOverlay sees populated history on its first render, and so the
-// resume blob doesn't outlive the history write under a mid-race reload),
-// and the game-over useEffect's daily fallback (test-seam .finalize() bypass
-// + any future code that dispatches finalize directly).
-// Caller dedups via recordedRef — this helper does not.
-function recordDailyCompletion(
-  s: GameSession,
-  recordDailyResult: UseGameAnnouncementsArgs['recordDailyResult'],
-): void {
-  if (s.dailyDate === null) return // safety guard; callers should also check
-  const attempts = s.currentAttempts
-  recordDailyResult(s.dailyDate, s.modeId, {
-    score: s.score,
-    attempts: attempts.map((a) => ({
-      pointsEarned: a.pointsEarned,
-      guessCca3: a.input.kind === 'country' ? a.input.cca3 : undefined,
-      guessLngLat: a.input.kind === 'point' ? a.input.lngLat : undefined,
-      distanceKm: a.reveal.distanceKm,
-    })),
-    completedAt: Date.now(),
-  })
-  clearResume()
-  track('daily_completed', {
-    mode: s.modeId,
-    bestScoreBucket: Math.min(4, Math.floor(s.score / 20)),
-    attemptsUsed: attempts.length,
-  })
-}
-
 export interface UseGameAnnouncementsArgs {
   session: GameSession
   mode: GameMode | null
@@ -70,7 +35,6 @@ export interface UseGameAnnouncementsArgs {
   advance: (nextRound: ReturnType<GameMode['nextRound']>) => void
   finalize: () => void
   record: (score: number, bestStreak: number) => void
-  recordDailyResult: (date: string, modeId: GameSession['modeId'], payload: DailyDayResult) => void
 }
 
 /**
@@ -81,13 +45,13 @@ export interface UseGameAnnouncementsArgs {
  *    "Game over. Final score N." on terminal transition. Deduped by round key
  *    so re-renders that touch unrelated session fields don't re-announce.
  * 2. Auto-advance timing from `round-ended` → `playing` (or `game-over` when
- *    the outcome ends the game). Six branches: country-pinning non-final,
- *    city-mode, country-pinning final + correct, country-pinning final +
- *    wrong + intra-game (Esc-only), country-pinning final + wrong +
- *    end-of-game, and the reveal-animation override for any of those.
- * 3. Game-over recording: personal best for free play, daily-history (with
- *    resume cleanup) for daily play. Deduped via a `recordedRef` so a
- *    rerender while still game-over doesn't double-record.
+ *    the outcome ends the game). Five branches: city-mode, country-pinning
+ *    final + correct, country-pinning final + wrong + intra-game (Esc-only),
+ *    country-pinning final + wrong + end-of-game, and the reveal-animation
+ *    override for any of those.
+ * 3. Game-over recording: calls `record(score, bestStreak)` once per game-over
+ *    transition. Deduped via a `recordedRef` so a rerender while still
+ *    game-over doesn't double-record.
  */
 export function useGameAnnouncements({
   session,
@@ -96,7 +60,6 @@ export function useGameAnnouncements({
   advance,
   finalize,
   record,
-  recordDailyResult,
 }: UseGameAnnouncementsArgs): void {
   const recordedRef = useRef(false)
   const announcedGameOverRef = useRef(false)
@@ -126,20 +89,12 @@ export function useGameAnnouncements({
       }
     }
     if (session.status === 'round-ended' && session.lastOutcome) {
-      const isFinalOutcome = session.attemptsPerRound === 1 || session.attemptsRemaining === 0
       const inCountryMode = isCountryPinning(session.modeId)
       const isCorrect =
         session.lastOutcome.reveal?.kind === 'country' ? session.lastOutcome.reveal.correct : false
 
       const advanceNow = () => {
         if (session.lastOutcome?.endsGame) {
-          // Daily: pre-finalize write so DailyRevealOverlay sees populated history
-          // on its first render, and so the resume blob doesn't outlive the history
-          // write under a mid-race reload. See spec 2026-05-20-daily-flow-polish.
-          if (session.dailyDate !== null && !recordedRef.current) {
-            recordedRef.current = true
-            recordDailyCompletion(session, recordDailyResult)
-          }
           finalize()
           return
         }
@@ -154,11 +109,6 @@ export function useGameAnnouncements({
         : null
       const animatedMs = plan ? Math.max(plan.durationMs + 300, 1800) : null
 
-      if (inCountryMode && !isFinalOutcome) {
-        const ms = animatedMs ?? REVEAL_MS_COUNTRY
-        const t = window.setTimeout(advanceNow, ms)
-        return () => window.clearTimeout(t)
-      }
       if (!inCountryMode) {
         const ms = animatedMs ?? REVEAL_MS_CITY
         const t = window.setTimeout(advanceNow, ms)
@@ -185,14 +135,7 @@ export function useGameAnnouncements({
     if (session.status === 'game-over') {
       if (!recordedRef.current) {
         recordedRef.current = true
-        if (session.dailyDate === null) {
-          record(session.score, session.bestStreak)
-        } else {
-          // Fallback: advanceNow didn't run (test-seam .finalize() bypass, or any
-          // future code path that dispatches `finalize` directly). The race fix
-          // doesn't apply here, but the write must still happen.
-          recordDailyCompletion(session, recordDailyResult)
-        }
+        record(session.score, session.bestStreak)
       }
       if (!announcedGameOverRef.current) {
         announcedGameOverRef.current = true
@@ -201,26 +144,18 @@ export function useGameAnnouncements({
       }
     }
   }, [
-    // session is passed whole to recordDailyCompletion; including it satisfies
-    // exhaustive-deps. The individual field list is retained for readability —
-    // it enumerates the fields actually read in the effect body — but the whole
-    // `session` reference is the load-bearing entry the linter requires.
     session,
     session.status,
     session.roundIndex,
     session.lastOutcome,
     session.score,
     session.bestStreak,
-    session.lives,
     session.used,
     session.currentRound,
     session.modeId,
-    session.currentAttempts,
-    session.dailyDate,
     advance,
     mode,
     record,
-    recordDailyResult,
     byCca3,
     finalize,
   ])

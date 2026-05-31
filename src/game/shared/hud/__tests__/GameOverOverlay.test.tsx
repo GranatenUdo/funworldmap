@@ -9,8 +9,6 @@ const baseSession = makeSession({
   lives: 0,
   score: 100,
   maxRounds: 1,
-  attemptsPerRound: 3,
-  attemptsRemaining: 0,
 })
 
 const zeroBest: PersonalBest = { bestScore: 0, bestStreak: 0, gamesPlayed: 0 }
@@ -21,36 +19,10 @@ describe('GameOverOverlay', () => {
     window.location.hash = ''
   })
 
-  it('hides the subtitle on daily mode (was "1 round complete.")', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.queryByText(/1 round complete/)).toBeNull()
-  })
-
-  it('shows "Today’s results" as the title on daily mode', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 1, dailyDate: '2026-04-27' }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('game-over-title').textContent).toBe('Today’s results')
-  })
-
   it('still says "Game over" on unlimited mode', () => {
     render(
       <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 10, attemptsPerRound: 1, dailyDate: null }}
+        session={{ ...baseSession, maxRounds: 10 }}
         personalBest={zeroBest}
         beatPersonalBest={false}
         onPlayAgain={() => {}}
@@ -64,7 +36,7 @@ describe('GameOverOverlay', () => {
   it('says "10 rounds complete." when maxRounds is 10', () => {
     render(
       <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 10, attemptsPerRound: 1 }}
+        session={{ ...baseSession, maxRounds: 10 }}
         personalBest={zeroBest}
         beatPersonalBest={false}
         onPlayAgain={() => {}}
@@ -74,24 +46,10 @@ describe('GameOverOverlay', () => {
     expect(screen.getByText('10 rounds complete.')).toBeTruthy()
   })
 
-  it('hides the personal-best block on daily plays', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, dailyDate: '2026-04-27' }}
-        personalBest={zeroBest}
-        beatPersonalBest={true}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.queryByTestId('game-over-pb')).toBeNull()
-    expect(screen.queryByText(/personal best/i)).toBeNull()
-  })
-
   it('shows the personal-best block on free plays', () => {
     render(
       <GameOverOverlay
-        session={{ ...baseSession, maxRounds: null, attemptsPerRound: 1 }}
+        session={{ ...baseSession, maxRounds: null }}
         personalBest={zeroBest}
         beatPersonalBest={true}
         onPlayAgain={() => {}}
@@ -103,7 +61,7 @@ describe('GameOverOverlay', () => {
   })
 
   it('keeps "New personal best!" when beatPersonalBest later flips to false (post-record re-render)', () => {
-    const session = { ...baseSession, maxRounds: null, attemptsPerRound: 1 }
+    const session = { ...baseSession, maxRounds: null }
     const { rerender } = render(
       <GameOverOverlay
         session={session}
@@ -130,7 +88,7 @@ describe('GameOverOverlay', () => {
   })
 
   it('shows "Best: N pts" stably when beatPersonalBest started false', () => {
-    const session = { ...baseSession, maxRounds: null, attemptsPerRound: 1, score: 14 }
+    const session = { ...baseSession, maxRounds: null, score: 14 }
     render(
       <GameOverOverlay
         session={session}
@@ -146,7 +104,7 @@ describe('GameOverOverlay', () => {
   it('renders "Game ended early." when session.endedEarly is true', () => {
     render(
       <GameOverOverlay
-        session={{ ...baseSession, maxRounds: null, attemptsPerRound: 1, endedEarly: true }}
+        session={{ ...baseSession, maxRounds: null, endedEarly: true }}
         personalBest={zeroBest}
         beatPersonalBest={false}
         onPlayAgain={() => {}}

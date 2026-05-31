@@ -12,7 +12,10 @@ declare global {
       submitGuess?: (input: GuessInput) => void
       submitCountryGuess?: (cca3: string) => boolean
       setRound?: (id: string) => boolean
-      getSession?: () => { currentAttempts: unknown[] }
+      getSession?: () => { lastOutcome: unknown; status: string; modeId: string }
+      finalize?: () => void
+      endGame?: () => void
+      restart?: (modeId: string, firstRound: unknown, maxRounds: number | null) => void
     }
     /** Test-only counter used by e2e/mobile-tap.spec.ts. */
     __mapClickCount?: number

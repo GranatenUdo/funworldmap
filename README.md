@@ -1,13 +1,13 @@
 # funworldmap
 
-> **[Live demo →](https://funworldmap.com)** · Interactive political world map with daily geography puzzles.
+> **[Live demo →](https://funworldmap.com)** · Interactive political world map with country-pinning and city-guessing games.
 
 ![funworldmap launcher](docs/assets/hero.png)
 
 [![CI](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml/badge.svg)](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Free, interactive political world map. Explore countries, borders, and geopolitical facts through a map-first interface.
+Free, interactive political world map. Explore countries, borders, and geopolitical facts through a map-first interface — and beat your personal best in two geography game modes.
 
 - ~249 countries with data from REST Countries and CIA World Factbook archive
 - Fuzzy search by name, capital, region, or country code
@@ -15,6 +15,8 @@ Free, interactive political world map. Explore countries, borders, and geopoliti
 - Light/dark/system theme with basemap adaptation
 - WCAG AA accessible: keyboard navigation, screen reader support, skip links
 - Fully client-side — no backend, deployable to any CDN
+- **Country Pinning** — click the right country; three lives, unlimited rounds, personal-best tracked
+- **City Guessing** — pin where the city is; 10 rounds, distance-scored, personal-best tracked
 
 ## Development
 
@@ -28,6 +30,8 @@ npm run lint          # Check for lint errors
 npm run format        # Format source files with Prettier
 npm run update-data   # Regenerate countries.json from source APIs
 ```
+
+No content-generation step is required before building or running tests — the app is fully client-side.
 
 ## Architecture
 

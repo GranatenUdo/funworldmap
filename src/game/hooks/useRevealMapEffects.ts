@@ -1,8 +1,8 @@
-import { useEffect, useRef, type RefObject } from 'react'
+import { useEffect, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryLike, GameSession, GuessInput } from '../shared/types'
 import { LAYER } from '../../lib/mapLayers'
-import { REVEAL_CORRECT, REVEAL_WRONG, REVEAL_FAR } from '../../lib/mapPalette'
+import { REVEAL_CORRECT, REVEAL_WRONG } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCityGuessing } from '../shared/modePredicates'
@@ -83,9 +83,7 @@ export interface UseRevealMapEffectsArgs {
 
 /**
  * Drives the MapLibre reveal layer (round-end geometry + arc animation),
- * the country-mode intermediate flash (anchor refs gate replay on resume),
- * the city-mode persistent click marker (no anchor — re-paints latest on
- * resume), the city click-to-guess handler, and the idle-state clear.
+ * the city click-to-guess handler, and the idle-state clear.
  */
 export function useRevealMapEffects({
   session,
@@ -93,9 +91,6 @@ export function useRevealMapEffects({
   byCca3,
   submitGuessInput,
 }: UseRevealMapEffectsArgs): void {
-  const lastIntermediateAttemptCountRef = useRef(0)
-  const prevStatusForIntermediateRef = useRef<typeof session.status>('idle')
-
   // Reveal geometry: on round-ended, update marker + line sources, snap the
   // camera to the guess centroid, and (for non-correct reveals with a known
   // guess location) animate the dashed line growing along the geodesic arc
@@ -266,100 +261,6 @@ export function useRevealMapEffects({
       clearRevealSources(map)
     }
   }, [session.status, session.lastOutcome, byCca3, mapRef])
-
-  // Intermediate reveal between attempts (daily only): correctness-coloured
-  // guess highlight + score toast.
-  useEffect(() => {
-    const enteringPlaying =
-      prevStatusForIntermediateRef.current !== 'playing' && session.status === 'playing'
-    prevStatusForIntermediateRef.current = session.status
-    if (enteringPlaying) {
-      // On fresh start: 0. On resume: the resumed attempts count, so the
-      // already-recorded latest attempt does not paint a phantom flash.
-      lastIntermediateAttemptCountRef.current = session.currentAttempts.length
-    }
-    if (session.status !== 'playing') return
-    if (session.attemptsPerRound <= 1) return
-    const cur = session.currentAttempts.length
-    const prev = lastIntermediateAttemptCountRef.current
-    lastIntermediateAttemptCountRef.current = cur
-    if (cur === 0) return
-    if (cur <= prev) return
-    const last = session.currentAttempts[cur - 1]
-    if (last.reveal.kind !== 'country') return // city handled by separate effect below
-    const map = mapRef.current
-    if (!map) return
-    const reduced = prefersReducedMotion()
-    const holdMs = reduced ? 0 : 600
-
-    if (last.reveal.kind === 'country') {
-      const colour = last.reveal.correct ? REVEAL_CORRECT : REVEAL_WRONG
-      try {
-        map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], last.reveal.clickedCca3 ?? ''])
-        map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
-        map.setPaintProperty(LAYER.hoverBorder, 'line-width', 3)
-      } catch {
-        /* layer may not exist */
-      }
-      const t = window.setTimeout(() => {
-        try {
-          map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
-        } catch {
-          /* no-op */
-        }
-      }, holdMs)
-      return () => {
-        window.clearTimeout(t)
-        try {
-          map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
-        } catch {
-          /* no-op */
-        }
-      }
-    }
-  }, [
-    session.status,
-    session.attemptsPerRound,
-    session.attemptsRemaining,
-    session.currentAttempts,
-    mapRef,
-  ])
-
-  // Persistent intermediate marker (city best-of-N) — no timeout. Replaced by
-  // the next click via setData, by the round-ended geometry effect, or by the
-  // idle-clear effect on game end. The cleanup-on-timeout pattern would defeat
-  // the legibility goal (the user needs to see their guess until they pick again).
-  useEffect(() => {
-    if (session.status !== 'playing') return
-    if (session.attemptsPerRound <= 1) return
-    if (!isCityGuessing(session.modeId)) return
-    if (session.currentAttempts.length === 0) return
-    const last = session.currentAttempts[session.currentAttempts.length - 1]
-    if (last.reveal.kind !== 'point') return
-    const point = last.reveal.clickedPoint
-    if (point === null) return
-    const map = mapRef.current
-    if (!map) return
-    const d = last.reveal.distanceKm
-    const colour = d < 50 ? REVEAL_CORRECT : d < 500 ? REVEAL_WRONG : REVEAL_FAR
-    try {
-      ensureRevealSources(map)
-      const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
-      markerSrc.setData({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: point },
-            properties: { intermediate: true },
-          },
-        ],
-      })
-      map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', colour)
-    } catch {
-      /* style may still be resolving */
-    }
-  }, [session.status, session.attemptsPerRound, session.modeId, session.currentAttempts, mapRef])
 
   // City-mode any-click handler.
   useEffect(() => {

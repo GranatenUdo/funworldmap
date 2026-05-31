@@ -8,14 +8,10 @@ async function waitForMap(page: Page) {
 
 test.describe('reveal animation', () => {
   test('wrong country guess renders a tessellated line from guess → target', async ({ page }) => {
-    // Seed lastMode so the shared unlimited link routes to country-pinning.
-    await page.addInitScript(() => {
-      localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
-    })
     await page.goto('/')
     await waitForMap(page)
     await openLauncher(page)
-    await page.getByTestId('launcher-unlimited-link').click()
+    await page.getByTestId('launcher-card-country-pinning-play').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     // Pin France as the target, then submit Germany as the guess.
@@ -49,8 +45,8 @@ test.describe('reveal animation', () => {
     expect(center!.lat).toBeCloseTo(46, 0)
 
     // Advance to the next round and confirm reveal artifacts cleared.
-    // For country-pinning best-of-1, the round-end panel opens with a
-    // "Continue" button (data-testid="game-continue"). Clicking it calls
+    // The round-end panel opens with a "Continue" button
+    // (data-testid="game-continue"). Clicking it calls
     // advanceRoundEndPanel → advance → next round.
     await expect(page.getByTestId('game-continue')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-continue').click()
@@ -84,14 +80,10 @@ test.describe('reveal animation', () => {
   test('city-guessing wrong guess renders a tessellated line from point → target', async ({
     page,
   }) => {
-    // Seed lastMode so the shared unlimited link routes to city-guessing.
-    await page.addInitScript(() => {
-      localStorage.setItem('funworldmap-game-last-mode', 'city-guessing')
-    })
     await page.goto('/')
     await waitForMap(page)
     await openLauncher(page)
-    await page.getByTestId('launcher-unlimited-link').click()
+    await page.getByTestId('launcher-card-city-guessing-play').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
     // Submit a point guess at [0, 0] — target is whatever the mode picked.

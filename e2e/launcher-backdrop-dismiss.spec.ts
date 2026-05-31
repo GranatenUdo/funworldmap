@@ -1,27 +1,13 @@
 import { test, expect } from '@playwright/test'
-import { toLocalDateString } from '../src/game/daily/dates'
-import { waitForAppReady, stubDailyIndex, gotoAndWaitForMap, openLauncher } from './helpers'
+import { gotoAndWaitForMap, waitForAppReady, openLauncher } from './helpers'
 
 test.setTimeout(60_000)
 
-function todayString(): string {
-  return toLocalDateString(new Date())
-}
-
-async function setupFreshLaunch(page: Parameters<typeof stubDailyIndex>[0]): Promise<void> {
-  await stubDailyIndex(page, todayString())
-  await page.addInitScript(() => {
-    localStorage.removeItem('funworldmap-game-last-mode')
-    localStorage.removeItem('funworldmap-daily-history')
-  })
-  await gotoAndWaitForMap(page, '/')
-  await waitForAppReady(page)
-  await openLauncher(page)
-}
-
 test.describe('Launcher — backdrop dismiss', () => {
   test('header is not in DOM while launcher is open', async ({ page }) => {
-    await setupFreshLaunch(page)
+    await gotoAndWaitForMap(page, '/')
+    await waitForAppReady(page)
+    await openLauncher(page)
     // The entire header must be removed from the DOM (not just hidden)
     await expect(page.getByTestId('header-play')).not.toBeAttached()
     await expect(page.locator('#search-input')).not.toBeAttached()
@@ -29,7 +15,9 @@ test.describe('Launcher — backdrop dismiss', () => {
   })
 
   test('backdrop click dismisses launcher', async ({ page }) => {
-    await setupFreshLaunch(page)
+    await gotoAndWaitForMap(page, '/')
+    await waitForAppReady(page)
+    await openLauncher(page)
     const launcher = page.getByTestId('launcher')
     // Click the backdrop div (top-left corner, away from centred card content)
     const backdrop = launcher.locator('> div[aria-hidden="true"]')
@@ -38,7 +26,9 @@ test.describe('Launcher — backdrop dismiss', () => {
   })
 
   test('after backdrop dismiss, header re-appears in DOM', async ({ page }) => {
-    await setupFreshLaunch(page)
+    await gotoAndWaitForMap(page, '/')
+    await waitForAppReady(page)
+    await openLauncher(page)
     const launcher = page.getByTestId('launcher')
     const backdrop = launcher.locator('> div[aria-hidden="true"]')
     await backdrop.click({ position: { x: 20, y: 20 } })
@@ -50,7 +40,9 @@ test.describe('Launcher — backdrop dismiss', () => {
   })
 
   test('after backdrop dismiss, focus moves to search input', async ({ page }) => {
-    await setupFreshLaunch(page)
+    await gotoAndWaitForMap(page, '/')
+    await waitForAppReady(page)
+    await openLauncher(page)
     const launcher = page.getByTestId('launcher')
     const backdrop = launcher.locator('> div[aria-hidden="true"]')
     await backdrop.click({ position: { x: 20, y: 20 } })

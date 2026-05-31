@@ -4,12 +4,9 @@ import { gotoAndWaitForMap, openLauncher, waitForGameTestHook } from './helpers'
 test.setTimeout(60_000)
 
 async function setupWithCountryPinning(page: Page) {
-  await page.addInitScript(() => {
-    localStorage.setItem('funworldmap-game-last-mode', 'country-pinning')
-  })
   await gotoAndWaitForMap(page)
   await openLauncher(page)
-  await page.getByTestId('launcher-unlimited-link').click()
+  await page.getByTestId('launcher-card-country-pinning-play').click()
   await waitForGameTestHook(page)
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 }

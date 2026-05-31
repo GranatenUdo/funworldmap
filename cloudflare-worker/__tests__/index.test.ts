@@ -37,16 +37,15 @@ describe('analytics worker', () => {
   it('accepts a well-formed known event and writes to Analytics Engine', async () => {
     const { env, writes } = makeEnv()
     const res = await worker.fetch(
-      post({ name: 'daily_opened', props: { mode: 'country-pinning', dateAge: 0 } }),
+      post({ name: 'free_started', props: { mode: 'country-pinning' } }),
       env,
       {} as ExecutionContext,
     )
     expect(res.status).toBe(204)
     expect(writes).toHaveLength(1)
-    expect(writes[0].indexes).toEqual(['daily_opened'])
-    expect(writes[0].blobs?.[0]).toBe('daily_opened')
+    expect(writes[0].indexes).toEqual(['free_started'])
+    expect(writes[0].blobs?.[0]).toBe('free_started')
     expect(writes[0].blobs?.[1]).toBe('country-pinning')
-    expect(writes[0].doubles?.[0]).toBe(0)
   })
 
   it('rejects unknown event names with 400', async () => {
@@ -93,23 +92,16 @@ describe('analytics worker', () => {
     const { env, writes } = makeEnv()
     await worker.fetch(
       post({
-        name: 'daily_shared',
+        name: 'launcher_dismissed',
         props: {
-          mode: 'city-guessing',
-          method: 'share-api',
-          bestScoreBucket: 3,
-          attemptsUsed: 2,
+          path: 'card',
         },
       }),
       env,
       {} as ExecutionContext,
     )
     const w = writes[0]
-    expect(w.blobs?.[0]).toBe('daily_shared')
-    expect(w.blobs?.[1]).toBe('city-guessing')
-    expect(w.blobs?.[2]).toBe('') // no path
-    expect(w.blobs?.[3]).toBe('share-api')
-    expect(w.doubles?.[2]).toBe(3) // bestScoreBucket
-    expect(w.doubles?.[4]).toBe(2) // attemptsUsed
+    expect(w.blobs?.[0]).toBe('launcher_dismissed')
+    expect(w.blobs?.[2]).toBe('card') // path
   })
 })

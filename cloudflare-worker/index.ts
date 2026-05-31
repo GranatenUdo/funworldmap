@@ -1,42 +1,16 @@
-type EventName =
-  | 'daily_opened'
-  | 'daily_started'
-  | 'daily_attempted'
-  | 'daily_completed'
-  | 'daily_shared'
-  | 'free_started'
-  | 'history_opened'
-  | 'history_cell_clicked'
-  | 'streak_reached_milestone'
-  | 'launcher_dismissed'
-  | 'deep_link_opened'
+type EventName = 'free_started' | 'launcher_dismissed' | 'header_cta_clicked'
 
 const KNOWN_EVENTS = new Set<EventName>([
-  'daily_opened',
-  'daily_started',
-  'daily_attempted',
-  'daily_completed',
-  'daily_shared',
   'free_started',
-  'history_opened',
-  'history_cell_clicked',
-  'streak_reached_milestone',
   'launcher_dismissed',
-  'deep_link_opened',
+  'header_cta_clicked',
 ])
 
-const ALLOWED_ORIGINS = new Set([
-  'https://funworldmap.com',
-  'https://www.funworldmap.com',
-])
+const ALLOWED_ORIGINS = new Set(['https://funworldmap.com', 'https://www.funworldmap.com'])
 
 interface Env {
   EVENTS: {
-    writeDataPoint(data: {
-      blobs?: string[]
-      doubles?: number[]
-      indexes?: string[]
-    }): void
+    writeDataPoint(data: { blobs?: string[]; doubles?: number[]; indexes?: string[] }): void
   }
 }
 

@@ -5,7 +5,7 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { name: 'app/ignores', ignores: ['dist', 'scripts/**', 'e2e/**', '**/*.config.{js,ts}', '*.config.{js,ts}'] },
+  { name: 'app/ignores', ignores: ['dist', 'scripts/**', 'e2e/**', 'cloudflare-worker/**', '**/*.config.{js,ts}', '*.config.{js,ts}'] },
   {
     name: 'app/typescript-strict',
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],

@@ -3,7 +3,6 @@ import WorldMap from './components/WorldMap'
 import Header from './components/Header'
 import CountryPanel from './components/CountryPanel'
 import { Launcher } from './components/Launcher'
-import { DailyRevealOverlay } from './components/DailyRevealOverlay'
 import Toast from './components/Toast'
 import { useCountryData } from './hooks/useCountryData'
 import { useCityData } from './hooks/useCityData'
@@ -17,17 +16,11 @@ import { useLiveAnnouncements } from './hooks/useLiveAnnouncements'
 import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { isCountryPinning } from './game/shared/modePredicates'
-import { DailyPuzzlesProvider, useDailyPuzzlesContext } from './game/daily/DailyPuzzlesProvider'
-import { useDailyHistory } from './game/daily/useDailyHistory'
-import { toLocalDateString, getToday, getYesterday } from './game/daily/dates'
-import { deriveStreakMode } from './game/daily/storage'
 import { GameController } from './game/GameController'
-import type { CityLike, CountryLike, ModeId } from './game/shared/types'
-import { readLastMode, writeLastMode } from './game/shared/lastMode'
+import type { CityLike, CountryLike } from './game/shared/types'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
-import { parseHash, writeHash } from './lib/hashState'
-import { track, type CtaState } from './lib/analytics'
+import { track } from './lib/analytics'
 import { dispatchToast } from './lib/toast'
 
 export default function App() {
@@ -55,17 +48,15 @@ export default function App() {
   return (
     <MapProvider>
       <GameSessionProvider pools={pools}>
-        <DailyPuzzlesProvider>
-          <AppInner
-            countries={countries}
-            pool={pool}
-            byNumeric={byNumeric}
-            byCca3={byCca3}
-            poolByCca3={poolByCca3}
-            sources={sources}
-            cities={cities}
-          />
-        </DailyPuzzlesProvider>
+        <AppInner
+          countries={countries}
+          pool={pool}
+          byNumeric={byNumeric}
+          byCca3={byCca3}
+          poolByCca3={poolByCca3}
+          sources={sources}
+          cities={cities}
+        />
       </GameSessionProvider>
     </MapProvider>
   )
@@ -96,11 +87,8 @@ function AppInner({
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const { session, submitGuessInput, advance, mode, finalize } = useGameSessionContext()
-  const { byDate } = useDailyPuzzlesContext()
   const {
     visible: launcherVisible,
-    anchorDate,
-    initialHistoryOpen,
     dismiss: dismissLauncher,
     show: showLauncher,
   } = useLauncherVisibility()
@@ -113,26 +101,6 @@ function AppInner({
   const liveRegionRef = useLiveAnnouncements(selected?.name.common ?? null)
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
-  const [revealState, setRevealState] = useState<{ date: string; modeId: ModeId | null } | null>(
-    null,
-  )
-
-  useEffect(() => {
-    const read = () => {
-      const state = parseHash(window.location.hash)
-      if (state.kind === 'daily' && state.reveal) {
-        setRevealState({ date: state.date, modeId: state.modeId as ModeId | null })
-      } else {
-        setRevealState(null)
-      }
-    }
-    read()
-    window.addEventListener('hashchange', read)
-    return () => window.removeEventListener('hashchange', read)
-  }, [])
-  const openLauncherHistory = useCallback(() => {
-    showLauncher({ historyOpen: true })
-  }, [showLauncher])
   const onLauncherDismissFromSearch = useCallback(() => {
     track('launcher_dismissed', { path: 'search' })
     dismissLauncher()
@@ -149,37 +117,13 @@ function AppInner({
 
   const gameActive = session.status !== 'idle'
 
-  const { today, yesterday } = useMemo(() => {
-    const now = new Date()
-    return { today: getToday(now), yesterday: getYesterday(now) }
-  }, [])
-  const { history: dailyHistory, streak } = useDailyHistory()
-  const { streakActive, ctaState } = useMemo(() => {
-    const mode = deriveStreakMode(streak.lastActiveDate, yesterday)
-    const todayEntry = dailyHistory.days[today] ?? {}
-    const countryPlayed = !!todayEntry['country-pinning']
-    const cityPlayed = !!todayEntry['city-guessing']
-    const state: CtaState =
-      countryPlayed && cityPlayed ? 'done' : countryPlayed || cityPlayed ? 'partial' : 'unplayed'
-    return { streakActive: mode === 'active', ctaState: state }
-  }, [streak.lastActiveDate, yesterday, dailyHistory.days, today])
-
   const roundEndTarget = useMemo(() => {
     if (session.status !== 'round-ended') return null
     if (!isCountryPinning(session.modeId)) return null
-    const isFinalOutcome = session.attemptsPerRound === 1 || session.attemptsRemaining === 0
-    if (!isFinalOutcome) return null
     const reveal = session.lastOutcome?.reveal
     if (!reveal || reveal.kind !== 'country') return null
     return byCca3.get(reveal.targetCca3) ?? null
-  }, [
-    session.status,
-    session.modeId,
-    session.attemptsPerRound,
-    session.attemptsRemaining,
-    session.lastOutcome,
-    byCca3,
-  ])
+  }, [session.status, session.modeId, session.lastOutcome, byCca3])
 
   const advanceRoundEndPanel = useCallback(() => {
     if (session.status !== 'round-ended' || !mode) return
@@ -393,26 +337,14 @@ function AppInner({
         comparePickingMode={comparePickingMode}
         gameActive={gameActive}
         launcherVisible={launcherVisible}
-        ctaState={ctaState}
-        streakCurrent={streak.current}
-        streakActive={streakActive}
         onSelect={onMapSelect}
         onThemeCycle={cycle}
         onSatelliteToggle={toggleSatellite}
         onOpenLauncher={showLauncher}
-        onOpenLauncherHistory={openLauncherHistory}
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
-      {launcherVisible && (
-        <Launcher
-          onDismiss={dismissLauncher}
-          anchorDate={anchorDate}
-          countries={pool}
-          cities={cities}
-          initialHistoryOpen={initialHistoryOpen}
-        />
-      )}
+      {launcherVisible && <Launcher onDismiss={dismissLauncher} />}
 
       <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
@@ -460,29 +392,6 @@ function AppInner({
           }}
           byCca3={byCca3}
           inGameRound={true}
-        />
-      )}
-
-      {revealState && (
-        <DailyRevealOverlay
-          date={revealState.date}
-          modeId={revealState.modeId}
-          puzzle={byDate(revealState.date) ?? null}
-          today={toLocalDateString(new Date())}
-          countries={pool}
-          cities={cities}
-          onClose={() => {
-            history.replaceState(null, '', window.location.pathname)
-            window.dispatchEvent(new HashChangeEvent('hashchange'))
-          }}
-          onPlayUnlimited={() => {
-            const id = revealState.modeId ?? readLastMode()
-            // No track() here — the hash router's free_started event fires when
-            // the game boots, which is the durable signal. Adding launcher_dismissed
-            // here would be a category error (the reveal overlay is not the launcher).
-            writeLastMode(id)
-            window.location.hash = writeHash({ kind: 'game', modeId: id })
-          }}
         />
       )}
     </div>

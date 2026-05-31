@@ -6,31 +6,22 @@ const KEY_PREFIX = 'funworldmap-game-tutorial-shown-'
 const COPY = {
   'country-pinning-free': {
     title: 'How to play',
-    body: 'Click the country that matches the flag and name above. Three wrong countries end the game. Ocean clicks don’t count.',
-  },
-  'country-pinning-daily': {
-    title: 'Today’s puzzle',
-    body: 'You have 3 attempts. Your highest-scoring guess wins. Press Done when you’re happy with your best so far.',
+    body: "Click the country that matches the flag and name above. Three wrong countries end the game. Ocean clicks don't count.",
   },
   'city-guessing-free': {
     title: 'How to play',
-    body: 'Click anywhere on the map — including ocean — to guess the city’s location. Ten rounds per game.',
-  },
-  'city-guessing-daily': {
-    title: 'Today’s puzzle',
-    body: 'You have 3 attempts to pin the city. Your closest guess wins. Press Done when you’re happy with your best so far.',
+    body: "Click anywhere on the map — including ocean — to guess the city's location. Ten rounds per game.",
   },
 } as const
 
 interface Props {
   modeId: ModeId
-  attemptsPerRound: number
   firstAttemptMade: boolean
 }
 
-export function FirstSessionTutorial({ modeId, attemptsPerRound, firstAttemptMade }: Props) {
+export function FirstSessionTutorial({ modeId, firstAttemptMade }: Props) {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- WHY: tsc requires this assertion to narrow the template literal to keyof typeof COPY; eslint's type inference disagrees but removing the cast breaks `tsc --strict`.
-  const variant = (attemptsPerRound > 1 ? `${modeId}-daily` : `${modeId}-free`) as keyof typeof COPY
+  const variant = `${modeId}-free` as keyof typeof COPY
   const [open, setOpen] = useState(false)
   const key = KEY_PREFIX + variant
 
