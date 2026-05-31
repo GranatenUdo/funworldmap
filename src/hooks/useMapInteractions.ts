@@ -4,7 +4,20 @@ import type { CountryData } from '../lib/types'
 import { LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
-import { isCountryPinning } from '../game/shared/modePredicates'
+import type { GameStatus } from '../game/shared/types'
+
+/**
+ * Whether the country name/capital hover tooltip should be shown.
+ *
+ * It is suppressed for EVERY game mode while a round is in play, because the
+ * country identity leaks the answer: in Country Pinning the name IS the answer,
+ * and in City Guessing it narrows down where the target city is. Outside active
+ * play (idle map, post-round reveal, game over) the tooltip is the normal
+ * map-exploration affordance and stays on.
+ */
+export function mapHoverTooltipEnabled(status: GameStatus): boolean {
+  return status !== 'playing'
+}
 
 interface Options {
   loaded: boolean
@@ -38,7 +51,6 @@ export function useMapInteractions({
   const { session } = useGameSessionContext()
   const sessionRef = useRef(session)
   sessionRef.current = session
-  const tooltipsEnabled = !(isCountryPinning(session.modeId) && session.status === 'playing')
 
   useEffect(() => {
     const map = mapRef.current
@@ -50,9 +62,11 @@ export function useMapInteractions({
       const canvas = map.getCanvas()
       if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'pointer'
 
-      // Keep the per-event tooltip-hide so a game starting mid-hover removes
-      // the lingering tooltip on the very next move. Cheap (no-op when already
-      // absent) and preserves prior behavior.
+      // Read the gate live (like clickMap reads sessionRef) so the listener
+      // stack attaches once and survives game-status changes instead of being
+      // re-registered on every round boundary. The per-event hide also clears a
+      // lingering tooltip when a round starts mid-hover.
+      const tooltipsEnabled = mapHoverTooltipEnabled(sessionRef.current.status)
       if (!tooltipsEnabled) tooltipRef.current?.classList.remove('visible')
 
       // Same country as last event — setFilter × 2, setFeatureState, and the
@@ -179,7 +193,14 @@ export function useMapInteractions({
       map.off('dragstart', dragStart)
       map.off('dragend', dragEnd)
     }
-  }, [loaded, mapRef, hoveredRef, tooltipRef, tooltipsEnabled])
+  }, [loaded, mapRef, hoveredRef, tooltipRef])
+
+  // When a round starts (tooltips become suppressed), proactively hide any
+  // tooltip left visible from the reveal phase rather than waiting for the next
+  // mouse move.
+  useEffect(() => {
+    if (!mapHoverTooltipEnabled(session.status)) tooltipRef.current?.classList.remove('visible')
+  }, [session.status, tooltipRef])
 
   // Crosshair cursor while picking a compare target. When picking ends, restore
   // either pointer (if hovering a country) or grab (if not).
