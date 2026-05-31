@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { GameSession, PersonalBest } from '../types'
+import { formatPersonalBest } from '../formatPersonalBest'
 
 interface Props {
   session: GameSession
@@ -99,9 +100,7 @@ export function GameOverOverlay({
               New personal best!
             </span>
           ) : (
-            <>
-              Best: {personalBest.bestScore} pts · {personalBest.bestStreak} streak
-            </>
+            <>Best: {formatPersonalBest(personalBest, session.modeId)}</>
           )}
         </div>
 
