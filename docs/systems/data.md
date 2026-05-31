@@ -1,6 +1,6 @@
 # Data System
 
-funworldmap uses multiple data sources, all bundled into the application at build time. There are zero runtime API calls or external data fetches (basemap tiles excepted). Every data point carries source attribution.
+funworldmap uses multiple data sources, all bundled into the application at build time. There are zero runtime API calls for country data — the only network traffic is map tiles (basemap, satellite, terrain) and optional, cookieless telemetry (see [Analytics](analytics.md)). Every data point carries source attribution.
 
 ## Data Sources
 
@@ -13,6 +13,7 @@ funworldmap uses multiple data sources, all bundled into the application at buil
 **License**: Public domain
 
 Provides polygon geometries for every country and territory. Each feature has:
+
 - `id`: ISO 3166-1 numeric code as a string (e.g., `"250"` for France)
 - `properties.name`: Country name in English
 
@@ -43,6 +44,7 @@ Flags are bundled as static assets — no external CDN fetch at runtime.
 The data collection tool (see [Data Collection](data-collection.md)) merges all sources into a single `countries.json` file. Each field carries source attribution.
 
 ### Per-Country Structure
+
 ```json
 {
   "ccn3": "250",
@@ -136,29 +138,35 @@ world-atlas feature.id  ←→  countries.json ccn3
 
 The application maintains two lookup maps built at startup:
 
-| Lookup | Key → Value | Purpose |
-|--------|-------------|---------|
-| `byNumeric` | `ccn3 → CountryData` | Map click: feature ID "250" → metadata (includes `cca3` for URL hash) |
-| `byCca3` | `cca3 → CountryData` | URL hash `#FRA` / border chip "DEU" → metadata (includes `ccn3` for map feature) |
+| Lookup      | Key → Value          | Purpose                                                                          |
+| ----------- | -------------------- | -------------------------------------------------------------------------------- |
+| `byNumeric` | `ccn3 → CountryData` | Map click: feature ID "250" → metadata (includes `cca3` for URL hash)            |
+| `byCca3`    | `cca3 → CountryData` | URL hash `#FRA` / border chip "DEU" → metadata (includes `ccn3` for map feature) |
 
 Since CountryData contains both `ccn3` and `cca3`, these two maps provide all needed conversions without separate index maps. Example: map click yields `"250"` → `byNumeric.get("250")` returns France → `country.cca3` is `"FRA"` for the URL hash.
 
-### Unmatched Territories
+### Canonical 195 filter
 
-Not every world-atlas polygon has a metadata match. Reasons:
-- **Disputed territories** (e.g., Kosovo, Northern Cyprus) may lack ISO numeric codes
-- **Uninhabited territories** (e.g., Siachen Glacier) have no entry in either REST Countries or CIA Factbook
-- **Special regions** may use different coding standards
+The app renders only the **canonical 195** sovereign states — 193 UN members plus the Vatican and Palestine (both UN observer states). The allowlist lives in `lib/canonicalCountries.ts` (`CANONICAL_CCA3` / `CANONICAL_NUMERIC_IDS`) and is applied in three places:
 
-When no match is found, the application displays:
+- `useCountryData.ts` filters `countries.json` (which still carries the raw 249 source rows) down to the 195 for search and panels.
+- `loadCountryGeojson.ts` filters the world-atlas polygons to the 195 numeric IDs (and `missingCountriesPatch.ts` synthesizes polygons for canonical IDs the 50m dataset omits).
+- `useCityData.ts` filters cities to those whose host country is in the 195.
+
+As a result, partially-recognized or contested entities (Kosovo, Taiwan, Western Sahara, Greenland, …) and uninhabited territories are **not rendered or selectable**. Every rendered polygon is one of the 195 and carries full metadata.
+
+### Unmatched Territories (defensive fallback)
+
+Because of the canonical filter above, every rendered polygon has a metadata match, so this path is not reachable through normal map clicks. Were a rendered polygon ever to lack a match, the application would display:
+
 - Country name from world-atlas `properties.name`
 - A note: "Limited data available"
 - No flag or detailed metadata
-- The polygon is still clickable and highlightable
+- The polygon still clickable and highlightable
 
 ## Disputed Territories
 
-funworldmap takes no political positions. Boundaries are displayed using Natural Earth's de facto defaults — showing territories as they are controlled in practice, not as any government claims.
+funworldmap takes no political positions. For the 195 states it renders, boundaries use Natural Earth's de facto defaults — showing territories as they are controlled in practice, not as any government claims. Entities that are neither UN members nor observer states (e.g. Kosovo, Taiwan, Western Sahara) are out of scope for v1 and are not rendered as selectable countries; their land may still appear in the underlying satellite / vector basemap imagery.
 
 Natural Earth data includes options for de jure boundaries and point-of-view-specific variants, which could be explored in future versions.
 
@@ -166,10 +174,10 @@ Natural Earth data includes options for de jure boundaries and point-of-view-spe
 
 **Critical implementation detail**: REST Countries and MapLibre use different coordinate order.
 
-| System | Order | Example (Paris) |
-|--------|-------|-----------------|
+| System                  | Order                   | Example (Paris) |
+| ----------------------- | ----------------------- | --------------- |
 | REST Countries `latlng` | `[latitude, longitude]` | `[48.86, 2.35]` |
-| MapLibre GL `center` | `[longitude, latitude]` | `[2.35, 48.86]` |
+| MapLibre GL `center`    | `[longitude, latitude]` | `[2.35, 48.86]` |
 
 The `flyToCountry()` function handles this swap. Getting this wrong puts the camera in the ocean.
 

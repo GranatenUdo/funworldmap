@@ -1,10 +1,11 @@
 # Security Policy
 
-funworldmap is a static-site frontend. There is no backend, no user accounts, no user-submitted data. The attack surface is small but not zero.
+funworldmap is a static-site frontend with no user accounts and no user-submitted content. Its only server-side component is a small, optional analytics Worker (`cloudflare-worker/`, `POST funworldmap.com/api/event`) that ingests anonymous, cookieless event counts. The attack surface is small but not zero.
 
 ## In Scope
 
 - Frontend vulnerabilities (XSS, prototype pollution, clickjacking)
+- The analytics Worker endpoint (`POST /api/event`) — input validation, CORS origin allowlist, event-schema handling (`cloudflare-worker/index.ts`)
 - Dependency CVEs reachable via the bundled code paths
 - Incidents involving the basemap tile provider that affect this site
 - Supply-chain concerns in `package.json` / `package-lock.json`

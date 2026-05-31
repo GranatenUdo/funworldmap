@@ -1,6 +1,6 @@
 # System Overview
 
-funworldmap is a fully client-side single-page application. There is no backend server. All code, data, and assets are delivered as static files from a CDN. The browser does all the work.
+funworldmap is a client-side single-page application: all code, data, and assets are delivered as static files from a CDN, and the browser does all the work. No application backend is required to run it — the only server-side component is an optional analytics Worker (see [Analytics](analytics.md)). At runtime the map pulls tiles from third-party CDNs (see External Dependencies below).
 
 ## Architecture
 
@@ -33,7 +33,7 @@ funworldmap is a fully client-side single-page application. There is no backend 
 │  └────────────────────────────────────────────────────────────┘  │
 │                                                                  │
 └──────────────────────────────┬───────────────────────────────────┘
-                               │ HTTPS (basemap tiles only)
+                               │ HTTPS — tile CDNs (incl. satellite + terrain) + optional telemetry
                     ┌──────────▼──────────┐
                     │  OpenFreeMap CDN     │
                     │  Vector tiles        │
@@ -43,11 +43,18 @@ funworldmap is a fully client-side single-page application. There is no backend 
 
 ## External Dependencies at Runtime
 
-| Dependency      | Purpose                                    | Failure Impact                                                                                 |
-| --------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| OpenFreeMap CDN | Basemap vector tiles (land, water, labels) | Map canvas renders but no basemap imagery. Country boundaries still display from bundled data. |
+> The diagram above shows a single representative tile CDN; the full runtime dependency list is below.
 
-Flag images and country metadata are bundled — no other external fetches at runtime.
+| Dependency                                          | Purpose                                         | Optional?                                                                                                                  | Failure Impact                                                                                 |
+| --------------------------------------------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| EOX Sentinel-2 (`tiles.maps.eox.at`)                | Satellite imagery — the **default** basemap     | No (default view)                                                                                                          | Satellite layer blank; country polygons still render. User can switch to the vector map.       |
+| AWS Terrain Tiles (`elevation-tiles-prod`)          | 3D terrain DEM (used in satellite mode)         | No (default view)                                                                                                          | Terrain falls back to flat; map stays functional.                                              |
+| OpenFreeMap (`tiles.openfreemap.org`)               | Positron vector tiles — the toggle-off map view | No (when in map view)                                                                                                      | Map canvas renders but no basemap imagery; country boundaries still display from bundled data. |
+| Analytics Worker (`funworldmap.com/api/event`)      | Anonymous, cookieless usage events              | Yes — no-op unless `VITE_ANALYTICS_ENDPOINT` is set                                                                        | None — fire-and-forget beacons; failures are swallowed.                                        |
+| Sentry                                              | Error reporting                                 | Yes — no-op unless `VITE_SENTRY_DSN` is set                                                                                | None.                                                                                          |
+| Cloudflare Web Analytics (`cloudflareinsights.com`) | Passive page-view / Web-Vitals beacon           | Loaded in every production build (stripped only in `vite dev`); `VITE_CF_WA_TOKEN` only sets whether CF attributes the hit | Async beacon; none.                                                                            |
+
+Flag images and country metadata are bundled into the build. Beyond the tile CDNs above, network traffic is limited to cookieless telemetry. Sentry and the analytics Worker are true no-ops when their env vars are unset (dev and CI e2e builds); the Cloudflare Web Analytics beacon, however, ships in every production build (it is stripped only in `vite dev`), so a prod build fetches it from `cloudflareinsights.com` regardless of `VITE_CF_WA_TOKEN` — the token only controls whether CF attributes the hit. See [Analytics](analytics.md).
 
 ## Data Flow
 
@@ -60,7 +67,7 @@ Flag images and country metadata are bundled — no other external fetches at ru
 5. TopoJSON converted to GeoJSON via `topojson-client`, added as map source
 6. Country boundaries render as interactive layers
 7. If URL has hash (e.g., `#FRA`), cca3 code is looked up → ccn3 numeric ID resolved → country selected and camera flies to it via `flyToCountry()`. Hash resolution is deferred until step 6 completes — the GeoJSON source must be loaded before a country can be selected and highlighted.
-8. If no hash, map shows default view: centered at longitude 0, latitude 20, zoom 2
+8. If no hash, map shows default view: satellite basemap, centered at longitude 0, latitude 20, zoom 1.8, pitch 20° (3D; pitch 0 under `prefers-reduced-motion`)
 
 ### On Country Click
 
@@ -108,14 +115,14 @@ When the hash is cleared (clicking ocean, closing the panel, or reset view), `us
 
 ## Error Handling
 
-| Failure                              | Behavior                                                                                                                                                                                                                                                    |
-| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **WebGL2 not supported**             | the `maplibregl.Map` constructor throws (caught in `useMapInstance`) → show error message with browser upgrade guidance instead of blank canvas. Note: MapLibre GL JS requires WebGL2, not just WebGL1 — some older browsers support WebGL1 but not WebGL2. |
-| **Invalid URL hash**                 | Hash contains an unrecognized cca3 code (e.g., `#INVALID`) → `byCca3` lookup returns no match → hash is silently cleared, no country selected, default view shown.                                                                                          |
-| **Basemap tiles fail to load**       | Map canvas renders with country polygons from bundled data, but no underlying geography (no water, labels, roads). Functional but visually sparse.                                                                                                          |
-| **TopoJSON fails to load/parse**     | Map shows basemap only with no interactive country layers. Error state displayed: "Country data unavailable." Search and panel non-functional.                                                                                                              |
-| **Country ID has no metadata match** | Panel shows country name from world-atlas `properties.name` with note "Limited data available." No crash. See [Data System — Unmatched Territories](data.md).                                                                                               |
-| **WebGL2 context lost mid-session**  | MapLibre fires `webglcontextlost` event. Display "Map temporarily unavailable" overlay. Attempt restore on `webglcontextrestored`.                                                                                                                          |
+| Failure                              | Behavior                                                                                                                                                                                                                                                                                                                                           |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **WebGL2 not supported**             | the `maplibregl.Map` constructor throws (caught in `useMapInstance`) → show error message with browser upgrade guidance instead of blank canvas. Note: MapLibre GL JS requires WebGL2, not just WebGL1 — some older browsers support WebGL1 but not WebGL2.                                                                                        |
+| **Invalid URL hash**                 | Hash contains an unrecognized cca3 code (e.g., `#INVALID`) → `byCca3` lookup returns no match → hash is silently cleared, no country selected, default view shown.                                                                                                                                                                                 |
+| **Basemap tiles fail to load**       | Map canvas renders with country polygons from bundled data, but no underlying geography (no water, labels, roads). Functional but visually sparse.                                                                                                                                                                                                 |
+| **TopoJSON fails to load/parse**     | Map shows basemap only with no interactive country layers. Error state displayed: "Country data unavailable." Search and panel non-functional.                                                                                                                                                                                                     |
+| **Country ID has no metadata match** | Defensive only — rendered polygons are filtered to the canonical 195 (`loadCountryGeojson.ts`), all of which carry metadata, so this is not reachable via normal map clicks. Were it ever hit, the panel would show the world-atlas `properties.name` with "Limited data available." No crash. See [Data System — Unmatched Territories](data.md). |
+| **WebGL2 context lost mid-session**  | MapLibre fires `webglcontextlost` event. Display "Map temporarily unavailable" overlay. Attempt restore on `webglcontextrestored`.                                                                                                                                                                                                                 |
 
 ## Bundle Size Budget
 

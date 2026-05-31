@@ -13,17 +13,22 @@
 
 ## Basemap
 
-The basemap provides the underlying geographic context — landmasses, water, country labels, major geographic features. It comes from **OpenFreeMap**, a free vector tile service.
+The map offers two basemaps, switched from the header (the **satellite** button):
 
-### Style
+- **Satellite + 3D terrain (default).** The app boots into satellite mode (`App.tsx` — `useState(true)`). Imagery is **EOX Sentinel-2 Cloudless** raster tiles; a terrain DEM from **AWS Terrain Tiles** drives 3D relief (`map.setTerrain`, exaggeration 1.5) with the camera pitched 20° (`DEFAULT_PITCH`; flattened to 0 under `prefers-reduced-motion`). In this mode the OpenFreeMap vector layers are hidden, country borders are tinted for contrast against the imagery, and the country-fill opacity is lowered so imagery shows through.
+- **Vector map (toggle-off).** **OpenFreeMap** Positron — a clean, minimal, light vector style. In dark mode its layer colors are modified programmatically (see Dark Mode below).
 
-**Positron** — clean, minimal, light background. Used as the base style. In dark mode, basemap layer colors are modified programmatically (see Dark Mode below).
+All tile URLs are constants in `lib/mapStyles.ts` (`SATELLITE_TILES`, `TERRAIN_TILES`, `BASEMAP_STYLE`).
+
+### Satellite toggle
+
+`useSatelliteMode.ts` reacts to the `satellite` flag: it toggles `satellite-*` layer visibility, adds/removes terrain, hides/shows the vector base layers, re-tints borders, and adjusts fill opacity. The header button (`data-testid="satellite-toggle"`, with `aria-pressed`) flips the flag; `BasemapBanner.tsx` surfaces attribution and load state, and `probeBasemap.ts` checks tile availability. The choice is **not persisted** — every fresh visit starts in satellite mode (the persistence deferral is tracked in the roadmap). Covered by `e2e/satellite-default.spec.ts`.
 
 ### Resilience
 
-The basemap URL is a single constant in `lib/mapStyles.ts`. If OpenFreeMap becomes unavailable, switching to another provider (MapTiler, Stadia Maps, or any MapLibre-compatible style URL) requires changing one line.
+Each tile URL is a single constant in `lib/mapStyles.ts`. If a provider becomes unavailable, switching to another (MapTiler, Stadia Maps, or any MapLibre-compatible source) requires changing one line.
 
-If tiles fail to load, the map canvas still renders. Country boundary polygons (from bundled data) display regardless of basemap availability. The user sees countries but without the underlying geographic context.
+If tiles fail to load, the map canvas still renders. Country boundary polygons (from bundled data) display regardless of basemap availability. The user sees countries but without the underlying imagery / geographic context.
 
 ## Country Boundaries
 

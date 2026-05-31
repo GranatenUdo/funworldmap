@@ -1,6 +1,6 @@
 # Contributing to funworldmap
 
-Thanks for your interest. funworldmap is an interactive political world map — static frontend, no backend, no accounts. Contributions that keep it fast, accessible, and honest about its data are welcome.
+Thanks for your interest. funworldmap is an interactive political world map — a static frontend (plus a small optional analytics Worker in `cloudflare-worker/`), no user accounts. Contributions that keep it fast, accessible, and honest about its data are welcome.
 
 ## Local Development
 

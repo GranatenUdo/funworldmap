@@ -29,6 +29,7 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ```
 
 **Bottom sheet** behavior:
+
 - Appears when a country is selected
 - Two interactive states: **peek** (40% viewport height) and **full** (80% viewport height). These are starting values — adjust during implementation based on content fit and device testing.
 - Expand/collapse button (chevron) at the top toggles between states — accessible via keyboard and pointer
@@ -53,6 +54,7 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ```
 
 **Sidebar** behavior:
+
 - Slides in from the right when a country is selected
 - Overlays the map with a drop shadow — map stays full-width underneath
 - Fixed width: 380px, full height of viewport (starting value — adjust based on content fit)
@@ -62,19 +64,22 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ## Component Breakdown
 
 ### Header
-- Floats on top of the map with `position: fixed`
-- Semi-transparent background with blur: `backdrop-blur-sm bg-white/80 dark:bg-slate-900/80`
-- Contains: search bar (left/center) + theme toggle (right)
-- `pointer-events: none` on container, `pointer-events: auto` on interactive children
-- This prevents the header background from blocking map interactions in empty areas
+
+- Floats on top of the map with `position: fixed`; the container itself is transparent and `pointer-events: none`
+- Individual controls are floating "pills" — each its own blurred, semi-transparent element using the sand/dark design tokens (e.g. `bg-sand-100/90 dark:bg-dark-400/80`), with `pointer-events: auto`
+- Contains (left → right): the **funworldmap** wordmark (desktop only), the search bar, a **Play** button (opens the launcher), a **satellite / map** toggle (`aria-pressed`), and the theme toggle
+- The transparent container plus per-control pointer-events lets map interactions pass through the header's empty areas
+- While a game is active the search bar and Play button are hidden; while the launcher is open the header unmounts entirely
 
 ### Map Controls
+
 - MapLibre's built-in `NavigationControl` (zoom +/−, compass)
-- Custom "Reset view" button — resets zoom and center to defaults (longitude 0, latitude 20, zoom 2). If a country is selected, deselects it, closes the panel, and clears the URL hash.
+- Custom "Reset view" button — resets the camera to defaults (longitude 0, latitude 20, zoom 1.8, pitch 20°). If a country is selected, deselects it, closes the panel, and clears the URL hash.
 - Positioned bottom-right on desktop
 - Repositioned to avoid bottom sheet overlap on mobile
 
 ### Country Panel
+
 - Same component renders as sidebar (desktop) or bottom sheet (mobile)
 - `useMediaQuery` hook determines which layout to use. If the viewport crosses the 1024px breakpoint while a country panel is open, the panel transitions between sidebar and bottom sheet layout. The panel stays open with the same content — only the presentation changes.
 - CSS transitions for slide-in/slide-out animation
@@ -83,12 +88,14 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ### Information Displayed
 
 **Primary** (always visible in peek state):
+
 - Flag (bundled SVG)
 - Country name (common + official if different)
 - Capital(s) — if a country has multiple capitals (e.g., South Africa: Pretoria, Cape Town, Bloemfontein), display them comma-separated
 - Region / Subregion
 
 **Secondary** (visible in full/expanded state):
+
 - Population (locale-formatted)
 - Area (km²)
 - Government type
@@ -101,16 +108,22 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 
 **Source Attribution**: Every data field has a small 'i' icon. On desktop, hover or focus shows a tooltip with the source name and link (e.g., "Source: CIA World Factbook"). On touch devices, tapping the 'i' icon toggles the tooltip open/closed (since hover is not available). The tooltip is dismissed by tapping elsewhere. See [Data System — UI Attribution](data.md).
 
+### Compare
+
+From an open country panel, a **Compare** action puts search into "pick a country to compare" mode (placeholder "Choose country to compare…"; entered via `enterComparePicking` in `App.tsx`, available only while a country is selected). Choosing a second country opens `CompareCountryPanel` — two `CountryColumn`s side by side. Unlike the single-country panel, fields here are not individually source-tagged; a shared footer (`data-testid="compare-sources"`) lists the comparison's data sources. On the map, both countries are highlighted (A = coral, B = teal-dim) while the other countries' borders are dimmed; exiting compare (Escape or the exit control) clears the second country and restores the borders (`useCompareViewDimming.ts`). Covered by `e2e/compare-view-dimming.spec.ts` and `e2e/compare-source-attribution.spec.ts`.
+
 ## Theme System
 
 Three-state theme: **light**, **dark**, and **system** (follow OS preference).
 
 ### Detection Priority
+
 1. User's manual choice (stored in `localStorage`)
 2. System preference (`prefers-color-scheme`)
 3. Default: system
 
 ### Implementation
+
 - `<html>` gets class `dark` when dark mode resolves to active
 - Tailwind's `dark:` variant applies dark styles throughout
 - Basemap layer colors darkened via MapLibre `setPaintProperty` (see [Map Rendering — Dark Mode](map-rendering.md))
@@ -118,21 +131,33 @@ Three-state theme: **light**, **dark**, and **system** (follow OS preference).
 - `transition-colors duration-200` prevents jarring switches
 
 ### Toggle
+
 - Three-state button in the header: sun (light) → moon (dark) → monitor (system) → sun ...
 - `aria-label` updates to reflect current state ("Switch to dark mode", "Switch to system theme", etc.)
 
 ## Deep Linking
 
 The URL hash reflects the selected country using cca3 codes:
+
 - Select France → URL becomes `funworldmap.com/#FRA`
 - Open `funworldmap.com/#FRA` → map flies to France, panel opens
 
 This enables:
+
 - Sharing links to specific countries
 - Browser back/forward navigation between selections
 - Bookmarking favorite countries
 
 Implementation: `hashchange` event listener + initial hash parse on load. The cca3 code from the hash is resolved to a ccn3 numeric code for map feature lookup via the bidirectional lookup table (see [Data System — Bidirectional Lookup](data.md)).
+
+### Game routes
+
+The hash is also the router for game state, parsed by `lib/hashState.ts`:
+
+- `writeHash` produces `#game/<modeId>` (e.g. `#game/country-pinning`); `parseHash` also tolerates a trailing `/play` on inbound links
+- Country selection (`#FRA`) and game routes share the same hash channel; the app dispatches on the prefix
+
+So the URL hash is the single source of truth for both country selection and game state.
 
 ### Browser History
 
