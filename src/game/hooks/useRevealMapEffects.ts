@@ -2,7 +2,7 @@ import { useEffect, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryLike, GameSession, GuessInput } from '../shared/types'
 import { LAYER } from '../../lib/mapLayers'
-import { REVEAL_CORRECT, REVEAL_WRONG } from '../../lib/mapPalette'
+import { REVEAL_CORRECT, REVEAL_WRONG, TEAL } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
 import { computeRevealAnimationPlan } from '../shared/revealAnimation'
 import { isCityGuessing } from '../shared/modePredicates'
@@ -24,6 +24,30 @@ const ARC_SEGMENTS = 64
  *  invisible. */
 const TRANSPARENT = 'rgba(0,0,0,0)'
 
+/** Marker fill is role-driven so the two city-reveal markers are always
+ *  distinguishable — even when a near-perfect guess lands on top of the city
+ *  and the connecting arc is too short to see. The player's guess is teal; the
+ *  actual city (and every country-reveal marker) falls through to amber. */
+const MARKER_COLOR_BY_ROLE: maplibregl.ExpressionSpecification = [
+  'match',
+  ['get', 'role'],
+  'guess',
+  TEAL,
+  REVEAL_WRONG,
+]
+
+type MarkerRole = 'target' | 'guess'
+
+/** A reveal-marker Point feature tagged with its role, which drives the
+ *  role-based fill (MARKER_COLOR_BY_ROLE). */
+function markerFeature(coordinates: [number, number], role: MarkerRole) {
+  return {
+    type: 'Feature' as const,
+    geometry: { type: 'Point' as const, coordinates },
+    properties: { role },
+  }
+}
+
 function ensureRevealSources(map: maplibregl.Map): void {
   if (!map.getSource(REVEAL_MARKER_SOURCE)) {
     map.addSource(REVEAL_MARKER_SOURCE, {
@@ -36,7 +60,7 @@ function ensureRevealSources(map: maplibregl.Map): void {
       source: REVEAL_MARKER_SOURCE,
       paint: {
         'circle-radius': 10,
-        'circle-color': REVEAL_WRONG,
+        'circle-color': MARKER_COLOR_BY_ROLE,
         'circle-stroke-color': '#ffffff',
         'circle-stroke-width': 2,
       },
@@ -123,16 +147,9 @@ export function useRevealMapEffects({
         try {
           ensureRevealSources(map)
           const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
-          map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
           markerSrc.setData({
             type: 'FeatureCollection',
-            features: [
-              {
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: reveal.targetCentroid },
-                properties: {},
-              },
-            ],
+            features: [markerFeature(reveal.targetCentroid, 'target')],
           })
         } catch (err) {
           console.warn('reveal marker skipped:', err)
@@ -158,18 +175,16 @@ export function useRevealMapEffects({
       const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
       const lineSrc = map.getSource(REVEAL_LINE_SOURCE) as maplibregl.GeoJSONSource
 
-      // Target marker goes in first so it is visible from t=0.
-      map.setPaintProperty(REVEAL_MARKER_LAYER, 'circle-color', REVEAL_WRONG)
-      markerSrc.setData({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: { type: 'Point', coordinates: plan.to },
-            properties: {},
-          },
-        ],
-      })
+      // Markers go in first so they are visible from t=0. For city reveals we
+      // also drop a marker at the player's guess (plan.from === clickedPoint),
+      // so the click is always visible even when it sits on top of the target
+      // and the connecting arc is too short to see. Country reveals keep the
+      // single target marker.
+      const markerFeatures = [markerFeature(plan.to, 'target')]
+      if (reveal.kind === 'point') {
+        markerFeatures.push(markerFeature(plan.from, 'guess'))
+      }
+      markerSrc.setData({ type: 'FeatureCollection', features: markerFeatures })
 
       // Full arc loaded ONCE — line-gradient masks the visible portion per
       // frame, so no per-frame setData / tile rebuild.
@@ -257,7 +272,8 @@ export function useRevealMapEffects({
       }
       // Always clear marker + line sources. Both country wrong-guesses (when
       // clickedCca3 is known) and city reveals draw these via
-      // computeRevealAnimationPlan, so the cleanup is mode-neutral.
+      // computeRevealAnimationPlan, so the cleanup is mode-neutral — even though
+      // marker *population* is point-specific (only city reveals add a guess).
       clearRevealSources(map)
     }
   }, [session.status, session.lastOutcome, byCca3, mapRef])

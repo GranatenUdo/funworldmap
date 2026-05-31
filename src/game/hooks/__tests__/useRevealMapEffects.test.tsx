@@ -41,6 +41,25 @@ function renderRevealHook(args: RevealArgs) {
   return renderHook(() => useRevealMapEffects(args))
 }
 
+/**
+ * The marker source and the line source share the same `setData` spy (the fake
+ * `getSource` returns one stub). Filter to the calls that carry Point features
+ * so marker assertions ignore the LineString arc and the empty-clear calls.
+ */
+function pointMarkerSetDataCalls(fake: ReturnType<typeof createFakeMapRef>) {
+  return fake.calls.setData.mock.calls
+    .map(
+      (c) =>
+        c[0] as {
+          features?: Array<{
+            geometry?: { type?: string; coordinates?: [number, number] }
+            properties?: { role?: string }
+          }>
+        },
+    )
+    .filter((d) => d.features?.some((f) => f.geometry?.type === 'Point'))
+}
+
 describe('useRevealMapEffects', () => {
   beforeEach(() => {
     // Always reset matchMedia to non-reducing — individual tests can override
@@ -221,6 +240,54 @@ describe('useRevealMapEffects', () => {
     expect(fake.calls.jumpTo.mock.calls.length).toBeLessThanOrEqual(1)
   })
 
+  it('city wrong-guess reveal renders a guess marker at the clicked point alongside the target', () => {
+    const fake = createFakeMapRef()
+    // Wrong guess with a known clicked point. The reveal must mark BOTH the
+    // actual city and where the user clicked — otherwise a near-perfect guess
+    // (tiny arc) leaves the guess invisible.
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    const markerCalls = pointMarkerSetDataCalls(fake)
+    expect(markerCalls.length).toBeGreaterThanOrEqual(1)
+    const features = markerCalls.at(-1)!.features!
+    const target = features.find((f) => f.properties?.role === 'target')
+    const guess = features.find((f) => f.properties?.role === 'guess')
+    expect(target?.geometry?.coordinates).toEqual([2.3522, 48.8566]) // actual city (Paris)
+    expect(guess?.geometry?.coordinates).toEqual([-10, 40]) // where the user clicked
+  })
+
+  it('country wrong-guess reveal renders only the target marker (no guess marker)', () => {
+    const fake = createFakeMapRef()
+    // A known clicked country yields an animation plan, but the clicked location
+    // is conveyed by the border highlight + arc — only city (point) reveals add
+    // a second guess dot. This pins the reveal.kind === 'point' guard.
+    const reveal = makeCountryReveal({
+      correct: false,
+      targetCca3: 'FRA',
+      clickedCca3: 'USA',
+      clickedName: 'United States',
+      distanceKm: 7000,
+    })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'country-pinning',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+
+    const markerCalls = pointMarkerSetDataCalls(fake)
+    expect(markerCalls.length).toBeGreaterThanOrEqual(1)
+    const features = markerCalls.at(-1)!.features!
+    expect(features).toHaveLength(1)
+    expect(features[0].properties?.role).toBe('target')
+  })
+
   it('calls setData on the line source exactly once with the full tessellated arc', () => {
     const fake = createFakeMapRef()
     const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
@@ -386,10 +453,10 @@ describe('useRevealMapEffects', () => {
 })
 
 describe('useRevealMapEffects — city reveal', () => {
-  it('round-end geometry effect resets circle-color to REVEAL_WRONG before painting target marker', () => {
+  it('city skip reveal renders a single target marker (no guess)', () => {
     const fake = createFakeMapRef()
     // City skip-only path: clickedPoint=null, distanceKm=MAX. plan returns null,
-    // round-end effect renders the target marker only (no arc).
+    // round-end effect renders the target marker only (no arc, no guess).
     const reveal = makePointReveal({ clickedPoint: null, distanceKm: 20015 })
     const session = makeSession({
       status: 'round-ended',
@@ -398,11 +465,10 @@ describe('useRevealMapEffects — city reveal', () => {
     })
     renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
 
-    // Reset call must precede or accompany the target-marker setData.
-    const resetCall = fake.calls.setPaintProperty.mock.calls.find(
-      (c) =>
-        c[0] === 'game-reveal-marker-layer' && c[1] === 'circle-color' && c[2] === REVEAL_WRONG,
-    )
-    expect(resetCall).toBeDefined()
+    const markerCalls = pointMarkerSetDataCalls(fake)
+    expect(markerCalls.length).toBeGreaterThanOrEqual(1)
+    const features = markerCalls.at(-1)!.features!
+    expect(features).toHaveLength(1)
+    expect(features[0].properties?.role).toBe('target')
   })
 })
