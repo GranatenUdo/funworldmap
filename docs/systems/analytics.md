@@ -52,38 +52,44 @@ Analytics Engine stores positional arrays: `indexes[]`, `blobs[]` (strings), `do
 
 **Indexes:**
 
-| Position | Meaning | Example |
-|---|---|---|
-| `index1` | event name | `"daily_completed"` |
+| Position | Meaning    | Example          |
+| -------- | ---------- | ---------------- |
+| `index1` | event name | `"free_started"` |
 
 **Blobs (strings):**
 
-| Position | SQL name | Meaning | Example |
-|---|---|---|---|
-| 0 | `blob1` | event name (duplicated for convenience) | `"daily_completed"` |
-| 1 | `blob2` | `props.mode` | `"country-pinning"` / `"city-guessing"` / `""` |
-| 2 | `blob3` | `props.path` (launcher_dismissed path) | `"link"` / `"search"` / `"escape"` / `"card"` / `""` |
-| 3 | `blob4` | `props.method` (share method) | `"share-api"` / `"clipboard-text"` / `"clipboard-link"` / `""` |
-| 4 | `blob5` | `props.dateKind` | `"today"` / `"past"` / `"future"` / `"invalid"` / `""` |
-| 5 | `blob6` | `props.outcome` | `"played"` / `"reveal"` / `"redirect"` / `""` |
-| 6 | `blob7` | `props.cellKind` | `"played"` / `"unplayed-in-window"` / `"rolled-off"` / `""` |
+| Position | SQL name | Meaning                                                                   | Example                                                              |
+| -------- | -------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| 0        | `blob1`  | event name (duplicated for convenience)                                   | `"free_started"`                                                     |
+| 1        | `blob2`  | `props.mode`                                                              | `"country-pinning"` / `"city-guessing"` / `""`                       |
+| 2        | `blob3`  | `props.path` (launcher_dismissed path)                                    | `"search"` / `"escape"` / `"card"` / `"backdrop"` / `"close"` / `""` |
+| 3        | `blob4`  | _reserved_ — legacy daily `props.method`; no current event populates it   | `""`                                                                 |
+| 4        | `blob5`  | _reserved_ — legacy daily `props.dateKind`; no current event populates it | `""`                                                                 |
+| 5        | `blob6`  | _reserved_ — legacy daily `props.outcome`; no current event populates it  | `""`                                                                 |
+| 6        | `blob7`  | _reserved_ — legacy daily `props.cellKind`; no current event populates it | `""`                                                                 |
 
 **Doubles (numbers):**
 
-| Position | SQL name | Meaning |
-|---|---|---|
-| 0 | `double1` | `props.dateAge` (days from today, 0 = today) |
-| 1 | `double2` | `props.scoreBucket` (0–4 quintile) |
-| 2 | `double3` | `props.bestScoreBucket` |
-| 3 | `double4` | `props.attemptIndex` (0-indexed) |
-| 4 | `double5` | `props.attemptsUsed` |
-| 5 | `double6` | `props.days` (streak milestone value: 3, 7, 14, 30, 100) |
+| Position | SQL name  | Meaning                                                                             |
+| -------- | --------- | ----------------------------------------------------------------------------------- |
+| 0        | `double1` | _reserved_ — legacy daily `props.dateAge`; no current event populates it (always 0) |
+| 1        | `double2` | _reserved_ — legacy daily `props.scoreBucket`; always 0                             |
+| 2        | `double3` | _reserved_ — legacy daily `props.bestScoreBucket`; always 0                         |
+| 3        | `double4` | _reserved_ — legacy daily `props.attemptIndex`; always 0                            |
+| 4        | `double5` | _reserved_ — legacy daily `props.attemptsUsed`; always 0                            |
+| 5        | `double6` | _reserved_ — legacy daily streak `props.days`; always 0                             |
 
-Unused slots for a given event carry empty strings / zero. Queries filter by `index1 = '<event_name>'` then project the columns that matter.
+The daily-puzzle feature was removed; its blob/double slots are kept **reserved** (never reused for new semantics) per the migration policy below. Current events populate only `index1`/`blob1` (name), `blob2` (mode, for `free_started`), and `blob3` (path, for `launcher_dismissed`). Queries filter by `index1 = '<event_name>'` then project the columns that matter.
 
 ## Event catalog
 
-See the §Analytics section of `docs/superpowers/specs/2026-04-21-retention-program-v1-design.md` for the canonical event list, props, and emission sites.
+The surviving custom events (see `src/lib/analytics.ts` `EventSchema` and `cloudflare-worker/index.ts` `KNOWN_EVENTS`):
+
+| Event                | Props                                                               | Emission site                                                     |
+| -------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `free_started`       | `{ mode: ModeId }`                                                  | hash router boots a `#game/<mode>` round (`useHashGameRouter.ts`) |
+| `launcher_dismissed` | `{ path: 'search' \| 'escape' \| 'card' \| 'backdrop' \| 'close' }` | launcher closed (`Launcher.tsx` / `App.tsx`)                      |
+| `header_cta_clicked` | `{}`                                                                | header **Play** button opens the launcher (`Header.tsx`)          |
 
 ## Migration notes
 
