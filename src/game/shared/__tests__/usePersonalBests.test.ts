@@ -38,8 +38,8 @@ describe('usePersonalBests', () => {
     expect(second.result.current.best).toEqual({ bestScore: 300, bestStreak: 7, gamesPlayed: 1 })
   })
 
-  it('ignores corrupt localStorage content', () => {
-    localStorage.setItem('funworldmap-game-country-pinning-bests', 'not-json')
+  it('falls back to zeros when the v2 key holds corrupt JSON', () => {
+    localStorage.setItem('funworldmap-game-country-pinning-bests-v2', 'not-json')
     const { result } = renderHook(() => usePersonalBests('country-pinning'))
     expect(result.current.best).toEqual({ bestScore: 0, bestStreak: 0, gamesPlayed: 0 })
   })
