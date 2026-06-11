@@ -61,7 +61,6 @@ export default defineConfig({
         'game-city-guessing.spec.ts',
         'game-over-mode-switch.spec.ts',
         'compare-view-dimming.spec.ts',
-        'reduced-motion-game-start.spec.ts',
         'reveal-animation.spec.ts',
         'reveal-animation-reduced-motion.spec.ts',
         'tutorial-first-click.spec.ts',
@@ -96,6 +95,7 @@ export default defineConfig({
       // Documented in docs/superpowers/notes/2026-05-05-flake-watch.md and
       // docs/roadmap.md § "Flaky-on-free-CI specs (need GPU runner)". Removing
       // this list once we move to a self-hosted GPU runner is the exit criterion.
+      // Tracking issue: #106
       testIgnore: isCi
         ? [
             'label-contrast.spec.ts',

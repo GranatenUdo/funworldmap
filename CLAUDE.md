@@ -18,7 +18,7 @@ When you start a non-trivial change, write the spec/plan first; commit before co
 
 ## Writing e2e tests that don't flake on CI
 
-`e2e/` runs against four Playwright projects: `chromium` (real-GPU-backed ANGLE on Linux), `mobile-chromium`, `mobile-webkit`, `desktop-firefox-touch`. The `chromium` project was consolidated from a previous `chromium` + `chromium-gpu` split when Software ANGLE was dropped on 2026-05-02 — it had been the documented largest contributor to the chromium e2e flake regression (see `docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`). The rules below exist because every test that violates them has caused a CI flake.
+`e2e/` runs against four Playwright projects: `chromium` (ANGLE — real GPU locally; GitHub-hosted CI has no GPU and falls back to software rendering), `mobile-chromium`, `mobile-webkit`, `desktop-firefox-touch`. The `chromium` project was consolidated from a previous `chromium` + `chromium-gpu` split when Software ANGLE was dropped on 2026-05-02 — it had been the documented largest contributor to the chromium e2e flake regression (see `docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`). The rules below exist because every test that violates them has caused a CI flake.
 
 ### Forbidden patterns
 
@@ -121,7 +121,7 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 
 ### Before adding a new e2e test
 
-1. **All tests run in the consolidated `chromium` project** (real-GPU-backed ANGLE). Add your spec's filename to the `chromium` `testMatch` in `playwright.config.ts`. If it is also appropriate for mobile or Firefox touch, add it to those projects too.
+1. **All tests run in the consolidated `chromium` project** (ANGLE — real GPU locally; GitHub-hosted CI has no GPU and falls back to software rendering). Add your spec's filename to the `chromium` `testMatch` in `playwright.config.ts`. If it is also appropriate for mobile or Firefox touch, add it to those projects too.
 2. **Does an existing helper cover the readiness wait?** Check `e2e/helpers.ts` first. If you're tempted to write `await page.waitForTimeout(...)`, look for the helper. If none exists for your case, _add_ one to `helpers.ts` rather than inlining the wait.
 3. **Are you about to use `force: true`?** Stop. Find what's blocking the click and wait for it to be gone instead.
 4. **Does the test depend on animations?** If yes, the component needs a `data-animation-state` (or similar) signal — don't guess durations.
@@ -152,6 +152,12 @@ Rules:
 2. **`test.fixme` is for "we will fix this", not "we accept this is broken forever".** A quarantine without a tracking issue is `test.skip`, which is a stronger signal of permanent disable — use that only when removing the test outright.
 3. **Conditional on `process.env.CI` only**, not on browser/project. The test should run in dev so a developer hitting the bug path locally still sees the failure.
 4. **Don't add `continue-on-error`** to the workflow — that silently allows CI to be perpetually red. `test.fixme` makes the suppression explicit and visible in `npm run test:e2e` output ("3 fixme") rather than hidden in a workflow attribute.
+
+**Beyond `test.fixme`:** ten whole specs are excluded on CI via the `chromium`
+project's `testIgnore` (no GPU on free runners — tracking issue #106), and CI runs
+only the chromium project, so the three mobile-only specs don't run there either.
+**13 of 38 specs are local-only.** See `docs/systems/testing.md` § "What runs in
+CI" before assuming CI covered your change.
 
 ### Reference: the 2026-04-28 flake regression
 
