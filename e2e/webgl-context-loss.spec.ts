@@ -20,17 +20,6 @@ test.describe('WebGL context-loss recovery', () => {
   })
 
   test('retry button recovers the map after webgl-lost', async ({ page }) => {
-    // Quarantined pending tracking issue #101 — overlay stays visible after
-    // reload fallback. data-map-loaded re-appears (reload path fires) but
-    // map-error-overlay remains attached and visible. The recovery path needs
-    // investigation: either the app re-triggers webgl-lost on the freshly
-    // loaded page before the test assertion runs, or the overlay is not
-    // unmounted on successful reload. Failing 10/10 locally and on CI.
-    test.fixme(
-      !!process.env.CI,
-      'tracking issue: https://github.com/tobiasens/funworldmap/issues/101',
-    )
-
     await gotoAndWaitForMap(page, '/')
     await ensureLauncherDismissed(page)
     await waitForCountryTilesRendered(page)
@@ -41,9 +30,11 @@ test.describe('WebGL context-loss recovery', () => {
 
     await page.getByTestId('map-error-retry').click()
 
-    // retryWebGL() calls restoreContext(); if the context doesn't restore
-    // within 1 s the app falls back to a full reload. Both paths converge on
-    // a loaded map with no error overlay — assert that end state.
+    // retryWebGL() calls restoreContext() on the WEBGL_lose_context extension
+    // captured at init (getExtension() returns null on a lost context, so it
+    // cannot be fetched at retry time); if the context doesn't restore within
+    // 1 s the app falls back to a full reload. Both paths converge on a loaded
+    // map with no error overlay — assert that end state.
     await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
     await expect(page.getByTestId('map-error-overlay')).not.toBeVisible()
   })
