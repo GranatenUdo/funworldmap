@@ -101,9 +101,6 @@ export type PersonalBest = {
 // ---- Mode contract ----
 export type GameMode = {
   id: ModeId
-  title: string
-  description: string
-  hashSegment: string
   maxRounds: number | null
   HudComponent: React.FC<{ session: GameSession }>
   nextRound(used: Set<string>): RoundSpec

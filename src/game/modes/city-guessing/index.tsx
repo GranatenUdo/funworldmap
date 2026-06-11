@@ -2,7 +2,6 @@ import { createContext, useContext } from 'react'
 import type { CityLike, GameMode } from '../../shared/types'
 import { scoreCityGuess } from './scoring'
 import { nextRound as pickNextRound } from './roundGenerator'
-import { MESSAGES } from './messages'
 import CityGuessingHud from './CityGuessingHud'
 
 export const CITY_GUESSING_MAX_ROUNDS = 10
@@ -26,9 +25,6 @@ const CityGuessingHudWrapper: GameMode['HudComponent'] = ({ session }) => {
 export function getCityGuessingMode(pool: CityLike[]): GameMode {
   return {
     id: 'city-guessing',
-    title: MESSAGES.title,
-    description: MESSAGES.description,
-    hashSegment: 'city-guessing',
     maxRounds: CITY_GUESSING_MAX_ROUNDS,
     HudComponent: CityGuessingHudWrapper,
     nextRound: (used) => pickNextRound(used, pool),

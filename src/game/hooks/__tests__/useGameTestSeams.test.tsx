@@ -23,9 +23,6 @@ import type { GameMode, GuessInput } from '../../shared/types'
 function makeMode(overrides: Partial<GameMode> = {}): GameMode {
   return {
     id: 'country-pinning',
-    title: 'Country Pinning',
-    description: '',
-    hashSegment: 'country-pinning',
     maxRounds: null,
     HudComponent: () => null,
     nextRound: () => ({

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { listModes } from '../game/modes'
+import { MODE_IDS } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
 import type { ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
@@ -24,8 +24,6 @@ function focusSearchInput(): void {
 
 export function Launcher({ onDismiss }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
-  // Static two-element list; cheap to call per render, no memo needed.
-  const modes = listModes()
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
 
   const dismissWithCloseButton = useCallback(() => {
@@ -164,12 +162,12 @@ export function Launcher({ onDismiss }: Props) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          {modes.map((m, i) => (
+          {MODE_IDS.map((id, i) => (
             <div
-              key={m.id}
+              key={id}
               style={{ animation: `launcher-card-in 220ms ease-out ${120 + i * 60}ms both` }}
             >
-              <LauncherModeCard modeId={m.id} onPlay={() => startFree(m.id)} />
+              <LauncherModeCard modeId={id} onPlay={() => startFree(id)} />
             </div>
           ))}
         </div>
