@@ -153,11 +153,7 @@ Rules:
 3. **Conditional on `process.env.CI` only**, not on browser/project. The test should run in dev so a developer hitting the bug path locally still sees the failure.
 4. **Don't add `continue-on-error`** to the workflow — that silently allows CI to be perpetually red. `test.fixme` makes the suppression explicit and visible in `npm run test:e2e` output ("3 fixme") rather than hidden in a workflow attribute.
 
-**Beyond `test.fixme`:** ten whole specs are excluded on CI via the `chromium`
-project's `testIgnore` (no GPU on free runners — tracking issue #106), and CI runs
-only the chromium project, so the three mobile-only specs don't run there either.
-**13 of 38 specs are local-only.** See `docs/systems/testing.md` § "What runs in
-CI" before assuming CI covered your change.
+**Beyond `test.fixme`:** ten whole specs are excluded on CI via the `chromium` project's `testIgnore` (no GPU on free runners — tracking issue #106), and CI runs only the chromium project, so the three mobile-only specs don't run there either. **13 of 38 specs are local-only.** See `docs/systems/testing.md` § "What Runs in CI" before assuming CI covered your change.
 
 ### Reference: the 2026-04-28 flake regression
 

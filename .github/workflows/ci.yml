@@ -55,11 +55,11 @@ jobs:
         # cross-browser baseline before re-adding to the CI matrix.
         # See `docs/roadmap.md` § "Cross-browser CI failures from PR #36".
         project: [chromium]
-        # 4-way sharding: split the chromium suite (~215 test cases) across 4 parallel
-        # runners. Each shard runs ~55 test cases in ~7 min wall-clock instead of
-        # one runner doing all 215 in ~28 min. Reduces per-shard accumulated
-        # cold-WebGL pressure; flaky timeouts have more headroom because the
-        # shard finishes before the runner's per-job time pressure builds up.
+        # 4-way sharding: split the CI-active chromium suite (~100 test cases
+        # after testIgnore) across 4 parallel runners, ~25 test cases per
+        # shard. Reduces per-shard accumulated cold-WebGL pressure; flaky
+        # timeouts have more headroom because each shard finishes before the
+        # runner's per-job time pressure builds up.
         # Per Playwright docs (https://playwright.dev/docs/test-sharding),
         # fullyParallel=true (already set in playwright.config.ts) distributes
         # individual TESTS not files, so shards are balanced.
@@ -84,8 +84,7 @@ jobs:
       # ubuntu-latest there's no GPU, so without this Chromium falls back to
       # SwiftShader (its built-in software renderer), which is 5-10x slower
       # than llvmpipe for WebGL2 paths and was the documented cause of cold-
-      # WebGL CI flakes on PR #36. Mesa/llvmpipe is markedly faster than
-      # SwiftShader for WebGL2 paths.
+      # WebGL CI flakes on PR #36.
       - name: Install Mesa software OpenGL drivers
         run: sudo apt-get install -y mesa-utils libgl1-mesa-dri libglu1-mesa libegl1
 

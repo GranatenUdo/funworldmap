@@ -20,7 +20,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      // Real-GPU-backed ANGLE renderer. Software ANGLE was dropped 2026-05-02
+      // ANGLE renderer — real GPU locally; software fallback on GitHub-hosted CI (see the 2026-05-05 note below). Software ANGLE was dropped 2026-05-02
       // per docs/superpowers/notes/2026-04-28-flake-regression-analysis.md
       // recommendation D: it was the documented largest single contributor
       // to the flake rate and ran ~8 min for tests that don't need GPU at all.
