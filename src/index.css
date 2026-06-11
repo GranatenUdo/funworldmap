@@ -135,7 +135,6 @@ body {
   }
 }
 
-
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -172,7 +171,6 @@ body {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 
 /* Country name tooltip — positioned by JS, not React */
 .country-tooltip {

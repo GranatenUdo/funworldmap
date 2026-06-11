@@ -8,4 +8,4 @@ export const CORAL_LIGHT = '#fb7185'
 /** Reveal-feedback palette — useRevealMapEffects colors the target-country
  *  border by outcome; the reveal arc and target marker are amber. */
 export const REVEAL_CORRECT = '#22c55e' // green-500 — correct-guess border
-export const REVEAL_WRONG = '#f59e0b' // amber-500 — wrong-guess border, reveal arc + markers
+export const REVEAL_WRONG = '#f59e0b' // amber-500 — wrong-guess border, reveal arc + target marker

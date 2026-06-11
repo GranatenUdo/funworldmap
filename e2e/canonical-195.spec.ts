@@ -2,7 +2,8 @@ import { test, expect } from '@playwright/test'
 import { ensureLauncherDismissed, waitForAppReady } from './helpers'
 
 test.describe('canonical-195 dataset reduction', () => {
-  // The launcher subtitle intentionally carries no country count; the canonical-195 guarantee is asserted against the bundled data and rendered map layers below.
+  // The launcher subtitle intentionally carries no country count; the canonical-195
+  // guarantee is asserted against the bundled dataset via search below.
 
   test('Palestine is searchable', async ({ page }) => {
     await page.goto('/')
