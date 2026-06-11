@@ -78,11 +78,15 @@ export function CountryColumn({
           <CompareField label="Government">{country.governmentType}</CompareField>
         )}
         {Object.keys(country.languages).length > 0 && (
-          <CompareField label="Languages">{Object.values(country.languages).join(', ')}</CompareField>
+          <CompareField label="Languages">
+            {Object.values(country.languages).join(', ')}
+          </CompareField>
         )}
         {Object.keys(country.currencies).length > 0 && (
           <CompareField label="Currencies">
-            {Object.values(country.currencies).map((c) => `${c.name} (${c.symbol})`).join(', ')}
+            {Object.values(country.currencies)
+              .map((c) => `${c.name} (${c.symbol})`)
+              .join(', ')}
           </CompareField>
         )}
         <CompareField label="UN Member">{country.unMember ? 'Yes' : 'No'}</CompareField>
@@ -94,13 +98,26 @@ export function CountryColumn({
             <div className="flex flex-wrap gap-1">
               {country.borders.slice(0, 6).map((code) => {
                 const neighbor = byCca3.get(code)
+                if (!neighbor) {
+                  // No canonical match (e.g. ESH, HKG) — render inert, matching
+                  // SingleCountryPanel. Clicking would write an unresolvable
+                  // hash, clearing the selection and closing the panel.
+                  return (
+                    <span
+                      key={code}
+                      className="px-2 py-0.5 text-[11px] rounded-full bg-sand-200 dark:bg-dark-300 text-sand-600 dark:text-dark-100"
+                    >
+                      {code}
+                    </span>
+                  )
+                }
                 return (
                   <button
                     key={code}
                     onClick={() => onSelect(code)}
                     className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-full border border-teal/20 dark:border-teal-light/15 bg-teal/5 dark:bg-teal-light/5 text-teal-dim dark:text-teal-light hover:bg-teal/12 dark:hover:bg-teal-light/12 transition-colors"
                   >
-                    {neighbor ? neighbor.name.common : code}
+                    {neighbor.name.common}
                   </button>
                 )
               })}
