@@ -20,7 +20,12 @@ const REGION_COLORS: Record<string, string> = {
   Antarctic: 'bg-slate-100 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
 
-export default function SearchBar({ countries, comparePickingMode, onSelect, onNonEmptyChange }: Props) {
+export default function SearchBar({
+  countries,
+  comparePickingMode,
+  onSelect,
+  onNonEmptyChange,
+}: Props) {
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(-1)
   const [isOpen, setIsOpen] = useState(false)
@@ -63,7 +68,7 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
         case 'Enter':
           e.preventDefault()
           if (activeIndex >= 0 && results[activeIndex]) {
-            selectResult(results[activeIndex].country)
+            selectResult(results[activeIndex])
           }
           break
         case 'Escape':
@@ -98,7 +103,12 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
         stroke="currentColor"
         viewBox="0 0 24 24"
       >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        />
       </svg>
 
       <input
@@ -137,7 +147,12 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
           data-testid="search-clear"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       )}
@@ -151,13 +166,13 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
           data-testid="search-results"
         >
           {results.length > 0
-            ? results.map((result, index) => (
+            ? results.map((country, index) => (
                 <li
-                  key={result.country.cca3}
+                  key={country.cca3}
                   id={`search-result-${index}`}
                   role="option"
                   aria-selected={index === activeIndex}
-                  onClick={() => selectResult(result.country)}
+                  onClick={() => selectResult(country)}
                   onMouseEnter={() => setActiveIndex(index)}
                   className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer text-sm transition-colors duration-75 ${
                     index === activeIndex
@@ -166,34 +181,38 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
                   }`}
                 >
                   <img
-                    src={result.country.flag}
+                    src={country.flag}
                     alt=""
                     className="w-10 h-7 object-cover rounded shadow-sm shrink-0"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="font-medium text-sand-900 dark:text-dark-50 truncate">
-                      {result.country.name.common}
+                      {country.name.common}
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      {result.country.capital.length > 0 && (
+                      {country.capital.length > 0 && (
                         <span className="text-xs text-sand-500 dark:text-dark-100 truncate">
-                          {result.country.capital[0]}
+                          {country.capital[0]}
                         </span>
                       )}
                       <span
                         data-testid="region-badge"
                         className={`text-[11px] font-medium px-1.5 py-0.5 rounded-full ${
-                          REGION_COLORS[result.country.region] || 'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
+                          REGION_COLORS[country.region] ||
+                          'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
                         }`}
                       >
-                        {result.country.region}
+                        {country.region}
                       </span>
                     </div>
                   </div>
                 </li>
               ))
             : query.trim().length > 0 && (
-                <li className="px-4 py-3 text-sm text-sand-500 dark:text-dark-100" data-testid="search-no-results">
+                <li
+                  className="px-4 py-3 text-sm text-sand-500 dark:text-dark-100"
+                  data-testid="search-no-results"
+                >
                   No countries found for &ldquo;{query}&rdquo;
                 </li>
               )}
@@ -204,9 +223,15 @@ export default function SearchBar({ countries, comparePickingMode, onSelect, onN
                 data-testid="search-keyboard-hint"
                 aria-hidden="true"
               >
-                <span><kbd>↓↑</kbd> Select</span>
-                <span><kbd>↵</kbd> Confirm</span>
-                <span><kbd>Esc</kbd> Close</span>
+                <span>
+                  <kbd>↓↑</kbd> Select
+                </span>
+                <span>
+                  <kbd>↵</kbd> Confirm
+                </span>
+                <span>
+                  <kbd>Esc</kbd> Close
+                </span>
               </div>
             </li>
           )}
