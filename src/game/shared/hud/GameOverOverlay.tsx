@@ -51,7 +51,7 @@ export function GameOverOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center sm:items-center items-end justify-center p-4 bg-black/30 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="game-over-title"
