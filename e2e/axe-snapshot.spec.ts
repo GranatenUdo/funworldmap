@@ -9,7 +9,7 @@
  * States:
  *   1. Cold launcher         — `/` with cleared localStorage
  *   2. Country panel open    — `/#FRA`
- *   3. Game-over modal       — driven via `finalizeGame()` seam
+ *   3. Game-over modal       — driven via the "End game" button
  *
  * See: docs/superpowers/notes/2026-05-05-post-audit-verification.md
  */
