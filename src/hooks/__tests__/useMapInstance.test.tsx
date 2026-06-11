@@ -100,8 +100,14 @@ function Wrapper({ children }: { children: ReactNode }) {
 }
 
 describe('useMapInstance', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     setupDom()
+    const maplibre = (await import('maplibre-gl')) as unknown as {
+      __loseContextState: { lost: boolean; restoreCalls: number }
+    }
+    const state = maplibre.__loseContextState
+    state.lost = false
+    state.restoreCalls = 0
   })
 
   it('starts with supported=true, loaded=false, mapError=null', () => {

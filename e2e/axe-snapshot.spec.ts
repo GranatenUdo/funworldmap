@@ -1,5 +1,5 @@
 /**
- * axe-snapshot.spec.ts — axe-core baseline sweep
+ * axe-snapshot.spec.ts — axe-core accessibility sweep
  *
  * Captures accessibility violations across canonical UI states from the
  * vision-audit remediation plan. Violations FAIL the suite — every audit below
@@ -24,7 +24,7 @@ test.setTimeout(120_000)
 const AXE_EXCLUDES = ['.maplibregl-canvas', '.z-\\[200\\]']
 
 /**
- * Summarise violations to stdout in a compact table and return the list.
+ * Summarise violations to stdout in a compact table.
  */
 function reportViolations(stateName: string, violations: import('axe-core').Result[]): void {
   if (violations.length === 0) {
@@ -72,7 +72,7 @@ test('axe-snapshot: country panel open', async ({ page }) => {
   expect(results.violations).toEqual([])
 })
 
-// ── 3. Game-over modal (driven via test seam) ─────────────────────────────────
+// ── 3. Game-over modal (driven via the End-game button) ──────────────────────
 test('axe-snapshot: game-over modal', async ({ page }) => {
   // Start a free country-pinning game via deep-link
   await page.goto('/#game/country-pinning/play')

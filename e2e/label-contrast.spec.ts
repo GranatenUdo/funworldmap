@@ -6,9 +6,10 @@
  *
  * Phase-3.10 hard assertions
  * ──────────────────────────
- * The Phase-3.10 thresholds below are HARD assertions — contrast regressions
- * fail this spec. Threshold violations are also LOGGED (visible in stdout and
- * test-info attachments) for quick diagnosis.
+ * Dark-mode thresholds (Phase 3.10) are HARD assertions — dark-mode contrast
+ * regressions fail this spec; light-mode tests remain collect-and-log.
+ * Threshold violations are also LOGGED (visible in stdout and test-info
+ * attachments) for quick diagnosis.
  *
  * Design notes
  * ────────────

@@ -192,8 +192,7 @@ export function useMapInstance({
     const canvas = map.getCanvas()
     // Capture WEBGL_lose_context now, while the context is healthy. On a lost
     // context getExtension() returns null, so this is the only reliable time
-    // to grab it. getContext() with the type the canvas already holds returns
-    // MapLibre's existing context (webgl2, falling back to webgl1).
+    // to grab it. webgl2 is the only context MapLibre v5 creates; the webgl fallback is defensive only.
     const gl = canvas.getContext('webgl2') ?? canvas.getContext('webgl')
     loseContextRef.current = gl?.getExtension('WEBGL_lose_context') ?? null
     canvas.addEventListener('webglcontextlost', onCanvasContextLost, { passive: false })

@@ -30,11 +30,12 @@ test.describe('WebGL context-loss recovery', () => {
 
     await page.getByTestId('map-error-retry').click()
 
-    // retryWebGL() calls restoreContext() on the WEBGL_lose_context extension
-    // captured at init (getExtension() returns null on a lost context, so it
-    // cannot be fetched at retry time); if the context doesn't restore within
-    // 1 s the app falls back to a full reload. Both paths converge on a loaded
-    // map with no error overlay — assert that end state.
+    // retryWebGL() calls restoreContext() on the extension captured at init;
+    // if the context doesn't restore within 1 s the app falls back to a full
+    // reload. Both paths must end with the error cleared and a loaded map.
+    // ([data-map-loaded] never detaches on context loss, so assert the error
+    // attribute is gone FIRST — otherwise the reload path passes vacuously.)
+    await expect(page.locator('[data-map-error]')).not.toBeAttached({ timeout: 60_000 })
     await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
     await expect(page.getByTestId('map-error-overlay')).not.toBeVisible()
   })
