@@ -5,8 +5,8 @@
  * requires <MapProvider>, which creates a maplibre-gl ref; while the ref itself
  * never calls into the GL library at construction time, the GameController body
  * also calls into several mapRef.current branches that can throw in JSDOM if the
- * guard isn't perfect. Adding workaround mocks for maplibre-gl and DailyPuzzlesProvider
- * fetch would diverge significantly from all other unit tests in this repo, which
+ * guard isn't perfect. Adding workaround mocks for maplibre-gl
+ * would diverge significantly from all other unit tests in this repo, which
  * avoid rendering full-page orchestrators. The renderHook tests below exercise
  * the same window-registration contract the e2e suite depends on, and the e2e
  * suite itself is the loudest regression signal for the seam's wiring.
