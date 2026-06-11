@@ -19,10 +19,10 @@ describe('GameOverOverlay', () => {
     window.location.hash = ''
   })
 
-  it('still says "Game over" on unlimited mode', () => {
+  it("says 'Three wrong guesses.' on unlimited (lives) mode", () => {
     render(
       <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 10 }}
+        session={{ ...baseSession, maxRounds: null }}
         personalBest={zeroBest}
         beatPersonalBest={false}
         onPlayAgain={() => {}}
@@ -30,7 +30,7 @@ describe('GameOverOverlay', () => {
       />,
     )
     expect(screen.getByTestId('game-over-title').textContent).toBe('Game over')
-    expect(screen.getByText('10 rounds complete.')).toBeTruthy()
+    expect(screen.getByText('Three wrong guesses.')).toBeTruthy()
   })
 
   it('says "10 rounds complete." when maxRounds is 10', () => {
