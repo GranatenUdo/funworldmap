@@ -2,9 +2,9 @@
  * axe-snapshot.spec.ts — axe-core baseline sweep
  *
  * Captures accessibility violations across canonical UI states from the
- * vision-audit remediation plan. Violations are COLLECTED, not enforced — the
- * purpose is to establish a baseline, not to block the build. Each test prints
- * its findings to stdout so the CI trace captures them.
+ * vision-audit remediation plan. Violations FAIL the suite — every audit below
+ * asserts an empty violations array. Each test prints its findings to stdout so
+ * the CI trace captures them.
  *
  * States:
  *   1. Cold launcher         — `/` with cleared localStorage
@@ -16,13 +16,7 @@
 
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import {
-  waitForAppReady,
-  waitForGameTestHook,
-  finalizeGame,
-  openLauncher,
-  gotoAndWaitForMap,
-} from './helpers'
+import { waitForAppReady, waitForGameTestHook, openLauncher, gotoAndWaitForMap } from './helpers'
 
 test.setTimeout(120_000)
 
@@ -31,7 +25,6 @@ const AXE_EXCLUDES = ['.maplibregl-canvas', '.z-\\[200\\]']
 
 /**
  * Summarise violations to stdout in a compact table and return the list.
- * We never throw — the spec is baseline-collection-only.
  */
 function reportViolations(stateName: string, violations: import('axe-core').Result[]): void {
   if (violations.length === 0) {
