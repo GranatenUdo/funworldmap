@@ -111,9 +111,13 @@ describe('useCompareViewDimming', () => {
     const fillCall = fake.calls.setPaintProperty.find(
       (c) => c[0] === 'country-fill' && c[1] === 'fill-opacity',
     )
-    // DEFAULT_FILL_OPACITY is the case-expression, not a number.
-    expect(fillCall?.[2]).toBeDefined()
-    expect(Array.isArray(fillCall?.[2])).toBe(true)
+    // The vector default — distinct from SATELLITE_FILL_OPACITY (0.32/0.03).
+    expect(fillCall?.[2]).toEqual([
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      0.28,
+      0.05,
+    ])
     // Dark-mode default is 0.5.
     const borderOpacity = fake.calls.setPaintProperty.find(
       (c) => c[0] === 'country-borders' && c[1] === 'line-opacity',
