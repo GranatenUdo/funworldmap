@@ -163,6 +163,22 @@ export const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
   0.05,
 ]
 
+/** The `country-fill` opacity in satellite mode: near-transparent base (3%)
+ *  so imagery shows through, 32% on hover. */
+export const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
+  'case',
+  ['boolean', ['feature-state', 'hover'], false],
+  0.32,
+  0.03,
+]
+
+/** The `country-fill` opacity for the current visual mode. One edit-point so
+ *  useSatelliteMode and useCompareViewDimming restore the same baseline
+ *  (mirrors applyBorderPaintForMode for borders). */
+export function fillOpacityForMode(satellite: boolean): maplibregl.ExpressionSpecification {
+  return satellite ? SATELLITE_FILL_OPACITY : DEFAULT_FILL_OPACITY
+}
+
 /** Apply the theme-appropriate paint to `country-borders` (color + opacity). */
 export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): void {
   map.setPaintProperty(LAYER.borders, 'line-color', isDark ? '#1e293b' : '#94a3b8')

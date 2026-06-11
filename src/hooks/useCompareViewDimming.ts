@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import {
   EMPTY_FILTER as EMPTY,
-  DEFAULT_FILL_OPACITY,
+  fillOpacityForMode,
   applyBorderPaintForMode,
   applySelectionColor,
   LAYER,
@@ -51,7 +51,7 @@ export function useCompareViewDimming({
         map.setPaintProperty(LAYER.compareGlow, 'line-color', TEAL_DIM)
         map.setPaintProperty(LAYER.compareExtrusion, 'fill-extrusion-color', TEAL_DIM)
       } else {
-        map.setPaintProperty(LAYER.fill, 'fill-opacity', DEFAULT_FILL_OPACITY)
+        map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(satellite))
         applyBorderPaintForMode(map, { isDark: resolvedTheme === 'dark', satellite })
 
         // Restore the selection highlight to the theme-appropriate coral so

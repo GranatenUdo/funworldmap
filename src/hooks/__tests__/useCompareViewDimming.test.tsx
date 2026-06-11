@@ -148,6 +148,31 @@ describe('useCompareViewDimming', () => {
     expect(borderColor?.[2]).toBe('rgba(255,255,255,0.35)')
   })
 
+  it('restores the satellite fill opacity when compareWith clears in satellite mode', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useCompareViewDimming({
+          loaded: true,
+          compareWith: null,
+          satellite: true,
+          resolvedTheme: 'light',
+        }),
+      { wrapper: makeWrapper(fake) },
+    )
+    const fillCall = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-fill' && c[1] === 'fill-opacity',
+    )
+    // Satellite keeps the base fill nearly transparent (0.03) so imagery shows
+    // through — not the vector default (0.05).
+    expect(fillCall?.[2]).toEqual([
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      0.32,
+      0.03,
+    ])
+  })
+
   it('does nothing when loaded is false', () => {
     const fake = makeFakeMap()
     renderHook(
