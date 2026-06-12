@@ -3,14 +3,13 @@ import { ensureLauncherDismissed, waitForAnimationIdle } from './helpers'
 
 test.setTimeout(90_000)
 
-// Search for a country and click the first result. Under slow CI the
-// search-results dropdown can need >5 s to populate (Fuse debounce +
-// render); waiting for the option locator is deterministic.
-async function searchAndOpenPanel(page: Page, query: string) {
+// Search for a country and click its result by name (never .first() — Fuse
+// ordering is not a contract; see CLAUDE.md).
+async function searchAndOpenPanel(page: Page, query: string, name: RegExp) {
   await page.getByTestId('search-input').fill(query)
-  const firstOption = page.getByTestId('search-results').getByRole('option').first()
-  await expect(firstOption).toBeVisible({ timeout: 15_000 })
-  await firstOption.click()
+  const option = page.getByTestId('search-results').getByRole('option', { name })
+  await expect(option).toBeVisible({ timeout: 15_000 })
+  await option.click()
   const panel = page.getByTestId('country-panel')
   await expect(panel).toBeVisible({ timeout: 15_000 })
   await waitForAnimationIdle(panel, 30_000)
@@ -25,7 +24,7 @@ test.describe('panel focus management', () => {
   })
 
   test('opening panel via search moves focus into panel', async ({ page }) => {
-    await searchAndOpenPanel(page, 'France')
+    await searchAndOpenPanel(page, 'France', /^France\s/)
     await expect
       .poll(
         () => page.evaluate(() => document.activeElement?.getAttribute('data-testid')),

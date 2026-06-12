@@ -4,13 +4,12 @@
  * Measures WCAG contrast ratios for MapLibre label layers against their
  * halo and background colours in all four theme × view combinations.
  *
- * BASELINE COLLECTION MODE
- * ────────────────────────
- * This spec captures contrast ratios as a baseline. Threshold violations are
- * LOGGED (visible in stdout and test-info attachments) but do NOT fail the test.
- * The measurement infrastructure is verified (paints are read, maths are sound),
- * not the threshold values themselves. Phase 3 will tighten thresholds and fix
- * contrast after the contrast-remediation work lands.
+ * Phase-3.10 hard assertions
+ * ──────────────────────────
+ * Dark-mode thresholds (Phase 3.10) are HARD assertions — dark-mode contrast
+ * regressions fail this spec; light-mode tests remain collect-and-log.
+ * Threshold violations are also LOGGED (visible in stdout and test-info
+ * attachments) for quick diagnosis.
  *
  * Design notes
  * ────────────
@@ -40,7 +39,11 @@ import { Buffer } from 'node:buffer'
 
 // ─── WCAG maths ────────────────────────────────────────────────────────────
 
-interface Rgb { r: number; g: number; b: number }
+interface Rgb {
+  r: number
+  g: number
+  b: number
+}
 
 function parseColor(raw: string): Rgb | null {
   if (!raw) return null
@@ -212,9 +215,12 @@ async function routeMapTilesRich(page: Page): Promise<void> {
       return route.fulfill({ status: 200, contentType: 'application/json', body: emptyTileJson })
     }
     if (
-      url.endsWith('.jpg') || url.endsWith('.jpeg') ||
-      url.endsWith('.png') || url.endsWith('.webp') ||
-      url.includes('.jpg?') || url.includes('.png?')
+      url.endsWith('.jpg') ||
+      url.endsWith('.jpeg') ||
+      url.endsWith('.png') ||
+      url.endsWith('.webp') ||
+      url.includes('.jpg?') ||
+      url.includes('.png?')
     ) {
       return route.fulfill({
         status: 200,
@@ -244,19 +250,21 @@ interface LabelPaint {
 
 async function readLabelPaints(page: Page, layerIds: string[]): Promise<LabelPaint[]> {
   return page.evaluate((ids: string[]): LabelPaint[] => {
-    const map = (window as unknown as {
-      __funworldmap_map?: {
-        getPaintProperty: (id: string, prop: string) => string | null
-        getLayer: (id: string) => unknown
+    const map = (
+      window as unknown as {
+        __funworldmap_map?: {
+          getPaintProperty: (id: string, prop: string) => string | null
+          getLayer: (id: string) => unknown
+        }
       }
-    }).__funworldmap_map
+    ).__funworldmap_map
     if (!map) throw new Error('__funworldmap_map not exposed')
     return ids
       .filter((id) => !!map.getLayer(id))
       .map((id) => ({
         layerId: id,
-        textColor: map.getPaintProperty(id, 'text-color') as string | null ?? null,
-        textHaloColor: map.getPaintProperty(id, 'text-halo-color') as string | null ?? null,
+        textColor: (map.getPaintProperty(id, 'text-color') as string | null) ?? null,
+        textHaloColor: (map.getPaintProperty(id, 'text-halo-color') as string | null) ?? null,
       }))
   }, layerIds)
 }
@@ -284,7 +292,9 @@ async function waitForMapLoaded(page: Page): Promise<void> {
   )
   const state = await result.jsonValue()
   if (state === 'timeout') {
-    throw new Error('Map watchdog fired: data-map-error="timeout". MapLibre did not reach \'load\' within BASEMAP_LOAD_TIMEOUT_MS.')
+    throw new Error(
+      'Map watchdog fired: data-map-error="timeout". MapLibre did not reach \'load\' within BASEMAP_LOAD_TIMEOUT_MS.',
+    )
   }
 }
 
@@ -341,16 +351,21 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await waitForMapLoaded(page)
 
     // Poll until applyMapTheme has applied the light text-color
-    await expect.poll(
-      async () => {
-        const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
-        return paints[0]?.textColor ?? null
-      },
-      { timeout: 15_000 },
-    ).toBe(EXPECTED_LIGHT_TEXT)
+    await expect
+      .poll(
+        async () => {
+          const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
+          return paints[0]?.textColor ?? null
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(EXPECTED_LIGHT_TEXT)
 
     const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
-    expect(paints.length, 'at least one label layer must be present in the stub style').toBeGreaterThan(0)
+    expect(
+      paints.length,
+      'at least one label layer must be present in the stub style',
+    ).toBeGreaterThan(0)
 
     for (const p of paints) {
       expect(p.textColor, `${p.layerId} text-color`).toBe(EXPECTED_LIGHT_TEXT)
@@ -364,8 +379,14 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
       const tvh = formatRatio(r.textVsHalo)
       const tvb = formatRatio(r.textVsBg)
       const hvb = formatRatio(r.haloVsBg)
-      const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'WARN <AA' : 'FAIL <3:1'
-      console.log(`  ${r.layer}: text vs halo = ${tvh} [${aaLabel}] | text vs bg = ${tvb} | halo vs bg = ${hvb}`)
+      const aaLabel = wcagAA(r.textVsHalo)
+        ? 'PASS AA'
+        : r.textVsHalo >= 3
+          ? 'WARN <AA'
+          : 'FAIL <3:1'
+      console.log(
+        `  ${r.layer}: text vs halo = ${tvh} [${aaLabel}] | text vs bg = ${tvb} | halo vs bg = ${hvb}`,
+      )
       // Log violations (collect mode); sanity-check that measurement worked (ratio > 0)
       if (r.textVsHalo < 3.0) {
         testInfo.attach('contrast-violation', {
@@ -385,16 +406,21 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await page.goto('/')
     await waitForMapLoaded(page)
 
-    await expect.poll(
-      async () => {
-        const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
-        return paints[0]?.textColor ?? null
-      },
-      { timeout: 15_000 },
-    ).toBe(EXPECTED_DARK_TEXT)
+    await expect
+      .poll(
+        async () => {
+          const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
+          return paints[0]?.textColor ?? null
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(EXPECTED_DARK_TEXT)
 
     const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
-    expect(paints.length, 'at least one label layer must be present in the stub style').toBeGreaterThan(0)
+    expect(
+      paints.length,
+      'at least one label layer must be present in the stub style',
+    ).toBeGreaterThan(0)
 
     for (const p of paints) {
       expect(p.textColor, `${p.layerId} text-color`).toBe(EXPECTED_DARK_TEXT)
@@ -408,9 +434,14 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
       const tvb = formatRatio(r.textVsBg)
       const hvb = formatRatio(r.haloVsBg)
       const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'OK ≥3:1' : 'FAIL <3:1'
-      console.log(`  ${r.layer}: text vs halo = ${tvh} [${aaLabel}] | text vs bg = ${tvb} | halo vs bg = ${hvb}`)
+      console.log(
+        `  ${r.layer}: text vs halo = ${tvh} [${aaLabel}] | text vs bg = ${tvb} | halo vs bg = ${hvb}`,
+      )
       // Phase 3.10: dark-mode 3:1 minimum is now a hard assertion (was collect-only in Phase 2.5)
-      expect(r.textVsHalo, `${r.layer} text-vs-halo must meet WCAG minimum 3:1`).toBeGreaterThanOrEqual(3.0)
+      expect(
+        r.textVsHalo,
+        `${r.layer} text-vs-halo must meet WCAG minimum 3:1`,
+      ).toBeGreaterThanOrEqual(3.0)
     }
   })
 
@@ -422,22 +453,30 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await page.goto('/')
     await waitForMapLoaded(page)
 
-    await expect.poll(
-      async () => {
-        const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
-        return paints[0]?.textColor ?? null
-      },
-      { timeout: 15_000 },
-    ).toBe(EXPECTED_LIGHT_TEXT)
+    await expect
+      .poll(
+        async () => {
+          const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
+          return paints[0]?.textColor ?? null
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(EXPECTED_LIGHT_TEXT)
 
     const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
     const rows = measureContrast(paints, LIGHT_LAND_BG)
     const testInfo = test.info()
 
-    console.log('\n=== Light + Satellite view (text vs halo — primary path; bg is variable imagery) ===')
+    console.log(
+      '\n=== Light + Satellite view (text vs halo — primary path; bg is variable imagery) ===',
+    )
     for (const r of rows) {
       const tvh = formatRatio(r.textVsHalo)
-      const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'WARN <AA' : 'FAIL <3:1'
+      const aaLabel = wcagAA(r.textVsHalo)
+        ? 'PASS AA'
+        : r.textVsHalo >= 3
+          ? 'WARN <AA'
+          : 'FAIL <3:1'
       console.log(`  ${r.layer}: text vs halo = ${tvh} [${aaLabel}]`)
       // Log violations (collect mode); sanity-check that measurement worked (ratio > 0)
       if (r.textVsHalo < 3.0) {
@@ -458,24 +497,31 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await page.goto('/')
     await waitForMapLoaded(page)
 
-    await expect.poll(
-      async () => {
-        const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
-        return paints[0]?.textColor ?? null
-      },
-      { timeout: 15_000 },
-    ).toBe(EXPECTED_DARK_TEXT)
+    await expect
+      .poll(
+        async () => {
+          const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
+          return paints[0]?.textColor ?? null
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(EXPECTED_DARK_TEXT)
 
     const paints = await readLabelPaints(page, LABEL_LAYER_IDS)
     const rows = measureContrast(paints, DARK_LAND_BG)
 
-    console.log('\n=== Dark + Satellite view (text vs halo — primary path; bg is variable imagery) ===')
+    console.log(
+      '\n=== Dark + Satellite view (text vs halo — primary path; bg is variable imagery) ===',
+    )
     for (const r of rows) {
       const tvh = formatRatio(r.textVsHalo)
       const aaLabel = wcagAA(r.textVsHalo) ? 'PASS AA' : r.textVsHalo >= 3 ? 'OK ≥3:1' : 'FAIL <3:1'
       console.log(`  ${r.layer}: text vs halo = ${tvh} [${aaLabel}]`)
       // Phase 3.10: dark-mode 3:1 minimum is now a hard assertion (was collect-only in Phase 2.5)
-      expect(r.textVsHalo, `${r.layer} text-vs-halo must meet WCAG minimum 3:1`).toBeGreaterThanOrEqual(3.0)
+      expect(
+        r.textVsHalo,
+        `${r.layer} text-vs-halo must meet WCAG minimum 3:1`,
+      ).toBeGreaterThanOrEqual(3.0)
     }
   })
 
@@ -486,9 +532,13 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     const halo = parseColor(EXPECTED_DARK_HALO)!
     const ratio = contrastRatio(text, halo)
     const ratioStr = formatRatio(ratio)
-    console.log(`\nStatic dark  text(${EXPECTED_DARK_TEXT}) vs halo(${EXPECTED_DARK_HALO}) = ${ratioStr}`)
+    console.log(
+      `\nStatic dark  text(${EXPECTED_DARK_TEXT}) vs halo(${EXPECTED_DARK_HALO}) = ${ratioStr}`,
+    )
     // Phase 3.10: dark-mode 3:1 minimum is now a hard assertion (was collect-only in Phase 2.5)
-    expect(ratio, `Dark palette text-vs-halo must meet WCAG minimum 3:1`).toBeGreaterThanOrEqual(3.0)
+    expect(ratio, `Dark palette text-vs-halo must meet WCAG minimum 3:1`).toBeGreaterThanOrEqual(
+      3.0,
+    )
   })
 
   test('static: light palette text-vs-halo measurement', () => {
@@ -497,7 +547,9 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     const ratio = contrastRatio(text, halo)
     const ratioStr = formatRatio(ratio)
     const testInfo = test.info()
-    console.log(`\nStatic light text(${EXPECTED_LIGHT_TEXT}) vs halo(${EXPECTED_LIGHT_HALO}) = ${ratioStr}`)
+    console.log(
+      `\nStatic light text(${EXPECTED_LIGHT_TEXT}) vs halo(${EXPECTED_LIGHT_HALO}) = ${ratioStr}`,
+    )
     // Log violation (collect mode); sanity-check that measurement worked (ratio > 0)
     if (ratio < 3.0) {
       testInfo.attach('contrast-violation', {

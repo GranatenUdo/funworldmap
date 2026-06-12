@@ -82,13 +82,6 @@ test.describe('City Guessing game', () => {
     expect(Number(score)).toBeLessThan(30)
   })
 
-  test('skip round scores 0 via the skip button', async ({ page }) => {
-    // Sanity: the button exists and is clickable when status is 'playing'.
-    // Separates the UI assertion from the game-logic assertion (covered below).
-    await openCityGuessing(page)
-    await expect(page.getByTestId('city-skip')).toBeVisible()
-  })
-
   test('skip round scores 0 and advances', async ({ page }) => {
     await openCityGuessing(page)
     await setRoundAndWait(page, 'FRA-paris', 'Paris')

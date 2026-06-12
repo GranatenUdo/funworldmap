@@ -24,7 +24,7 @@ test.describe('Source tooltip edge collision', () => {
     await expect(panel).toBeVisible({ timeout: 15_000 })
     await expect(panel).toContainText('France', { timeout: 10_000 })
 
-    // The "Capital" field is in the left column. Find its source "i" button.
+    // First Source button in DOM order = the Capital cell (first DataCell). The edge test only needs an 'i' button near the panel's left edge; update if cell order changes.
     const capitalSourceBtn = page.getByRole('button', { name: /^Source:/i }).first()
     await expect(capitalSourceBtn).toBeVisible({ timeout: 10_000 })
 
@@ -43,11 +43,12 @@ test.describe('Source tooltip edge collision', () => {
     // auto-position frame, we retry until the position stabilises.
     // We poll until `left >= 0` which is the key regression signal — if
     // Floating UI has positioned the element, the left edge will be ≥ 0.
-    await expect.poll(
-      () =>
-        tooltip.evaluate((el) => el.getBoundingClientRect().left),
-      { timeout: 5_000, message: 'Tooltip left edge should be ≥ 0' },
-    ).toBeGreaterThanOrEqual(0)
+    await expect
+      .poll(() => tooltip.evaluate((el) => el.getBoundingClientRect().left), {
+        timeout: 5_000,
+        message: 'Tooltip left edge should be ≥ 0',
+      })
+      .toBeGreaterThanOrEqual(0)
 
     // Read the final stable rect and assert all four edges.
     const rect = await tooltip.evaluate((el) => {
@@ -58,7 +59,9 @@ test.describe('Source tooltip edge collision', () => {
     expect(rect.left, 'tooltip must not be clipped on the left').toBeGreaterThanOrEqual(0)
     expect(rect.right, 'tooltip must not overflow on the right').toBeLessThanOrEqual(viewport.width)
     expect(rect.top, 'tooltip must not overflow above viewport').toBeGreaterThanOrEqual(0)
-    expect(rect.bottom, 'tooltip must not overflow below viewport').toBeLessThanOrEqual(viewport.height)
+    expect(rect.bottom, 'tooltip must not overflow below viewport').toBeLessThanOrEqual(
+      viewport.height,
+    )
   })
 
   test('tooltip closes when focus moves away (useDismiss)', async ({ page }) => {
