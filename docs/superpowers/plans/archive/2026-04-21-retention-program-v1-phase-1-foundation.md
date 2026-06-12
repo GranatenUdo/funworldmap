@@ -1,3 +1,5 @@
+> **Tombstone (2026-06-12):** the daily-puzzle/retention feature this plan built was removed in PR #97 (2026-05-30, "Remove the daily puzzle"). Kept unmodified for history — do not implement from it.
+
 # Retention Program v1 — Phase 1: Foundation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.

@@ -1,3 +1,5 @@
+> **Tombstone (2026-06-12):** the country-news feature this spec concerns was removed in PR #40 (2026-05-12). Kept unmodified for history — do not implement from it.
+
 # Country News Feed on CountryPanel — Design
 
 **Date:** 2026-04-23

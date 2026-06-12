@@ -1,3 +1,5 @@
+> **Tombstone (2026-06-12):** the country-news feature was removed in PR #40 (2026-05-12); the "execute when monetisation becomes concrete" guidance below is void — the migration in fact shipped the same day it was specced (PR #17). Kept unmodified for history.
+
 # Country News — Guardian → GDELT Migration Design
 
 **Date:** 2026-04-24
