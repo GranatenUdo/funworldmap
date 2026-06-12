@@ -8,6 +8,9 @@ async function waitForMap(page: Page) {
 
 test.describe('reveal animation', () => {
   test('wrong country guess renders a tessellated line from guess → target', async ({ page }) => {
+    // This spec covers the ANIMATED reveal path; opt out of the project-wide
+    // reduced-motion baseline (mirrors animation-interrupt.spec.ts).
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
     await waitForMap(page)
     await openLauncher(page)
@@ -80,6 +83,9 @@ test.describe('reveal animation', () => {
   test('city-guessing wrong guess renders a tessellated line from point → target', async ({
     page,
   }) => {
+    // This spec covers the ANIMATED reveal path; opt out of the project-wide
+    // reduced-motion baseline (mirrors animation-interrupt.spec.ts).
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
     await waitForMap(page)
     await openLauncher(page)

@@ -9,9 +9,9 @@ export default tseslint.config(
   {
     name: 'app/typescript-strict',
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
-    // Scoped to src/ — the type-checked rules require parserOptions.project,
-    // and only src/ is in tsconfig.app.json. e2e/ and scripts/ get the
-    // cheaper non-type-checked config below.
+    // Scoped to src/ — type-aware lint for e2e/ and scripts/ via tsconfig.e2e.json
+    // is possible but slows lint-staged/pre-commit; revisit with eslint-plugin-playwright
+    // (see roadmap). e2e/ and scripts/ get the non-type-checked preset below.
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
