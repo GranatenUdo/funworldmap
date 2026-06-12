@@ -73,7 +73,7 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current[0]?.country.cca3).toBe('FRA')
+    expect(result.current[0]?.cca3).toBe('FRA')
   })
 
   it('matches capitals', () => {
@@ -85,7 +85,7 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current[0]?.country.cca3).toBe('ESP')
+    expect(result.current[0]?.cca3).toBe('ESP')
   })
 
   it('matches cca3 codes', () => {
@@ -97,7 +97,7 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current[0]?.country.cca3).toBe('ITA')
+    expect(result.current[0]?.cca3).toBe('ITA')
   })
 
   it('caps results at 8', () => {

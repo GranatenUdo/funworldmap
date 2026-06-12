@@ -1,11 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from 'react'
-import Fuse, { type IFuseOptions, type FuseResultMatch } from 'fuse.js'
+import Fuse, { type IFuseOptions } from 'fuse.js'
 import type { CountryData } from '../lib/types'
-
-export interface SearchResult {
-  country: CountryData
-  matches: readonly FuseResultMatch[]
-}
 
 const FUSE_OPTIONS: IFuseOptions<CountryData> = {
   keys: [
@@ -18,18 +13,14 @@ const FUSE_OPTIONS: IFuseOptions<CountryData> = {
     { name: 'cca3', weight: 0.3 },
   ],
   threshold: 0.4,
-  includeMatches: true,
 }
 
 const MAX_RESULTS = 8
 const DEBOUNCE_MS = 150
 
-export function useCountrySearch(
-  countries: CountryData[],
-  query: string,
-): SearchResult[] {
+export function useCountrySearch(countries: CountryData[], query: string): CountryData[] {
   const fuse = useMemo(() => new Fuse(countries, FUSE_OPTIONS), [countries])
-  const [results, setResults] = useState<SearchResult[]>([])
+  const [results, setResults] = useState<CountryData[]>([])
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
@@ -41,13 +32,7 @@ export function useCountrySearch(
     }
 
     timerRef.current = setTimeout(() => {
-      const raw = fuse.search(query, { limit: MAX_RESULTS })
-      setResults(
-        raw.map((r) => ({
-          country: r.item,
-          matches: r.matches ?? [],
-        })),
-      )
+      setResults(fuse.search(query, { limit: MAX_RESULTS }).map((r) => r.item))
     }, DEBOUNCE_MS)
 
     return () => {

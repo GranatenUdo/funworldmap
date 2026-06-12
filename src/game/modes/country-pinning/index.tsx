@@ -1,15 +1,11 @@
 import type { CountryLike, GameMode } from '../../shared/types'
 import { scoreGuess } from './scoring'
 import { nextRound as pickNextRound } from './roundGenerator'
-import { MESSAGES } from './messages'
 import CountryPinningHud from './CountryPinningHud'
 
 export function getCountryPinningMode(pool: CountryLike[]): GameMode {
   return {
     id: 'country-pinning',
-    title: MESSAGES.title,
-    description: MESSAGES.description,
-    hashSegment: 'country-pinning',
     maxRounds: null,
     HudComponent: CountryPinningHud,
     nextRound: (used) => pickNextRound(used, pool),

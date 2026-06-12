@@ -135,15 +135,6 @@ body {
   }
 }
 
-@keyframes shimmer {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -179,45 +170,6 @@ body {
 @keyframes launcher-text-in {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes launcher-exit {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes launcher-streak-in {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes launcher-history-in {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scaleY(0.97);
-    transform-origin: top center;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scaleY(1);
-  }
-}
-
-@keyframes launcher-milestone-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 /* Country name tooltip — positioned by JS, not React */

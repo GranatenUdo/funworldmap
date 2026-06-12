@@ -261,7 +261,7 @@ export async function waitForRevealLineCoords(
  * satellite-toggle aria-pressed state, and map.getLayoutProperty() calls
  * still work because they read MapLibre's in-memory style — not pixels.
  *
- * All localhost requests (app assets, daily API stubs, etc.) pass through
+ * All localhost requests (app assets, preview-server routes) pass through
  * unchanged.
  *
  * Call BEFORE page.goto('/') so the intercepts are in place before any
@@ -337,7 +337,7 @@ export async function routeMapTiles(page: Page): Promise<void> {
   await page.route('**/*', (route) => {
     const url = route.request().url()
 
-    // Let all localhost requests pass through (app assets, daily API stubs, etc.)
+    // Let all localhost requests pass through (app assets, preview-server routes)
     if (
       url.startsWith('http://localhost') ||
       url.startsWith('https://localhost') ||

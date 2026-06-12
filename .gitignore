@@ -4,10 +4,6 @@ node_modules/
 # Build output
 dist/
 
-# Daily content — generated on demand (lives on the `data` branch in prod)
-public/daily/index.json
-.daily-data/
-
 # Environment
 .env
 .env.local
