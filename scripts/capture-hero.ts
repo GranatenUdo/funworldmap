@@ -50,7 +50,6 @@ async function main(): Promise<void> {
     await page.waitForTimeout(400)
 
     await page.screenshot({ path: out, fullPage: false })
-    // eslint-disable-next-line no-console
     console.log(`Wrote ${out}`)
   } finally {
     await browser.close()
@@ -58,7 +57,6 @@ async function main(): Promise<void> {
 }
 
 main().catch((e) => {
-  // eslint-disable-next-line no-console
   console.error(e)
   process.exit(1)
 })

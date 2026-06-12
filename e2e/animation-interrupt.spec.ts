@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForAppReady, waitForGameTestHook, getSession, openLauncher } from './helpers'
+import { waitForGameTestHook, getSession, openLauncher } from './helpers'
 
 test.setTimeout(60_000)
 

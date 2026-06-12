@@ -1,7 +1,9 @@
 import { test, expect, type Page } from '@playwright/test'
 import { waitForRevealLineCoords, openLauncher } from './helpers'
 
-test.use({ colorScheme: 'dark', reducedMotion: 'reduce' })
+// Playwright 1.59 has no dedicated `reducedMotion` test option; it must go
+// through `contextOptions` (a bare `reducedMotion` key is silently dropped).
+test.use({ colorScheme: 'dark', contextOptions: { reducedMotion: 'reduce' } })
 
 async function waitForMap(page: Page) {
   await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })

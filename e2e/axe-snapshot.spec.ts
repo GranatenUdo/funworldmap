@@ -20,13 +20,20 @@ import { waitForAppReady, waitForGameTestHook, openLauncher, gotoAndWaitForMap }
 
 test.setTimeout(120_000)
 
+/**
+ * Violation list type derived from AxeBuilder's return type — `axe-core` is a
+ * transitive dependency of `@axe-core/playwright` and is not hoisted to the
+ * root node_modules, so `import('axe-core')` does not resolve from here.
+ */
+type AxeViolations = Awaited<ReturnType<AxeBuilder['analyze']>>['violations']
+
 /** Shared axe excludes: map canvas (opaque WebGL) and loading splash. */
 const AXE_EXCLUDES = ['.maplibregl-canvas', '.z-\\[200\\]']
 
 /**
  * Summarise violations to stdout in a compact table.
  */
-function reportViolations(stateName: string, violations: import('axe-core').Result[]): void {
+function reportViolations(stateName: string, violations: AxeViolations): void {
   if (violations.length === 0) {
     console.log(`\n[axe-snapshot] ${stateName}: No violations`)
     return

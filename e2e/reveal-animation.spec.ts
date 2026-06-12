@@ -8,8 +8,17 @@ async function waitForMap(page: Page) {
 
 test.describe('reveal animation', () => {
   test('wrong country guess renders a tessellated line from guess → target', async ({ page }) => {
+    // This spec covers the ANIMATED reveal path; opt out of the project-wide
+    // reduced-motion baseline (mirrors animation-interrupt.spec.ts).
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
     await waitForMap(page)
+    // Precondition: the rich-motion override actually applied — otherwise this
+    // spec silently tests the one-shot reduced path and the 65-point arc
+    // assertion still passes (mirrors the reduced-motion sibling's assert).
+    expect(
+      await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches),
+    ).toBe(false)
     await openLauncher(page)
     await page.getByTestId('launcher-card-country-pinning-play').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
@@ -80,8 +89,17 @@ test.describe('reveal animation', () => {
   test('city-guessing wrong guess renders a tessellated line from point → target', async ({
     page,
   }) => {
+    // This spec covers the ANIMATED reveal path; opt out of the project-wide
+    // reduced-motion baseline (mirrors animation-interrupt.spec.ts).
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
     await waitForMap(page)
+    // Precondition: the rich-motion override actually applied — otherwise this
+    // spec silently tests the one-shot reduced path and the 65-point arc
+    // assertion still passes (mirrors the reduced-motion sibling's assert).
+    expect(
+      await page.evaluate(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches),
+    ).toBe(false)
     await openLauncher(page)
     await page.getByTestId('launcher-card-city-guessing-play').click()
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })

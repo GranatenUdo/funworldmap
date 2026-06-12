@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { ensureLauncherDismissed, waitForAppReady } from './helpers'
+import { ensureLauncherDismissed } from './helpers'
 
 test.describe('canonical-195 dataset reduction', () => {
   // The launcher subtitle intentionally carries no country count; the canonical-195

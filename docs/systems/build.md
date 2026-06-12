@@ -86,7 +86,7 @@ npm run format      # Format all files with Prettier
 | `preview`       | `vite preview`                                           | Serve the production build locally                   |
 | `typecheck`     | `tsc -b`                                                 | Type-check without emitting                          |
 | `check`         | `npm run lint && npm run typecheck && npm run test:unit` | Lint + typecheck + unit tests (local gate)           |
-| `lint`          | `eslint src/`                                            | Check for lint errors                                |
+| `lint`          | `eslint src/ e2e/ scripts/`                              | Check for lint errors                                |
 | `format`        | `prettier --write src/`                                  | Format source files with Prettier                    |
 | `test:e2e`      | `playwright test`                                        | Run Playwright end-to-end tests                      |
 | `test:unit`     | `vitest run`                                             | Run Vitest unit tests                                |
