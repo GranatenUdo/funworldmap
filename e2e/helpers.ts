@@ -276,7 +276,7 @@ export async function waitForRevealLineCoords(
  * Call BEFORE page.goto('/') so the intercepts are in place before any
  * network activity begins.
  */
-export async function routeMapTiles(page: Page): Promise<void> {
+export async function routeMapTiles(page: Page, opts: { styleStub?: Buffer } = {}): Promise<void> {
   // 1×1 transparent PNG (base64-encoded)
   const pngBody = Buffer.from(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgAAIAAAUAAeImBZsAAAAASUVORK5CYII=',
@@ -379,7 +379,7 @@ export async function routeMapTiles(page: Page): Promise<void> {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: positronStyleStub,
+        body: opts.styleStub ?? positronStyleStub,
       })
     }
 
