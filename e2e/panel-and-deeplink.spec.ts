@@ -44,7 +44,9 @@ test.describe('Country Panel', () => {
     await panel.getByRole('button', { name: 'Germany' }).click()
     // The panel trivially contains "Germany" as a neighbor chip on France,
     // so assert on the hash transition — that's the real navigation signal.
-    await expect.poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 }).toBe('#DEU')
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
+      .toBe('#DEU')
     await expect(panel).toContainText('Germany')
   })
 
@@ -74,7 +76,7 @@ test.describe('Bottom sheet on mobile', () => {
     const panel = await openPanel(page, 'JPN', 'Japan')
     // Peek state: secondary fields (UN Member, Languages, Government…)
     // only render once showSecondary is true.
-    await expect(panel.getByText('UN Member')).not.toBeVisible()
+    await expect(panel.getByText('UN Member')).toBeHidden()
     await page.getByLabel('Expand panel').click()
     await expect(panel.getByText('UN Member')).toBeVisible({ timeout: 10_000 })
   })

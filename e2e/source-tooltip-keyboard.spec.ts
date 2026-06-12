@@ -27,6 +27,6 @@ test.describe('SourceTooltip keyboard reachability', () => {
     // Tab away — tooltip should close
     await page.keyboard.press('Tab')
     await expect(firstIcon).not.toBeFocused()
-    await expect(tooltip).not.toBeVisible()
+    await expect(tooltip).toBeHidden()
   })
 })

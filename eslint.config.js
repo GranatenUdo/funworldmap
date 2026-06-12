@@ -3,6 +3,7 @@ import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
+import playwright from 'eslint-plugin-playwright'
 
 export default tseslint.config(
   { name: 'app/ignores', ignores: ['dist', 'cloudflare-worker/**', '**/*.config.{js,ts}', '*.config.{js,ts}'] },
@@ -61,6 +62,31 @@ export default tseslint.config(
       // node for the runners (Playwright, tsx scripts); browser for
       // page.evaluate callbacks, which execute in the page.
       globals: { ...globals.node, ...globals.browser },
+    },
+  },
+  {
+    name: 'tooling/e2e-playwright',
+    extends: [playwright.configs['flat/recommended']],
+    files: ['e2e/**/*.ts'],
+    rules: {
+      // helpers.ts deliberately exports expect-based readiness helpers
+      // (waitForAppReady, waitForGameTestHook, ...) used across specs.
+      'playwright/no-standalone-expect': 'off',
+      // CLAUDE.md quarantine policy: test.fixme(!!process.env.CI, ...) is the
+      // approved pattern for tracking CI-only flakes with a required issue link.
+      // Disabling the conditional rules that flag this deliberate pattern.
+      'playwright/no-conditional-in-test': 'off',
+      'playwright/no-skipped-test': 'off',
+      // waitForSelector is used deliberately in helpers.ts (gotoAndWaitForMap,
+      // waitForMapReady) and in specs that pre-date the locator API. These are
+      // not flake contributors — the CLAUDE.md ban targets waitForTimeout and
+      // force:true, not the selector-based wait API. Migrating ~16 call-sites
+      // to waitFor() on a locator is a separate cleanup task.
+      'playwright/no-wait-for-selector': 'off',
+      // compare-source-attribution.spec.ts uses a conditional expect inside an
+      // if(count > 1) guard — a legitimate pattern to skip assertions when the
+      // data set has only one element. Not a flake risk.
+      'playwright/no-conditional-expect': 'off',
     },
   },
 )

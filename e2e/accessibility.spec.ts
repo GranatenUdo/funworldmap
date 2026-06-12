@@ -91,9 +91,7 @@ test.describe('Accessibility', () => {
     await ensureLauncherDismissed(page)
 
     const toggle = page.getByTestId('theme-toggle')
-    const label = await toggle.getAttribute('aria-label')
-    expect(label).toBeTruthy()
-    expect(label).toContain('Switch to')
+    await expect(toggle).toHaveAttribute('aria-label', /Switch to/)
   })
 
   test('axe-core audit passes on home page', async ({ page }) => {

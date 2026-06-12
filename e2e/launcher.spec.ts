@@ -33,12 +33,12 @@ test.describe('Launcher (free-play hub)', () => {
   test('does NOT appear on cold load at /#FRA (deep-link bypass)', async ({ page }) => {
     await gotoAndWaitForMap(page, '/#FRA')
     await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 10_000 })
-    await expect(page.getByTestId('launcher')).not.toBeVisible()
+    await expect(page.getByTestId('launcher')).toBeHidden()
   })
 
   test('does NOT appear on cold load at /#game/country-pinning', async ({ page }) => {
     await gotoAndWaitForMap(page, '/#game/country-pinning')
-    await expect(page.getByTestId('launcher')).not.toBeVisible()
+    await expect(page.getByTestId('launcher')).toBeHidden()
   })
 
   test('clicking the × close button dismisses and focuses search', async ({ page }) => {
