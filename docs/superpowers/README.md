@@ -18,9 +18,14 @@ A document that starts with "We shipped X" does not belong in `plans/`.
 
 ## Archive
 
-Completed plans live under `plans/archive/`. Moving a plan to `archive/` is the signal that its work has shipped. Keep the filename (`YYYY-MM-DD-<slug>.md`) — any back-links from other docs update to the new path.
+Completed plans live under `plans/archive/` — moving a plan there is the
+signal that its work shipped. Archive on landing; periodic batch sweeps are
+acceptable when the live directory has drifted. Keep the filename and update
+any back-links. Plans whose feature was later **removed** get a one-line
+`> **Tombstone:**` header pointing at the removing PR instead of being
+rewritten.
 
-Forward plans (active or not-yet-started) live directly under `plans/`. At most one forward plan per concurrent work stream; archive it when it lands.
+Only plans for active or not-yet-started work live directly under `plans/`.
 
 ## Checklist for a Well-Formed Plan
 

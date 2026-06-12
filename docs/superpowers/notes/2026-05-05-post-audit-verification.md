@@ -61,6 +61,12 @@ No violations.
 
 The single finding (`aria-prohibited-attr` on the HUD attempt-indicator row) is isolated to the in-game surface and has a straightforward fix. No `critical` violations were found across any of the five states.
 
+> **Correction (2026-06-12):** §2.2 below is wrong — the 2026-05-04 Phase 5.5
+> note had already added `theme-and-responsive` and
+> `launcher-card-loading-states` to the mobile-webkit and
+> desktop-firefox-touch testMatch, where they remain today. The
+> "chromium-only by design" rationale and the backlog item are void.
+
 ## 2.2 — Cross-browser parity
 
 Run date: 2026-05-05.
