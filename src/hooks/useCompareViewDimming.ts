@@ -37,7 +37,9 @@ export function useCompareViewDimming({
     const inCompareView = compareWith !== null
     try {
       if (inCompareView) {
-        map.setPaintProperty(LAYER.fill, 'fill-opacity', 0.05)
+        // Hover layers are cleared below, so a scalar dim is fine — but it must
+        // match the mode's baseline (satellite base is 0.03; 0.05 would brighten).
+        map.setPaintProperty(LAYER.fill, 'fill-opacity', satellite ? 0.03 : 0.05)
         map.setFilter(LAYER.hoverBorder, EMPTY)
         map.setFilter(LAYER.extrusion, EMPTY)
         map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)

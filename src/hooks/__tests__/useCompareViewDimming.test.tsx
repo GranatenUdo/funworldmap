@@ -53,6 +53,26 @@ describe('useCompareViewDimming', () => {
     expect(borderCall?.[2]).toBe(0.15)
   })
 
+  it('dims with the satellite base when compareWith is present in satellite mode', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useCompareViewDimming({
+          loaded: true,
+          compareWith: { ccn3: '276' },
+          satellite: true,
+          resolvedTheme: 'light',
+        }),
+      { wrapper: makeWrapper(fake) },
+    )
+    const fillCall = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-fill' && c[1] === 'fill-opacity',
+    )
+    // Satellite base is 0.03; the vector dim scalar 0.05 would BRIGHTEN the
+    // fill over imagery instead of dimming it.
+    expect(fillCall?.[2]).toBe(0.03)
+  })
+
   it('pins A (selection) to CORAL and B (compare) to TEAL_DIM when compareWith is present', () => {
     const fake = makeFakeMap()
     renderHook(
