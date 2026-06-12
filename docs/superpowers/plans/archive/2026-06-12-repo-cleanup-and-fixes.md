@@ -1,5 +1,7 @@
 # Repo Cleanup and Fixes Implementation Plan
 
+> **Executed and shipped 2026-06-12** via subagent-driven development: PRs #103, #104, #105, #107, #108, #109, #110 (tracking issue #106; review follow-ups in #111). Checkboxes were tracked by the executing session rather than ticked in-file; verification evidence lives in the PR descriptions. Post-merge gates green: 300 unit / 152 chromium e2e / 6 mobile e2e local, CI + Deploy + CodeQL green on main.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Fix the small production bugs, delete dead code, make the CI/test story honest, and reconcile every doc/code contradiction found in the 2026-06-11 full-repo review.
