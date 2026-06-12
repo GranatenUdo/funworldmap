@@ -1,32 +1,8 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import { type ReactNode } from 'react'
-import { MapProvider, useMap } from '../useMap'
 import { useCompareViewHighlight } from '../useCompareViewHighlight'
 import { CORAL, CORAL_LIGHT, TEAL_DIM } from '../../lib/mapPalette'
-
-function makeFakeMap() {
-  const calls: Record<string, unknown[][]> = { setFilter: [], setPaintProperty: [] }
-  return {
-    setFilter: vi.fn((...args: unknown[]) => calls.setFilter.push(args)),
-    setPaintProperty: vi.fn((...args: unknown[]) => calls.setPaintProperty.push(args)),
-    calls,
-  }
-}
-function Injector({ children, map }: { children: ReactNode; map: unknown }) {
-  const refs = useMap()
-  refs.mapRef.current = map as never
-  return <>{children}</>
-}
-function makeWrapper(map: unknown) {
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return (
-      <MapProvider>
-        <Injector map={map}>{children}</Injector>
-      </MapProvider>
-    )
-  }
-}
+import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
 
 describe('useCompareViewHighlight', () => {
   it('suppresses hover layers and pins A/B colours when compareWith is present', () => {
@@ -38,7 +14,7 @@ describe('useCompareViewHighlight', () => {
           compareWith: { ccn3: '276' },
           resolvedTheme: 'light',
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     expect(
       fake.calls.setFilter.filter(
@@ -64,7 +40,7 @@ describe('useCompareViewHighlight', () => {
           compareWith: { ccn3: '276' },
           resolvedTheme: 'dark',
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     const selFill = fake.calls.setPaintProperty.find(
       (c) => c[0] === 'country-selected' && c[1] === 'fill-color',
@@ -76,7 +52,7 @@ describe('useCompareViewHighlight', () => {
     const fake = makeFakeMap()
     renderHook(
       () => useCompareViewHighlight({ loaded: true, compareWith: null, resolvedTheme: 'dark' }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     const selFill = fake.calls.setPaintProperty.find(
       (c) => c[0] === 'country-selected' && c[1] === 'fill-color',
@@ -93,7 +69,7 @@ describe('useCompareViewHighlight', () => {
           compareWith: { ccn3: '276' },
           resolvedTheme: 'light',
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     expect(fake.setFilter).not.toHaveBeenCalled()
     expect(fake.setPaintProperty).not.toHaveBeenCalled()
