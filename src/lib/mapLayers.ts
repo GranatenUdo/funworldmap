@@ -220,6 +220,27 @@ export const LAYER = {
   satellite: 'satellite-layer',
 } as const
 
+/** Single owner of the country-fill opacity + country-borders baseline paint.
+ *  Called from useCountryBaselinePaint for every {satellite, compare, theme}
+ *  change, so the winning value is decided by THIS logic — not by which hook's
+ *  effect happened to run last (the pre-2026-06 ordering bug class). */
+export function applyCountryBaselinePaint(
+  map: maplibregl.Map,
+  opts: { satellite: boolean; inCompareView: boolean; isDark: boolean },
+): void {
+  // Borders: mode colour first, then the compare dim on top.
+  applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite })
+  if (opts.inCompareView) {
+    map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
+    // Hover layers are suppressed in compare view (useCompareViewHighlight),
+    // so a scalar dim is fine — matched to the mode's baseline (satellite base
+    // is 0.03; the vector 0.05 would brighten over imagery).
+    map.setPaintProperty(LAYER.fill, 'fill-opacity', opts.satellite ? 0.03 : 0.05)
+  } else {
+    map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(opts.satellite))
+  }
+}
+
 /** Apply a uniform color to all four selection-highlight layers in one call.
  *  Used by useMapTheme (theme change) and useCompareViewDimming (compare
  *  enter/exit) so the four setPaintProperty calls have a single definition. */
