@@ -215,9 +215,8 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 **Pre:** Free Country Pinning, `status=playing`.
 
 1. **User presses Escape.**
-   - After: Either an "End game?" confirm dialog opens, or `endGame` dispatches directly.
-   - After: If confirmed: session → `idle`, hash returns to `#`, the user returns to the bare map (no launcher auto-open, no camera reset).
-   - After: If a confirm dialog: focus moves to the dialog, second Escape dismisses (does NOT end game), Enter on the confirm button ends.
+   - After: `endGame` dispatches directly — there is no confirm dialog (the HUD's "End game" button is the flow that routes through `finishFree` to the game-over overlay).
+   - After: Session → `idle`, hash returns to `#`, the user returns to the bare map (no launcher auto-open, no camera reset).
 
    **2026-05-13 update:** The global Escape handler (`GameController.tsx:767-783`) covers `status=playing` as described. However, it **explicitly excludes** the `round-ended + country-pinning` sub-state from this exit path (see comment at `GameController.tsx:407`). In that sub-state, Escape is handled by `holdThenAdvance` (`GameController.tsx:51-64`), which **skips the reveal hold and advances to the next round** — it does NOT abort to the launcher. The "After" lines above apply only when `status=playing`, not when `status=round-ended`.
 
