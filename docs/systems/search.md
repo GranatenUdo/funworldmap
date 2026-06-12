@@ -40,7 +40,6 @@ Fuse.js uses approximate string matching with a configurable threshold (0.4). Th
 3. Fuse.js searches the index, returns scored results
 4. Top 8 results displayed in a dropdown
 5. Each result shows: flag, country name, capital, region
-6. Match segments are highlighted in the country name
 
 ### Selection Flow
 
@@ -67,7 +66,6 @@ When a user selects a search result (click or Enter):
 - Appears below the search bar when results exist
 - Maximum 8 results to keep it scannable
 - Each result: flag icon + country name + capital + region
-- Highlighted match segments in the name
 - Disappears when search is empty or after selection
 
 ### No Results

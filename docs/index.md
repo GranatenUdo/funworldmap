@@ -27,6 +27,11 @@ Start with the purpose, then read the system overview for architecture context, 
 
 - [Runbook](ops/runbook.md) — bandwidth watch, data freshness, basemap degradation, incident response
 
+### Testing references
+
+- [Playwright project matrix](testing/playwright-matrix.md) — which project runs which spec, CI exclusions, quarantines
+- [Game happy paths](testing/game-happy-paths.md) / [unhappy paths](testing/game-unhappy-paths.md) — designed flows that test plans derive from
+
 ### Decisions
 
 - [ADR README](adr/README.md) — architecture decision record filing convention

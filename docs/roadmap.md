@@ -56,7 +56,7 @@ Source: [`2026-04-18-satellite-default-and-game-modes-design.md`](superpowers/sp
 Sources: [`2026-04-16-fix-ci-bugs-and-perf.md`](superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md) (plan) and the 2026-04-18 PR; [`2026-04-19-assessment-remediation-design.md`](superpowers/specs/2026-04-19-assessment-remediation-design.md) for the three 2026-04-19 entries.
 
 - **Network-stubbed tile mocks for e2e** — removes external-network variance. Worth doing after CI stabilises if residual flake appears.
-- **Bundle-size budgets in CI** — `size-limit` or similar to catch silent regressions. The 2026-04-19 assessment noted the `<700 KB` target drifted with Sentry + `cities.json`; enforcing a re-baselined target in CI would have caught it.
+- ~~**Bundle-size budgets in CI** — `size-limit` or similar to catch silent regressions. The 2026-04-19 assessment noted the `<700 KB` target drifted with Sentry + `cities.json`; enforcing a re-baselined target in CI would have caught it.~~ **Done** (PR #50, 2026-05-14): `scripts/bundle-budget/check.ts` enforces `budgets.json` via `npm run bundle:budget` in CI.
 - **Self-hosted GPU runner** — the single `chromium` project runs under `--use-gl=angle --use-angle=default`, which falls back to software rendering on shared Ubuntu runners (no real GPU); several specs are effectively software-renderer-only there. A self-hosted runner with a real GPU would let the CI-skipped specs (see the item below) run in CI again.
 - **Flaky-on-free-CI specs (need GPU runner).** The specs in `playwright.config.ts`'s `chromium` project's `testIgnore` (CI-only) consistently flake on GitHub-hosted ubuntu-latest because cold-WebGL on SwiftShader/llvmpipe takes 30–90s for what's near-instant locally — `waitForMapLoaded` and animation-state waits time out before the GPU has finished rasterizing. Mitigations attempted in PR #36 (Mesa/llvmpipe install, Playwright "new headless" mode via `channel: 'chromium'`, 4-way sharding, raised `BASEMAP_LOAD_TIMEOUT_MS` to 30s, fast-fail watchdog wait) reduced but didn't eliminate the flakes. Current state: the listed specs are skipped in CI but run locally; the goal is to put them back into CI once a self-hosted GPU runner exists. Skip list: `label-contrast`, `header-play-reopens-launcher`, `panel-focus`, `accessibility`, `axe-snapshot`, `reveal-animation`, `search`, `game-country-pinning`, `theme-and-responsive`, `source-tooltip-edge`. See [`docs/superpowers/specs/2026-05-05-flake-triage-design.md`](superpowers/specs/2026-05-05-flake-triage-design.md) (option D escalation), [`docs/superpowers/notes/2026-05-05-flake-watch.md`](superpowers/notes/2026-05-05-flake-watch.md).
 - ~~**Firefox and Safari e2e projects** — cross-browser coverage from the original Phase 7 exit criteria.~~ **Done** (PR #36 / Phase 5.x): `playwright.config.ts` now has `mobile-webkit` (WebKit/Safari engine) and `desktop-firefox-touch` (Firefox) projects alongside `chromium` and `mobile-chromium`. The legacy `chromium` / `chromium-gpu` split was consolidated into a single `chromium` project on 2026-05-02 (Software ANGLE drop).
@@ -84,7 +84,7 @@ PR #36 added three new e2e projects to the matrix: `mobile-chromium`, `mobile-we
   - `theme-and-responsive.spec.ts:46` — respects prefers-color-scheme: dark when in system mode
 - **Hypothesis:** The inline theme-bootstrap script in `index.html` (lines ~15–40) reads `localStorage.getItem('funworldmap-theme')` and checks `window.matchMedia('(prefers-color-scheme: dark)')` to set the root `<html>` class before React mounts. On WebKit, Playwright's `colorScheme` fixture may be applied AFTER the bootstrap runs (or overrides it), causing the script to read stale values. The spec expects bootstrap-then-fixture order; WebKit may reverse it.
 - **Acceptance criteria:** Each test passes 10/10 on `--project=mobile-webkit --repeat-each=10`. Add a minimal tracing call in the spec to log the order: `console.log('bootstrap:', await page.evaluate(() => document.documentElement.className))` before and after fixture application.
-- **Reference:** [`src/index.html`](../../src/index.html) lines 15–40; test file [`e2e/theme-and-responsive.spec.ts`](../e2e/theme-and-responsive.spec.ts); PR #36 added `mobile-webkit` to `playwright.config.ts` projects.
+- **Reference:** [`index.html`](../index.html) lines 15–40; test file [`e2e/theme-and-responsive.spec.ts`](../e2e/theme-and-responsive.spec.ts); PR #36 added `mobile-webkit` to `playwright.config.ts` projects.
 
 ### Mobile click-tolerance failures on mobile-chromium and desktop-firefox-touch (2 failures, pre-existing in spec)
 
@@ -93,7 +93,7 @@ PR #36 added three new e2e projects to the matrix: `mobile-chromium`, `mobile-we
   - `mobile-tap.spec.ts:61` — 12 px drag is NOT accepted as a click (above tolerance)
 - **Hypothesis:** The spec tests `clickTolerance: 8` in `useMapInstance.ts`. These tests likely authored and run locally against desktop chromium viewport; when emulated on mobile viewport (320px-ish width), the 5–12 px movements scale differently or the pointer-event order changes. Desktop and mobile may have different baseline movement thresholds before a `pointerup` is classified as a drag vs. a tap. Worth checking: does Playwright's `mobile-chromium` emulation match the actual browser's behavior? Possible real bug: the tap-tolerance calculation may be viewport-blind or use `window.devicePixelRatio` incorrectly.
 - **Acceptance criteria:** Spec passes 10/10 on `--project=mobile-chromium --repeat-each=10` and `--project=desktop-firefox-touch --repeat-each=10`. Confirm the tolerance logic in `useMapInstance.ts` accounts for viewport width or pixel-ratio scaling.
-- **Reference:** [`e2e/mobile-tap.spec.ts`](../e2e/mobile-tap.spec.ts) lines 48 and 61; [`src/hooks/useMapInstance.ts`](../../src/hooks/useMapInstance.ts) `clickTolerance` definition.
+- **Reference:** [`e2e/mobile-tap.spec.ts`](../e2e/mobile-tap.spec.ts) lines 48 and 61; [`src/hooks/useMapInstance.ts`](../src/hooks/useMapInstance.ts) `clickTolerance` definition.
 
 ### Map loading failure on desktop-firefox-touch (1 failure, GPU stack divergence)
 
@@ -120,6 +120,18 @@ PR #36 added three new e2e projects to the matrix: `mobile-chromium`, `mobile-we
   - Network capture via `page.on('request')` against `/api/event`.
 
 ---
+
+## Deferred from the 2026-06 cleanup
+
+Source: [`2026-06-11-repo-cleanup-and-fixes-design.md`](superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md)
+
+- **Shared unit-test utilities** — one `CountryData` factory + one matchMedia stub in `src/test/` to replace the five per-file factories and six bespoke matchMedia stubs.
+- **`waitForMapLoaded(page)` e2e helper** — consolidate the ~9 hand-rolled `waitForSelector('[data-map-loaded]')` preambles; parameterise `routeMapTiles` with a style stub so `label-contrast.spec.ts` can drop its 70-line interceptor copy.
+- **Search match highlighting** — re-introduce Fuse `includeMatches` only together with a UI that renders it (the plumbing was removed as dead).
+- **Route game announcement strings through `messages.ts`** — `useGameAnnouncements` inlines its prompt strings; restore the i18n routing when i18n work starts.
+- **Unit-test gaps** — `useSatelliteMode`, `useMapTheme`, `GameSessionProvider` pool/status guards, reducer `endGame`/`overrideRound` actions.
+- **Pre-load `'style'` error latching** — a transient pre-load tile error latches `mapError='style'` permanently even when the map then loads fine (`useMapInstance`'s error handler never clears it on successful load); visible on every stubbed e2e load via `data-map-error="style"`. Found during the 2026-06 webgl-retry fix. Clear or downgrade `'style'` on `load`.
+- **`eslint-plugin-playwright` on the e2e lint block** — `missing-playwright-await` catches unawaited `expect()` syntactically (the classic e2e flake source, invisible to the current non-type-checked lint), and `no-wait-for-timeout` / `no-force-option` would mechanize two of CLAUDE.md's hand-enforced forbidden patterns. Alternative: type-checked lint via `tsconfig.e2e.json` (declined in the 2026-06 cleanup for pre-commit latency).
 
 ## Rejected (won't build)
 

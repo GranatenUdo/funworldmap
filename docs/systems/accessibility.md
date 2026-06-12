@@ -52,11 +52,13 @@ Two skip links at the top of the page, visible only on focus:
 
 ### Panel Keyboard Controls
 
-| Key    | Action                                                                                         |
-| ------ | ---------------------------------------------------------------------------------------------- |
-| Escape | Close panel                                                                                    |
-| Tab    | Cycle through interactive elements (close button, expand/collapse, border chips, 'i' tooltips) |
-| Enter  | Activate focused element (e.g., navigate to border country)                                    |
+| Key    | Action                                                                           |
+| ------ | -------------------------------------------------------------------------------- |
+| Escape | Close panel                                                                      |
+| Tab    | Cycle through interactive elements (close button, expand/collapse, border chips) |
+| Enter  | Activate focused element (e.g., navigate to border country)                      |
+
+Source 'i' buttons are intentionally outside the Tab order (`tabIndex=-1`) so blur-out closes them cleanly; they open on hover, click/tap, or programmatic focus — a deliberate trade-off (see the comment in `SourceTooltip.tsx`).
 
 ### Bottom Sheet (Mobile)
 
@@ -69,15 +71,15 @@ Two skip links at the top of the page, visible only on focus:
 
 ### ARIA Roles and Labels
 
-| Element        | Role                   | Label                                                                                                   |
-| -------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
-| Map container  | `role="application"`   | `aria-label`: "Interactive world map", `aria-description`: "Use search to select countries by keyboard" |
-| Search input   | `role="combobox"`      | "Search countries..." (accessible name from the placeholder)                                            |
-| Search results | `role="listbox"`       | (controlled by combobox)                                                                                |
-| Each result    | `role="option"`        | Country name                                                                                            |
-| Country panel  | `role="complementary"` | "Country information"                                                                                   |
-| Theme toggle   | `<button>`             | "Switch to dark mode" / "Switch to system theme" / "Switch to light mode"                               |
-| Source tooltip | `role="tooltip"`       | Source name and URL                                                                                     |
+| Element        | Role                   | Label                                                                                                                                              |
+| -------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Map container  | `role="application"`   | `aria-label`: "Interactive world map", `aria-description`: "Pan with arrow keys, zoom with plus/minus, reset view with Home, deselect with Escape" |
+| Search input   | `role="combobox"`      | "Search countries..." (accessible name from the placeholder)                                                                                       |
+| Search results | `role="listbox"`       | (controlled by combobox)                                                                                                                           |
+| Each result    | `role="option"`        | Country name                                                                                                                                       |
+| Country panel  | `role="complementary"` | "Country information"                                                                                                                              |
+| Theme toggle   | `<button>`             | "Switch to dark mode" / "Switch to system theme" / "Switch to light mode"                                                                          |
+| Source tooltip | `role="tooltip"`       | Source name and URL                                                                                                                                |
 
 **Note on `role="application"`**: This role tells screen readers to pass all keystrokes to the page instead of intercepting them for screen reader navigation (H for heading, L for list, etc.). This is intentional — arrow keys pan the map, +/- zoom. The label explicitly tells screen reader users to use search for country selection. When the user tabs out of the map container, normal screen reader navigation resumes.
 
@@ -101,7 +103,7 @@ This ensures screen reader users are informed of changes that are visually obvio
 
 ### Panel Open
 
-When the country panel opens, focus moves to the panel heading (country name). This prevents focus from being lost behind the panel.
+When the country panel opens, focus moves first to the panel heading (so screen readers announce the country name), then settles on the panel's close button once the slide-in completes (~300 ms). Keyboard users land on Close; the announcement still happens.
 
 ### Panel Close
 

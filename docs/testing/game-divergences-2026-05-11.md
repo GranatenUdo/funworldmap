@@ -5,6 +5,10 @@ Build: dev server, `VITE_TEST_HOOKS=1`, viewport 1280×800
 Compared against: [`docs/testing/game-happy-paths.md`](./game-happy-paths.md)
 Method: programmatic walkthrough using `window.__funworldmap_game` test seam + DOM observation.
 
+> **Note (2026-06-12):** the companion `game-happy-paths.md` was rewritten after
+> the daily-puzzle removal (PR #97); Scenarios 3–5 referenced below existed only
+> in its pre-removal version (see git history).
+
 ---
 
 > ## Correction memo — 2026-05-11 (later same day)
@@ -23,25 +27,27 @@ Scenarios run: 1 (Free Country Pinning), 2 (Free City Guessing), 3 (Daily Countr
 
 ## Summary
 
-| # | Scenario | Result |
-|---|---|---|
-| 1 | Free Country Pinning | ⚠️ Mostly works; **1 real bug** in deep-link bootstrap; **2 test-plan inaccuracies** |
-| 2 | Free City Guessing | ✅ Works as designed; **1 test-plan inaccuracy** (per-round score range) |
-| 3 | Daily Country Pinning | ✅ Works end-to-end including resume |
-| 4 | Daily City Guessing | ✅ Works end-to-end |
+| #   | Scenario              | Result                                                                               |
+| --- | --------------------- | ------------------------------------------------------------------------------------ |
+| 1   | Free Country Pinning  | ⚠️ Mostly works; **1 real bug** in deep-link bootstrap; **2 test-plan inaccuracies** |
+| 2   | Free City Guessing    | ✅ Works as designed; **1 test-plan inaccuracy** (per-round score range)             |
+| 3   | Daily Country Pinning | ✅ Works end-to-end including resume                                                 |
+| 4   | Daily City Guessing   | ✅ Works end-to-end                                                                  |
 
 Three classes of finding:
+
 - 🔴 **Code bug** — design intent unmet
 - 🟡 **Doc gap** — feature works, but `daily-puzzle.md` / `purpose.md` doesn't describe it
 - 📝 **Test-plan inaccuracy** — `game-happy-paths.md` claimed behavior that the design never intended
 
 ---
 
-## ~~🔴 Bug 1 — Deep-link to `#game/<mode>` doesn't bootstrap a free-play game on fresh page load~~ *[RETRACTED, see Correction memo above]*
+## ~~🔴 Bug 1 — Deep-link to `#game/<mode>` doesn't bootstrap a free-play game on fresh page load~~ _[RETRACTED, see Correction memo above]_
 
 **Scenario:** Scenario 1, Step 2 (and equivalent for City Guessing).
 
 **Repro:**
+
 1. From a clean page, navigate **directly** to `http://localhost:5175/#game/country-pinning` (e.g. paste URL into a new tab).
 2. Observe: map renders. **No launcher, no HUD, no game.** Session stays at `status: 'idle'`. Page is essentially unusable from this URL.
 
@@ -56,6 +62,7 @@ Three classes of finding:
 **Severity:** HIGH — silently breaks a published deep-link contract; the docs (`daily-puzzle.md:98`, `purpose.md`) list `/#game/<mode>` as a supported route.
 
 **Likely code locations:**
+
 - `src/game/GameController.tsx:176-301` (hash-routing block)
 - `src/game/shared/GameSessionProvider.tsx` (pool-readiness gate, lines 34-35)
 
@@ -63,7 +70,7 @@ Three classes of finding:
 
 ## 🟡 Doc gap 1 — Daily index file is stale by 4 days locally
 
-**Repro:** With a clean checkout, `public/daily/index.json` ends at `2026-05-07`. Today is `2026-05-11`. The launcher correctly degrades (shows "Today's puzzle isn't ready yet" + a "Try May 7's daily →" link), but this is the cold-start UX for *every developer* today.
+**Repro:** With a clean checkout, `public/daily/index.json` ends at `2026-05-07`. Today is `2026-05-11`. The launcher correctly degrades (shows "Today's puzzle isn't ready yet" + a "Try May 7's daily →" link), but this is the cold-start UX for _every developer_ today.
 
 **Why it matters:** Onboarding new contributors. They land on the page, see "puzzle isn't ready yet," and don't know whether that's their bug, the daily workflow's bug, or by design.
 
@@ -78,6 +85,7 @@ Three classes of finding:
 ## 🟡 Doc gap 2 — Reveal pause timing differs significantly between modes
 
 **Observed:**
+
 - **Free Country Pinning, correct guess:** ~3.5 s from `submitGuess` → next round (auto-advance).
 - **Free Country Pinning, wrong guess (non-fatal):** indefinite hold; user **must click Continue** in the opened country panel. No auto-advance, no timeout fallback. (See Test-plan inaccuracy 1.)
 - **Free City Guessing, any guess:** ~200-300 ms auto-advance.
@@ -93,6 +101,7 @@ Three classes of finding:
 ## 🟡 Doc gap 3 — `data-app-ready` and `data-map-loaded` live where the CLAUDE.md helpers expect them, but not on `<body>`
 
 The CLAUDE.md e2e rules implicitly imply these attributes are on `<body>`. They actually live:
+
 - `data-app-ready="true"` on `<main>` (not `<body>`)
 - `data-map-loaded="true"` on `<div role="application">` (not `<body>`)
 
@@ -106,12 +115,13 @@ The existing `waitForAppReady(page)` helper presumably uses a selector that matc
 
 My test plan says:
 
-> 3. ... Country panel is **not** opened (mid-game; panel is a post-reveal artifact only).
-> 5. ... HUD shows a "wrong" reveal line ... [implied auto-advance like step 4]
+> 3\. ... Country panel is **not** opened (mid-game; panel is a post-reveal artifact only).
+> 5\. ... HUD shows a "wrong" reveal line ... [implied auto-advance like step 4]
 
 Actual behavior: after a **wrong** guess (with lives remaining), the country panel **does open** mid-game, populated with the correct country's full info, and a **"Continue" button** sits inside it. The user must click Continue to advance. There is no auto-advance for wrong guesses (verified by waiting 15 s with no transition).
 
 The design is intentional and clearer than my doc suggests — wrong guesses surface real geopolitical context as a teaching moment. The doc should:
+
 - Acknowledge that the panel does open after wrong guesses.
 - Describe the Continue button as the explicit advance action.
 - Remove the "panel is post-reveal artifact only" claim.
@@ -122,7 +132,7 @@ For correct guesses, no panel opens and auto-advance fires at ~3.5 s — that pa
 
 ## 📝 Test-plan inaccuracy 2 — City scoring is 0-100 per round, not 0-1000
 
-My test plan said "max 1000" per round. Actual: 100 points max per round, 1000 total across 10 rounds (`CITY_GUESSING_MAX_ROUNDS=10`). The launcher card's "Best (free) 0 / 1000" copy is the *game-total* range, not per-round.
+My test plan said "max 1000" per round. Actual: 100 points max per round, 1000 total across 10 rounds (`CITY_GUESSING_MAX_ROUNDS=10`). The launcher card's "Best (free) 0 / 1000" copy is the _game-total_ range, not per-round.
 
 ---
 
@@ -132,7 +142,7 @@ A few worth calling out — the prior review (or the agents I dispatched) over-s
 
 1. **"Test seams might be only the four advertised: submitGuess, completeNow, finalize, endGame."** Actual seam exposes **8 methods**: `submitGuess`, `submitCountryGuess`, `setRound`, `getSession`, `endGame`, `completeNow`, `finalize`, `restart`. `getSession` and `submitCountryGuess` in particular make programmatic state inspection cheap; the e2e suite could lean on these more.
 
-2. **Resume after refresh works perfectly.** I treated this as a fragile path (silent-failure swallowed catches). In the happy path it's robust: attempts restore, target unchanged, attemptsRemaining correct, hash bootstrap fires the resume action. The risks I flagged are about *failure* paths (corrupt blob), not the happy path.
+2. **Resume after refresh works perfectly.** I treated this as a fragile path (silent-failure swallowed catches). In the happy path it's robust: attempts restore, target unchanged, attemptsRemaining correct, hash bootstrap fires the resume action. The risks I flagged are about _failure_ paths (corrupt blob), not the happy path.
 
 3. **History persistence, streak update, and resume-blob clearing on completion are all atomic and verifiable** via the `funworldmap-daily-history` blob. No drift, no race observed.
 

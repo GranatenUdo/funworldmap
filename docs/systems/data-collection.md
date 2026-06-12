@@ -13,11 +13,11 @@ funworldmap aggregates country data from multiple authoritative sources. The dat
 
 ## Sources
 
-| Source | Data Provided | Access Method | License |
-|--------|--------------|---------------|---------|
-| REST Countries v3.1 | Names, codes, capitals, regions, population, area, languages, currencies, coordinates, borders, UN status, timezones | HTTPS GET `/v3.1/all?fields=...` | MPL 2.0 |
-| CIA World Factbook (archived) | Government type | `factbook/factbook.json` GitHub repository — CC0-licensed JSON archive. HTTP GET raw files per country: `https://raw.githubusercontent.com/factbook/factbook.json/master/{region}/{code}.json`. Government type at `data.Government["Government type"].text`. | Public domain (CC0) |
-| flagcdn.com / REST Countries | SVG flag images | HTTPS download per country | Public domain |
+| Source                        | Data Provided                                                                                                        | Access Method                                                                                                                                                                                                                                                 | License             |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
+| REST Countries v3.1           | Names, codes, capitals, regions, population, area, languages, currencies, coordinates, borders, UN status, timezones | HTTPS GET `/v3.1/all?fields=...`                                                                                                                                                                                                                              | MPL 2.0             |
+| CIA World Factbook (archived) | Government type                                                                                                      | `factbook/factbook.json` GitHub repository — CC0-licensed JSON archive. HTTP GET raw files per country: `https://raw.githubusercontent.com/factbook/factbook.json/master/{region}/{code}.json`. Government type at `data.Government["Government type"].text`. | Public domain (CC0) |
+| flagcdn.com / REST Countries  | SVG flag images                                                                                                      | HTTPS download per country                                                                                                                                                                                                                                    | Public domain       |
 
 ### CIA World Factbook: Archived Source
 
@@ -45,13 +45,7 @@ npm run update-data
            │
            ▼
 ┌──────────────────────┐
-│  3. Download SVG      │  Download ~195 SVG flag files
-│     Flags             │  → public/flags/XX.svg (by cca2 code)
-└──────────┬───────────┘
-           │
-           ▼
-┌──────────────────────┐
-│  4. Merge & Enrich    │  Join by country code
+│  3. Merge & Enrich    │  Join by country code
 │                       │  Add source attribution to each field
 │                       │  Apply priority rules for conflicts
 │                       │  Generate _fieldSources per country
@@ -60,8 +54,13 @@ npm run update-data
            │
            ▼
 ┌──────────────────────┐
+│  4. Download SVG      │  Download ~195 SVG flag files
+│     Flags             │  → public/flags/XX.svg (by cca2 code)
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
 │  5. Write Output      │  → src/data/countries.json
-│                       │  → public/flags/*.svg
 │                       │  Console: summary of changes vs previous
 └──────────────────────┘
 ```
@@ -73,13 +72,14 @@ When multiple sources provide the same field, priority order:
 1. **CIA World Factbook** — for government type (primary purpose of this source)
 2. **REST Countries** — for all other fields (most comprehensive general source)
 
-If a source is unavailable during a run, the tool falls back to existing data for that source's fields and logs a warning.
+If a source is unavailable during a run, the run fails and writes nothing — the previously committed countries.json stays in place. There is no per-source fallback.
 
 ## Output Format
 
 See [Data System — Enriched Data Model](data.md) for the full per-country JSON structure.
 
 Key characteristics of the output:
+
 - Single `countries.json` file containing `_sources` metadata and `countries` array
 - Data fields are flat (e.g., `"population": 67390000`, not wrapped)
 - Source attribution lives in a `_fieldSources` map per country (e.g., `"_fieldSources": { "population": "restcountries" }`)
@@ -114,6 +114,7 @@ scripts/
 ## Adding New Sources
 
 To add a new data source:
+
 1. Add a source module in `scripts/sources/` that exports a fetch function returning normalized country data
 2. Register it in the source registry with a unique key
 3. Define merge priority for its fields

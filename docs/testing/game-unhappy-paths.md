@@ -3,11 +3,13 @@
 Date: 2026-05-11
 Companion to: [`game-happy-paths.md`](./game-happy-paths.md)
 
-> ⚠️ **Verification status (2026-05-11):** Most scenarios in this document are **design hypotheses derived from code reading, not from live observation**. The exceptions personally verified live are: D2/D3 (reducer rejects out-of-state submits — verified via test seam), F1 (last-life endsGame suppresses Continue panel — verified live in country pinning).
+> ⚠️ **Verification status (2026-05-11):** Most scenarios in this document are **design hypotheses derived from code reading, not from live observation**. The exceptions personally verified live are: D2/D3 (reducer rejects out-of-state submits — verified via test seam), E1 (last-life endsGame flow — the 2026-05-11 "panel suppressed" observation no longer holds; see E1's updated contract).
 >
 > All of **section A (animations)** — red flash, dashed geodesic arc, globe rotation, panel slide-in timing — is hypothesized from CSS conventions and code structure. Before treating any "After" line in section A as a test contract, **observe the live behavior and update the line to match reality** (screenshots or video help). Sections E (concurrency) and parts of F (boundary) are similarly speculative.
 >
 > The structure of this document — numbered user actions paired with observable post-conditions — is the artifact. The content needs validation. Treat unverified "After" lines as **questions to test**, not answers to assert.
+>
+> Line-number references below reflect the 2026-05-13 tree; the game-controller extraction (2026-05-14) moved most of them.
 
 This document describes **failure-mode and edge-case** user flows. If happy-paths.md says "what should happen when everything goes right," this file says "what should happen when something goes wrong, when the user does something unexpected, or when the environment is hostile."
 
@@ -126,7 +128,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 ### A9. Animation completes — `data-animation-state="idle"` is set
 
-**Pre:** Animated component (`Launcher`, `SingleCountryPanel`, `LauncherMilestoneOverlay`).
+**Pre:** Animated component (`Launcher`, `SingleCountryPanel`).
 
 1. **User triggers a state change that begins an animation.**
    - After: Component's `data-animation-state` attribute is `entering`.
@@ -159,7 +161,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 ### B2. Country GeoJSON fails to load
 
-**Pre:** Force `world-atlas/countries-10m.json` chunk to fail (e.g. block via DevTools network throttling, or corrupt the cache).
+**Pre:** Force `world-atlas/countries-50m.json` chunk to fail (e.g. block via DevTools network throttling, or corrupt the cache).
 
 1. **User opens `/`.**
    - After: Map basemap renders.
@@ -176,14 +178,6 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
    - After: Game-over overlay mounts normally.
    - After: Failed analytics POSTs are silently dropped (`lib/analytics.ts:46-61`).
    - After: No banner, no console error, no impact on gameplay.
-
-### B4. News JSON for a country 404s
-
-**Pre:** User opens panel for a country with no `news/<cca3>.json` file.
-
-1. **User opens the panel.**
-   - After: Panel renders all non-news fields.
-   - After: News section either shows "No recent news" or is omitted entirely. No spinner-forever.
 
 ---
 
@@ -222,7 +216,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 1. **User presses Escape.**
    - After: Either an "End game?" confirm dialog opens, or `endGame` dispatches directly.
-   - After: If confirmed: session → `idle`, hash returns to `#`, launcher reopens, map camera flies to default view.
+   - After: If confirmed: session → `idle`, hash returns to `#`, the user returns to the bare map (no launcher auto-open, no camera reset).
    - After: If a confirm dialog: focus moves to the dialog, second Escape dismisses (does NOT end game), Enter on the confirm button ends.
 
    **2026-05-13 update:** The global Escape handler (`GameController.tsx:767-783`) covers `status=playing` as described. However, it **explicitly excludes** the `round-ended + country-pinning` sub-state from this exit path (see comment at `GameController.tsx:407`). In that sub-state, Escape is handled by `holdThenAdvance` (`GameController.tsx:51-64`), which **skips the reveal hold and advances to the next round** — it does NOT abort to the launcher. The "After" lines above apply only when `status=playing`, not when `status=round-ended`.
@@ -272,10 +266,9 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 
 1. **User clicks a wrong country.**
    - After: `lives=0`, `livesDelta=-1`, `endsGame=true`.
-   - After: Per Scenario 1 Step 7 (happy paths): country panel **does NOT open** with Continue (because endsGame supersedes the wrong-guess-Continue flow).
-   - After: Auto-transition to game-over at ~3 s.
+   - After: The country panel still opens (the round-end panel renders regardless of `endsGame`); Continue, Enter / Space / Escape, or the ~3 s hold finalize to `game-over`.
    - After: Game-over overlay shows. No stuck "Continue" state.
-   - After: 🟠 **Edge to verify:** my divergence walkthrough did not observe whether the Continue/panel flow is suppressed when `endsGame=true`. The reducer treats them identically; the UI must distinguish.
+   - After: ✅ Resolved 2026-06-12: the panel renders regardless of `endsGame` (`App.tsx` `roundEndTarget` has no endsGame check).
 
 ### E2. Game-over fires while reveal panel is still animating in
 
@@ -422,7 +415,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 1. **User opens `/`.**
    - After: Layout reflows; no horizontal overflow on mobile widths.
    - After: All buttons remain clickable; no overlap.
-   - After: Modal dialogs (launcher, milestone overlay) stay within the viewport.
+   - After: Modal dialogs (launcher, game-over overlay) stay within the viewport.
 
 ---
 

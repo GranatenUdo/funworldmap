@@ -43,7 +43,7 @@ In the CF dashboard, confirm that a Worker Route `funworldmap.com/api/event` exi
 - Preferred transport: `navigator.sendBeacon` (fire-and-forget, reliable on page unload).
 - Fallback: `fetch(..., { keepalive: true })`.
 - No-op when `navigator.doNotTrack === '1'`.
-- No-op when `window.__PLAYWRIGHT__` is set — the e2e harness captures events to `window.__testAnalytics` for assertion instead.
+- No-op when `window.__PLAYWRIGHT__` is set — a unit-test seam (`src/test/analyticsCapture.ts`) that captures events to `window.__testAnalytics`.
 - No-op when `VITE_ANALYTICS_ENDPOINT` build-time env is empty (dev builds, CI e2e builds).
 
 ## Column schema (Analytics Engine)
