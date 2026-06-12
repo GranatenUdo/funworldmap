@@ -57,7 +57,7 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 
 - Slides in from the right when a country is selected
 - Overlays the map with a drop shadow — map stays full-width underneath
-- Fixed width: 380px, full height of viewport (starting value — adjust based on content fit)
+- Fixed width: 360px, full height of viewport
 - Close button (×) in top-right corner
 - Scrollable content area for countries with extensive metadata
 
@@ -74,7 +74,7 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ### Map Controls
 
 - MapLibre's built-in `NavigationControl` (zoom +/−, compass)
-- Custom "Reset view" button — resets the camera to defaults (longitude 0, latitude 20, zoom 1.8, pitch 20°). If a country is selected, deselects it, closes the panel, and clears the URL hash.
+- Custom "Reset view" button — flies the camera back to the default world view (longitude 0, latitude 20, zoom 1.8, pitch 20°, bearing 0). It does not touch selection: an open panel and the URL hash are preserved. (The Home key does the same while the map has focus.)
 - Positioned bottom-right on desktop
 - Repositioned to avoid bottom sheet overlap on mobile
 

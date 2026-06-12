@@ -18,12 +18,12 @@ GitHub Pages soft-caps free bandwidth at ~100 GB/month. Custom domains route thr
 
 `src/data/countries.json` is bundled at build time from multiple sources.
 
-| Source                          | Cadence                        | Status        |
-| ------------------------------- | ------------------------------ | ------------- |
-| REST Countries v3.1             | Quarterly review               | Live upstream |
-| CIA World Factbook              | None — archive frozen Jan 2026 | Read-only     |
-| world-atlas (Natural Earth 50m) | On npm upstream release        | Stable        |
-| flagcdn.com                     | Hotlinked at runtime           | No-op         |
+| Source                          | Cadence                                     | Status        |
+| ------------------------------- | ------------------------------------------- | ------------- |
+| REST Countries v3.1             | Quarterly review                            | Live upstream |
+| CIA World Factbook              | None — archive frozen Jan 2026              | Read-only     |
+| world-atlas (Natural Earth 50m) | On npm upstream release                     | Stable        |
+| flagcdn.com (SVG flags)         | Downloaded by update-data; bundled at build | Static        |
 
 > **Action:** Quarterly review is currently unowned. When a review is due, file an issue against the repo with label `data-freshness` and assign to a maintainer.
 

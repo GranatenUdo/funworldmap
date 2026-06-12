@@ -57,6 +57,8 @@ Three visual layers render on top of the basemap:
 | `country-borders`  | Political boundary lines       | Thin gray/white lines.                                                         |
 | `country-selected` | Selected country highlight     | Thicker border + stronger fill. Filtered to show only the selected country ID. |
 
+These are the three core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, and the satellite raster complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (13 ids).
+
 ### Interaction Model
 
 **Hover**: As the mouse moves over the `country-fill` layer, MapLibre's `feature-state` API sets `{ hover: true }` on the feature under the cursor. The layer paint expression reacts by increasing fill opacity. When the mouse leaves, hover is cleared. The cursor changes to `pointer` over countries.
@@ -88,23 +90,18 @@ When a country is selected (via click or search), the map smoothly animates to c
 flyTo({
   center: [longitude, latitude],
   zoom: calculated from country area,
-  duration: 1500
+  duration: 1400
 })
 ```
 
 **Reduced motion**: When the user's system preference is `prefers-reduced-motion: reduce`, `duration` is set to `0` — the camera jumps instantly without animation. The application checks this preference, not MapLibre's built-in handling.
 
-**Zoom calculation**: The zoom level is derived from the country's area in km² using a logarithmic scale. Approximate targets:
-
-| Country      | Area (km²) | Approximate Zoom |
-| ------------ | ---------- | ---------------- |
-| Russia       | 17,098,242 | ~3               |
-| Brazil       | 8,515,767  | ~4               |
-| France       | 551,695    | ~6               |
-| Luxembourg   | 2,586      | ~10              |
-| Vatican City | 0.44       | ~15              |
-
-Exact values are tuned during implementation to feel natural at each scale.
+**Zoom calculation**: `flyToCountry` derives a target zoom from the country's
+area — `zoom = clamp(11 − 1.7·log₁₀(areaKm²), 2, 12)` — and never zooms _out_
+below the user's current zoom (`Math.max(map.getZoom(), computed)`; see the
+2026-05-17 country-click-preserve-zoom spec). Large countries resolve to the
+clamp floor (zoom 2); only countries below roughly 100,000 km² pull the camera
+in meaningfully (Luxembourg ≈ 5.2, Vatican ≈ 11.6).
 
 **Coordinate swap**: REST Countries stores coordinates as `[latitude, longitude]` but MapLibre expects `[longitude, latitude]`. The `flyToCountry()` function handles this swap. See [Data System — Coordinate System](data.md).
 
@@ -114,13 +111,7 @@ In dark mode, the basemap is darkened using MapLibre's native `setPaintProperty(
 
 ### Approach
 
-On theme toggle, iterate over known basemap layers and modify their paint properties:
-
-- Background → dark gray
-- Water layers → dark blue
-- Land/landuse layers → dark tones
-- Road/path layers → muted dark lines
-- Text/label layers → white/light gray
+On theme toggle, `applyMapTheme` (`src/lib/mapColors.ts`) overrides a fixed set of basemap layers — background, water, waterway, park, building — with warm dark (or sand-light) fills, and recolors every symbol layer's text + halo. Layers outside that set keep their style defaults.
 
 This uses `map.setPaintProperty(layerId, property, value)` which is non-destructive — all sources, layers, and state are preserved. No style reload occurs.
 

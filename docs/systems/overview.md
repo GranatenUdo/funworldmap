@@ -19,7 +19,7 @@ funworldmap is a client-side single-page application: all code, data, and assets
 │  │         │                │                    │             │  │
 │  │  ┌──────▼────────────────▼────────────────────▼──────────┐ │  │
 │  │  │                   Hooks (state)                        │ │  │
-│  │  │  useMapInteraction · useCountryData · useCountrySearch │ │  │
+│  │  │  useMapInteractions · useCountryData · useCountrySearch │ │  │
 │  │  │  useTheme · useMediaQuery · URL hash sync              │ │  │
 │  │  └───────────────────────┬───────────────────────────────┘ │  │
 │  │                          │                                  │  │
@@ -146,7 +146,7 @@ Measured against the 2026-04-19 build:
 | world-atlas countries-50m (async chunk)         | ~233 KB                     |
 | **Total with async data (measured)**            | **~710 KB**                 |
 
-The per-component figures are estimates summing to the measured totals. MapLibre dominates. The geo data loads asynchronously after the map initializes, so the user sees the basemap first. The original <700 KB target predates Sentry and `cities.json`; re-baselining against a measured CI build is tracked as a roadmap item (bundle-size budgets in CI).
+The per-component figures are estimates summing to the measured totals. MapLibre dominates. The geo data loads asynchronously after the map initializes, so the user sees the basemap first. Budgets are enforced in CI by `scripts/bundle-budget/check.ts` against `scripts/bundle-budget/budgets.json` (total-with-async ceiling 820 KB gzip, set 2026-05-14 at measured + 10%).
 
 ## Game system
 

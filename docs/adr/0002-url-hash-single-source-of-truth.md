@@ -13,8 +13,7 @@ no server-side routing.
 
 The **URL hash is the single source of truth** for the current selection and route.
 Every entry point — map click, search result, border chip, initial page load —
-writes the hash; all consuming components react to `hashchange`. There is no parallel
-in-memory selection state that can diverge from the hash. Parsing and serialization
+writes the hash; all consuming components react to `hashchange`. Components hold no independent selection state; `useSelectedCountry` re-derives from the hash on every `hashchange`, and mirrors the clear on deselect (which uses `history.replaceState`, firing no event). Parsing and serialization
 live in `src/lib/hashState.ts` (`parseHash` / `writeHash`).
 
 ## Consequences

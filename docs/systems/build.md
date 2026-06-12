@@ -115,4 +115,4 @@ Most static hosting providers set these automatically for hashed assets.
 
 ## Bundle Budget
 
-See [System Overview — Bundle Size Budget](./overview.md) for the detailed size breakdown. Target: <700KB total gzipped including async geo data chunk.
+See [System Overview — Bundle Size Budget](./overview.md) for the size breakdown. Budgets are enforced in CI (`npm run bundle:budget`) against `scripts/bundle-budget/budgets.json` — total-with-async ceiling 820 KB gzip. Raising a budget requires measurement evidence in the PR.
