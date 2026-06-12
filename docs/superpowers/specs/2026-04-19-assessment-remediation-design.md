@@ -8,7 +8,7 @@
 
 A critical review of the repository surfaced a small set of user-visible bugs (reveal text shows ISO codes instead of country names; mode-specific tutorial and game-over copy fired in the wrong mode; a "Link copied" toast fires on the failure path), a confirmed regression where exiting compare view while satellite is on leaves country borders stuck near-invisible, two architectural smells (a module-level HUD-registration singleton; a `window.__funworldmap_guess` path that doubles as production code and test seam), a handful of doc drifts (testing docs claim DEV-only map exposure, bundle budget predates Sentry and `cities.json`), and several smaller loose ends (touch-unfriendly tooltip, unused zoom clamp, no focus management on the game-over dialog, no blocking theme init so dark-mode users see a light-to-dark flash, no coverage of the city-skip button's click handler, and a stale pre-launch checklist in the README).
 
-The `docs/superpowers/plans/archive/` directory also accumulated 13 completed plan files over the project's lifetime; the `docs/superpowers/README.md` convention says plans are forward-looking and completed work belongs elsewhere.
+The `docs/superpowers/plans/` directory also accumulated 13 completed plan files over the project's lifetime; the `docs/superpowers/README.md` convention says plans are forward-looking and completed work belongs elsewhere.
 
 ## Goals
 
