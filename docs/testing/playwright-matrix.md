@@ -48,10 +48,14 @@ local opt-in via `--project=<name>`. See `docs/systems/testing.md`
 ³ only `tutorial-first-click`.
 `*` = in the chromium `testIgnore` list on CI (runs locally only — see below).
 
+New specs default to the `chromium` project. Add a mobile project only when
+touch or viewport behavior is itself under test; the ✓¹/✓² entries are
+cross-engine DOM smoke runs, not full-suite coverage.
+
 ## CI testIgnore (chromium, CI-only)
 
 These 10 specs are excluded on CI pending a self-hosted GPU runner (tracking
-issue #106; `docs/roadmap.md` § "Flaky-on-free-CI specs (need GPU runner)").
+issue [#106](https://github.com/GranatenUdo/funworldmap/issues/106); `docs/roadmap.md` § "Flaky-on-free-CI specs (need GPU runner)").
 They run locally.
 
 label-contrast · header-play-reopens-launcher · panel-focus · accessibility ·

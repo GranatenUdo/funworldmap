@@ -19,7 +19,7 @@ funworldmap is a client-side single-page application: all code, data, and assets
 │  │         │                │                    │             │  │
 │  │  ┌──────▼────────────────▼────────────────────▼──────────┐ │  │
 │  │  │                   Hooks (state)                        │ │  │
-│  │  │  useMapInteractions · useCountryData · useCountrySearch │ │  │
+│  │  │  useMapInteractions · useCountryData · useCountrySearch│ │  │
 │  │  │  useTheme · useMediaQuery · URL hash sync              │ │  │
 │  │  └───────────────────────┬───────────────────────────────┘ │  │
 │  │                          │                                  │  │

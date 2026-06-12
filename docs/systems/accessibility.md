@@ -58,7 +58,7 @@ Two skip links at the top of the page, visible only on focus:
 | Tab    | Cycle through interactive elements (close button, expand/collapse, border chips) |
 | Enter  | Activate focused element (e.g., navigate to border country)                      |
 
-Source 'i' buttons are intentionally outside the Tab order (`tabIndex=-1`) so blur-out closes them cleanly; they open on hover, click/tap, or programmatic focus — a documented trade-off.
+Source 'i' buttons are intentionally outside the Tab order (`tabIndex=-1`) so blur-out closes them cleanly; they open on hover, click/tap, or programmatic focus — a deliberate trade-off (see the comment in `SourceTooltip.tsx`).
 
 ### Bottom Sheet (Mobile)
 

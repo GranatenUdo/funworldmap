@@ -96,12 +96,7 @@ flyTo({
 
 **Reduced motion**: When the user's system preference is `prefers-reduced-motion: reduce`, `duration` is set to `0` — the camera jumps instantly without animation. The application checks this preference, not MapLibre's built-in handling.
 
-**Zoom calculation**: `flyToCountry` derives a target zoom from the country's
-area — `zoom = clamp(11 − 1.7·log₁₀(areaKm²), 2, 12)` — and never zooms _out_
-below the user's current zoom (`Math.max(map.getZoom(), computed)`; see the
-2026-05-17 country-click-preserve-zoom spec). Large countries resolve to the
-clamp floor (zoom 2); only countries below roughly 100,000 km² pull the camera
-in meaningfully (Luxembourg ≈ 5.2, Vatican ≈ 11.6).
+**Zoom calculation**: `flyToCountry` derives a target zoom from the country's area — `zoom = clamp(11 − 1.7·log₁₀(areaKm²), 2, 12)` — and never zooms _out_ below the user's current zoom (`Math.max(map.getZoom(), computed)`; see the 2026-05-17 country-click-preserve-zoom spec). Large countries resolve to the clamp floor (zoom 2); only countries below roughly 100,000 km² pull the camera in meaningfully (Luxembourg ≈ 5.2, Vatican ≈ 11.6).
 
 **Coordinate swap**: REST Countries stores coordinates as `[latitude, longitude]` but MapLibre expects `[longitude, latitude]`. The `flyToCountry()` function handles this swap. See [Data System — Coordinate System](data.md).
 

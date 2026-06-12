@@ -37,7 +37,7 @@ If actual behaviour diverges from any "After" line below, that is the bug. The r
 
 3. **User clicks on the correct country on the map.**
    - After: Session transitions `playing → round-ended`. Score increases by 100. Streak increments. The target country's border highlights and the HUD shows a "correct" reveal line.
-   - After: **The country panel opens with the target country's data and a Continue button.** The panel renders for every country-pinning round-end — correct or wrong (`App.tsx` `roundEndTarget`); only the HUD reveal line differs by outcome.
+   - After: **The country panel opens with the target country's data and a Continue button.** The panel renders for every country-pinning round-end — correct or wrong (`App.tsx` `roundEndTarget`); the panel is identical — the reveal line and the hold semantics differ by outcome (see Steps 4–5).
 
 4. **User clicks Continue, presses Enter / Space / Escape, or waits ~3 s.**
    - After: Reveal animation ends. Session advances `round-ended → playing` with the next round. HUD updates to show the new target flag + name. Lives unchanged at 3.
@@ -128,7 +128,7 @@ These are not standalone scenarios but must hold during any of the flows above:
    - assert the prior state (e.g. session is in expected `status` before the action),
    - take the action (click, key press, hash write, dispatch),
    - assert the post-condition.
-3. **Translate to test seam where possible.** Game-flow assertions in e2e should prefer `__funworldmap_game.submitGuessInput(...)` over UI clicks, per `CLAUDE.md` rules. Only use real UI clicks when the test is verifying UI behaviour (focus, animation, ARIA), not game-state behaviour.
+3. **Translate to test seam where possible.** Game-flow assertions in e2e should prefer `__funworldmap_game.submitCountryGuess(...)` over UI clicks, per `CLAUDE.md` rules. Only use real UI clicks when the test is verifying UI behaviour (focus, animation, ARIA), not game-state behaviour.
 4. **Verify timing-sensitive steps with state, not timeouts.** A reveal "hold" is a reducer state (`round-ended`), not a wallclock duration — wait on the state, not the time. The wallclock guard exists only as a UX floor; the test should drive `finalize()` directly when verifying the post-game state.
 
 If a scenario step fails to match its "After" line on real hardware, that is the bug. File it with: scenario number, step number, observed behaviour, expected behaviour from this doc, and a `git rev-parse HEAD` to anchor the fact in time.
