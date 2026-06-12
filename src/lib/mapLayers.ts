@@ -187,8 +187,8 @@ export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): v
 
 /** Apply border paint for the current visual mode. Satellite mode uses a
  *  white-ish translucent border over imagery; vector mode uses the theme's
- *  default border color and opacity. One edit-point so the three hooks
- *  that care (theme, satellite, compare-dimming) agree on the baseline. */
+ *  default border color and opacity. Called from applyCountryBaselinePaint,
+ *  the single owner of the country baseline paint. */
 export function applyBorderPaintForMode(
   map: maplibregl.Map,
   opts: { isDark: boolean; satellite: boolean },
