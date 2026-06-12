@@ -198,7 +198,7 @@ async function readLabelPaints(page: Page, layerIds: string[]): Promise<LabelPai
 
 // ─── Wait for map loaded ──────────────────────────────────────────────────
 
-async function waitForMapLoaded(page: Page): Promise<void> {
+async function waitForMapLoadedOrWatchdogTimeout(page: Page): Promise<void> {
   // Race the success signal and the non-recoverable watchdog signal.
   // data-map-error="timeout" means the app-level watchdog fired before MapLibre's
   // 'load' event — [data-map-loaded] will never appear after that, so we fast-fail
@@ -275,7 +275,7 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
     await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     // Poll until applyMapTheme has applied the light text-color
     await expect
@@ -331,7 +331,7 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
     await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     await expect
       .poll(
@@ -378,7 +378,7 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
     await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     await expect
       .poll(
@@ -422,7 +422,7 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
     await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     await expect
       .poll(

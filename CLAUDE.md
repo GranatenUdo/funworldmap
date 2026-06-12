@@ -109,6 +109,7 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 | `openLauncher(page)`                | When the test needs the launcher open — clicks the header Play button and waits for it to be visible (cold load is map-first; the launcher does not auto-open)                                               |
 | `ensureLauncherDismissed(page)`     | When the launcher may be open and you need a clean map state — closes it if visible, else no-op                                                                                                              |
 | `gotoAndWaitForMap(page, path)`     | Combined: navigates, waits for `data-map-loaded`. Prefer over manual `goto + waitForSelector('[data-map-loaded]')`                                                                                           |
+| `waitForMapLoaded(page, timeout?)`  | Map-load wait WITHOUT tile stubbing — for GPU specs needing real basemap rendering. Prefer `gotoAndWaitForMap` everywhere else                                                                               |
 | `routeMapTiles(page)`               | When the test doesn't need real basemap tiles — stubs them to avoid network flake                                                                                                                            |
 
 **✅ Auto-retrying assertions over manual polls.** `expect(locator).toBeVisible()`, `expect(locator).toHaveCount(N)`, `expect.poll(...)` all retry up to a timeout. Reach for these instead of writing your own polling loops.

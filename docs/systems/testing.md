@@ -157,17 +157,18 @@ npx playwright test --project=chromium search.spec.ts   # a CI-skipped spec
 
 There is no `e2e/fixtures/` directory. Reusable readiness and interaction helpers live in `e2e/helpers.ts`. Prefer these over hand-rolled waits — `waitForTimeout` is banned (see the repo CLAUDE.md):
 
-| Helper                                                                  | Purpose                                                                     |
-| ----------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `waitForAppReady(page)`                                                 | Waits for bundled data + first React commit (`data-app-ready`)              |
-| `gotoAndWaitForMap(page, path)`                                         | Navigates and waits for `[data-map-loaded]`                                 |
-| `waitForCountryTilesRendered(page)`                                     | Waits for the GPU to rasterise country tiles before `queryRenderedFeatures` |
-| `waitForGameTestHook(page)`                                             | Waits for the `__funworldmap_game` seam to register                         |
-| `waitForAnimationIdle(locator)`                                         | Waits for `data-animation-state="idle"` (replaces animation timeouts)       |
-| `openLauncher(page)` / `ensureLauncherDismissed(page)`                  | Open / close the launcher deterministically                                 |
-| `submitAndWait(page, cca3)` / `finalizeGame(page)` / `getSession(page)` | Drive game flow through the test seams                                      |
-| `routeMapTiles(page)`                                                   | Stubs basemap tiles to avoid network flake                                  |
-| `forceWebGLContextLoss(page)`                                           | Triggers WebGL context-loss for the recovery test                           |
+| Helper                                                                  | Purpose                                                                                                                              |
+| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `waitForAppReady(page)`                                                 | Waits for bundled data + first React commit (`data-app-ready`)                                                                       |
+| `gotoAndWaitForMap(page, path)`                                         | Navigates and waits for `[data-map-loaded]`                                                                                          |
+| `waitForCountryTilesRendered(page)`                                     | Waits for the GPU to rasterise country tiles before `queryRenderedFeatures`                                                          |
+| `waitForGameTestHook(page)`                                             | Waits for the `__funworldmap_game` seam to register                                                                                  |
+| `waitForAnimationIdle(locator)`                                         | Waits for `data-animation-state="idle"` (replaces animation timeouts)                                                                |
+| `openLauncher(page)` / `ensureLauncherDismissed(page)`                  | Open / close the launcher deterministically                                                                                          |
+| `submitAndWait(page, cca3)` / `finalizeGame(page)` / `getSession(page)` | Drive game flow through the test seams                                                                                               |
+| `routeMapTiles(page, opts?)`                                            | Stubs basemap tiles to avoid network flake; pass `opts.styleStub` to serve a custom style JSON instead of the embedded positron stub |
+| `waitForMapLoaded(page, timeout?)`                                      | Map-load wait WITHOUT tile stubbing — for GPU specs needing real basemap rendering. Prefer `gotoAndWaitForMap` everywhere else       |
+| `forceWebGLContextLoss(page)`                                           | Triggers WebGL context-loss for the recovery test                                                                                    |
 
 For the full list and signatures, read `e2e/helpers.ts` directly.
 

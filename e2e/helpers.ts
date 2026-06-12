@@ -275,6 +275,9 @@ export async function waitForRevealLineCoords(
  *
  * Call BEFORE page.goto('/') so the intercepts are in place before any
  * network activity begins.
+ *
+ * Pass opts.styleStub to serve a custom style JSON instead of the embedded
+ * positron stub (see label-contrast.spec.ts's buildRichPositronStub).
  */
 export async function routeMapTiles(page: Page, opts: { styleStub?: Buffer } = {}): Promise<void> {
   // 1×1 transparent PNG (base64-encoded)
@@ -372,9 +375,10 @@ export async function routeMapTiles(page: Page, opts: { styleStub?: Buffer } = {
 
     // ── Style JSON ─────────────────────────────────────────────────────────
     // The basemap style JSON lives at /styles/<name> with no file extension.
-    // Return our embedded stub so MapLibre gets a valid style immediately,
-    // with no real-network latency. The probe request (?probe=1) also gets
-    // the stub — probeBasemap only checks res.ok, not the body.
+    // Return the caller's style stub if provided, else our embedded one, so
+    // MapLibre gets a valid style immediately with no real-network latency.
+    // The probe request (?probe=1) also gets the stub — probeBasemap only
+    // checks res.ok, not the body.
     if (/^\/styles\/[^/]+$/.test(urlObj.pathname.replace(/\?.*$/, ''))) {
       return route.fulfill({
         status: 200,
