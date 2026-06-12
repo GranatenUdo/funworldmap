@@ -44,7 +44,11 @@ export default defineConfig({
         // collapses every animation to ~0ms. Eliminates the entire
         // animation-driven actionability flake class on Linux/ANGLE CI.
         // See docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md.
-        reducedMotion: 'reduce',
+        //
+        // Playwright 1.59 has no dedicated `reducedMotion` test option — a bare
+        // `reducedMotion: 'reduce'` here is silently dropped. The supported
+        // route is `contextOptions` (see the testOptions.contextOptions docs).
+        contextOptions: { reducedMotion: 'reduce' },
         launchOptions: {
           args: ['--use-gl=angle', '--use-angle=default'],
         },
