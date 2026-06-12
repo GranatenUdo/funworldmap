@@ -1,3 +1,5 @@
+> **Tombstone (2026-06-12):** the daily-puzzle/retention feature this spec designed was removed in PR #97 (2026-05-30, "Remove the daily puzzle"). Kept unmodified for history — do not implement from it.
+
 # Retention Program v1 — Daily Puzzle, Streak, Share
 
 **Date:** 2026-04-21

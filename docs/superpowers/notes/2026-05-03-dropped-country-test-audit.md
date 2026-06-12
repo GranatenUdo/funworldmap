@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-03
 **Worktree branch:** `plan/fixes-and-palestine` (off `origin/main` @ `7eafc26`)
-**Plan:** [`docs/superpowers/plans/2026-05-03-quarantine-bugs-and-palestine.md`](../plans/2026-05-03-quarantine-bugs-and-palestine.md), Phase 3 Task 3.0
+**Plan:** [`docs/superpowers/plans/2026-05-03-quarantine-bugs-and-palestine.md`](../plans/2026-05-03-quarantine-bugs-and-palestine.md), Phase 3 Task 3.0 *(dead link — this plan file was never committed; the note merged without it in PR #33)*
 
 ## TL;DR
 

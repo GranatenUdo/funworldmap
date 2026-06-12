@@ -1,3 +1,7 @@
 # Machine-generated — never reformat (the lint-staged `*.json` glob would
 # otherwise rewrite the whole lockfile on any commit that touches it).
 package-lock.json
+
+# Dated historical artifacts (specs/plans/notes) — never reformat; tombstones
+# and link repairs must not churn historical bytes.
+docs/superpowers/

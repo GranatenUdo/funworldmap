@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-28
 **Triggered by:** PRs #25 (game-flow cascade fix) and #26 (game-flow polish) both saw `e2e (chromium)` red on every CI run with different tests failing each time, while local `npm run test:e2e` passed cleanly. Today's `main`-branch CI also failed both e2e jobs (run `24998469360`), confirming the flakes pre-date both PRs.
-**Predecessor work:** [`docs/superpowers/plans/2026-04-22-deflake-chromium-e2e.md`](../plans/2026-04-22-deflake-chromium-e2e.md), [`docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md`](2026-04-22-chromium-flake-diagnosis.md), merged in commit `422c076` (2026-04-22).
+**Predecessor work:** [`docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md`](../plans/archive/2026-04-22-deflake-chromium-e2e.md), [`docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md`](2026-04-22-chromium-flake-diagnosis.md), merged in commit `422c076` (2026-04-22).
 
 ## TL;DR
 
@@ -12,7 +12,7 @@ Concretely: `search.spec.ts` still has **12** `waitForTimeout` calls (one per te
 
 ## What the 2026-04-22 deflake plan actually fixed
 
-From `docs/superpowers/plans/2026-04-22-deflake-chromium-e2e.md`:
+From `docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md`:
 
 | Task | Change | Scope |
 |---|---|---|

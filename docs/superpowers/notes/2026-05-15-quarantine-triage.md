@@ -1,6 +1,6 @@
 # E2E Quarantine Triage — 2026-05-15
 
-Documents the 4 active `test.fixme(!!process.env.CI, '<issue>')` quarantines in the e2e suite, with diagnosis and resolution paths. Produced as Phase 6 of the 2026-05-15 cleanup plan (`docs/superpowers/plans/2026-05-15-repository-cleanup-presentability.md`).
+Documents the 4 active `test.fixme(!!process.env.CI, '<issue>')` quarantines in the e2e suite, with diagnosis and resolution paths. Produced as Phase 6 of the 2026-05-15 cleanup plan (`docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md`).
 
 User constraint guiding this triage: **exclude GPU runner from CI pipelines — verify GPU paths locally only**. The CI baseline stays on ubuntu-latest's headless ANGLE renderer with `reducedMotion: 'reduce'` and 4-shard parallelism. Suggested fixes below respect this constraint.
 
