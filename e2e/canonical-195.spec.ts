@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { ensureLauncherDismissed, waitForAppReady } from './helpers'
+import { ensureLauncherDismissed } from './helpers'
 
 test.describe('canonical-195 dataset reduction', () => {
   // The "Launcher subtitle reflects the canonical 195 count" test was removed

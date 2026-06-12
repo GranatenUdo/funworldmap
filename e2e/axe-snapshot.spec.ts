@@ -9,20 +9,14 @@
  * States:
  *   1. Cold launcher         — `/` with cleared localStorage
  *   2. Country panel open    — `/#FRA`
- *   3. Game-over modal       — driven via `finalizeGame()` seam
+ *   3. Game-over modal       — driven via the "End game" button
  *
  * See: docs/superpowers/notes/2026-05-05-post-audit-verification.md
  */
 
 import { test, expect } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
-import {
-  waitForAppReady,
-  waitForGameTestHook,
-  finalizeGame,
-  openLauncher,
-  gotoAndWaitForMap,
-} from './helpers'
+import { waitForAppReady, waitForGameTestHook, openLauncher, gotoAndWaitForMap } from './helpers'
 
 test.setTimeout(120_000)
 
@@ -30,10 +24,17 @@ test.setTimeout(120_000)
 const AXE_EXCLUDES = ['.maplibregl-canvas', '.z-\\[200\\]']
 
 /**
+ * Violation list type derived from AxeBuilder's return type — `axe-core` is a
+ * transitive dependency of `@axe-core/playwright` and is not hoisted to the
+ * root node_modules, so `import('axe-core')` does not resolve from here.
+ */
+type AxeViolations = Awaited<ReturnType<AxeBuilder['analyze']>>['violations']
+
+/**
  * Summarise violations to stdout in a compact table and return the list.
  * We never throw — the spec is baseline-collection-only.
  */
-function reportViolations(stateName: string, violations: import('axe-core').Result[]): void {
+function reportViolations(stateName: string, violations: AxeViolations): void {
   if (violations.length === 0) {
     console.log(`\n[axe-snapshot] ${stateName}: No violations`)
     return
