@@ -32,6 +32,9 @@ vi.mock('maplibre-gl', () => {
     off() {}
     remove() {}
     setProjection() {}
+    // Present so fire('load') exercises the handler's intended path rather
+    // than bailing through the background-layer try/catch.
+    setPaintProperty() {}
     fire(evt: string, e?: unknown) {
       this._handlers[evt]?.forEach((h) => h(e ?? {}))
     }
