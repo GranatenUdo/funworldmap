@@ -173,7 +173,7 @@ export const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
 ]
 
 /** The `country-fill` opacity for the current visual mode. One edit-point so
- *  useSatelliteMode and useCompareViewDimming restore the same baseline
+ *  applyCountryBaselinePaint applies the same baseline in every mode
  *  (mirrors applyBorderPaintForMode for borders). */
 export function fillOpacityForMode(satellite: boolean): maplibregl.ExpressionSpecification {
   return satellite ? SATELLITE_FILL_OPACITY : DEFAULT_FILL_OPACITY
@@ -242,7 +242,7 @@ export function applyCountryBaselinePaint(
 }
 
 /** Apply a uniform color to all four selection-highlight layers in one call.
- *  Used by useMapTheme (theme change) and useCompareViewDimming (compare
+ *  Used by useMapTheme (theme change) and useCompareViewHighlight (compare
  *  enter/exit) so the four setPaintProperty calls have a single definition. */
 export function applySelectionColor(map: maplibregl.Map, color: string): void {
   map.setPaintProperty(LAYER.selected, 'fill-color', color)
