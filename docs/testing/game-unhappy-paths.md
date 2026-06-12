@@ -120,7 +120,7 @@ The reveal animation is the moment of feedback after a guess. It carries the gam
 **Pre:** Free Country Pinning, mid-reveal animation (after a correct guess, before auto-advance).
 
 1. **User presses Escape.**
-   - After: `endGame` dispatches (or end-game confirm opens — see scenario E1). Either way, the in-progress reveal animation aborts.
+   - After: `endGame` dispatches; the in-progress reveal animation aborts.
    - After: Map returns to a sensible state (default view or current view, not stuck mid-pan).
    - After: No reveal artifacts (highlight, arc, marker) remain on screen.
 
