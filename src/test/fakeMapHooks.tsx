@@ -13,6 +13,7 @@ export function makeFakeMap() {
   }
 }
 
+// eslint-disable-next-line react-refresh/only-export-components -- WHY: test-only helper file; fast-refresh concerns don't apply here.
 function Injector({ children, map }: { children: ReactNode; map: unknown }) {
   const refs = useMap()
   refs.mapRef.current = map as never
