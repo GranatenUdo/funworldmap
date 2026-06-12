@@ -14,6 +14,7 @@ describe('BorderChip', () => {
         size="panel"
       />,
     )
+    expect(screen.getByRole('button', { name: 'Algeria' }).querySelector('img')).not.toBeNull()
     screen.getByRole('button', { name: 'Algeria' }).click()
     expect(onSelect).toHaveBeenCalledWith('DZA')
   })
