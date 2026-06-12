@@ -44,13 +44,29 @@ describe('GameSessionProvider', () => {
     expect(typeof seam?.endGame).toBe('function')
     expect(typeof seam?.finalize).toBe('function')
     expect(typeof seam?.restart).toBe('function')
-    // getSession returns the live session through the ref.
-    expect((seam!.getSession as () => { status: string })().status).toBe(
-      result.current.session.status,
-    )
+    // getSession reads the LIVE session through the ref — drive a transition
+    // via the seam's own restart and observe it (a stale snapshot would
+    // still report 'idle').
+    expect((seam!.getSession as () => { status: string })().status).toBe('idle')
+    act(() => {
+      ;(seam!.restart as (m: string, r: unknown, n: number | null) => void)(
+        'country-pinning',
+        {
+          kind: 'country-pinning',
+          targetCca3: 'FRA',
+          targetName: 'France',
+          targetFlag: '',
+          targetCentroid: [0, 0],
+        },
+        null,
+      )
+    })
+    expect((seam!.getSession as () => { status: string })().status).toBe('playing')
+    expect(result.current.session.status).toBe('playing')
     unmount()
     // Teardown deletes per-key, so __funworldmap_game still exists but keys are gone.
     const after = (window as { __funworldmap_game?: Record<string, unknown> }).__funworldmap_game
+    expect(after).toBeDefined()
     expect(after?.getSession).toBeUndefined()
   })
 })

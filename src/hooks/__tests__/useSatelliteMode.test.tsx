@@ -60,5 +60,6 @@ describe('useSatelliteMode', () => {
       wrapper: makeMapWrapper(fake),
     })
     expect(fake.setLayoutProperty).not.toHaveBeenCalled()
+    expect(fake.setTerrain).not.toHaveBeenCalled()
   })
 })

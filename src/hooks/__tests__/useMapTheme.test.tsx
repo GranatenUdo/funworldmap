@@ -11,7 +11,6 @@ function makeThemeFakeMap(layers: Array<{ id: string; type: string }>) {
     setSky: vi.fn((...args: unknown[]) => calls.setSky.push(args)),
     getLayer: (id: string) => layers.find((l) => l.id === id),
     getStyle: () => ({ layers }),
-    setFilter: vi.fn(),
     calls,
   }
 }
