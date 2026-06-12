@@ -160,6 +160,40 @@ describe('useMapInstance', () => {
     expect(state.restoreCalls).toBe(1)
   })
 
+  it('retryWebGL dedupes the 1s reload-fallback timer on rapid re-click', () => {
+    const setSpy = vi.spyOn(window, 'setTimeout')
+    const clearSpy = vi.spyOn(window, 'clearTimeout')
+
+    const { result } = renderHook(
+      () => {
+        const ref = useRef<HTMLDivElement | null>(document.getElementById('c') as HTMLDivElement)
+        return useMapInstance({ containerRef: ref, onLoad: () => Promise.resolve() })
+      },
+      { wrapper: Wrapper },
+    )
+
+    // Count only the 1000 ms fallback setTimeout calls (not the watchdog or other
+    // internal calls that may fire during render/setup).
+    const armsBefore = setSpy.mock.calls.filter((call) => call[1] === 1_000).length
+
+    result.current.retryWebGL()
+    result.current.retryWebGL()
+
+    // Two clicks → two 1s timers armed, but the second click clears the first.
+    const armsAfter = setSpy.mock.calls.filter((call) => call[1] === 1_000).length
+    expect(armsAfter - armsBefore).toBe(2)
+
+    // clearTimeout must have been called (deduping the first timer).
+    // Identify the id returned by the first 1s arm and confirm it was cleared.
+    const firstArmCall = setSpy.mock.results.filter((_, i) => setSpy.mock.calls[i]?.[1] === 1_000)[
+      armsBefore
+    ]
+    expect(clearSpy).toHaveBeenCalledWith(firstArmCall?.value)
+
+    setSpy.mockRestore()
+    clearSpy.mockRestore()
+  })
+
   it('passes clickTolerance: 8 to the MapLibre constructor', async () => {
     const maplibre = (await import('maplibre-gl')) as unknown as {
       __constructorArgs: Array<Record<string, unknown>>

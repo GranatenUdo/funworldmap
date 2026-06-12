@@ -53,6 +53,9 @@ export function useMapInstance({
   // lost — so retryWebGL cannot fetch the extension at retry time; it must
   // use this pre-captured instance to call restoreContext().
   const loseContextRef = useRef<WEBGL_lose_context | null>(null)
+  // Pending reload-fallback timer from retryWebGL — deduped on re-click and
+  // cleared on unmount so a stale timer can't fire into a torn-down map.
+  const retryTimerRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -192,7 +195,10 @@ export function useMapInstance({
     const canvas = map.getCanvas()
     // Capture WEBGL_lose_context now, while the context is healthy. On a lost
     // context getExtension() returns null, so this is the only reliable time
-    // to grab it. webgl2 is the only context MapLibre v5 creates; the webgl fallback is defensive only.
+    // to grab it. MapLibre 5.x tries webgl2 then falls back to webgl1 (_setupPainter), so on a
+    // WebGL1-only browser the webgl2 request returns null here (the canvas already
+    // holds a 'webgl' context) and the webgl fallback is LOAD-BEARING — without it
+    // the extension is never captured and retry degrades to the reload fallback.
     const gl = canvas.getContext('webgl2') ?? canvas.getContext('webgl')
     loseContextRef.current = gl?.getExtension('WEBGL_lose_context') ?? null
     canvas.addEventListener('webglcontextlost', onCanvasContextLost, { passive: false })
@@ -211,6 +217,10 @@ export function useMapInstance({
       canvas.removeEventListener('webglcontextlost', onCanvasContextLost)
       canvas.removeEventListener('webglcontextrestored', onCanvasContextRestored)
       loseContextRef.current = null
+      if (retryTimerRef.current !== null) {
+        window.clearTimeout(retryTimerRef.current)
+        retryTimerRef.current = null
+      }
       map.remove()
       mapRef.current = null
       if (import.meta.env.VITE_TEST_HOOKS) {
@@ -234,7 +244,11 @@ export function useMapInstance({
       // Ignore — restoreContext throws if the context is not currently lost.
     }
     // Fallback: if webglcontextrestored hasn't fired after 1 s, reload.
-    window.setTimeout(() => {
+    // Clear any existing timer first — rapid re-clicks would otherwise arm
+    // multiple reloads.
+    if (retryTimerRef.current !== null) window.clearTimeout(retryTimerRef.current)
+    retryTimerRef.current = window.setTimeout(() => {
+      retryTimerRef.current = null
       setMapErrorState((prev) => {
         if (prev === 'webgl-lost') {
           window.location.reload()
