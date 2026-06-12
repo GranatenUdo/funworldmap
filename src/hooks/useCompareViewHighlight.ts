@@ -12,8 +12,10 @@ interface Options {
 /** Compare-view highlight management: suppress hover layers while picking is
  *  meaningless, and pin the A/B colours to the panel badges (A = coral,
  *  B = teal-dim). Baseline fill/border dimming lives in
- *  useCountryBaselinePaint — this hook no longer writes baseline paint, so
- *  hook call order no longer matters (#111 item 1). */
+ *  useCountryBaselinePaint, so baseline-paint call order no longer matters
+ *  (#111 item 1). Call order: must still run AFTER useMapTheme — both write
+ *  the selection colours, and the compare CORAL pin must win over the
+ *  theme's dark-mode CORAL_LIGHT. */
 export function useCompareViewHighlight({ loaded, compareWith, resolvedTheme }: Options): void {
   const { mapRef } = useMap()
 
