@@ -131,7 +131,7 @@ await expect(page.getByTestId('expected-second')).toBeFocused()
 1. **Don't re-run blindly.** Read the trace (`test-results/<test>/trace.zip` → `npx playwright show-trace <file>`).
 2. **Check whether the test follows the rules above.** If `waitForTimeout` is in the failure path, that's the bug.
 3. **Reproduce locally with `--workers=2`** (matches CI parallelism). Single-worker local runs hide most flakes.
-4. **The escalation rule from `docs/superpowers/plans/2026-04-22-deflake-chromium-e2e.md`:** if local 10× green but CI red, the test is making an assumption your local env happens to satisfy. Don't paper over with retries — fix the assumption.
+4. **The escalation rule from `docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md`:** if local 10× green but CI red, the test is making an assumption your local env happens to satisfy. Don't paper over with retries — fix the assumption.
 
 ### Quarantining a CI-only flake (last-resort)
 
