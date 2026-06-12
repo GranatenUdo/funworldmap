@@ -116,7 +116,7 @@ The existing `waitForAppReady(page)` helper presumably uses a selector that matc
 My test plan says:
 
 > 3. ... Country panel is **not** opened (mid-game; panel is a post-reveal artifact only).
-> 4. ... HUD shows a "wrong" reveal line ... [implied auto-advance like step 4]
+>    5\. ... HUD shows a "wrong" reveal line ... [implied auto-advance like step 4]
 
 Actual behavior: after a **wrong** guess (with lives remaining), the country panel **does open** mid-game, populated with the correct country's full info, and a **"Continue" button** sits inside it. The user must click Continue to advance. There is no auto-advance for wrong guesses (verified by waiting 15 s with no transition).
 

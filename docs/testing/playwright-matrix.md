@@ -10,7 +10,7 @@ update this file in the same PR.
 | ----------------------- | -------- | -------------------------- | ----- | ------------------------------------------------- | -------------------------------------------------------------------------- |
 | `chromium`              | Chromium | Desktop                    | No    | ANGLE (real GPU locally; software fallback on CI) | All desktop specs; consolidated from chromium + chromium-gpu on 2026-05-02 |
 | `mobile-chromium`       | Chromium | Pixel 7 (412×915)          | Yes   | ANGLE                                             | Mobile-viewport regression coverage                                        |
-| `mobile-webkit`         | WebKit   | iPhone 14                  | Yes   | Native                                            | Second mobile engine (DOM specs only)                                      |
+| `mobile-webkit`         | WebKit   | iPhone 14                  | Yes   | Native                                            | Second mobile engine                                                       |
 | `desktop-firefox-touch` | Firefox  | 412×839 + `hasTouch: true` | Yes   | Native                                            | Gecko touch-event proxy. NOT a real Firefox-Android repro                  |
 
 CI runs **chromium only** (4-way sharded). The other three projects are
@@ -27,7 +27,7 @@ local opt-in via `--project=<name>`. See `docs/systems/testing.md`
   `prefers-reduced-motion` CSS rule collapses animations — this removed the
   animation-actionability flake class. A spec that needs rich-motion behavior
   must opt back in per test via `page.emulateMedia(...)` (see
-  `reveal-animation-reduced-motion.spec.ts` for the pattern).
+  `animation-interrupt.spec.ts`'s `emulateMedia({ reducedMotion: 'no-preference' })` for the pattern).
 
 ## Spec assignment
 
