@@ -156,7 +156,7 @@ export { EMPTY_FILTER }
 
 /** The default `fill-opacity` expression for `country-fill`: 5% by default,
  *  28% when the country has the `hover` feature state. */
-export const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
+const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
   'case',
   ['boolean', ['feature-state', 'hover'], false],
   0.28,
@@ -165,7 +165,7 @@ export const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
 
 /** The `country-fill` opacity in satellite mode: near-transparent base (3%)
  *  so imagery shows through, 32% on hover. */
-export const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
+const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
   'case',
   ['boolean', ['feature-state', 'hover'], false],
   0.32,
@@ -174,8 +174,9 @@ export const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
 
 /** The `country-fill` opacity for the current visual mode. One edit-point so
  *  applyCountryBaselinePaint applies the same baseline in every mode
- *  (mirrors applyBorderPaintForMode for borders). */
-export function fillOpacityForMode(satellite: boolean): maplibregl.ExpressionSpecification {
+ *  (mirrors applyBorderPaintForMode for borders). Not exported —
+ *  applyCountryBaselinePaint/applyBaselinePaint are the doorway. */
+function fillOpacityForMode(satellite: boolean): maplibregl.ExpressionSpecification {
   return satellite ? SATELLITE_FILL_OPACITY : DEFAULT_FILL_OPACITY
 }
 
