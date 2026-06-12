@@ -135,6 +135,11 @@ export function useMapInstance({
 
     map.on('load', () => {
       window.clearTimeout(watchdog)
+      // 'load' fired, so the style demonstrably loaded — clear a latched
+      // pre-load 'style' error (transient tile/style fetch hiccups otherwise
+      // pin the full-screen overlay over a working map). timeout / webgl-lost /
+      // country-data are real failures and stay latched.
+      setMapErrorState((prev) => (prev === 'style' ? null : prev))
       map.setProjection({ type: 'globe' })
       // Make the basemap's background layer transparent so the body CSS
       // (hex-grid + deep-navy gradient in src/index.css) shows through the
