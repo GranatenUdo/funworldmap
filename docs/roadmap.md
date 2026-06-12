@@ -131,6 +131,7 @@ Source: [`2026-06-11-repo-cleanup-and-fixes-design.md`](superpowers/specs/2026-0
 - **Route game announcement strings through `messages.ts`** — `useGameAnnouncements` inlines its prompt strings; restore the i18n routing when i18n work starts.
 - **Unit-test gaps** — `useSatelliteMode`, `useMapTheme`, `GameSessionProvider` pool/status guards, reducer `endGame`/`overrideRound` actions.
 - **Pre-load `'style'` error latching** — a transient pre-load tile error latches `mapError='style'` permanently even when the map then loads fine (`useMapInstance`'s error handler never clears it on successful load); visible on every stubbed e2e load via `data-map-error="style"`. Found during the 2026-06 webgl-retry fix. Clear or downgrade `'style'` on `load`.
+- **`eslint-plugin-playwright` on the e2e lint block** — `missing-playwright-await` catches unawaited `expect()` syntactically (the classic e2e flake source, invisible to the current non-type-checked lint), and `no-wait-for-timeout` / `no-force-option` would mechanize two of CLAUDE.md's hand-enforced forbidden patterns. Alternative: type-checked lint via `tsconfig.e2e.json` (declined in the 2026-06 cleanup for pre-commit latency).
 
 ## Rejected (won't build)
 
