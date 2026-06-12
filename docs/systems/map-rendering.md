@@ -2,7 +2,7 @@
 
 ## Technology
 
-**MapLibre GL JS** renders the map using WebGL2 in an HTML `<canvas>` element. This means:
+**MapLibre GL JS** renders the map using WebGL (WebGL2 preferred) in an HTML `<canvas>` element. This means:
 
 - GPU-accelerated rendering — smooth 60fps pan/zoom on modern hardware
 - Vector tiles — basemap imagery stays crisp at any zoom level
@@ -128,6 +128,6 @@ These changes are applied through the same `setPaintProperty` calls, fully indep
 
 The specific basemap layer IDs to modify depend on OpenFreeMap's positron style spec. If layer IDs cannot be identified (e.g., style spec changes), the basemap remains light while UI chrome (header, sidebar) still darkens. This is a graceful degradation — dark UI with a light map is functional.
 
-## WebGL2 Requirement
+## WebGL Requirement
 
-MapLibre GL JS requires WebGL2 support in the browser. The `maplibregl.Map` constructor throws when WebGL2 is unavailable; `useMapInstance` catches it and shows a fallback message with browser-upgrade guidance instead of a blank canvas (rare — mainly enterprise browsers with GPU disabled, or very old devices). Note that some older browsers support WebGL1 but not WebGL2 — the error message specifically mentions WebGL2. See [System Overview — Error Handling](overview.md).
+MapLibre GL JS prefers WebGL2 and falls back to WebGL1 (verified against maplibre-gl 5.23; earlier v4 builds were WebGL2-only). The `maplibregl.Map` constructor throws only when no WebGL context can be created at all; `useMapInstance` catches it and shows a fallback message with browser-upgrade guidance instead of a blank canvas (rare — mainly enterprise browsers with GPU disabled, or very old devices). See [System Overview — Error Handling](overview.md).
