@@ -5,11 +5,14 @@ import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
-  { name: 'app/ignores', ignores: ['dist', 'scripts/**', 'e2e/**', 'cloudflare-worker/**', '**/*.config.{js,ts}', '*.config.{js,ts}'] },
+  { name: 'app/ignores', ignores: ['dist', 'cloudflare-worker/**', '**/*.config.{js,ts}', '*.config.{js,ts}'] },
   {
     name: 'app/typescript-strict',
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
-    files: ['**/*.{ts,tsx}'],
+    // Scoped to src/ — the type-checked rules require parserOptions.project,
+    // and only src/ is in tsconfig.app.json. e2e/ and scripts/ get the
+    // cheaper non-type-checked config below.
+    files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -48,6 +51,16 @@ export default tseslint.config(
       'react-hooks/refs': 'off',
       'react-hooks/set-state-in-effect': 'off',
       'react-hooks/immutability': 'off',
+    },
+  },
+  {
+    name: 'tooling/e2e-and-scripts',
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ['e2e/**/*.ts', 'scripts/**/*.ts'],
+    languageOptions: {
+      // node for the runners (Playwright, tsx scripts); browser for
+      // page.evaluate callbacks, which execute in the page.
+      globals: { ...globals.node, ...globals.browser },
     },
   },
 )

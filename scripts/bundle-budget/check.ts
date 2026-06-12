@@ -34,7 +34,6 @@ const files = readdirSync(distAssets)
 // can fail closed on unrecognised additions (e.g. Vite emits a new chunk type).
 const accounted = new Set<string>()
 
-let mainJsBytes = 0
 let lazyJsBytes = 0
 let cssBytes = 0
 let asyncCountriesBytes = 0
@@ -51,7 +50,7 @@ if (indexJs.length === 0) {
   console.error('No main JS chunk found in dist/assets/')
   process.exit(1)
 }
-mainJsBytes = gzipSize(join(distAssets, indexJs[0].f))
+const mainJsBytes = gzipSize(join(distAssets, indexJs[0].f))
 accounted.add(indexJs[0].f)
 for (let i = 1; i < indexJs.length; i++) {
   lazyJsBytes += gzipSize(join(distAssets, indexJs[i].f))

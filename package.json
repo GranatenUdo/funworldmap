@@ -29,7 +29,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "check": "npm run lint && npm run typecheck && npm run test:unit",
-    "lint": "eslint src/",
+    "lint": "eslint src/ e2e/ scripts/",
     "format": "prettier --write src/",
     "test:e2e": "playwright test",
     "test:unit": "vitest run",
