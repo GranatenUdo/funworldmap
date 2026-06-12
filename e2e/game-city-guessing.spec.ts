@@ -1,13 +1,9 @@
 import { test, expect, type Page } from '@playwright/test'
-import { finalizeGame, openLauncher } from './helpers'
-
-async function waitForMap(page: Page) {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-}
+import { finalizeGame, openLauncher, waitForMapLoaded } from './helpers'
 
 async function openCityGuessing(page: Page) {
   await page.goto('/')
-  await waitForMap(page)
+  await waitForMapLoaded(page)
   await openLauncher(page)
   await page.getByTestId('launcher-card-city-guessing-play').click()
   await expect(page.getByTestId('game-hud')).toBeVisible()
@@ -60,7 +56,7 @@ test.describe('City Guessing game', () => {
 
   test('deep link #game/city-guessing/play boots into playing', async ({ page }) => {
     await page.goto('/#game/city-guessing/play')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await expect(page.getByTestId('game-hud')).toBeVisible()
     await expect(page.getByTestId('hud-round-counter')).toContainText('1')
   })
@@ -153,7 +149,7 @@ test.describe('City Guessing game', () => {
 
   test('End game opens game-over; Back to map exits cleanly and clears hash', async ({ page }) => {
     await page.goto('/#game/city-guessing/play')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await page.getByTestId('game-end').click()
     // End game in free mode now routes through finishFree → game-over UI shows
     // (Bug 3 fix); user must click Back to map to fully exit.

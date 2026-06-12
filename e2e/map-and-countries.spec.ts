@@ -1,19 +1,14 @@
 import { test, expect } from '@playwright/test'
-import { ensureLauncherDismissed, waitForCountryTilesRendered } from './helpers'
+import { ensureLauncherDismissed, waitForCountryTilesRendered, waitForMapLoaded } from './helpers'
 
 // Map interaction tests need the map to FULLY load.
 // If these fail, that's a real bug — not silently skipped.
-
-/** Wait for the map to be fully loaded with country layers */
-async function waitForMapReady(page: import('@playwright/test').Page) {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 45000 })
-}
 
 test.describe('Map rendering', () => {
   test('map loads with country boundary layers', async ({ page }) => {
     await page.goto('/')
     await ensureLauncherDismissed(page)
-    await waitForMapReady(page)
+    await waitForMapLoaded(page, 45_000)
 
     const hasLayers = await page.evaluate(() => {
       const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
@@ -37,7 +32,7 @@ test.describe('Map rendering', () => {
   test('GeoJSON features have valid IDs in properties', async ({ page }) => {
     await page.goto('/')
     await ensureLauncherDismissed(page)
-    await waitForMapReady(page)
+    await waitForMapLoaded(page, 45_000)
 
     await waitForCountryTilesRendered(page)
 
@@ -85,7 +80,7 @@ test.describe('Country click interaction', () => {
   test('clicking a country sets URL hash and opens panel', async ({ page }) => {
     await page.goto('/')
     await ensureLauncherDismissed(page)
-    await waitForMapReady(page)
+    await waitForMapLoaded(page, 45_000)
     await waitForCountryTilesRendered(page)
 
     // Find a country feature at the center of the viewport and click it
@@ -133,7 +128,7 @@ test.describe('Country click interaction', () => {
     // Start with default view (no hash)
     await page.goto('/')
     await ensureLauncherDismissed(page)
-    await waitForMapReady(page)
+    await waitForMapLoaded(page, 45_000)
     await waitForCountryTilesRendered(page)
 
     // First, click a country to select it
@@ -203,7 +198,7 @@ test.describe('Country click interaction', () => {
 test.describe('Country selection via hash', () => {
   test('navigating to #FRA selects France with highlight', async ({ page }) => {
     await page.goto('/#FRA')
-    await waitForMapReady(page)
+    await waitForMapLoaded(page, 45_000)
 
     // data-selected-country should be set
     const attr = await page.locator('[data-selected-country]').getAttribute('data-selected-country')
@@ -235,7 +230,7 @@ test.describe('Hover interaction', () => {
   test('hovering over a country changes cursor to pointer', async ({ page }) => {
     await page.goto('/')
     await ensureLauncherDismissed(page)
-    await waitForMapReady(page)
+    await waitForMapLoaded(page, 45_000)
     await waitForCountryTilesRendered(page)
 
     // Find a country feature

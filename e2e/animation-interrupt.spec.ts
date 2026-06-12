@@ -1,11 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForGameTestHook, getSession, openLauncher } from './helpers'
+import { waitForGameTestHook, getSession, openLauncher, waitForMapLoaded } from './helpers'
 
 test.setTimeout(60_000)
-
-async function waitForMap(page: Page) {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-}
 
 async function startCountryPinningWithFRA(page: Page): Promise<void> {
   // Override the project's global reducedMotion:'reduce' so the panel slide-in
@@ -13,7 +9,7 @@ async function startCountryPinningWithFRA(page: Page): Promise<void> {
   // animation timing (data-animation-state='entering' and the ~3s reveal hold).
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
-  await waitForMap(page)
+  await waitForMapLoaded(page)
   await openLauncher(page)
   await page.getByTestId('launcher-card-country-pinning-play').click()
   await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })

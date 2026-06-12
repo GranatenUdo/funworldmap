@@ -1,10 +1,6 @@
-import { test, expect, type Page } from '@playwright/test'
-import { waitForRevealLineCoords, openLauncher } from './helpers'
+import { test, expect } from '@playwright/test'
+import { waitForRevealLineCoords, openLauncher, waitForMapLoaded } from './helpers'
 import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
-
-async function waitForMap(page: Page) {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-}
 
 test.describe('reveal animation', () => {
   test('wrong country guess renders a tessellated line from guess → target', async ({ page }) => {
@@ -12,7 +8,7 @@ test.describe('reveal animation', () => {
     // reduced-motion baseline (mirrors animation-interrupt.spec.ts).
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     // Precondition: the rich-motion override actually applied — otherwise this
     // spec silently tests the one-shot reduced path and the 65-point arc
     // assertion still passes (mirrors the reduced-motion sibling's assert).
@@ -93,7 +89,7 @@ test.describe('reveal animation', () => {
     // reduced-motion baseline (mirrors animation-interrupt.spec.ts).
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     // Precondition: the rich-motion override actually applied — otherwise this
     // spec silently tests the one-shot reduced path and the 65-point arc
     // assertion still passes (mirrors the reduced-motion sibling's assert).

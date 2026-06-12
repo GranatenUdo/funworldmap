@@ -199,6 +199,15 @@ export async function waitForCountryTilesRendered(page: Page, timeout = 10_000):
 }
 
 /**
+ * Wait for the map's first load WITHOUT stubbing tiles — for GPU specs that
+ * need real basemap rendering (gotoAndWaitForMap stubs tiles and is the right
+ * choice for everything else). Replaces the per-spec `waitForMap` copies.
+ */
+export async function waitForMapLoaded(page: Page, timeout = 60_000): Promise<void> {
+  await page.waitForSelector('[data-map-loaded]', { timeout })
+}
+
+/**
  * Stub tiles, navigate to `path`, and wait for `[data-map-loaded]`. The bundled
  * three-step preamble used by every mobile spec.
  */

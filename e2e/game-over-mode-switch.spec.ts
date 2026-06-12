@@ -1,11 +1,7 @@
 import { test, expect, type Page } from '@playwright/test'
-import { submitAndWait, finalizeGame } from './helpers'
+import { submitAndWait, finalizeGame, waitForMapLoaded } from './helpers'
 
 test.setTimeout(60_000)
-
-async function waitForMap(page: Page) {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-}
 
 async function waitForGameReady(page: Page) {
   // Wait for the HUD to appear and be in playing state (game session started).
@@ -46,7 +42,7 @@ test.describe('game-over → new mode', () => {
       'tracking issue: https://github.com/GranatenUdo/funworldmap/issues/32',
     )
     await page.goto('/#game/country-pinning')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await waitForGameReady(page)
 
     // Burn three lives. Escape advances after wrong guesses #1 and #2;
