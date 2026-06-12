@@ -53,6 +53,26 @@ describe('useCompareViewDimming', () => {
     expect(borderCall?.[2]).toBe(0.15)
   })
 
+  it('dims with the satellite base when compareWith is present in satellite mode', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useCompareViewDimming({
+          loaded: true,
+          compareWith: { ccn3: '276' },
+          satellite: true,
+          resolvedTheme: 'light',
+        }),
+      { wrapper: makeWrapper(fake) },
+    )
+    const fillCall = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-fill' && c[1] === 'fill-opacity',
+    )
+    // Satellite base is 0.03; the vector dim scalar 0.05 would BRIGHTEN the
+    // fill over imagery instead of dimming it.
+    expect(fillCall?.[2]).toBe(0.03)
+  })
+
   it('pins A (selection) to CORAL and B (compare) to TEAL_DIM when compareWith is present', () => {
     const fake = makeFakeMap()
     renderHook(
@@ -111,9 +131,13 @@ describe('useCompareViewDimming', () => {
     const fillCall = fake.calls.setPaintProperty.find(
       (c) => c[0] === 'country-fill' && c[1] === 'fill-opacity',
     )
-    // DEFAULT_FILL_OPACITY is the case-expression, not a number.
-    expect(fillCall?.[2]).toBeDefined()
-    expect(Array.isArray(fillCall?.[2])).toBe(true)
+    // The vector default — distinct from SATELLITE_FILL_OPACITY (0.32/0.03).
+    expect(fillCall?.[2]).toEqual([
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      0.28,
+      0.05,
+    ])
     // Dark-mode default is 0.5.
     const borderOpacity = fake.calls.setPaintProperty.find(
       (c) => c[0] === 'country-borders' && c[1] === 'line-opacity',
@@ -146,6 +170,31 @@ describe('useCompareViewDimming', () => {
       (c) => c[0] === 'country-borders' && c[1] === 'line-color',
     )
     expect(borderColor?.[2]).toBe('rgba(255,255,255,0.35)')
+  })
+
+  it('restores the satellite fill opacity when compareWith clears in satellite mode', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useCompareViewDimming({
+          loaded: true,
+          compareWith: null,
+          satellite: true,
+          resolvedTheme: 'light',
+        }),
+      { wrapper: makeWrapper(fake) },
+    )
+    const fillCall = fake.calls.setPaintProperty.find(
+      (c) => c[0] === 'country-fill' && c[1] === 'fill-opacity',
+    )
+    // Satellite keeps the base fill nearly transparent (0.03) so imagery shows
+    // through — not the vector default (0.05).
+    expect(fillCall?.[2]).toEqual([
+      'case',
+      ['boolean', ['feature-state', 'hover'], false],
+      0.32,
+      0.03,
+    ])
   })
 
   it('does nothing when loaded is false', () => {

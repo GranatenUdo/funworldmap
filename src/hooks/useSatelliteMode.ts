@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { DEFAULT_FILL_OPACITY, applyBorderPaintForMode, LAYER } from '../lib/mapLayers'
+import { applyBorderPaintForMode, fillOpacityForMode, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
@@ -8,11 +8,7 @@ interface Options {
   resolvedTheme: 'light' | 'dark'
 }
 
-export function useSatelliteMode({
-  loaded,
-  satellite,
-  resolvedTheme,
-}: Options): void {
+export function useSatelliteMode({ loaded, satellite, resolvedTheme }: Options): void {
   const { mapRef } = useMap()
 
   // Satellite layer + terrain + base-layer hide/show + border tint.
@@ -21,11 +17,7 @@ export function useSatelliteMode({
     if (!map || !loaded) return
 
     try {
-      map.setLayoutProperty(
-        LAYER.satellite,
-        'visibility',
-        satellite ? 'visible' : 'none',
-      )
+      map.setLayoutProperty(LAYER.satellite, 'visibility', satellite ? 'visible' : 'none')
 
       if (satellite) {
         map.setTerrain({ source: 'terrain-dem', exaggeration: 1.5 })
@@ -40,11 +32,7 @@ export function useSatelliteMode({
           const isCustom = customPrefixes.some((p) => layer.id.startsWith(p))
           if (!isCustom) {
             try {
-              map.setLayoutProperty(
-                layer.id,
-                'visibility',
-                satellite ? 'none' : 'visible',
-              )
+              map.setLayoutProperty(layer.id, 'visibility', satellite ? 'none' : 'visible')
             } catch {
               /* some layers don't support visibility */
             }
@@ -53,16 +41,7 @@ export function useSatelliteMode({
       }
 
       applyBorderPaintForMode(map, { isDark: resolvedTheme === 'dark', satellite })
-      if (satellite) {
-        map.setPaintProperty(LAYER.fill, 'fill-opacity', [
-          'case',
-          ['boolean', ['feature-state', 'hover'], false],
-          0.32,
-          0.03,
-        ])
-      } else {
-        map.setPaintProperty(LAYER.fill, 'fill-opacity', DEFAULT_FILL_OPACITY)
-      }
+      map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(satellite))
     } catch {
       // Layers may not exist yet.
     }

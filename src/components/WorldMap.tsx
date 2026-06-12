@@ -70,10 +70,10 @@ export default function WorldMap({
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-sand-100 dark:bg-dark-500 text-sand-700 dark:text-dark-50 p-8 text-center">
         <div>
-          <h1 className="text-2xl font-bold mb-4">WebGL2 Not Supported</h1>
+          <h1 className="text-2xl font-bold mb-4">WebGL Not Available</h1>
           <p>
-            funworldmap requires WebGL2 to render the map. Please update your browser or enable
-            hardware acceleration in your browser settings.
+            funworldmap needs WebGL to render the map (WebGL2 preferred, WebGL1 supported). Please
+            update your browser or enable hardware acceleration in your browser settings.
           </p>
         </div>
       </div>
