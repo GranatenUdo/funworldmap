@@ -8,6 +8,7 @@
 import { vi } from 'vitest'
 import type { CountriesFile } from '../../lib/types'
 import { makeCountryData } from '../../test/countryFixtures'
+import { stubMatchMedia as _stubMatchMedia } from '../../test/matchMediaStub'
 
 // ---------------------------------------------------------------------------
 // Country fixture factory
@@ -37,24 +38,10 @@ export const sources: CountriesFile['_sources'] = {
  * evaluation time. Stub it before SingleCountryPanel is dynamically imported.
  */
 export function stubMatchMedia(): void {
-  // jsdom currently has no matchMedia; the property is undefined. Cast through
-  // unknown to dodge TS 2774 ("function always defined") for the standard lib
-  // declaration which marks matchMedia as required.
+  // Only install if not already present — this is called in beforeAll, which
+  // runs once per describe block; subsequent calls are no-ops.
   if ((window as unknown as { matchMedia?: unknown }).matchMedia) return
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    configurable: true,
-    value: () => ({
-      matches: false,
-      media: '',
-      onchange: null,
-      addListener: () => {},
-      removeListener: () => {},
-      addEventListener: () => {},
-      removeEventListener: () => {},
-      dispatchEvent: () => false,
-    }),
-  })
+  _stubMatchMedia()
 }
 
 // ---------------------------------------------------------------------------

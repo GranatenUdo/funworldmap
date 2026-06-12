@@ -18,6 +18,7 @@ import {
 } from '../../shared/__tests__/factories'
 import { byCca3Fixture, citiesFixture, countriesFixture } from './fixtures'
 import { getMode } from '../../modes'
+import { stubMatchMedia } from '../../../test/matchMediaStub'
 
 const POOLS = { countries: countriesFixture, cities: citiesFixture }
 
@@ -74,20 +75,7 @@ describe('useGameAnnouncements', () => {
     // prefersReducedMotion() (called from the auto-advance branches) reads
     // window.matchMedia, which JSDOM doesn't implement by default.
     if (!window.matchMedia) {
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        configurable: true,
-        value: vi.fn().mockImplementation((query: string) => ({
-          matches: false,
-          media: query,
-          onchange: null,
-          addEventListener: () => {},
-          removeEventListener: () => {},
-          addListener: () => {},
-          removeListener: () => {},
-          dispatchEvent: () => false,
-        })),
-      })
+      stubMatchMedia()
     }
   })
 
