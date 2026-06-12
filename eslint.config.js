@@ -11,8 +11,10 @@ export default tseslint.config(
     name: 'app/typescript-strict',
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
     // Scoped to src/ — type-aware lint for e2e/ and scripts/ via tsconfig.e2e.json
-    // is possible but slows lint-staged/pre-commit; revisit with eslint-plugin-playwright
-    // (see roadmap). e2e/ and scripts/ get the non-type-checked preset below.
+    // is possible but slows lint-staged/pre-commit; deliberately deferred even now
+    // that eslint-plugin-playwright (2026-06, tooling/e2e-playwright block below)
+    // covers the high-value syntactic rules. e2e/ and scripts/ get the
+    // non-type-checked preset below.
     files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
