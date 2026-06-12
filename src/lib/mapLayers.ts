@@ -175,7 +175,7 @@ const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
 /** The `country-fill` opacity for the current visual mode. One edit-point so
  *  applyCountryBaselinePaint applies the same baseline in every mode
  *  (mirrors applyBorderPaintForMode for borders). Not exported —
- *  applyCountryBaselinePaint/applyBaselinePaint are the doorway. */
+ *  applyCountryBaselinePaint is the doorway. */
 function fillOpacityForMode(satellite: boolean): maplibregl.ExpressionSpecification {
   return satellite ? SATELLITE_FILL_OPACITY : DEFAULT_FILL_OPACITY
 }
