@@ -72,6 +72,11 @@ export default tseslint.config(
       // helpers.ts deliberately exports expect-based readiness helpers
       // (waitForAppReady, waitForGameTestHook, ...) used across specs.
       'playwright/no-standalone-expect': 'off',
+      // flat/recommended ships these at 'warn', but `npm run lint` has no
+      // --max-warnings 0 — a warning would not fail CI. The CLAUDE.md flake
+      // bans these rules mechanize must actually block, so: error.
+      'playwright/no-wait-for-timeout': 'error',
+      'playwright/no-force-option': 'error',
       // CLAUDE.md quarantine policy: test.fixme(!!process.env.CI, ...) is the
       // approved pattern for tracking CI-only flakes with a required issue link.
       // Disabling the conditional rules that flag this deliberate pattern.
