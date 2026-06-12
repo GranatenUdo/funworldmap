@@ -71,29 +71,30 @@ export default tseslint.config(
     extends: [playwright.configs['flat/recommended']],
     files: ['e2e/**/*.ts'],
     rules: {
-      // helpers.ts deliberately exports expect-based readiness helpers
-      // (waitForAppReady, waitForGameTestHook, ...) used across specs.
-      'playwright/no-standalone-expect': 'off',
       // flat/recommended ships these at 'warn', but `npm run lint` has no
       // --max-warnings 0 — a warning would not fail CI. The CLAUDE.md flake
       // bans these rules mechanize must actually block, so: error.
       'playwright/no-wait-for-timeout': 'error',
       'playwright/no-force-option': 'error',
-      // CLAUDE.md quarantine policy: test.fixme(!!process.env.CI, ...) is the
-      // approved pattern for tracking CI-only flakes with a required issue link.
-      // Disabling the conditional rules that flag this deliberate pattern.
+      // Bare test.skip means "removing the test outright" per CLAUDE.md and
+      // should block. The quarantine pattern (test.fixme(!!process.env.CI,
+      // ...)) is exempt by the rule's default (disallowFixme: false), so
+      // erroring here costs the policy nothing.
+      'playwright/no-skipped-test': 'error',
+      // The corpus has legitimate data-driven conditionals (label-contrast's
+      // per-layer probes, keyboard-map-nav, compare-source-attribution's
+      // count guard) this rule cannot tell apart from flake-prone branching.
+      // (The test.fixme quarantine pattern does NOT trigger this rule and is
+      // not the reason for the 'off'.)
       'playwright/no-conditional-in-test': 'off',
-      'playwright/no-skipped-test': 'off',
-      // waitForSelector is used deliberately in helpers.ts (gotoAndWaitForMap,
-      // waitForMapReady) and in specs that pre-date the locator API. These are
-      // not flake contributors — the CLAUDE.md ban targets waitForTimeout and
-      // force:true, not the selector-based wait API. Migrating ~16 call-sites
-      // to waitFor() on a locator is a separate cleanup task.
-      'playwright/no-wait-for-selector': 'off',
-      // compare-source-attribution.spec.ts uses a conditional expect inside an
-      // if(count > 1) guard — a legitimate pattern to skip assertions when the
-      // data set has only one element. Not a flake risk.
+      // compare-source-attribution.spec.ts asserts inside an if(count > 1)
+      // guard — legitimate when the dataset may have a single element.
       'playwright/no-conditional-expect': 'off',
+      // waitForSelector is used deliberately in helpers.ts and 17 spec files
+      // (18 call sites) that pre-date the repo's locator-first convention.
+      // Not a flake contributor — the CLAUDE.md ban targets waitForTimeout
+      // and force:true. Migrating the call sites is a separate cleanup task.
+      'playwright/no-wait-for-selector': 'off',
     },
   },
 )
