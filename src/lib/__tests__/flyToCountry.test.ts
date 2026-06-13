@@ -1,35 +1,22 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import type maplibregl from 'maplibre-gl'
-import type { CountryData } from '../types'
 import { flyToCountry } from '../flyToCountry'
 import { prefersReducedMotion } from '../motion'
+import { makeCountryData } from '../../test/countryFixtures'
 
 vi.mock('../motion', () => ({
   prefersReducedMotion: vi.fn(() => false),
 }))
 
-function makeCountry(opts: { area: number; latlng?: [number, number] }): CountryData {
-  return {
+function makeCountry(opts: { area: number; latlng?: [number, number] }) {
+  return makeCountryData({
     cca3: 'XYZ',
     ccn3: '999',
+    cca2: 'XY',
     name: { common: 'X', official: 'X' },
-    capital: [],
-    region: '',
-    subregion: '',
-    languages: {},
-    currencies: {},
-    timezones: [],
-    borders: [],
-    flag: '',
-    flagAlt: '',
-    population: 0,
     area: opts.area,
     latlng: opts.latlng ?? [0, 0],
-    unMember: true,
-    independent: true,
-    governmentType: '',
-    _fieldSources: {},
-  } as unknown as CountryData
+  })
 }
 
 function makeMap(currentZoom: number): {

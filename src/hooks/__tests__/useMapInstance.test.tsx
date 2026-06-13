@@ -3,6 +3,7 @@ import { renderHook } from '@testing-library/react'
 import { useRef, type ReactNode } from 'react'
 import { MapProvider } from '../useMap'
 import { useMapInstance } from '../useMapInstance'
+import { stubMatchMedia } from '../../test/matchMediaStub'
 
 vi.mock('maplibre-gl', () => {
   const constructorArgs: unknown[] = []
@@ -79,19 +80,7 @@ function setupDom() {
   document.body.appendChild(host)
   // jsdom does not implement matchMedia
   if (!window.matchMedia) {
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      value: () => ({
-        matches: false,
-        media: '',
-        onchange: null,
-        addListener: () => {},
-        removeListener: () => {},
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        dispatchEvent: () => false,
-      }),
-    })
+    stubMatchMedia()
   }
 }
 

@@ -1,31 +1,7 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import { type ReactNode } from 'react'
-import { MapProvider, useMap } from '../useMap'
 import { useCountryBaselinePaint } from '../useCountryBaselinePaint'
-
-function makeFakeMap() {
-  const calls: Record<string, unknown[][]> = { setFilter: [], setPaintProperty: [] }
-  return {
-    setFilter: vi.fn((...args: unknown[]) => calls.setFilter.push(args)),
-    setPaintProperty: vi.fn((...args: unknown[]) => calls.setPaintProperty.push(args)),
-    calls,
-  }
-}
-function Injector({ children, map }: { children: ReactNode; map: unknown }) {
-  const refs = useMap()
-  refs.mapRef.current = map as never
-  return <>{children}</>
-}
-function makeWrapper(map: unknown) {
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return (
-      <MapProvider>
-        <Injector map={map}>{children}</Injector>
-      </MapProvider>
-    )
-  }
-}
+import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
 
 function paintValue(fake: ReturnType<typeof makeFakeMap>, layer: string, prop: string) {
   // Last write wins — mirror MapLibre semantics.
@@ -81,7 +57,7 @@ describe('useCountryBaselinePaint', () => {
             inCompareView: c.inCompareView,
             resolvedTheme: 'light',
           }),
-        { wrapper: makeWrapper(fake) },
+        { wrapper: makeMapWrapper(fake) },
       )
       expect(paintValue(fake, 'country-fill', 'fill-opacity')).toEqual(c.fill)
       expect(paintValue(fake, 'country-borders', 'line-opacity')).toBe(c.borderOpacity)
@@ -99,7 +75,7 @@ describe('useCountryBaselinePaint', () => {
           inCompareView: false,
           resolvedTheme: 'dark',
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     expect(paintValue(fake, 'country-borders', 'line-color')).toBe('#1e293b')
     expect(paintValue(fake, 'country-borders', 'line-opacity')).toBe(0.5)
@@ -115,7 +91,7 @@ describe('useCountryBaselinePaint', () => {
           inCompareView: false,
           resolvedTheme: 'light',
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     expect(fake.setPaintProperty).not.toHaveBeenCalled()
   })

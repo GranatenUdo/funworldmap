@@ -2,30 +2,16 @@ import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useCountrySearch } from '../useCountrySearch'
 import type { CountryData } from '../../lib/types'
+import { makeCountryData } from '../../test/countryFixtures'
 
-function c(cca3: string, ccn3: string, common: string, capital: string[] = []): CountryData {
-  return {
+const c = (cca3: string, ccn3: string, common: string, capital: string[] = []): CountryData =>
+  makeCountryData({
     cca3,
     ccn3,
     cca2: cca3.slice(0, 2),
     name: { common, official: common },
     capital,
-    region: 'Europe',
-    subregion: '',
-    languages: {},
-    currencies: {},
-    timezones: [],
-    borders: [],
-    flag: '',
-    flagAlt: '',
-    population: 0,
-    area: 0,
-    unMember: true,
-    independent: true,
-    governmentType: '',
-    _fieldSources: {},
-  } as unknown as CountryData
-}
+  })
 
 const dataset: CountryData[] = [
   c('FRA', '250', 'France', ['Paris']),
