@@ -1,17 +1,19 @@
 import { useEffect } from 'react'
-import { applyBorderPaintForMode, fillOpacityForMode, LAYER } from '../lib/mapLayers'
+import { LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
 interface Options {
   loaded: boolean
   satellite: boolean
-  resolvedTheme: 'light' | 'dark'
 }
 
-export function useSatelliteMode({ loaded, satellite, resolvedTheme }: Options): void {
+/** Satellite layer visibility, terrain, and base-layer hide/show.
+ *  Border tint and fill opacity are now owned by useCountryBaselinePaint —
+ *  this hook no longer writes those paint properties. */
+export function useSatelliteMode({ loaded, satellite }: Options): void {
   const { mapRef } = useMap()
 
-  // Satellite layer + terrain + base-layer hide/show + border tint.
+  // Satellite layer + terrain + base-layer hide/show.
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
@@ -39,11 +41,8 @@ export function useSatelliteMode({ loaded, satellite, resolvedTheme }: Options):
           }
         }
       }
-
-      applyBorderPaintForMode(map, { isDark: resolvedTheme === 'dark', satellite })
-      map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(satellite))
     } catch {
       // Layers may not exist yet.
     }
-  }, [satellite, loaded, resolvedTheme, mapRef])
+  }, [satellite, loaded, mapRef])
 }

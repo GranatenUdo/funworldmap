@@ -18,7 +18,8 @@ import { useMapInteractions } from '../hooks/useMapInteractions'
 import { useSelectionHighlight } from '../hooks/useSelectionHighlight'
 import { useMapTheme } from '../hooks/useMapTheme'
 import { useSatelliteMode } from '../hooks/useSatelliteMode'
-import { useCompareViewDimming } from '../hooks/useCompareViewDimming'
+import { useCountryBaselinePaint } from '../hooks/useCountryBaselinePaint'
+import { useCompareViewHighlight } from '../hooks/useCompareViewHighlight'
 import type { CountryData } from '../lib/types'
 
 interface Props {
@@ -63,8 +64,9 @@ export default function WorldMap({
   useMapInteractions({ loaded, byNumeric, onSelect, onDeselect, comparePickingMode })
   useSelectionHighlight({ loaded, selected, compareWith })
   useMapTheme({ loaded, resolvedTheme })
-  useSatelliteMode({ loaded, satellite, resolvedTheme })
-  useCompareViewDimming({ loaded, compareWith, satellite, resolvedTheme })
+  useSatelliteMode({ loaded, satellite })
+  useCountryBaselinePaint({ loaded, satellite, inCompareView: compareWith !== null, resolvedTheme })
+  useCompareViewHighlight({ loaded, compareWith, resolvedTheme })
 
   if (!supported) {
     return (
