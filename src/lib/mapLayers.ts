@@ -156,7 +156,7 @@ export { EMPTY_FILTER }
 
 /** The default `fill-opacity` expression for `country-fill`: 5% by default,
  *  28% when the country has the `hover` feature state. */
-export const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
+const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
   'case',
   ['boolean', ['feature-state', 'hover'], false],
   0.28,
@@ -165,7 +165,7 @@ export const DEFAULT_FILL_OPACITY: maplibregl.ExpressionSpecification = [
 
 /** The `country-fill` opacity in satellite mode: near-transparent base (3%)
  *  so imagery shows through, 32% on hover. */
-export const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
+const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
   'case',
   ['boolean', ['feature-state', 'hover'], false],
   0.32,
@@ -174,14 +174,22 @@ export const SATELLITE_FILL_OPACITY: maplibregl.ExpressionSpecification = [
 
 /** The `country-fill` opacity for the current visual mode. One edit-point so
  *  applyCountryBaselinePaint applies the same baseline in every mode
- *  (mirrors applyBorderPaintForMode for borders). */
-export function fillOpacityForMode(satellite: boolean): maplibregl.ExpressionSpecification {
+ *  (mirrors applyBorderPaintForMode for borders). Not exported —
+ *  applyCountryBaselinePaint is the doorway. */
+function fillOpacityForMode(satellite: boolean): maplibregl.ExpressionSpecification {
   return satellite ? SATELLITE_FILL_OPACITY : DEFAULT_FILL_OPACITY
+}
+
+/** The mode/theme-appropriate `country-borders` line colour. Single source so
+ *  the compare-view path can set the colour without also writing the mode
+ *  opacity (which it immediately overrides to 0.15). */
+function borderLineColorForMode(isDark: boolean, satellite: boolean): string {
+  return satellite ? 'rgba(255,255,255,0.35)' : isDark ? '#1e293b' : '#94a3b8'
 }
 
 /** Apply the theme-appropriate paint to `country-borders` (color + opacity). */
 export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): void {
-  map.setPaintProperty(LAYER.borders, 'line-color', isDark ? '#1e293b' : '#94a3b8')
+  map.setPaintProperty(LAYER.borders, 'line-color', borderLineColorForMode(isDark, false))
   map.setPaintProperty(LAYER.borders, 'line-opacity', isDark ? 0.5 : 0.35)
 }
 
@@ -194,7 +202,7 @@ export function applyBorderPaintForMode(
   opts: { isDark: boolean; satellite: boolean },
 ): void {
   if (opts.satellite) {
-    map.setPaintProperty(LAYER.borders, 'line-color', 'rgba(255,255,255,0.35)')
+    map.setPaintProperty(LAYER.borders, 'line-color', borderLineColorForMode(opts.isDark, true))
     map.setPaintProperty(LAYER.borders, 'line-opacity', 0.6)
   } else {
     applyDefaultBorderPaint(map, opts.isDark)
@@ -228,15 +236,22 @@ export function applyCountryBaselinePaint(
   map: maplibregl.Map,
   opts: { satellite: boolean; inCompareView: boolean; isDark: boolean },
 ): void {
-  // Borders: mode colour first, then the compare dim on top.
-  applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite })
   if (opts.inCompareView) {
+    // Compare view keeps the mode/theme border COLOUR but dims to a flat 0.15.
+    // Set the colour directly rather than via applyBorderPaintForMode, so we
+    // don't write the mode opacity (0.6 / 0.5 / 0.35) only to overwrite it.
+    map.setPaintProperty(
+      LAYER.borders,
+      'line-color',
+      borderLineColorForMode(opts.isDark, opts.satellite),
+    )
     map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
     // Hover layers are suppressed in compare view (useCompareViewHighlight),
     // so a scalar dim is fine — matched to the mode's baseline (satellite base
     // is 0.03; the vector 0.05 would brighten over imagery).
     map.setPaintProperty(LAYER.fill, 'fill-opacity', opts.satellite ? 0.03 : 0.05)
   } else {
+    applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite })
     map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(opts.satellite))
   }
 }
