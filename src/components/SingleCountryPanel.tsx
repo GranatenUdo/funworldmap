@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
+import { BorderChip } from './BorderChip'
 import { CloseButton } from './CloseButton'
 import { FieldLabel } from './FieldLabel'
 import { dispatchToast } from '../lib/toast'
@@ -95,7 +96,10 @@ export function SingleCountryPanel({
     const rafId = window.requestAnimationFrame(() => {
       if (cancelled) return
       const animations = root.getAnimations({ subtree: true })
-      if (animations.length === 0) { flipToIdle(); return }
+      if (animations.length === 0) {
+        flipToIdle()
+        return
+      }
       Promise.all(animations.map((a) => a.finished))
         .then(flipToIdle)
         .catch(flipToIdle)
@@ -222,7 +226,12 @@ export function SingleCountryPanel({
                 title="Copy link"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.75}
+                    d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+                  />
                 </svg>
               </button>
             )}
@@ -239,7 +248,12 @@ export function SingleCountryPanel({
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 15l7-7 7 7"
+                  />
                 </svg>
               </button>
             )}
@@ -346,33 +360,15 @@ export function SingleCountryPanel({
                     className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-2 flex items-center gap-1"
                   />
                   <div className="flex flex-wrap gap-1.5">
-                    {country.borders.map((code) => {
-                      const neighbor = byCca3.get(code)
-                      if (neighbor) {
-                        return (
-                          <button
-                            key={code}
-                            onClick={() => onSelect(code)}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-full border border-teal/20 dark:border-teal-light/15 bg-teal/5 dark:bg-teal-light/5 text-teal-dim dark:text-teal-light hover:bg-teal/12 dark:hover:bg-teal-light/12 hover:scale-[1.03] active:scale-100 transition-all duration-150"
-                          >
-                            <img
-                              src={neighbor.flag}
-                              alt=""
-                              className="w-4 h-3 object-cover rounded-sm shrink-0"
-                            />
-                            {neighbor.name.common}
-                          </button>
-                        )
-                      }
-                      return (
-                        <span
-                          key={code}
-                          className="px-2.5 py-1.5 text-xs rounded-full bg-sand-200 dark:bg-dark-300 text-sand-600 dark:text-dark-100"
-                        >
-                          {code}
-                        </span>
-                      )
-                    })}
+                    {country.borders.map((code) => (
+                      <BorderChip
+                        key={code}
+                        code={code}
+                        neighbor={byCca3.get(code)}
+                        onSelect={onSelect}
+                        size="panel"
+                      />
+                    ))}
                   </div>
                 </div>
               </>
