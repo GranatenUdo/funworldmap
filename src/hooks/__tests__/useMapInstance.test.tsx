@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { renderHook } from '@testing-library/react'
+import { renderHook, act } from '@testing-library/react'
 import { useRef, type ReactNode } from 'react'
 import { MapProvider } from '../useMap'
 import { useMapInstance } from '../useMapInstance'
@@ -7,6 +7,7 @@ import { stubMatchMedia } from '../../test/matchMediaStub'
 
 vi.mock('maplibre-gl', () => {
   const constructorArgs: unknown[] = []
+  const instances: FakeMap[] = []
   // Mirrors the WebGL spec behaviour useMapInstance relies on: while a context
   // is lost, getExtension() returns null — only an extension instance captured
   // while the context was healthy can restoreContext().
@@ -23,6 +24,7 @@ vi.mock('maplibre-gl', () => {
     _handlers: Record<string, ((e: unknown) => void)[]> = {}
     constructor(options: unknown) {
       constructorArgs.push(options)
+      instances.push(this)
     }
     addControl() {}
     on(evt: string, h: (e: unknown) => void) {
@@ -31,6 +33,12 @@ vi.mock('maplibre-gl', () => {
     off() {}
     remove() {}
     setProjection() {}
+    // Present so fire('load') exercises the handler's intended path rather
+    // than bailing through the background-layer try/catch.
+    setPaintProperty() {}
+    fire(evt: string, e?: unknown) {
+      this._handlers[evt]?.forEach((h) => h(e ?? {}))
+    }
     get scrollZoom() {
       return { setZoomRate: () => {} }
     }
@@ -62,6 +70,7 @@ vi.mock('maplibre-gl', () => {
     NavigationControl: FakeControl,
     AttributionControl: FakeControl,
     __constructorArgs: constructorArgs,
+    __instances: instances,
     __loseContextState: loseContextState,
   }
 })
@@ -199,5 +208,32 @@ describe('useMapInstance', () => {
     const args = maplibre.__constructorArgs
     expect(args.length).toBe(1)
     expect(args[0].clickTolerance).toBe(8)
+  })
+
+  it('clears a latched pre-load style error once load fires', async () => {
+    const maplibre = (await import('maplibre-gl')) as unknown as {
+      __instances: Array<{ fire: (evt: string, e?: unknown) => void }>
+    }
+    const { result } = renderHook(
+      () => {
+        const ref = useRef<HTMLDivElement | null>(document.getElementById('c') as HTMLDivElement)
+        return useMapInstance({ containerRef: ref, onLoad: () => Promise.resolve() })
+      },
+      { wrapper: Wrapper },
+    )
+    const map = maplibre.__instances.at(-1)!
+
+    // A transient pre-load error latches 'style'...
+    act(() => {
+      map.fire('error', { error: { message: 'The source image could not be decoded' } })
+    })
+    expect(result.current.mapError).toBe('style')
+
+    // ...and a successful load clears it (the style demonstrably loaded).
+    act(() => {
+      map.fire('load')
+    })
+    await vi.waitFor(() => expect(result.current.mapError).toBeNull())
+    await vi.waitFor(() => expect(result.current.loaded).toBe(true))
   })
 })
