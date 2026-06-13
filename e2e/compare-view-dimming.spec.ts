@@ -54,7 +54,7 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
     await page.goto('/#FRA,DEU')
     await waitForMapLoaded(page)
 
-    // Poll until useCompareViewDimming has applied the badge-matched paint props.
+    // Poll until useCompareViewHighlight has applied the badge-matched paint props.
     await expect.poll(() => getFillColor(page, 'country-selected'), { timeout: 15_000 }).toBe(CORAL)
 
     await expect

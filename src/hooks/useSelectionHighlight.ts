@@ -30,20 +30,14 @@ function applyOrClearFilter(
   layerIds: readonly string[],
   ccn3: string | null,
 ): void {
-  const filter: maplibregl.FilterSpecification = ccn3
-    ? ['==', ['get', 'id'], ccn3]
-    : EMPTY
+  const filter: maplibregl.FilterSpecification = ccn3 ? ['==', ['get', 'id'], ccn3] : EMPTY
   for (const id of layerIds) map.setFilter(id, filter)
 }
 
 /** Apply selection + compare filters. Flies camera to the selected country.
- *  Compare-view dimming lives in useCompareViewDimming (separate hook
- *  because it has different deps and must run after useMapTheme). */
-export function useSelectionHighlight({
-  loaded,
-  selected,
-  compareWith,
-}: Options): void {
+ *  Compare-view highlight management lives in useCompareViewHighlight (separate
+ *  hook); baseline paint lives in useCountryBaselinePaint. */
+export function useSelectionHighlight({ loaded, selected, compareWith }: Options): void {
   const { mapRef } = useMap()
 
   useEffect(() => {

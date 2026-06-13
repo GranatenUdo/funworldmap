@@ -9,9 +9,9 @@ interface Options {
   resolvedTheme: 'light' | 'dark'
 }
 
-// Border paint lives in useSatelliteMode (which also reacts to
-// resolvedTheme) so that the two concerns — overlay colors+sky and
-// baseline border paint — each have one owner.
+// Baseline border/fill paint lives in useCountryBaselinePaint so that the
+// two concerns — overlay colors+sky and baseline country paint — each have
+// one owner.
 export function useMapTheme({ loaded, resolvedTheme }: Options): void {
   const { mapRef } = useMap()
 

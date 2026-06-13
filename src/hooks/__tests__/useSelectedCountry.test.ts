@@ -2,33 +2,20 @@ import { describe, expect, it, beforeEach, afterEach } from 'vitest'
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { useSelectedCountry } from '../useSelectedCountry'
 import type { CountryData } from '../../lib/types'
+import { makeCountryData } from '../../test/countryFixtures'
 
-function makeCountry(cca3: string, ccn3: string, name: string): CountryData {
-  return {
-    cca3,
-    ccn3,
-    cca2: cca3.slice(0, 2),
-    name: { common: name, official: name },
-    capital: [],
-    region: 'Europe',
-    subregion: '',
-    languages: {},
-    currencies: {},
-    timezones: [],
-    borders: [],
-    flag: '',
-    flagAlt: '',
-    population: 0,
-    area: 0,
-    unMember: true,
-    independent: true,
-    governmentType: '',
-    _fieldSources: {},
-  } as unknown as CountryData
-}
-
-const FRA = makeCountry('FRA', '250', 'France')
-const DEU = makeCountry('DEU', '276', 'Germany')
+const FRA = makeCountryData({
+  cca3: 'FRA',
+  ccn3: '250',
+  cca2: 'FR',
+  name: { common: 'France', official: 'France' },
+})
+const DEU = makeCountryData({
+  cca3: 'DEU',
+  ccn3: '276',
+  cca2: 'DE',
+  name: { common: 'Germany', official: 'Germany' },
+})
 
 function makeByCca3() {
   const m = new Map<string, CountryData>()

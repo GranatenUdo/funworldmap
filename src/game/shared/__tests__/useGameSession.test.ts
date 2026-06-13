@@ -484,6 +484,53 @@ describe('useGameSession (single-attempt free-play)', () => {
     })
   })
 
+  describe('endGame', () => {
+    it('resets to idle with a fresh used set from any state', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU', 10)))
+      act(() => result.current.endGame())
+      expect(result.current.session.status).toBe('idle')
+      expect(result.current.session.score).toBe(0)
+      expect(result.current.session.lives).toBe(3)
+      expect(result.current.session.currentRound).toBeNull()
+      expect(result.current.session.used.size).toBe(0)
+    })
+  })
+
+  describe('overrideRound', () => {
+    it('while playing swaps the round WITHOUT advancing roundIndex', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.overrideRound(round('DEU')))
+      expect(result.current.session.roundIndex).toBe(0)
+      expect(
+        result.current.session.currentRound?.kind === 'country-pinning' &&
+          result.current.session.currentRound.targetCca3,
+      ).toBe('DEU')
+      expect(result.current.session.used.has('FRA')).toBe(true)
+      expect(result.current.session.used.has('DEU')).toBe(true)
+    })
+
+    it('from round-ended advances roundIndex and clears lastOutcome', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.start('country-pinning', round('FRA'), null))
+      act(() => result.current.attempt(countryInput('DEU'), miss('FRA', 'DEU', 10)))
+      expect(result.current.session.status).toBe('round-ended')
+      act(() => result.current.overrideRound(round('ESP')))
+      expect(result.current.session.status).toBe('playing')
+      expect(result.current.session.roundIndex).toBe(1)
+      expect(result.current.session.lastOutcome).toBeNull()
+    })
+
+    it('from idle is rejected', () => {
+      const { result } = renderHook(() => useGameSession())
+      act(() => result.current.overrideRound(round('FRA')))
+      expect(result.current.session.status).toBe('idle')
+      expect(result.current.session.currentRound).toBeNull()
+    })
+  })
+
   describe('endOfRound transitions to round-ended (even when endsGame=true)', () => {
     it('free country lives-out attempt sets status round-ended with endsGame=true', () => {
       const { result } = renderHook(() => useGameSession())

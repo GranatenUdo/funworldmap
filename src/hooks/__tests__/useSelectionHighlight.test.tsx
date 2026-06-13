@@ -1,60 +1,15 @@
 import { describe, expect, it, vi } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import { type ReactNode } from 'react'
-import { MapProvider, useMap } from '../useMap'
 import { useSelectionHighlight } from '../useSelectionHighlight'
-import type { CountryData } from '../../lib/types'
+import { makeCountryData } from '../../test/countryFixtures'
+import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
 
 vi.mock('../../lib/flyToCountry', () => ({
   flyToCountry: vi.fn(),
 }))
 
-function makeCountry(ccn3: string): CountryData {
-  return {
-    cca3: 'FRA',
-    ccn3,
-    name: { common: 'France', official: 'France' },
-    capital: [],
-    region: 'Europe',
-    subregion: '',
-    languages: {},
-    currencies: {},
-    timezones: [],
-    borders: [],
-    flag: '',
-    flagAlt: '',
-    population: 0,
-    area: 0,
-    unMember: true,
-    independent: true,
-    governmentType: '',
-    _fieldSources: {},
-  } as unknown as CountryData
-}
-
-function makeFakeMap() {
-  const calls: Record<string, unknown[][]> = { setFilter: [], setPaintProperty: [] }
-  return {
-    setFilter: vi.fn((...args: unknown[]) => calls.setFilter.push(args)),
-    setPaintProperty: vi.fn((...args: unknown[]) => calls.setPaintProperty.push(args)),
-    calls,
-  }
-}
-
-function Injector({ children, map }: { children: ReactNode; map: unknown }) {
-  const refs = useMap()
-  refs.mapRef.current = map as never
-  return <>{children}</>
-}
-
-function makeWrapper(map: unknown) {
-  return function Wrapper({ children }: { children: ReactNode }) {
-    return (
-      <MapProvider>
-        <Injector map={map}>{children}</Injector>
-      </MapProvider>
-    )
-  }
+function makeCountry(ccn3: string) {
+  return makeCountryData({ ccn3 })
 }
 
 describe('useSelectionHighlight', () => {
@@ -67,7 +22,7 @@ describe('useSelectionHighlight', () => {
           selected: makeCountry('250'),
           compareWith: null,
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     const call = fake.calls.setFilter.find((c) => c[0] === 'country-selected')
     expect(call?.[1]).toEqual(['==', ['get', 'id'], '250'])
@@ -82,7 +37,7 @@ describe('useSelectionHighlight', () => {
           selected: null,
           compareWith: null,
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     const call = fake.calls.setFilter.find((c) => c[0] === 'country-selected')
     expect(call?.[1]).toEqual(['==', ['get', 'id'], ''])
@@ -97,7 +52,7 @@ describe('useSelectionHighlight', () => {
           selected: makeCountry('250'),
           compareWith: null,
         }),
-      { wrapper: makeWrapper(fake) },
+      { wrapper: makeMapWrapper(fake) },
     )
     expect(fake.setFilter).not.toHaveBeenCalled()
     expect(fake.setPaintProperty).not.toHaveBeenCalled()

@@ -18,6 +18,7 @@ import {
 } from '../../shared/__tests__/factories'
 import { byCca3Fixture } from './fixtures'
 import { createFakeMapRef } from '../../../test/fakeMapRef'
+import { stubMatchMedia } from '../../../test/matchMediaStub'
 
 type RevealArgs = Parameters<typeof useRevealMapEffects>[0]
 
@@ -64,20 +65,7 @@ describe('useRevealMapEffects', () => {
   beforeEach(() => {
     // Always reset matchMedia to non-reducing — individual tests can override
     // for reduced-motion paths, and beforeEach restores the default afterward.
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      configurable: true,
-      value: vi.fn().mockImplementation((query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        addListener: () => {},
-        removeListener: () => {},
-        dispatchEvent: () => false,
-      })),
-    })
+    stubMatchMedia()
     // The reveal-arc rAF loop calls window.requestAnimationFrame; JSDOM's
     // stub is fine but we wrap it so we can keep tests deterministic without
     // pumping frames.
@@ -411,20 +399,7 @@ describe('useRevealMapEffects', () => {
 
   it('reduced-motion: no easeTo, jumpTo target, gradient fully revealed', () => {
     // Override the matchMedia mock to report reduced-motion preference.
-    Object.defineProperty(window, 'matchMedia', {
-      writable: true,
-      configurable: true,
-      value: vi.fn().mockImplementation((query: string) => ({
-        matches: query.includes('reduce'),
-        media: query,
-        onchange: null,
-        addEventListener: () => {},
-        removeEventListener: () => {},
-        addListener: () => {},
-        removeListener: () => {},
-        dispatchEvent: () => false,
-      })),
-    })
+    stubMatchMedia((q) => q.includes('reduce'))
     const fake = createFakeMapRef()
     const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
     const session = makeSession({

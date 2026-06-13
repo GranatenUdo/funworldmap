@@ -1,7 +1,14 @@
 import { test, expect } from '@playwright/test'
-import { ensureLauncherDismissed } from './helpers'
+import { ensureLauncherDismissed, gotoAndWaitForMap } from './helpers'
 
 test.describe('map reliability', () => {
+  test('a clean load leaves no latched map error', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/')
+    // Pre-fix, transient pre-load tile errors in the stubbed environment latch
+    // mapError='style' forever (roadmap § "Pre-load 'style' error latching").
+    await expect(page.locator('[data-map-error]')).not.toBeAttached()
+  })
+
   test('shows error overlay when basemap style is unreachable', async ({ page }) => {
     await page.route('**/tiles.openfreemap.org/**', (route) => route.abort('failed'))
 

@@ -10,6 +10,7 @@
  *   1. Cold launcher         — `/` with cleared localStorage
  *   2. Country panel open    — `/#FRA`
  *   3. Game-over modal       — driven via the "End game" button
+ *   4. In-game HUD           — free country-pinning, mid-round
  *
  * See: docs/superpowers/notes/2026-05-05-post-audit-verification.md
  */

@@ -1,4 +1,5 @@
 import type { CountryData } from '../lib/types'
+import { BorderChip } from './BorderChip'
 import { CloseButton } from './CloseButton'
 
 function CompareField({ label, children }: { label: string; children: React.ReactNode }) {
@@ -96,31 +97,15 @@ export function CountryColumn({
               Borders
             </div>
             <div className="flex flex-wrap gap-1">
-              {country.borders.slice(0, 6).map((code) => {
-                const neighbor = byCca3.get(code)
-                if (!neighbor) {
-                  // No canonical match (e.g. ESH, HKG) — render inert, matching
-                  // SingleCountryPanel. Clicking would write an unresolvable
-                  // hash, clearing the selection and closing the panel.
-                  return (
-                    <span
-                      key={code}
-                      className="px-2 py-0.5 text-[11px] rounded-full bg-sand-200 dark:bg-dark-300 text-sand-600 dark:text-dark-100"
-                    >
-                      {code}
-                    </span>
-                  )
-                }
-                return (
-                  <button
-                    key={code}
-                    onClick={() => onSelect(code)}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-full border border-teal/20 dark:border-teal-light/15 bg-teal/5 dark:bg-teal-light/5 text-teal-dim dark:text-teal-light hover:bg-teal/12 dark:hover:bg-teal-light/12 transition-colors"
-                  >
-                    {neighbor.name.common}
-                  </button>
-                )
-              })}
+              {country.borders.slice(0, 6).map((code) => (
+                <BorderChip
+                  key={code}
+                  code={code}
+                  neighbor={byCca3.get(code)}
+                  onSelect={onSelect}
+                  size="compare"
+                />
+              ))}
               {country.borders.length > 6 && (
                 <span className="px-2 py-0.5 text-[11px] text-sand-400 dark:text-dark-100">
                   +{country.borders.length - 6}
