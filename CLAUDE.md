@@ -18,7 +18,7 @@ When you start a non-trivial change, write the spec/plan first; commit before co
 
 ## Writing e2e tests that don't flake on CI
 
-`e2e/` runs against four Playwright projects: `chromium` (ANGLE — real GPU locally; GitHub-hosted CI has no GPU and falls back to software rendering), `mobile-chromium`, `mobile-webkit`, `desktop-firefox-touch`. The `chromium` project was consolidated from a previous `chromium` + `chromium-gpu` split when Software ANGLE was dropped on 2026-05-02 — it had been the documented largest contributor to the chromium e2e flake regression (see `docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`). The rules below exist because every test that violates them has caused a CI flake.
+`e2e/` runs against four Playwright projects: `chromium` (ANGLE — real GPU locally; GitHub-hosted CI has no GPU and falls back to software rendering), `mobile-chromium`, `mobile-webkit`, `desktop-firefox-touch`. The `chromium` project was consolidated from a previous `chromium` + `chromium-gpu` split when Software ANGLE was dropped on 2026-05-02 — it had been the documented largest contributor to the chromium e2e flake regression (see `docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`). The rules below exist because every test that violates them has caused a CI flake. As of 2026-06, eslint-plugin-playwright mechanizes the waitForTimeout and force-click bans (`npm run lint`).
 
 ### Forbidden patterns
 

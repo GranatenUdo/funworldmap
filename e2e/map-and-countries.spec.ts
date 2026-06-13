@@ -204,8 +204,10 @@ test.describe('Country selection via hash', () => {
     await waitForMapLoaded(page, MAP_LOAD_TIMEOUT)
 
     // data-selected-country should be set
-    const attr = await page.locator('[data-selected-country]').getAttribute('data-selected-country')
-    expect(attr).toBe('250')
+    await expect(page.locator('[data-selected-country]')).toHaveAttribute(
+      'data-selected-country',
+      '250',
+    )
 
     // The country-selected layer filter should match France's ID
     const filter = await page.evaluate(() => {

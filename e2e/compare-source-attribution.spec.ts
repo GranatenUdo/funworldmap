@@ -21,9 +21,7 @@ test.describe('compare view source attribution footer', () => {
 
     for (let i = 0; i < count; i++) {
       const link = links.nth(i)
-      const href = await link.getAttribute('href')
-      expect(href).toBeTruthy()
-      expect(href).toMatch(/^https?:\/\//)
+      await expect(link).toHaveAttribute('href', /^https?:\/\//)
       await expect(link).toHaveAttribute('target', '_blank')
       await expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     }
