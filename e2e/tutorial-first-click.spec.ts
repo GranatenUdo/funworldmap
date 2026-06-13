@@ -1,10 +1,7 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
+import { waitForMapLoaded } from './helpers'
 
 test.setTimeout(60_000)
-
-async function waitForMap(page: Page) {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-}
 
 test.describe('first-session tutorial', () => {
   test('dismisses on first guess and the attempt counts', async ({ page }) => {
@@ -15,7 +12,7 @@ test.describe('first-session tutorial', () => {
     await page.evaluate(() => sessionStorage.clear())
 
     await page.goto('/#game/country-pinning/play')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await expect(page.getByTestId('game-tutorial')).toBeVisible({ timeout: 10_000 })
 
     // USA is unlikely to be the round target; even if it is, the tutorial

@@ -199,6 +199,15 @@ export async function waitForCountryTilesRendered(page: Page, timeout = 10_000):
 }
 
 /**
+ * Wait for the map's first load WITHOUT stubbing tiles — for GPU specs that
+ * need real basemap rendering (gotoAndWaitForMap stubs tiles and is the right
+ * choice for everything else). Replaces the per-spec `waitForMap` copies.
+ */
+export async function waitForMapLoaded(page: Page, timeout = 60_000): Promise<void> {
+  await page.waitForSelector('[data-map-loaded]', { timeout })
+}
+
+/**
  * Stub tiles, navigate to `path`, and wait for `[data-map-loaded]`. The bundled
  * three-step preamble used by every mobile spec.
  */
@@ -266,8 +275,11 @@ export async function waitForRevealLineCoords(
  *
  * Call BEFORE page.goto('/') so the intercepts are in place before any
  * network activity begins.
+ *
+ * Pass opts.styleStub to serve a custom style JSON instead of the embedded
+ * positron stub (see label-contrast.spec.ts's buildRichPositronStub).
  */
-export async function routeMapTiles(page: Page): Promise<void> {
+export async function routeMapTiles(page: Page, opts: { styleStub?: Buffer } = {}): Promise<void> {
   // 1×1 transparent PNG (base64-encoded)
   const pngBody = Buffer.from(
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgAAIAAAUAAeImBZsAAAAASUVORK5CYII=',
@@ -363,14 +375,15 @@ export async function routeMapTiles(page: Page): Promise<void> {
 
     // ── Style JSON ─────────────────────────────────────────────────────────
     // The basemap style JSON lives at /styles/<name> with no file extension.
-    // Return our embedded stub so MapLibre gets a valid style immediately,
-    // with no real-network latency. The probe request (?probe=1) also gets
-    // the stub — probeBasemap only checks res.ok, not the body.
+    // Return the caller's style stub if provided, else our embedded one, so
+    // MapLibre gets a valid style immediately with no real-network latency.
+    // The probe request (?probe=1) also gets the stub — probeBasemap only
+    // checks res.ok, not the body.
     if (/^\/styles\/[^/]+$/.test(urlObj.pathname.replace(/\?.*$/, ''))) {
       return route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: positronStyleStub,
+        body: opts.styleStub ?? positronStyleStub,
       })
     }
 

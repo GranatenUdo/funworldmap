@@ -1,9 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { finalizeGame, openLauncher } from './helpers'
-
-async function waitForMap(page: Page) {
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-}
+import { finalizeGame, openLauncher, waitForMapLoaded } from './helpers'
 
 // Open Country Pinning via the launcher mode card Play button.
 async function openCountryPinning(page: Page) {
@@ -46,7 +42,7 @@ async function setRoundAndWait(page: Page, cca3: string, expectedName: string) {
 test.describe('Country Pinning game', () => {
   test('enter via launcher mode card, HUD appears and search hides', async ({ page }) => {
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
 
     await openCountryPinning(page)
     await expect(page.getByTestId('game-hud')).toBeVisible()
@@ -57,13 +53,13 @@ test.describe('Country Pinning game', () => {
 
   test('deep link #game/country-pinning/play boots into playing', async ({ page }) => {
     await page.goto('/#game/country-pinning/play')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await expect(page.getByTestId('game-hud')).toBeVisible()
   })
 
   test('correct guess scores 100, streak 1, no life lost', async ({ page }) => {
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await openCountryPinning(page)
 
     await setRoundAndWait(page, 'FRA', 'France')
@@ -78,7 +74,7 @@ test.describe('Country Pinning game', () => {
 
   test('wrong guess costs a life, resets streak, still scores proximity', async ({ page }) => {
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await openCountryPinning(page)
 
     await setRoundAndWait(page, 'FRA', 'France')
@@ -93,7 +89,7 @@ test.describe('Country Pinning game', () => {
 
   test('three wrong guesses end the game', async ({ page }) => {
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await openCountryPinning(page)
 
     // Between guesses, setRoundAndWait() calls setRound() → overrideRound
@@ -114,7 +110,7 @@ test.describe('Country Pinning game', () => {
 
   test('End game opens game-over; Back to map exits cleanly and clears hash', async ({ page }) => {
     await page.goto('/#game/country-pinning/play')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await page.getByTestId('game-end').click()
     // End game in free mode now routes through finishFree → game-over UI shows
     // (Bug 3 fix); user must click Back to map to fully exit.
@@ -126,7 +122,7 @@ test.describe('Country Pinning game', () => {
 
   test('game-over overlay moves focus to Play again', async ({ page }) => {
     await page.goto('/#game/country-pinning/play')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
 
     await setRoundAndWait(page, 'FRA', 'France')
     await clickCountryPolygon(page, 'AUS')
@@ -147,7 +143,7 @@ test.describe('Country Pinning game', () => {
 
   test('tooltip identity hidden during country-pinning guess phase', async ({ page }) => {
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await openCountryPinning(page)
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
@@ -170,7 +166,7 @@ test.describe('Country Pinning game', () => {
 
   test('round-end on wrong guess opens target panel; Continue advances', async ({ page }) => {
     await page.goto('/')
-    await waitForMap(page)
+    await waitForMapLoaded(page)
     await openCountryPinning(page)
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 

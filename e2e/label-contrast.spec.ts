@@ -36,6 +36,7 @@
 
 import { test, expect, type Page } from '@playwright/test'
 import { Buffer } from 'node:buffer'
+import { routeMapTiles } from './helpers'
 
 // ─── WCAG maths ────────────────────────────────────────────────────────────
 
@@ -166,80 +167,6 @@ function buildRichPositronStub(): Buffer {
   )
 }
 
-// ─── Route helper with rich positron stub ─────────────────────────────────
-
-async function routeMapTilesRich(page: Page): Promise<void> {
-  const pngBody = Buffer.from(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgAAIAAAUAAeImBZsAAAAASUVORK5CYII=',
-    'base64',
-  )
-  const emptySpriteJson = Buffer.from('{}')
-  const emptyTileJson = Buffer.from(
-    JSON.stringify({
-      tilejson: '2.2.0',
-      tiles: ['http://localhost:5173/__stub_tiles__/{z}/{x}/{y}.pbf'],
-      minzoom: 0,
-      maxzoom: 22,
-    }),
-  )
-  const richPositronStub = buildRichPositronStub()
-
-  await page.route('**/*', (route) => {
-    const url = route.request().url()
-    if (
-      url.startsWith('http://localhost') ||
-      url.startsWith('https://localhost') ||
-      url.startsWith('data:')
-    ) {
-      return route.continue()
-    }
-    const isExternalTileHost =
-      url.includes('tiles.openfreemap.org') ||
-      url.includes('tiles.maps.eox.at') ||
-      url.includes('s3.amazonaws.com')
-    if (!isExternalTileHost) return route.continue()
-
-    const urlObj = new URL(url)
-    if (/^\/styles\/[^/]+$/.test(urlObj.pathname.replace(/\?.*$/, ''))) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: richPositronStub,
-      })
-    }
-    if (url.endsWith('.json') || url.includes('.json?')) {
-      return route.fulfill({ status: 200, contentType: 'application/json', body: emptySpriteJson })
-    }
-    const lastSegment = urlObj.pathname.split('/').pop() ?? ''
-    if (!lastSegment.includes('.')) {
-      return route.fulfill({ status: 200, contentType: 'application/json', body: emptyTileJson })
-    }
-    if (
-      url.endsWith('.jpg') ||
-      url.endsWith('.jpeg') ||
-      url.endsWith('.png') ||
-      url.endsWith('.webp') ||
-      url.includes('.jpg?') ||
-      url.includes('.png?')
-    ) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'image/png',
-        headers: { 'Cache-Control': 'public, max-age=3600' },
-        body: pngBody,
-      })
-    }
-    if (url.endsWith('.pbf') || url.includes('.pbf?')) {
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/x-protobuf',
-        body: Buffer.alloc(0),
-      })
-    }
-    return route.continue()
-  })
-}
-
 // ─── Runtime paint reader ─────────────────────────────────────────────────
 
 interface LabelPaint {
@@ -271,7 +198,7 @@ async function readLabelPaints(page: Page, layerIds: string[]): Promise<LabelPai
 
 // ─── Wait for map loaded ──────────────────────────────────────────────────
 
-async function waitForMapLoaded(page: Page): Promise<void> {
+async function waitForMapLoadedOrWatchdogTimeout(page: Page): Promise<void> {
   // Race the success signal and the non-recoverable watchdog signal.
   // data-map-error="timeout" means the app-level watchdog fired before MapLibre's
   // 'load' event — [data-map-loaded] will never appear after that, so we fast-fail
@@ -346,9 +273,9 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
 
   test('light + map view: label paint properties set correctly', async ({ page }) => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
-    await routeMapTilesRich(page)
+    await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     // Poll until applyMapTheme has applied the light text-color
     await expect
@@ -402,9 +329,9 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
 
   test('dark + map view: label paint properties set correctly', async ({ page }) => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
-    await routeMapTilesRich(page)
+    await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     await expect
       .poll(
@@ -449,9 +376,9 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
 
   test('light + satellite view: label paint properties set correctly', async ({ page }) => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
-    await routeMapTilesRich(page)
+    await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     await expect
       .poll(
@@ -493,9 +420,9 @@ test.describe('Label contrast measurement (Phase 2.5)', () => {
 
   test('dark + satellite view: label paint properties set correctly', async ({ page }) => {
     await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
-    await routeMapTilesRich(page)
+    await routeMapTiles(page, { styleStub: buildRichPositronStub() })
     await page.goto('/')
-    await waitForMapLoaded(page)
+    await waitForMapLoadedOrWatchdogTimeout(page)
 
     await expect
       .poll(
