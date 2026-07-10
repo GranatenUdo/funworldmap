@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-10
 **Author:** Tobias Ens (with Claude)
-**Status:** Draft
+**Status:** Accepted (implemented on `fix/2026-07-10-review-batch-1`)
 
 ## Context
 

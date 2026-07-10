@@ -87,7 +87,11 @@ export default function WorldMap({
   }
 
   return (
-    <div className="relative h-screen w-screen">
+    // overflow-hidden: the hover tooltip is absolutely positioned inside this
+    // wrapper by raw-DOM writes; a stale position near an edge (or after a
+    // viewport shrink) must clip at the map bounds instead of stretching the
+    // document into page scrollbars (2026-07-10 review).
+    <div className="relative h-screen w-screen overflow-hidden">
       <div
         ref={containerRef}
         className="h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-teal dark:focus-visible:outline-teal-light"
