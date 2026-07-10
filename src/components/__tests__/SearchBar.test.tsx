@@ -74,4 +74,25 @@ describe('SearchBar Enter behavior', () => {
 
     expect(onSelect).not.toHaveBeenCalled()
   })
+
+  it('Enter during the debounce window does NOT commit the previous query’s results', async () => {
+    const { onSelect, input } = setup()
+    // Settle France as the fresh, auto-activated top result.
+    fireEvent.change(input, { target: { value: 'fran' } })
+    const option = await screen.findByRole('option', { name: /France/ })
+    await waitFor(() => expect(option.getAttribute('aria-selected')).toBe('true'))
+
+    // Retype and press Enter immediately: results are still France's (stale),
+    // so Enter must be a no-op instead of committing FRA against 'germ'
+    // (2026-07-10 review finding).
+    fireEvent.change(input, { target: { value: 'germ' } })
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(onSelect).not.toHaveBeenCalled()
+
+    // Once the fresh results land, Enter commits the new top result.
+    const germany = await screen.findByRole('option', { name: /Germany/ })
+    await waitFor(() => expect(germany.getAttribute('aria-selected')).toBe('true'))
+    fireEvent.keyDown(input, { key: 'Enter' })
+    expect(onSelect).toHaveBeenCalledWith('DEU')
+  })
 })

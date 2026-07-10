@@ -18,21 +18,38 @@ const FUSE_OPTIONS: IFuseOptions<CountryData> = {
 const MAX_RESULTS = 8
 const DEBOUNCE_MS = 150
 
-export function useCountrySearch(countries: CountryData[], query: string): CountryData[] {
+export interface CountrySearchState {
+  results: CountryData[]
+  /** True while `results` still belong to a previous query (the debounce
+   *  hasn't fired for the current one). Consumers must not auto-commit stale
+   *  results — Enter during the debounce window would select the previous
+   *  query's top match (2026-07-10 review finding). */
+  isStale: boolean
+}
+
+export function useCountrySearch(countries: CountryData[], query: string): CountrySearchState {
   const fuse = useMemo(() => new Fuse(countries, FUSE_OPTIONS), [countries])
-  const [results, setResults] = useState<CountryData[]>([])
+  // results and the query they were computed for update together, so
+  // freshness is derivable at render time without extra effects.
+  const [state, setState] = useState<{ results: CountryData[]; forQuery: string }>({
+    results: [],
+    forQuery: '',
+  })
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   useEffect(() => {
     if (timerRef.current) clearTimeout(timerRef.current)
 
     if (!query.trim()) {
-      setResults([])
+      setState({ results: [], forQuery: query })
       return
     }
 
     timerRef.current = setTimeout(() => {
-      setResults(fuse.search(query, { limit: MAX_RESULTS }).map((r) => r.item))
+      setState({
+        results: fuse.search(query, { limit: MAX_RESULTS }).map((r) => r.item),
+        forQuery: query,
+      })
     }, DEBOUNCE_MS)
 
     return () => {
@@ -40,5 +57,5 @@ export function useCountrySearch(countries: CountryData[], query: string): Count
     }
   }, [fuse, query])
 
-  return results
+  return { results: state.results, isStale: state.forQuery !== query }
 }

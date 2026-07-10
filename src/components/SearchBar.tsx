@@ -30,7 +30,7 @@ export default function SearchBar({
   const [activeIndex, setActiveIndex] = useState(-1)
   const [isOpen, setIsOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const results = useCountrySearch(countries, query)
+  const { results, isStale } = useCountrySearch(countries, query)
 
   useEffect(() => {
     // Gate entirely on query being non-empty so that stale results left over
@@ -42,8 +42,11 @@ export default function SearchBar({
     setIsOpen(query.trim().length > 0)
     // Auto-activate the top result so Enter commits it immediately
     // ("Search First" — approved 2026-07-10). Arrow keys move from here.
-    setActiveIndex(results.length > 0 ? 0 : -1)
-  }, [results, query])
+    // FRESH results only: during the 150ms debounce the list still shows the
+    // previous query's matches, and Enter must stay a no-op rather than
+    // commit them (2026-07-10 review finding).
+    setActiveIndex(!isStale && results.length > 0 ? 0 : -1)
+  }, [results, query, isStale])
 
   const selectResult = useCallback(
     (country: CountryData) => {
@@ -189,7 +192,10 @@ export default function SearchBar({
                     className="w-10 h-7 object-cover rounded shadow-sm shrink-0"
                   />
                   <div className="min-w-0 flex-1">
-                    <div className="font-medium text-sand-900 dark:text-dark-50 truncate">
+                    <div
+                      className="font-medium text-sand-900 dark:text-dark-50 truncate"
+                      data-testid="search-option-name"
+                    >
                       {country.name.common}
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">

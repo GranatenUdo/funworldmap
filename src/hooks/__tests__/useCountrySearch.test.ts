@@ -30,7 +30,7 @@ describe('useCountrySearch', () => {
 
   it('returns empty results for empty query', () => {
     const { result } = renderHook(() => useCountrySearch(dataset, ''))
-    expect(result.current).toEqual([])
+    expect(result.current.results).toEqual([])
   })
 
   it('debounces by 150ms before producing results', () => {
@@ -39,15 +39,15 @@ describe('useCountrySearch', () => {
       { initialProps: { query: '' } },
     )
     rerender({ query: 'Fra' })
-    expect(result.current).toEqual([])
+    expect(result.current.results).toEqual([])
     act(() => {
       vi.advanceTimersByTime(149)
     })
-    expect(result.current).toEqual([])
+    expect(result.current.results).toEqual([])
     act(() => {
       vi.advanceTimersByTime(1)
     })
-    expect(result.current.length).toBeGreaterThan(0)
+    expect(result.current.results.length).toBeGreaterThan(0)
   })
 
   it('matches country names (common) above 0.4 threshold', () => {
@@ -59,7 +59,7 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current[0]?.cca3).toBe('FRA')
+    expect(result.current.results[0]?.cca3).toBe('FRA')
   })
 
   it('matches capitals', () => {
@@ -71,7 +71,7 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current[0]?.cca3).toBe('ESP')
+    expect(result.current.results[0]?.cca3).toBe('ESP')
   })
 
   it('matches cca3 codes', () => {
@@ -83,7 +83,7 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current[0]?.cca3).toBe('ITA')
+    expect(result.current.results[0]?.cca3).toBe('ITA')
   })
 
   it('caps results at 8', () => {
@@ -98,7 +98,7 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current.length).toBeLessThanOrEqual(8)
+    expect(result.current.results.length).toBeLessThanOrEqual(8)
   })
 
   it('clears results when query becomes empty', () => {
@@ -109,8 +109,37 @@ describe('useCountrySearch', () => {
     act(() => {
       vi.advanceTimersByTime(150)
     })
-    expect(result.current.length).toBeGreaterThan(0)
+    expect(result.current.results.length).toBeGreaterThan(0)
     rerender({ query: '' })
-    expect(result.current).toEqual([])
+    expect(result.current.results).toEqual([])
+  })
+
+  it('flags results as stale while the debounce for a changed query is pending', () => {
+    const { result, rerender } = renderHook(
+      ({ query }: { query: string }) => useCountrySearch(dataset, query),
+      { initialProps: { query: 'France' } },
+    )
+    act(() => {
+      vi.advanceTimersByTime(150)
+    })
+    expect(result.current.isStale).toBe(false)
+    expect(result.current.results[0]?.cca3).toBe('FRA')
+
+    // Retype: the old France results are still returned but marked stale
+    // until the debounce fires for the new query.
+    rerender({ query: 'Germany' })
+    expect(result.current.results[0]?.cca3).toBe('FRA')
+    expect(result.current.isStale).toBe(true)
+
+    act(() => {
+      vi.advanceTimersByTime(150)
+    })
+    expect(result.current.isStale).toBe(false)
+    expect(result.current.results[0]?.cca3).toBe('DEU')
+  })
+
+  it('is fresh (not stale) for the empty query', () => {
+    const { result } = renderHook(() => useCountrySearch(dataset, ''))
+    expect(result.current.isStale).toBe(false)
   })
 })
