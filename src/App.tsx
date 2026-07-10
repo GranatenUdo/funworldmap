@@ -82,8 +82,15 @@ function AppInner({
   cities,
 }: AppInnerProps) {
   const appReady = countries.length > 0 && cities.length > 0
-  const { selected, compareWith, select, compareSelect, clearCompare, deselect } =
-    useSelectedCountry(byCca3)
+  const {
+    selected,
+    compareWith,
+    selectionOriginRef,
+    select,
+    compareSelect,
+    clearCompare,
+    deselect,
+  } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
   const { session, submitGuessInput, advance, mode, finalize } = useGameSessionContext()
@@ -322,6 +329,7 @@ function AppInner({
         <WorldMap
           byNumeric={byNumeric}
           selected={selected}
+          selectionOriginRef={selectionOriginRef}
           compareWith={compareWith}
           comparePickingMode={comparePickingMode}
           resolvedTheme={resolved}

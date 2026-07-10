@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { LAYER } from '../lib/mapLayers'
+import { markClickOrigin } from '../lib/selectionOrigin'
 import { useMap } from './useMap'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 import type { GameStatus } from '../game/shared/types'
@@ -158,7 +159,12 @@ export function useMapInteractions({
       if (e.features && e.features.length > 0) {
         const featureId = String(e.features[0].id)
         const country = byNumericRef.current.get(featureId)
-        if (country) onSelectRef.current(country.cca3)
+        if (country) {
+          // This is the ONLY click-origin site — onSelect in App is shared
+          // with search and border chips, so the mark must live here.
+          markClickOrigin()
+          onSelectRef.current(country.cca3)
+        }
       }
     }
 

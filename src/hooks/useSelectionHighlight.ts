@@ -1,13 +1,18 @@
-import { useEffect } from 'react'
+import { useEffect, type MutableRefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { flyToCountry } from '../lib/flyToCountry'
 import { EMPTY_FILTER as EMPTY, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
+import type { SelectionOrigin } from './useSelectedCountry'
 
 interface Options {
   loaded: boolean
   selected: CountryData | null
+  /** How the selection was made — map clicks keep the user's zoom, auto
+   *  selections (search, chips, deep link) may zoom out. Ref, not value:
+   *  reading it must not re-trigger the fly effect. */
+  selectionOriginRef: MutableRefObject<SelectionOrigin>
   compareWith: CountryData | null
 }
 
@@ -37,15 +42,21 @@ function applyOrClearFilter(
 /** Apply selection + compare filters. Flies camera to the selected country.
  *  Compare-view highlight management lives in useCompareViewHighlight (separate
  *  hook); baseline paint lives in useCountryBaselinePaint. */
-export function useSelectionHighlight({ loaded, selected, compareWith }: Options): void {
+export function useSelectionHighlight({
+  loaded,
+  selected,
+  selectionOriginRef,
+  compareWith,
+}: Options): void {
   const { mapRef } = useMap()
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
     applyOrClearFilter(map, SELECTION_LAYERS, selected?.ccn3 ?? null)
-    if (selected) flyToCountry(map, selected)
-  }, [selected, loaded, mapRef])
+    if (selected)
+      flyToCountry(map, selected, { preserveZoom: selectionOriginRef.current === 'click' })
+  }, [selected, loaded, mapRef, selectionOriginRef])
 
   useEffect(() => {
     const map = mapRef.current
