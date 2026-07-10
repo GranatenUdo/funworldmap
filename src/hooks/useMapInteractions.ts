@@ -132,18 +132,26 @@ export function useMapInteractions({
       })
     }
 
-    const mouseleaveHover = () => {
+    // Shared by mouseleave and movestart: a camera move without mouse movement
+    // (search select, deep link, reveal fly-to) must not leave a hover
+    // highlight or tooltip describing the previous view. No cursor write here —
+    // movestart fires mid-drag after dragstart set 'grabbing', and resetting to
+    // 'grab' would glitch the drag cursor.
+    const clearHoverArtifacts = () => {
       if (hoveredRef.current !== null) {
         map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
         hoveredRef.current = null
       }
       map.setFilter(LAYER.extrusion, ['==', ['get', 'id'], ''])
       map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
-      const canvas = map.getCanvas()
-      if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'grab'
-
       const tooltip = tooltipRef.current
       if (tooltip) tooltip.classList.remove('visible')
+    }
+
+    const mouseleaveHover = () => {
+      clearHoverArtifacts()
+      const canvas = map.getCanvas()
+      if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'grab'
     }
 
     const clickCountry = (e: maplibregl.MapLayerMouseEvent) => {
@@ -175,6 +183,7 @@ export function useMapInteractions({
     map.on('mousemove', LAYER.fill, mousemoveHover)
     map.on('mousemove', mousemovePosition)
     map.on('mouseleave', LAYER.fill, mouseleaveHover)
+    map.on('movestart', clearHoverArtifacts)
     map.on('click', LAYER.fill, clickCountry)
     map.on('click', clickMap)
     map.on('dragstart', dragStart)
@@ -188,6 +197,7 @@ export function useMapInteractions({
       map.off('mousemove', LAYER.fill, mousemoveHover)
       map.off('mousemove', mousemovePosition)
       map.off('mouseleave', LAYER.fill, mouseleaveHover)
+      map.off('movestart', clearHoverArtifacts)
       map.off('click', LAYER.fill, clickCountry)
       map.off('click', clickMap)
       map.off('dragstart', dragStart)

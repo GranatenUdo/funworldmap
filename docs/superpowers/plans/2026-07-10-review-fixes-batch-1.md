@@ -26,7 +26,7 @@ registry, `SearchBar`'s activeIndex state, `mapLayers` layer definitions, and th
 | --- | --- |
 | `src/index.css` | `.country-tooltip` gains `top: 0; left: 0` |
 | `src/hooks/useMapInteractions.ts` | extract hover-clearing helper; register on `movestart`; `markClickOrigin()` in `clickCountry` |
-| `src/hooks/__tests__/useMapInteractions.test.tsx` | **new** — movestart clears hover artifacts |
+| `src/hooks/__tests__/useMapInteractions.test.ts` | extend — movestart clears hover artifacts (file already existed; a same-basename `.tsx` sibling would be silently dropped from the TS program, which dedupes same-name files preferring `.ts`) |
 | `src/components/SearchBar.tsx` | auto-active index 0; `spellCheck={false}` |
 | `src/components/__tests__/SearchBar.test.tsx` | **new** — type + Enter selects top result |
 | `e2e/search.spec.ts` | drop ArrowDown-before-Enter; keep arrow-key coverage |

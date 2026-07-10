@@ -3,6 +3,8 @@ import { renderHook } from '@testing-library/react'
 import type maplibregl from 'maplibre-gl'
 import type { GameSession, GameStatus } from '../../game/shared/types'
 import type { CountryData } from '../../lib/types'
+import { LAYER } from '../../lib/mapLayers'
+import { makeCountryData } from '../../test/countryFixtures'
 
 // Stable refs (like MapProvider's useMemo'd refs) + a mutable session, so a
 // rerender that only changes session.status does NOT change any effect dep
@@ -108,5 +110,95 @@ describe('useMapInteractions tooltip wiring', () => {
     // The listener stack must survive the status change (read status live via a
     // ref instead of re-attaching on every round boundary).
     expect(on.mock.calls.length).toBe(initialOnCalls)
+  })
+})
+
+describe('useMapInteractions movestart', () => {
+  // A camera move without mouse movement (search select, deep link, reveal
+  // fly-to) must not leave a hover highlight or tooltip describing the
+  // previous view (2026-07-10 review, batch-1 spec item 2).
+  type Handler = (...args: unknown[]) => void
+
+  function makeInteractionMap() {
+    const handlers = new Map<string, Handler>()
+    const keyFor = (event: string, layerOrHandler: unknown) =>
+      typeof layerOrHandler === 'string' ? `${event}:${layerOrHandler}` : event
+
+    const setFeatureState = vi.fn()
+    const setFilter = vi.fn()
+    const map = {
+      on: vi.fn((event: string, layerOrHandler: unknown, maybeHandler?: unknown) => {
+        const handler = (
+          typeof layerOrHandler === 'function' ? layerOrHandler : maybeHandler
+        ) as Handler
+        handlers.set(keyFor(event, layerOrHandler), handler)
+      }),
+      off: vi.fn(),
+      setFeatureState,
+      setFilter,
+      getCanvas: () => ({ style: { cursor: '' } }) as HTMLCanvasElement,
+      doubleClickZoom: { disable: vi.fn() },
+      queryRenderedFeatures: vi.fn(() => []),
+    } as unknown as maplibregl.Map
+
+    const fire = (event: string, layer: string | null, payload?: unknown) => {
+      const handler = handlers.get(layer ? `${event}:${layer}` : event)
+      if (!handler) throw new Error(`no handler registered for ${event}${layer ? `:${layer}` : ''}`)
+      handler(payload)
+    }
+
+    return { map, fire, setFeatureState, setFilter }
+  }
+
+  const EMPTY_FILTER = ['==', ['get', 'id'], '']
+
+  it('clears hover feature state, filters, and tooltip when the camera starts moving', () => {
+    const { map, fire, setFeatureState, setFilter } = makeInteractionMap()
+    const tooltip = document.createElement('div')
+    h.mapRef.current = map
+    h.tooltipRef.current = tooltip
+    const country = makeCountryData()
+    renderHook(() =>
+      useMapInteractions({
+        ...baseOptions,
+        byNumeric: new Map([[country.ccn3, country]]),
+        loaded: true,
+      }),
+    )
+
+    // Seed hover state via the layer mousemove handler.
+    fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
+    expect(tooltip.classList.contains('visible')).toBe(true)
+    expect(setFeatureState).toHaveBeenCalledWith(
+      { source: 'countries', id: country.ccn3 },
+      { hover: true },
+    )
+    setFeatureState.mockClear()
+    setFilter.mockClear()
+
+    fire('movestart', null)
+
+    expect(setFeatureState).toHaveBeenCalledWith(
+      { source: 'countries', id: country.ccn3 },
+      { hover: false },
+    )
+    expect(setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
+    expect(setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(tooltip.classList.contains('visible')).toBe(false)
+  })
+
+  it('is a safe no-op when nothing is hovered', () => {
+    const { map, fire, setFeatureState, setFilter } = makeInteractionMap()
+    const tooltip = document.createElement('div')
+    h.mapRef.current = map
+    h.tooltipRef.current = tooltip
+    renderHook(() => useMapInteractions({ ...baseOptions, loaded: true }))
+
+    fire('movestart', null)
+
+    expect(setFeatureState).not.toHaveBeenCalled()
+    expect(setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
+    expect(setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(tooltip.classList.contains('visible')).toBe(false)
   })
 })
