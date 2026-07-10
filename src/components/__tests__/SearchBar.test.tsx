@@ -30,7 +30,8 @@ describe('SearchBar Enter behavior', () => {
     fireEvent.change(input, { target: { value: 'fran' } })
 
     const option = await screen.findByRole('option', { name: /France/ })
-    expect(option.getAttribute('aria-selected')).toBe('true')
+    // The activation effect commits one render after the results do.
+    await waitFor(() => expect(option.getAttribute('aria-selected')).toBe('true'))
   })
 
   it('Enter commits the top result without arrow keys', async () => {
