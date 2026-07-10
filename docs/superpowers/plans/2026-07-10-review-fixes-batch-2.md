@@ -516,54 +516,57 @@ export function useSatelliteMode({ loaded, satellite }: Options): void {
 
 - [ ] **Step 5: Update `useSatelliteMode.test.tsx`**
 
-Add the GameSessionProvider mock used by `useMapInteractions.test.ts` (hoisted mutable `h.session`, default `status: 'idle'` — align the mock/`h` naming with that file's existing harness for `../useMap`), keep the existing cases green, and add:
+**Harness facts (verified 2026-07-11):** this file uses `makeMapWrapper` from `fakeMapHooks` with a LOCAL `makeSatelliteFakeMap(layers)` — there is no `../useMap` mock. `useGameSessionContext` THROWS outside its provider, so without the module mock below every EXISTING case in this file crashes the moment the hook gains the context read. Required changes:
+
+1. Add a module-level mock with a mutable session holder:
 
 ```ts
-import { createFakeMapRef } from '../../test/fakeMapRef'
+const h = vi.hoisted(() => ({
+  session: { modeId: 'country-pinning', status: 'idle' } as { modeId: string; status: string },
+}))
+vi.mock('../../game/shared/GameSessionProvider', () => ({
+  useGameSessionContext: () => ({ session: h.session }),
+}))
+```
 
-const STYLE_LAYERS = [
-  { id: 'water', type: 'fill' },
-  { id: 'place-labels', type: 'symbol' },
-  { id: 'country-fill', type: 'fill' },
-]
-function makeStyledMap() {
-  const fake = createFakeMapRef()
-  ;(fake.map.getStyle as ReturnType<typeof vi.fn>).mockReturnValue({ layers: STYLE_LAYERS })
-  return fake
-}
-const visibilityOf = (fake: ReturnType<typeof createFakeMapRef>, id: string) =>
-  fake.calls.setLayoutProperty.mock.calls.filter((c) => c[0] === id).at(-1)?.[2]
+2. Reset `h.session` to `status: 'idle'` in a `beforeEach`, and give the STYLE_LAYERS fixtures `type` fields (`background`/`water` → `'fill'`, add `{ id: 'place-labels', type: 'symbol' }`; entries without `type` are treated as non-symbol, so existing assertions stay green).
+3. Add the new cases using the file's own fake:
+
+```ts
+const lastVisibility = (fake: ReturnType<typeof makeSatelliteFakeMap>, id: string) =>
+  fake.calls.setLayoutProperty.filter((c) => c[0] === id).at(-1)?.[2]
 
 it('hides symbol layers while a game is playing in map view', () => {
-  const fake = makeStyledMap()
-  h.mapRef.current = fake.map
+  const fake = makeSatelliteFakeMap(STYLE_LAYERS)
   h.session = { modeId: 'country-pinning', status: 'playing' }
-  renderHook(() => useSatelliteMode({ loaded: true, satellite: false }))
-  expect(visibilityOf(fake, 'place-labels')).toBe('none')
-  expect(visibilityOf(fake, 'water')).toBe('visible')
+  renderHook(() => useSatelliteMode({ loaded: true, satellite: false }), {
+    wrapper: makeMapWrapper(fake),
+  })
+  expect(lastVisibility(fake, 'place-labels')).toBe('none')
+  expect(lastVisibility(fake, 'water')).toBe('visible')
 })
 
 it('re-hides labels when satellite toggles off mid-game (ordering regression)', () => {
-  const fake = makeStyledMap()
-  h.mapRef.current = fake.map
+  const fake = makeSatelliteFakeMap(STYLE_LAYERS)
   h.session = { modeId: 'country-pinning', status: 'playing' }
   const { rerender } = renderHook(
     ({ satellite }: { satellite: boolean }) => useSatelliteMode({ loaded: true, satellite }),
-    { initialProps: { satellite: true } },
+    { initialProps: { satellite: true }, wrapper: makeMapWrapper(fake) },
   )
   rerender({ satellite: false })
-  expect(visibilityOf(fake, 'place-labels')).toBe('none')
-  expect(visibilityOf(fake, 'water')).toBe('visible')
+  expect(lastVisibility(fake, 'place-labels')).toBe('none')
+  expect(lastVisibility(fake, 'water')).toBe('visible')
 })
 
 it('restores labels when the game ends', () => {
-  const fake = makeStyledMap()
-  h.mapRef.current = fake.map
+  const fake = makeSatelliteFakeMap(STYLE_LAYERS)
   h.session = { modeId: 'country-pinning', status: 'playing' }
-  const { rerender } = renderHook(() => useSatelliteMode({ loaded: true, satellite: false }))
+  const { rerender } = renderHook(() => useSatelliteMode({ loaded: true, satellite: false }), {
+    wrapper: makeMapWrapper(fake),
+  })
   h.session = { modeId: 'country-pinning', status: 'game-over' }
   rerender()
-  expect(visibilityOf(fake, 'place-labels')).toBe('visible')
+  expect(lastVisibility(fake, 'place-labels')).toBe('visible')
 })
 ```
 
@@ -659,7 +662,7 @@ In `applyCountryBaselinePaint`, change the opts type to `{ satellite: boolean; i
 
 - [ ] **Step 4: Wire the hook**
 
-In `src/hooks/useCountryBaselinePaint.ts`: `const { session } = useGameSessionContext()`, `const gameActive = session.status === 'playing'`, include `gameActive` in the `applyCountryBaselinePaint` opts and the effect deps. Extend the hook's own test file with the provider mock (same `h.session` pattern) and one case: satellite + playing rerender writes `line-width` 1.6, then back to 0.5 on game end.
+In `src/hooks/useCountryBaselinePaint.ts`: `const { session } = useGameSessionContext()`, `const gameActive = session.status === 'playing'`, include `gameActive` in the `applyCountryBaselinePaint` opts and the effect deps. **Required (verified 2026-07-11):** `useCountryBaselinePaint.test.tsx` uses `makeFakeMap`/`makeMapWrapper` with NO GameSessionProvider — `useGameSessionContext` throws outside its provider, so add the same `vi.mock('../../game/shared/GameSessionProvider')` + hoisted `h.session` (default `'idle'`) as in Task 4, or every existing matrix case crashes. With the idle default the pinned {satellite × compare} paint matrix is unchanged. Then add one case: satellite + `h.session.status='playing'` rerender writes `line-width` 1.6, then back to 0.5 after `status='game-over'`.
 
 - [ ] **Step 5: Run — expect PASS**
 
@@ -1028,6 +1031,8 @@ git commit -m "feat(compare): frame both countries around the compare panel"
 
 - [ ] **Step 1: Game label-hiding e2e**
 
+**Stub vacuity guard (verified 2026-07-11):** the game specs run under `routeMapTiles`, whose embedded minimal positron style may contain no symbol layers — the assertion below would then pass vacuously. Follow label-contrast.spec.ts's precedent and pass `routeMapTiles(page, { styleStub })` with a minimal style containing at least one symbol layer (e.g. a `place-labels` symbol layer over the stub source), and assert `symbols.length > 0` before the visibility checks.
+
 In the country-pinning spec, inside an existing test that reaches `status: 'playing'` in map view (or a new test following that spec's established setup helpers — `waitForGameTestHook` etc.), add:
 
 ```ts
@@ -1044,6 +1049,8 @@ const symbolVisibility = () =>
       .layers.filter((l) => l.type === 'symbol' && !l.id.startsWith('country-'))
     return symbols.map((l) => map.getLayoutProperty(l.id, 'visibility'))
   })
+// Non-vacuous: the style stub must actually contain symbol layers.
+expect(await symbolVisibility()).not.toHaveLength(0)
 await expect.poll(symbolVisibility).not.toContain('visible')
 // … after game end (End game → Back to map):
 await expect.poll(symbolVisibility).not.toContain('none')
