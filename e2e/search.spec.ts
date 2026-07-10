@@ -30,7 +30,7 @@ test.describe('Search', () => {
       .first()
     await expect(firstOption).toBeVisible({ timeout: 15_000 })
 
-    await searchInput.press('ArrowDown')
+    // No ArrowDown: the top result is auto-activated, Enter commits it.
     await searchInput.press('Enter')
 
     await expect
@@ -49,21 +49,30 @@ test.describe('Search', () => {
     await expect(results).toContainText('United')
   })
 
-  test('keyboard navigation: arrow down, enter selects', async ({ page }) => {
+  test('keyboard navigation: top result auto-active, arrows move, enter selects', async ({
+    page,
+  }) => {
     const input = page.getByTestId('search-input')
     await input.fill('Ger')
 
-    // Wait for the Germany option to be present before pressing ArrowDown —
+    // Wait for the Germany option to be present before pressing keys —
     // ensures React has committed the isOpen state that gates onKeyDown.
-    await expect(
-      page
-        .getByTestId('search-results')
-        .getByRole('option', { name: /Germany/ })
-        .first(),
-    ).toBeVisible({ timeout: 15_000 })
+    const germany = page
+      .getByTestId('search-results')
+      .getByRole('option', { name: /Germany/ })
+      .first()
+    await expect(germany).toBeVisible({ timeout: 15_000 })
 
+    // The top result is auto-activated as soon as results appear.
+    const options = page.getByTestId('search-results').getByRole('option')
+    await expect(options.first()).toHaveAttribute('aria-selected', 'true')
+
+    // Arrows move the active option and back.
     await input.press('ArrowDown')
-    // Enter to select
+    await expect(options.first()).toHaveAttribute('aria-selected', 'false')
+    await input.press('ArrowUp')
+    await expect(options.first()).toHaveAttribute('aria-selected', 'true')
+
     await input.press('Enter')
 
     await expect(page.getByTestId('country-panel')).toBeVisible()

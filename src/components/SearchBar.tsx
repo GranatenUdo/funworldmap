@@ -40,7 +40,9 @@ export default function SearchBar({
     // query still being present, causing the useEffect to call setIsOpen(true)
     // for one extra render frame — enough to block a click on panel-close in CI.
     setIsOpen(query.trim().length > 0)
-    setActiveIndex(-1)
+    // Auto-activate the top result so Enter commits it immediately
+    // ("Search First" — approved 2026-07-10). Arrow keys move from here.
+    setActiveIndex(results.length > 0 ? 0 : -1)
   }, [results, query])
 
   const selectResult = useCallback(
@@ -119,6 +121,7 @@ export default function SearchBar({
         aria-controls={LISTBOX_ID}
         aria-activedescendant={activeId}
         aria-autocomplete="list"
+        spellCheck={false}
         placeholder={comparePickingMode ? 'Choose country to compare...' : 'Search countries...'}
         value={query}
         onChange={(e) => {
