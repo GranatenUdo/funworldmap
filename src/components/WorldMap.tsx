@@ -21,10 +21,13 @@ import { useSatelliteMode } from '../hooks/useSatelliteMode'
 import { useCountryBaselinePaint } from '../hooks/useCountryBaselinePaint'
 import { useCompareViewHighlight } from '../hooks/useCompareViewHighlight'
 import type { CountryData } from '../lib/types'
+import type { MutableRefObject } from 'react'
+import type { SelectionOrigin } from '../hooks/useSelectedCountry'
 
 interface Props {
   byNumeric: Map<string, CountryData>
   selected: CountryData | null
+  selectionOriginRef: MutableRefObject<SelectionOrigin>
   compareWith: CountryData | null
   comparePickingMode: boolean
   resolvedTheme: 'light' | 'dark'
@@ -36,6 +39,7 @@ interface Props {
 export default function WorldMap({
   byNumeric,
   selected,
+  selectionOriginRef,
   compareWith,
   comparePickingMode,
   resolvedTheme,
@@ -62,7 +66,7 @@ export default function WorldMap({
   })
 
   useMapInteractions({ loaded, byNumeric, onSelect, onDeselect, comparePickingMode })
-  useSelectionHighlight({ loaded, selected, compareWith })
+  useSelectionHighlight({ loaded, selected, selectionOriginRef, compareWith })
   useMapTheme({ loaded, resolvedTheme })
   useSatelliteMode({ loaded, satellite })
   useCountryBaselinePaint({ loaded, satellite, inCompareView: compareWith !== null, resolvedTheme })
@@ -83,7 +87,11 @@ export default function WorldMap({
   }
 
   return (
-    <div className="relative h-screen w-screen">
+    // overflow-hidden: the hover tooltip is absolutely positioned inside this
+    // wrapper by raw-DOM writes; a stale position near an edge (or after a
+    // viewport shrink) must clip at the map bounds instead of stretching the
+    // document into page scrollbars (2026-07-10 review).
+    <div className="relative h-screen w-screen overflow-hidden">
       <div
         ref={containerRef}
         className="h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-teal dark:focus-visible:outline-teal-light"

@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
-import { LAYER } from '../lib/mapLayers'
+import { EMPTY_FILTER, LAYER } from '../lib/mapLayers'
+import { markClickOrigin } from '../lib/selectionOrigin'
 import { useMap } from './useMap'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 import type { GameStatus } from '../game/shared/types'
@@ -47,6 +48,8 @@ export function useMapInteractions({
   onDeselectRef.current = onDeselect
   const byNumericRef = useRef(byNumeric)
   byNumericRef.current = byNumeric
+  const comparePickingRef = useRef(comparePickingMode)
+  comparePickingRef.current = comparePickingMode
 
   const { session } = useGameSessionContext()
   const sessionRef = useRef(session)
@@ -132,25 +135,60 @@ export function useMapInteractions({
       })
     }
 
-    const mouseleaveHover = () => {
+    // Shared by mouseleave and programmatic movestart: a camera move without
+    // mouse movement (search select, deep link, reveal fly-to) must not leave
+    // a hover highlight or tooltip describing the previous view. No cursor
+    // write here — movestart fires mid-drag after dragstart set 'grabbing',
+    // and resetting to 'grab' would glitch the drag cursor.
+    const clearHoverArtifacts = () => {
       if (hoveredRef.current !== null) {
         map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
         hoveredRef.current = null
       }
-      map.setFilter(LAYER.extrusion, ['==', ['get', 'id'], ''])
-      map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
-      const canvas = map.getCanvas()
-      if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'grab'
-
+      map.setFilter(LAYER.extrusion, EMPTY_FILTER)
+      map.setFilter(LAYER.hoverBorder, EMPTY_FILTER)
       const tooltip = tooltipRef.current
       if (tooltip) tooltip.classList.remove('visible')
+    }
+
+    // User gestures (drag/wheel) carry originalEvent; programmatic camera
+    // moves (easeTo/flyTo from search select, deep link, reveal) do not. Only
+    // programmatic moves can leave the pointer's hover state stale — clearing
+    // on a user wheel-zoom would wipe a live hover under a stationary cursor
+    // (2026-07-10 review finding).
+    const movestartClear = (
+      e: maplibregl.MapLibreEvent<MouseEvent | TouchEvent | WheelEvent | undefined>,
+    ) => {
+      if (e.originalEvent) return
+      clearHoverArtifacts()
+    }
+
+    const mouseleaveHover = () => {
+      clearHoverArtifacts()
+      const canvas = map.getCanvas()
+      if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'grab'
     }
 
     const clickCountry = (e: maplibregl.MapLayerMouseEvent) => {
       if (e.features && e.features.length > 0) {
         const featureId = String(e.features[0].id)
         const country = byNumericRef.current.get(featureId)
-        if (country) onSelectRef.current(country.cca3)
+        if (country) {
+          // This is the ONLY click-origin site — onSelect in App is shared
+          // with search and border chips, so the mark must live here. Mark
+          // only when this click will produce a selection hashchange: takeOrigin()
+          // runs solely in resolveHash, so a mark set by a game guess click, a
+          // compare-picking click, or a re-click of the already-selected
+          // country (identical hash → no hashchange) would never be consumed
+          // and would leak preserveZoom into the NEXT auto selection
+          // (2026-07-10 review finding).
+          const willChangeSelectionHash =
+            sessionRef.current.status === 'idle' &&
+            !comparePickingRef.current &&
+            window.location.hash !== `#${country.cca3}`
+          if (willChangeSelectionHash) markClickOrigin()
+          onSelectRef.current(country.cca3)
+        }
       }
     }
 
@@ -175,6 +213,7 @@ export function useMapInteractions({
     map.on('mousemove', LAYER.fill, mousemoveHover)
     map.on('mousemove', mousemovePosition)
     map.on('mouseleave', LAYER.fill, mouseleaveHover)
+    map.on('movestart', movestartClear)
     map.on('click', LAYER.fill, clickCountry)
     map.on('click', clickMap)
     map.on('dragstart', dragStart)
@@ -188,6 +227,7 @@ export function useMapInteractions({
       map.off('mousemove', LAYER.fill, mousemoveHover)
       map.off('mousemove', mousemovePosition)
       map.off('mouseleave', LAYER.fill, mouseleaveHover)
+      map.off('movestart', movestartClear)
       map.off('click', LAYER.fill, clickCountry)
       map.off('click', clickMap)
       map.off('dragstart', dragStart)

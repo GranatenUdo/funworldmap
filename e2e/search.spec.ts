@@ -29,8 +29,11 @@ test.describe('Search', () => {
       .getByRole('option', { name: /^France\s/ })
       .first()
     await expect(firstOption).toBeVisible({ timeout: 15_000 })
+    // Auto-activation commits one render after the results appear — wait for
+    // the activated state, not just visibility, before pressing Enter.
+    await expect(firstOption).toHaveAttribute('aria-selected', 'true')
 
-    await searchInput.press('ArrowDown')
+    // No ArrowDown: the top result is auto-activated, Enter commits it.
     await searchInput.press('Enter')
 
     await expect
@@ -49,25 +52,37 @@ test.describe('Search', () => {
     await expect(results).toContainText('United')
   })
 
-  test('keyboard navigation: arrow down, enter selects', async ({ page }) => {
+  test('keyboard navigation: top result auto-active, arrows move, enter selects', async ({
+    page,
+  }) => {
     const input = page.getByTestId('search-input')
     await input.fill('Ger')
 
-    // Wait for the Germany option to be present before pressing ArrowDown —
-    // ensures React has committed the isOpen state that gates onKeyDown.
-    await expect(
-      page
-        .getByTestId('search-results')
-        .getByRole('option', { name: /Germany/ })
-        .first(),
-    ).toBeVisible({ timeout: 15_000 })
+    // Wait for options to be present before pressing keys — ensures React has
+    // committed the isOpen state that gates onKeyDown. 'Ger' fuzzy-matches
+    // several countries (Germany, Niger, Nigeria, Algeria), so there are
+    // always ≥2 options for the arrow-key round trip below.
+    const options = page.getByTestId('search-results').getByRole('option')
+    await expect(options.nth(1)).toBeVisible({ timeout: 15_000 })
 
+    // The top result is auto-activated as soon as results appear.
+    await expect(options.first()).toHaveAttribute('aria-selected', 'true')
+
+    // Arrows move the active option and back.
     await input.press('ArrowDown')
-    // Enter to select
+    await expect(options.first()).toHaveAttribute('aria-selected', 'false')
+    await input.press('ArrowUp')
+    await expect(options.first()).toHaveAttribute('aria-selected', 'true')
+
+    // Enter commits whichever country is top-ranked — derive the expectation
+    // from the option itself rather than assuming Fuse's ordering
+    // (CLAUDE.md: never assert Fuse.js result order).
+    const topName = await options.first().getByTestId('search-option-name').textContent()
+    if (!topName) throw new Error('top search option rendered without a name')
     await input.press('Enter')
 
     await expect(page.getByTestId('country-panel')).toBeVisible()
-    await expect(page.getByTestId('country-panel')).toContainText('Germany')
+    await expect(page.getByTestId('country-panel')).toContainText(topName)
   })
 
   test('escape closes dropdown', async ({ page }) => {

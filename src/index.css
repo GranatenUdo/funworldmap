@@ -175,6 +175,11 @@ body {
 /* Country name tooltip — positioned by JS, not React */
 .country-tooltip {
   position: absolute;
+  /* Initial resting position. Without this the hidden tooltip sits at its
+     static position after the map container and stretches the document 12px
+     past the viewport — permanent page scrollbars (2026-07-10 review). */
+  top: 0;
+  left: 0;
   pointer-events: none;
   z-index: 100;
   padding: 6px 10px;

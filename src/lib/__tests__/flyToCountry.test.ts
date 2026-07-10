@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import type maplibregl from 'maplibre-gl'
 import { flyToCountry } from '../flyToCountry'
 import { prefersReducedMotion } from '../motion'
@@ -31,8 +31,30 @@ function makeMap(currentZoom: number): {
   return { map, flyTo }
 }
 
+function lastFlyArg(flyTo: ReturnType<typeof vi.fn>) {
+  return flyTo.mock.calls[0][0] as {
+    zoom: number
+    center: [number, number]
+    offset: [number, number]
+    duration: number
+  }
+}
+
+function stubViewport({ desktop, height = 900 }: { desktop: boolean; height?: number }) {
+  vi.stubGlobal(
+    'matchMedia',
+    vi.fn(() => ({ matches: desktop })),
+  )
+  vi.stubGlobal('innerHeight', height)
+}
+
 beforeEach(() => {
   vi.mocked(prefersReducedMotion).mockReturnValue(false)
+  stubViewport({ desktop: true })
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
 })
 
 describe('flyToCountry', () => {
@@ -41,34 +63,63 @@ describe('flyToCountry', () => {
     const vatican = makeCountry({ area: 0.49, latlng: [41.9, 12.45] })
     flyToCountry(map, vatican)
     expect(flyTo).toHaveBeenCalledTimes(1)
-    const arg = flyTo.mock.calls[0][0] as { zoom: number; center: [number, number] }
+    const arg = lastFlyArg(flyTo)
     expect(arg.zoom).toBeGreaterThan(10)
     expect(arg.center).toEqual([12.45, 41.9])
   })
 
-  it('preserves the user-current zoom when it exceeds the area-derived zoom', () => {
+  it('preserveZoom (map click) keeps the user-current zoom when it exceeds the computed zoom', () => {
     const { map, flyTo } = makeMap(4)
     const russia = makeCountry({ area: 17_098_242, latlng: [60, 100] })
-    flyToCountry(map, russia)
-    const arg = flyTo.mock.calls[0][0] as { zoom: number }
-    expect(arg.zoom).toBe(4)
+    flyToCountry(map, russia, { preserveZoom: true })
+    expect(lastFlyArg(flyTo).zoom).toBe(4)
   })
 
-  it('flies to the area-derived clamp when current zoom is below it', () => {
+  it('auto selections zoom OUT to frame the country (Vatican → Japan case)', () => {
+    const { map, flyTo } = makeMap(11.5)
+    const japan = makeCountry({ area: 377_930, latlng: [36, 138] })
+    flyToCountry(map, japan)
+    const { zoom } = lastFlyArg(flyTo)
+    expect(zoom).toBeGreaterThan(3)
+    expect(zoom).toBeLessThan(4)
+  })
+
+  it('mid-size countries land at a meaningful zoom from the world view', () => {
+    const { map, flyTo } = makeMap(1.8)
+    const germany = makeCountry({ area: 357_114, latlng: [51, 9] })
+    flyToCountry(map, germany)
+    const { zoom } = lastFlyArg(flyTo)
+    expect(zoom).toBeGreaterThan(3)
+    expect(zoom).toBeLessThan(4)
+  })
+
+  it('continental giants still resolve to the globe view floor', () => {
     const { map, flyTo } = makeMap(1.5)
     const russia = makeCountry({ area: 17_098_242, latlng: [60, 100] })
-    flyToCountry(map, russia)
-    const arg = flyTo.mock.calls[0][0] as { zoom: number }
-    expect(arg.zoom).toBe(2)
+    flyToCountry(map, russia, { preserveZoom: true })
+    expect(lastFlyArg(flyTo).zoom).toBe(2)
   })
 
-  it('composes the clamp with reduced-motion duration: 0', () => {
+  it('composes with reduced-motion duration: 0', () => {
     vi.mocked(prefersReducedMotion).mockReturnValue(true)
     const { map, flyTo } = makeMap(4)
     const france = makeCountry({ area: 643_801, latlng: [46, 2] })
-    flyToCountry(map, france)
-    const arg = flyTo.mock.calls[0][0] as { zoom: number; duration: number }
+    flyToCountry(map, france, { preserveZoom: true })
+    const arg = lastFlyArg(flyTo)
     expect(arg.zoom).toBe(4)
     expect(arg.duration).toBe(0)
+  })
+
+  it('offsets the target left of the desktop panel', () => {
+    const { map, flyTo } = makeMap(1.8)
+    flyToCountry(map, makeCountry({ area: 100 }))
+    expect(lastFlyArg(flyTo).offset).toEqual([-188, 0])
+  })
+
+  it('offsets the target above the mobile bottom sheet', () => {
+    stubViewport({ desktop: false, height: 800 })
+    const { map, flyTo } = makeMap(1.8)
+    flyToCountry(map, makeCountry({ area: 100 }))
+    expect(lastFlyArg(flyTo).offset).toEqual([0, -160])
   })
 })
