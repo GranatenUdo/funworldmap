@@ -4,7 +4,7 @@
  * 2026-07-10, batch-1 spec item 3). Arrow keys still move the active option.
  */
 import { describe, expect, it, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SearchBar from '../SearchBar'
 import { makeCountryData } from '../../test/countryFixtures'
 
@@ -36,7 +36,10 @@ describe('SearchBar Enter behavior', () => {
   it('Enter commits the top result without arrow keys', async () => {
     const { onSelect, input } = setup()
     fireEvent.change(input, { target: { value: 'fran' } })
-    await screen.findByRole('option', { name: /France/ })
+    // Wait for auto-activation, not just presence — the activeIndex effect
+    // commits one render after the results do.
+    const option = await screen.findByRole('option', { name: /France/ })
+    await waitFor(() => expect(option.getAttribute('aria-selected')).toBe('true'))
 
     fireEvent.keyDown(input, { key: 'Enter' })
 
@@ -49,6 +52,8 @@ describe('SearchBar Enter behavior', () => {
     fireEvent.change(input, { target: { value: 'an' } })
     const options = await screen.findAllByRole('option')
     expect(options.length).toBeGreaterThan(1)
+    // Wait for auto-activation so ArrowDown moves 0 → 1, not −1 → 0.
+    await waitFor(() => expect(options[0].getAttribute('aria-selected')).toBe('true'))
     const secondName = options[1].textContent ?? ''
     const expected = countries.find((c) => secondName.includes(c.name.common))
     expect(expected).toBeDefined()
