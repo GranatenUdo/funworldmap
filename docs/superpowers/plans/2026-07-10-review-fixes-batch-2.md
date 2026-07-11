@@ -1,6 +1,6 @@
 # Review Fixes Batch 2 Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Spec:** `docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md`
 **Branch:** `feat/2026-07-10-review-batch-2`
@@ -34,7 +34,7 @@
 - Consumes: nothing.
 - Produces: `DESKTOP_MEDIA_QUERY: string`; `SINGLE_PANEL_FOOTPRINT_PX = 376`; `COMPARE_PANEL_FOOTPRINT_PX = 672`; `SHEET_COLLAPSED_FRACTION = 0.4`; `COMPARE_SHEET_FRACTION = 0.8`; `panelScreenOffset(kind: 'single' | 'compare'): [number, number]`. Tasks 6 (class assertions) and 7 (compare offset) rely on these exact names.
 
-- [ ] **Step 1: Write the failing drift-alarm test**
+- [x] **Step 1: Write the failing drift-alarm test**
 
 ```ts
 // src/lib/__tests__/layoutConstants.test.ts
@@ -96,12 +96,12 @@ describe('layout constants ↔ panel classes drift alarm', () => {
 })
 ```
 
-- [ ] **Step 2: Run it — expect FAIL (module not found)**
+- [x] **Step 2: Run it — expect FAIL (module not found)**
 
 Run: `npx vitest run src/lib/__tests__/layoutConstants.test.ts`
 Expected: FAIL — cannot resolve `../layoutConstants`.
 
-- [ ] **Step 3: Implement the module**
+- [x] **Step 3: Implement the module**
 
 ```ts
 // src/lib/layoutConstants.ts
@@ -135,7 +135,7 @@ export function panelScreenOffset(kind: 'single' | 'compare'): [number, number] 
 }
 ```
 
-- [ ] **Step 4: Point `flyToCountry` at the shared module**
+- [x] **Step 4: Point `flyToCountry` at the shared module**
 
 In `src/lib/flyToCountry.ts` delete the private `panelOffset` function and its comment block, add the import, and use it:
 
@@ -152,12 +152,12 @@ import { panelScreenOffset } from './layoutConstants'
   })
 ```
 
-- [ ] **Step 5: Run both suites — expect PASS**
+- [x] **Step 5: Run both suites — expect PASS**
 
 Run: `npx vitest run src/lib/__tests__/layoutConstants.test.ts src/lib/__tests__/flyToCountry.test.ts`
 Expected: all green (flyToCountry offset values are unchanged: `[-188, 0]` / `[0, -160]`).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/lib/layoutConstants.ts src/lib/__tests__/layoutConstants.test.ts src/lib/flyToCountry.ts
@@ -175,7 +175,7 @@ git commit -m "refactor(layout): shared panel-geometry constants with class-drif
 **Interfaces:**
 - Produces: exported `EXTRUSION_MAX_ZOOM = 7` and `extrusionHeightExpression(peakMeters: number)`; Task 3 migrates this test file's fake map, so keep assertions helper-agnostic.
 
-- [ ] **Step 1: Update the test to the fade contract (failing first)**
+- [x] **Step 1: Update the test to the fade contract (failing first)**
 
 Replace the two tests in `src/lib/__tests__/mapLayers.test.ts` bodies with:
 
@@ -236,11 +236,11 @@ describe('highlight extrusion layers', () => {
 })
 ```
 
-- [ ] **Step 2: Run — expect FAIL (exports missing, heights are scalars)**
+- [x] **Step 2: Run — expect FAIL (exports missing, heights are scalars)**
 
 Run: `npx vitest run src/lib/__tests__/mapLayers.test.ts`
 
-- [ ] **Step 3: Implement in `mapLayers.ts`**
+- [x] **Step 3: Implement in `mapLayers.ts`**
 
 Replace the `EXTRUSION_MAX_ZOOM` block and both extrusion paint blocks:
 
@@ -263,11 +263,11 @@ export function extrusionHeightExpression(
 In `addHoverLayers` (LAYER.extrusion): `maxzoom: EXTRUSION_MAX_ZOOM,` and `'fill-extrusion-height': extrusionHeightExpression(60000),`.
 In `addHighlightStack` (`${prefix}-extrusion`): `maxzoom: EXTRUSION_MAX_ZOOM,` and `'fill-extrusion-height': extrusionHeightExpression(80000),`. Update both nearby comments to reference the fade.
 
-- [ ] **Step 4: Run — expect PASS**
+- [x] **Step 4: Run — expect PASS**
 
 Run: `npx vitest run src/lib/__tests__/mapLayers.test.ts`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/lib/mapLayers.ts src/lib/__tests__/mapLayers.test.ts
@@ -288,7 +288,7 @@ git commit -m "fix(map): fade highlight extrusions across z4.5-6.5 instead of th
 - Consumes: existing `createFakeMapRef()` consumers (useRevealMapEffects tests etc.) — additions must be backward compatible.
 - Produces: `createFakeMapRef(opts?: { zoom?: number })` whose return adds `map`, `fire(event, layer, payload?)`, `addedLayers: maplibregl.LayerSpecification[]`, and calls `setFeatureState`, `setLayoutProperty`, `getZoom`, `getCanvas`, `cameraForBounds` (Task 7 uses `cameraForBounds` + `fire`).
 
-- [ ] **Step 1: Extend `src/test/fakeMapRef.ts`**
+- [x] **Step 1: Extend `src/test/fakeMapRef.ts`**
 
 ```ts
 import { vi } from 'vitest'
@@ -354,22 +354,22 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
 }
 ```
 
-- [ ] **Step 2: Run the existing consumers — expect PASS (backward compat)**
+- [x] **Step 2: Run the existing consumers — expect PASS (backward compat)**
 
 Run: `npx vitest run src/game/hooks src/hooks/__tests__/useSelectionHighlight.test.tsx`
 Expected: green — only additive changes.
 
-- [ ] **Step 3: Migrate the three inline fakes**
+- [x] **Step 3: Migrate the three inline fakes**
 
 - `useMapInteractions.test.ts`: delete `makeInteractionMap` and `makeClickMap`; both describe blocks use `const fake = createFakeMapRef()`, `h.mapRef.current = fake.map`, and `fake.fire(...)` / `fake.calls.setFeatureState` / `fake.calls.setFilter`. The click-origin block's `clickCountry(payload)` helper becomes `fake.fire('click', LAYER.fill, payload)`.
 - `mapLayers.test.ts`: delete `captureAddedLayers`; use `const fake = createFakeMapRef(); add(fake.map); const specs = fake.addedLayers`.
 - `flyToCountry.test.ts`: delete `makeMap`; use `const fake = createFakeMapRef({ zoom: 4 })` and read `fake.calls.flyTo`.
 
-- [ ] **Step 4: Run all touched suites — expect PASS**
+- [x] **Step 4: Run all touched suites — expect PASS**
 
 Run: `npx vitest run src/hooks/__tests__/useMapInteractions.test.ts src/lib/__tests__/mapLayers.test.ts src/lib/__tests__/flyToCountry.test.ts`
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/test/fakeMapRef.ts src/hooks/__tests__/useMapInteractions.test.ts src/lib/__tests__/mapLayers.test.ts src/lib/__tests__/flyToCountry.test.ts
@@ -390,7 +390,7 @@ git commit -m "test: consolidate fake-map builders into createFakeMapRef"
 - Consumes: `useGameSessionContext()` (same pattern as `useMapInteractions`).
 - Produces: `applyBasemapLayerVisibility(map, opts: { satellite: boolean; hideLabels: boolean }): void` in mapLayers.ts. Rule: custom layers (id starts `country-` / `satellite-`) untouched; other layers visible iff `!satellite && (type !== 'symbol' || !hideLabels)`.
 
-- [ ] **Step 1: Write failing unit tests for the owner function**
+- [x] **Step 1: Write failing unit tests for the owner function**
 
 Append to `src/lib/__tests__/mapLayers.test.ts`:
 
@@ -436,11 +436,11 @@ describe('applyBasemapLayerVisibility', () => {
 })
 ```
 
-- [ ] **Step 2: Run — expect FAIL (function missing)**
+- [x] **Step 2: Run — expect FAIL (function missing)**
 
 Run: `npx vitest run src/lib/__tests__/mapLayers.test.ts`
 
-- [ ] **Step 3: Implement the owner in `mapLayers.ts`**
+- [x] **Step 3: Implement the owner in `mapLayers.ts`**
 
 ```ts
 /** Single owner of BASEMAP layer visibility (the repo's #111 pattern —
@@ -469,7 +469,7 @@ export function applyBasemapLayerVisibility(
 }
 ```
 
-- [ ] **Step 4: Rewire `useSatelliteMode` through the owner + game gate**
+- [x] **Step 4: Rewire `useSatelliteMode` through the owner + game gate**
 
 Replace `src/hooks/useSatelliteMode.ts` with:
 
@@ -514,7 +514,7 @@ export function useSatelliteMode({ loaded, satellite }: Options): void {
 }
 ```
 
-- [ ] **Step 5: Update `useSatelliteMode.test.tsx`**
+- [x] **Step 5: Update `useSatelliteMode.test.tsx`**
 
 **Harness facts (verified 2026-07-11):** this file uses `makeMapWrapper` from `fakeMapHooks` with a LOCAL `makeSatelliteFakeMap(layers)` — there is no `../useMap` mock. `useGameSessionContext` THROWS outside its provider, so without the module mock below every EXISTING case in this file crashes the moment the hook gains the context read. Required changes:
 
@@ -570,11 +570,11 @@ it('restores labels when the game ends', () => {
 })
 ```
 
-- [ ] **Step 6: Run — expect PASS**
+- [x] **Step 6: Run — expect PASS**
 
 Run: `npx vitest run src/hooks/__tests__/useSatelliteMode.test.tsx src/lib/__tests__/mapLayers.test.ts`
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/lib/mapLayers.ts src/lib/__tests__/mapLayers.test.ts src/hooks/useSatelliteMode.ts src/hooks/__tests__/useSatelliteMode.test.tsx
@@ -594,7 +594,7 @@ git commit -m "feat(game): hide basemap labels during play via single-owner laye
 - Consumes: `useGameSessionContext()`.
 - Produces: `applyCountryBaselinePaint(map, opts: { satellite; inCompareView; isDark; gameActive: boolean })` — new required `gameActive` member; the only call site is `useCountryBaselinePaint`.
 
-- [ ] **Step 1: Extend the paint owner (test first)**
+- [x] **Step 1: Extend the paint owner (test first)**
 
 Append to `src/lib/__tests__/mapLayers.test.ts`:
 
@@ -634,9 +634,9 @@ describe('applyCountryBaselinePaint game emphasis', () => {
 })
 ```
 
-- [ ] **Step 2: Run — expect FAIL (gameActive not accepted; line-width never written)**
+- [x] **Step 2: Run — expect FAIL (gameActive not accepted; line-width never written)**
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 In `applyBorderPaintForMode`, accept and apply emphasis, and start owning `line-width` in every branch:
 
@@ -660,16 +660,16 @@ export function applyBorderPaintForMode(
 
 In `applyCountryBaselinePaint`, change the opts type to `{ satellite: boolean; inCompareView: boolean; isDark: boolean; gameActive: boolean }` and pass `gameActive` through the non-compare branch: `applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite, gameActive: opts.gameActive })`. The compare branch keeps its flat dim (compare never coexists with a game).
 
-- [ ] **Step 4: Wire the hook**
+- [x] **Step 4: Wire the hook**
 
 In `src/hooks/useCountryBaselinePaint.ts`: `const { session } = useGameSessionContext()`, `const gameActive = session.status === 'playing'`, include `gameActive` in the `applyCountryBaselinePaint` opts and the effect deps. **Required (verified 2026-07-11):** `useCountryBaselinePaint.test.tsx` uses `makeFakeMap`/`makeMapWrapper` with NO GameSessionProvider — `useGameSessionContext` throws outside its provider, so add the same `vi.mock('../../game/shared/GameSessionProvider')` + hoisted `h.session` (default `'idle'`) as in Task 4, or every existing matrix case crashes. With the idle default the pinned {satellite × compare} paint matrix is unchanged. Then add one case: satellite + `h.session.status='playing'` rerender writes `line-width` 1.6, then back to 0.5 after `status='game-over'`.
 
-- [ ] **Step 5: Run — expect PASS**
+- [x] **Step 5: Run — expect PASS**
 
 Run: `npx vitest run src/lib/__tests__/mapLayers.test.ts src/hooks/__tests__/useCountryBaselinePaint.test.tsx`
 (Also `npx tsc -b` — the opts type change must not break other callers; `useCountryBaselinePaint` is the only one.)
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add src/lib/mapLayers.ts src/lib/__tests__/mapLayers.test.ts src/hooks/useCountryBaselinePaint.ts src/hooks/__tests__/useCountryBaselinePaint.test.tsx
@@ -692,7 +692,7 @@ git commit -m "feat(game): bold satellite country borders while a round is in pl
 **Interfaces:**
 - Produces: `nonSelectableNeighborName(code: string): string | undefined`; `<TimezoneList timezones={string[]} />` rendering ≤3 inline or 3 + toggle.
 
-- [ ] **Step 1: neighborNames lib (test first)**
+- [x] **Step 1: neighborNames lib (test first)**
 
 ```ts
 // src/lib/__tests__/neighborNames.test.ts
@@ -738,7 +738,7 @@ export function nonSelectableNeighborName(code: string): string | undefined {
 
 Run: `npx vitest run src/lib/__tests__/neighborNames.test.ts` → PASS.
 
-- [ ] **Step 2: BorderChip uses it (extend the existing test file first)**
+- [x] **Step 2: BorderChip uses it (extend the existing test file first)**
 
 In `BorderChip.test.tsx` update the ESH expectations: the span shows `Western Sahara` (not `ESH`); add a `UNK` case showing `Kosovo`; add a truly-unknown code case still falling back to the raw code. Then in `BorderChip.tsx`:
 
@@ -752,7 +752,7 @@ import { nonSelectableNeighborName } from '../lib/neighborNames'
 
 Run: `npx vitest run src/components/__tests__/BorderChip.test.tsx` → PASS.
 
-- [ ] **Step 3: TimezoneList component (test first)**
+- [x] **Step 3: TimezoneList component (test first)**
 
 ```tsx
 // src/components/__tests__/TimezoneList.test.tsx
@@ -812,7 +812,7 @@ export function TimezoneList({ timezones }: { timezones: string[] }) {
 In `SingleCountryPanel.tsx` the Timezones DataCell child becomes `<TimezoneList timezones={country.timezones} />`.
 Run: `npx vitest run src/components/__tests__/TimezoneList.test.tsx` → PASS.
 
-- [ ] **Step 4: Heading wrap, subtitle wrap, badge row, focus ring**
+- [x] **Step 4: Heading wrap, subtitle wrap, badge row, focus ring**
 
 In `SingleCountryPanel.tsx`:
 
@@ -832,15 +832,15 @@ In `SingleCountryPanel.tsx`:
 </span>
 ```
 
-- [ ] **Step 5: Assert in SingleCountryPanel tests**
+- [x] **Step 5: Assert in SingleCountryPanel tests**
 
 Add to `SingleCountryPanel.test.tsx` (using its existing render helper): heading className contains `line-clamp-2` and NOT `truncate` / `focus-visible:ring`; the region badge is NOT a descendant of the heading's parent column (`expect(badge.parentElement).not.toBe(heading.parentElement)`) and has `whitespace-nowrap`.
 
-- [ ] **Step 6: Run the component suites — expect PASS**
+- [x] **Step 6: Run the component suites — expect PASS**
 
 Run: `npx vitest run src/components`
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/lib/neighborNames.ts src/lib/__tests__/neighborNames.test.ts src/components
@@ -862,7 +862,7 @@ git commit -m "fix(panel): un-truncated names, one-line region badge, named neig
 - Consumes: `panelScreenOffset('compare')` (Task 1); `createFakeMapRef` `cameraForBounds`/`flyTo` spies (Task 3).
 - Produces: `flyToComparePair(map: maplibregl.Map, a: CountryData, b: CountryData): void`.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 ```ts
 // src/lib/__tests__/flyToComparePair.test.ts
@@ -923,9 +923,9 @@ describe('flyToComparePair', () => {
 })
 ```
 
-- [ ] **Step 2: Run — expect FAIL (module missing)**
+- [x] **Step 2: Run — expect FAIL (module missing)**
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 ```ts
 // src/lib/flyToComparePair.ts
@@ -968,7 +968,7 @@ export function flyToComparePair(
 }
 ```
 
-- [ ] **Step 4: Wire into `useSelectionHighlight`'s compare effect**
+- [x] **Step 4: Wire into `useSelectionHighlight`'s compare effect**
 
 ```ts
 import { flyToComparePair } from '../lib/flyToComparePair'
@@ -985,7 +985,7 @@ import { flyToComparePair } from '../lib/flyToComparePair'
 
 Add to `useSelectionHighlight.test.tsx` (mock `../../lib/flyToComparePair` like `flyToCountry`): compare set → called once with (map, selected, compareWith); compare cleared → not called again.
 
-- [ ] **Step 5: Extend the compare e2e spec**
+- [x] **Step 5: Extend the compare e2e spec**
 
 In `e2e/compare-view-dimming.spec.ts`, in the flow that establishes a compare pair, after the compare panel is visible add:
 
@@ -1010,11 +1010,11 @@ await expect
 
 (Uses the `__funworldmap_map` seam — available in e2e builds; `expect.poll` is the auto-retrying wait CLAUDE.md requires.)
 
-- [ ] **Step 6: Run — expect PASS**
+- [x] **Step 6: Run — expect PASS**
 
 Run: `npx vitest run src/lib/__tests__/flyToComparePair.test.ts src/hooks/__tests__/useSelectionHighlight.test.tsx`
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/lib/flyToComparePair.ts src/lib/__tests__/flyToComparePair.test.ts src/hooks/useSelectionHighlight.ts src/hooks/__tests__/useSelectionHighlight.test.tsx e2e/
@@ -1029,7 +1029,7 @@ git commit -m "feat(compare): frame both countries around the compare panel"
 - Modify: `e2e/game-country-pinning.spec.ts` (label-hiding assertion)
 - Modify: `docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md` (Status → Accepted)
 
-- [ ] **Step 1: Game label-hiding e2e**
+- [x] **Step 1: Game label-hiding e2e**
 
 **Stub vacuity guard (verified 2026-07-11):** the game specs run under `routeMapTiles`, whose embedded minimal positron style may contain no symbol layers — the assertion below would then pass vacuously. Follow label-contrast.spec.ts's precedent and pass `routeMapTiles(page, { styleStub })` with a minimal style containing at least one symbol layer (e.g. a `place-labels` symbol layer over the stub source), and assert `symbols.length > 0` before the visibility checks.
 
@@ -1058,19 +1058,19 @@ await expect.poll(symbolVisibility).not.toContain('none')
 
 (Note: the game must be running in MAP view for this test — set it up by clicking the satellite toggle before Play, using the spec's existing helpers.)
 
-- [ ] **Step 2: Full check ×2 (ordering flakes)**
+- [x] **Step 2: Full check ×2 (ordering flakes)**
 
 Run: `npm run check` twice.
 Expected: lint, `tsc -b`, and the full vitest suite green both times (~380+ tests after this batch).
 
-- [ ] **Step 3: Targeted e2e**
+- [x] **Step 3: Targeted e2e**
 
 Verify no stray servers (`Get-NetTCPConnection -LocalPort 5173 -State Listen` — kill node listeners; TaskStop leaves Vite children alive, see project memory). Then:
 
 Run: `npx playwright test game-country-pinning.spec.ts game-city-guessing.spec.ts search.spec.ts map-and-countries.spec.ts compare-view-dimming.spec.ts --project=chromium`
 Expected: all pass.
 
-- [ ] **Step 4: Live pass (dev server, then kill it + orphans)**
+- [x] **Step 4: Live pass (dev server, then kill it + orphans)**
 
 - Play country-pinning in map view: no text labels anywhere during the round; labels back at game end.
 - Play in satellite: borders clearly bolder during the round; hairline again after.
@@ -1079,7 +1079,7 @@ Expected: all pass.
 - Compare France+Germany (desktop + 390px viewport): both highlights visible beside/above the panel. Compare Japan+USA: framed across the Pacific.
 - Fly Vatican→world: extrusion lift fades in, no pop.
 
-- [ ] **Step 5: Spec status + plan checkboxes, commit**
+- [x] **Step 5: Spec status + plan checkboxes, commit**
 
 Set spec Status → `Accepted (implemented on feat/2026-07-10-review-batch-2)`, tick this plan's boxes, append execution notes for any deviations.
 
@@ -1088,7 +1088,7 @@ git add docs/
 git commit -m "docs: batch-2 spec accepted; plan execution notes"
 ```
 
-- [ ] **Step 6: Push and open PR**
+- [x] **Step 6: Push and open PR**
 
 ```bash
 git push -u origin feat/2026-07-10-review-batch-2
@@ -1096,3 +1096,26 @@ gh pr create --base main --title "Review fixes batch 2: game basemap, panel poli
 ```
 
 On merge: move this plan to `docs/superpowers/plans/archive/`.
+
+## Execution notes (2026-07-11, subagent-driven)
+
+- Executed via superpowers:subagent-driven-development: fresh implementer + task reviewer per
+  task; ledger in `.superpowers/sdd/progress.md`. All 8 tasks complete; 379 unit tests, targeted
+  e2e 41/41 (+14 re-run after fixes), full live pass on desktop and 390px mobile.
+- Task 1 deviation: the drift-alarm test reads component sources via Vite `?raw` imports instead
+  of the plan's Node `fs` reads — the plan's own snippet failed `tsc -b` under
+  tsconfig.app.json's `types: ["vite/client"]`. Assertions and intent unchanged.
+- Task 7 took three live-pass fix rounds on `flyToComparePair`:
+  1. Centroid-only bounds underframed adjacent pairs (France+Germany cropped to the border
+     region) → bounds extended by area-derived half-extents (`sqrt(area)/222` degrees,
+     lng scaled by 1/cos φ, clamped at 75°).
+  2. The −336px compare offset over-rotates at globe-scale zooms → offset dropped when the
+     computed camera zoom < 2.2.
+  3. Pairs wider than a globe face (Japan+USA, ~169° extended span) cannot be offset-framed at
+     all → spec §3's designed fallback implemented: >110° lng span flies to the pair's circular
+     midpoint at DEFAULT_ZOOM with no offset. **Known limitation:** for such pairs part of the
+     globe sits under the compare panel; both countries are at least partially visible at the
+     limbs. This is globe geometry, not a camera bug.
+- Playing-only label gate confirmed in-session (2026-07-11): labels intentionally return during
+  city-guessing reveals; no visible stutter in the live pass.
+- Minor findings deferred to the final whole-branch review triage are listed in the ledger.
