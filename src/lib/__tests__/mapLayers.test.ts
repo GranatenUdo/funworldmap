@@ -133,4 +133,22 @@ describe('applyCountryBaselinePaint game emphasis', () => {
     expect(paintOf(fake, 'line-width')).toBe(0.5)
     expect(paintOf(fake, 'line-opacity')).toBe(0.35)
   })
+
+  it('compare view resets line-width even after game emphasis', () => {
+    const fake = createFakeMapRef()
+    applyCountryBaselinePaint(fake.map, {
+      satellite: true,
+      inCompareView: false,
+      isDark: false,
+      gameActive: true,
+    })
+    applyCountryBaselinePaint(fake.map, {
+      satellite: true,
+      inCompareView: true,
+      isDark: false,
+      gameActive: false,
+    })
+    expect(paintOf(fake, 'line-width')).toBe(0.5)
+    expect(paintOf(fake, 'line-opacity')).toBe(0.15)
+  })
 })

@@ -264,6 +264,9 @@ export function applyCountryBaselinePaint(
       borderLineColorForMode(opts.isDark, opts.satellite),
     )
     map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
+    // Width must be owned here too: a game's emphasized 1.6px otherwise
+    // survives a browser-Back into a compare hash (final review 2026-07-11).
+    map.setPaintProperty(LAYER.borders, 'line-width', 0.5)
     // Hover layers are suppressed in compare view (useCompareViewHighlight),
     // so a scalar dim is fine — matched to the mode's baseline (satellite base
     // is 0.03; the vector 0.05 would brighten over imagery).
