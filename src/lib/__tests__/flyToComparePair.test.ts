@@ -10,6 +10,11 @@ const FRANCE = makeCountryData() // latlng [46, 2]
 const GERMANY = makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] })
 const JAPAN = makeCountryData({ cca3: 'JPN', ccn3: '392', latlng: [36, 138] })
 const USA = makeCountryData({ cca3: 'USA', ccn3: '840', latlng: [38, -97] })
+// Mid-wide pair: extended-bounds span (~81°) stays under the WIDE_PAIR_SPAN_DEG
+// (110°) fallback threshold, so this pair still reaches cameraForBounds — used
+// for the globe-scale offset-drop test now that Japan+USA takes the fallback.
+const BRAZIL = makeCountryData({ cca3: 'BRA', ccn3: '076', latlng: [-10, -55], area: 8_515_767 })
+const NIGERIA = makeCountryData({ cca3: 'NGA', ccn3: '566', latlng: [10, 8], area: 923_768 })
 
 beforeEach(() => {
   vi.mocked(prefersReducedMotion).mockReturnValue(false)
@@ -37,13 +42,21 @@ describe('flyToComparePair', () => {
     expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
   })
 
-  it('normalizes antimeridian pairs so the bounds cross the Pacific, not the planet', () => {
+  it('falls back to the pair midpoint at world zoom when the span exceeds a globe face (Japan+USA)', () => {
     const fake = createFakeMapRef()
     flyToComparePair(fake.map, JAPAN, USA)
-    const [bounds] = fake.calls.cameraForBounds.mock.calls[0]
-    const [[west], [east]] = bounds as [[number, number], [number, number]]
-    expect(east - west).toBeLessThan(200) // -97 shifted to +263, plus half-extents
-    expect(east).toBeGreaterThan(180)
+    // A globe face physically cannot frame a ~169°-plus span — cameraForBounds
+    // is skipped entirely in favor of the midpoint fallback (spec §3).
+    expect(fake.calls.cameraForBounds).not.toHaveBeenCalled()
+    expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
+    const flyToArgs = fake.calls.flyTo.mock.calls[0][0] as {
+      center: [number, number]
+      zoom: number
+    }
+    expect(flyToArgs.zoom).toBe(1.8)
+    // -97 shifted to +263 (antimeridian normalization); (138 + 263) / 2 = 200.5
+    expect(flyToArgs.center[0]).toBeCloseTo(200.5, 0)
+    expect(flyToArgs.center[1]).toBe(37)
   })
 
   it('is a no-op when cameraForBounds returns undefined', () => {
@@ -63,10 +76,10 @@ describe('flyToComparePair', () => {
   it('drops the panel offset at globe-scale zooms so wide pairs stay centered', () => {
     const fake = createFakeMapRef()
     ;(fake.map.cameraForBounds as ReturnType<typeof vi.fn>).mockReturnValue({
-      center: [-150, 37],
+      center: [-25, 0],
       zoom: 1.6,
     })
-    flyToComparePair(fake.map, JAPAN, USA)
+    flyToComparePair(fake.map, BRAZIL, NIGERIA)
     expect(fake.calls.cameraForBounds).toHaveBeenCalledTimes(2)
     const secondOpts = fake.calls.cameraForBounds.mock.calls[1][1]
     expect(secondOpts).toEqual({ padding: 80 })
