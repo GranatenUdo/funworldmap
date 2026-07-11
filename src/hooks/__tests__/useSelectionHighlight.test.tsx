@@ -1,14 +1,20 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import type { MutableRefObject } from 'react'
 import { useSelectionHighlight } from '../useSelectionHighlight'
 import type { SelectionOrigin } from '../useSelectedCountry'
+import type { CountryData } from '../../lib/types'
 import { flyToCountry } from '../../lib/flyToCountry'
+import { flyToComparePair } from '../../lib/flyToComparePair'
 import { makeCountryData } from '../../test/countryFixtures'
 import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
 
 vi.mock('../../lib/flyToCountry', () => ({
   flyToCountry: vi.fn(),
+}))
+
+vi.mock('../../lib/flyToComparePair', () => ({
+  flyToComparePair: vi.fn(),
 }))
 
 function makeCountry(ccn3: string) {
@@ -20,6 +26,8 @@ function originRef(origin: SelectionOrigin = 'auto'): MutableRefObject<Selection
 }
 
 describe('useSelectionHighlight', () => {
+  beforeEach(() => vi.clearAllMocks())
+
   it('sets selection filter with ccn3 when a country is selected', () => {
     const fake = makeFakeMap()
     renderHook(
@@ -98,5 +106,42 @@ describe('useSelectionHighlight', () => {
       { wrapper: makeMapWrapper(fake) },
     )
     expect(flyToCountry).toHaveBeenCalledWith(expect.anything(), country, { preserveZoom: false })
+  })
+
+  it('flies to frame both countries when compare is set', () => {
+    const fake = makeFakeMap()
+    const selected = makeCountry('250')
+    const compareWith = makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] })
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected,
+          selectionOriginRef: originRef(),
+          compareWith,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    expect(flyToComparePair).toHaveBeenCalledTimes(1)
+    expect(flyToComparePair).toHaveBeenCalledWith(expect.anything(), selected, compareWith)
+  })
+
+  it('does not fly again when compare is cleared', () => {
+    const fake = makeFakeMap()
+    const selected = makeCountry('250')
+    const compareWith = makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] })
+    const { rerender } = renderHook<void, { compareWith: CountryData | null }>(
+      (props) =>
+        useSelectionHighlight({
+          loaded: true,
+          selected,
+          selectionOriginRef: originRef(),
+          compareWith: props.compareWith,
+        }),
+      { wrapper: makeMapWrapper(fake), initialProps: { compareWith } },
+    )
+    expect(flyToComparePair).toHaveBeenCalledTimes(1)
+    rerender({ compareWith: null })
+    expect(flyToComparePair).toHaveBeenCalledTimes(1)
   })
 })

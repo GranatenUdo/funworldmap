@@ -60,6 +60,23 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
     await expect
       .poll(() => getFillColor(page, 'country-compare-fill'), { timeout: 15_000 })
       .toBe(TEAL_DIM)
+
+    // Camera must frame BOTH countries left of the compare panel (batch-2 §3).
+    await expect
+      .poll(async () =>
+        page.evaluate(() => {
+          const map = window.__funworldmap_map as {
+            project: (lnglat: [number, number]) => { x: number; y: number }
+          }
+          const france = map.project([2, 46])
+          const germany = map.project([9, 51])
+          const unoccluded = window.innerWidth - 672 // compare panel footprint
+          return [france, germany].every(
+            (p) => p.x > 0 && p.x < unoccluded && p.y > 0 && p.y < window.innerHeight,
+          )
+        }),
+      )
+      .toBe(true)
   })
 
   test('A and B colours are distinct from each other in compare mode', async ({ page }) => {

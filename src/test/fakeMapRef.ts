@@ -32,7 +32,12 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
   const getZoom = vi.fn(() => opts.zoom ?? 1.8)
   const canvas = { style: { cursor: '' } }
   const getCanvas = vi.fn(() => canvas as unknown as HTMLCanvasElement)
-  const cameraForBounds = vi.fn(() => ({ center: [0, 0], zoom: 3 }))
+  const cameraForBounds = vi.fn<
+    (
+      bounds: maplibregl.LngLatBoundsLike,
+      options?: maplibregl.CameraForBoundsOptions,
+    ) => maplibregl.CenterZoomBearing | undefined
+  >(() => ({ center: [0, 0], zoom: 3 }))
   const queryRenderedFeatures = vi.fn(() => [])
   const getStyle = vi.fn(() => ({ layers: [] as maplibregl.LayerSpecification[] }))
   const doubleClickZoom = { disable: vi.fn() }
