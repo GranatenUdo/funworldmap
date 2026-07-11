@@ -9,12 +9,17 @@ import { TEAL, TEAL_DIM, CORAL } from './mapPalette'
 
 const EMPTY_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
-/** Zoom at which the hover/selection/compare fill-extrusion layers switch off.
- *  The 60–80 km lift reads as a subtle raise at world/continent zooms, but at
- *  the zooms tiny countries fly to (Vatican ≈ z11.5, pitch 20°) the column
- *  projects as a ribbon crossing the whole viewport (2026-07-10 review).
- *  The fill/border/glow layers carry the highlight alone past this zoom. */
-const EXTRUSION_MAX_ZOOM = 6
+/** Backstop zoom for the highlight extrusions. The lift fades to 0 via
+ *  extrusionHeightExpression well before this; the maxzoom only guards
+ *  against a zero-height top-face render at high zoom. */
+export const EXTRUSION_MAX_ZOOM = 7
+
+/** Zoom-interpolated lift: full at z4.5, gone at z6.5. Replaces the hard
+ *  z6 cliff that popped the column off in one frame mid-flight
+ *  (2026-07-10 batch-2 spec §4.3). */
+export function extrusionHeightExpression(peakMeters: number): maplibregl.ExpressionSpecification {
+  return ['interpolate', ['linear'], ['zoom'], 4.5, peakMeters, 6.5, 0]
+}
 
 /** Add all non-country raster/DEM sources the map needs. */
 export function addRasterSources(map: maplibregl.Map): void {
@@ -83,12 +88,10 @@ export function addHoverLayers(map: maplibregl.Map): void {
     id: LAYER.extrusion,
     type: 'fill-extrusion',
     source: 'countries',
-    // Cap the 3D lift at continent zooms: at high zoom the fixed-height column
-    // renders as a wall crossing the viewport (Vatican smear, 2026-07-10 review).
     maxzoom: EXTRUSION_MAX_ZOOM,
     paint: {
       'fill-extrusion-color': TEAL,
-      'fill-extrusion-height': 60000,
+      'fill-extrusion-height': extrusionHeightExpression(60000),
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.65,
     },
@@ -131,11 +134,10 @@ function addHighlightStack(
     id: `${prefix}-extrusion`,
     type: 'fill-extrusion',
     source: 'countries',
-    // See EXTRUSION_MAX_ZOOM — prevents the high-zoom extrusion wall.
     maxzoom: EXTRUSION_MAX_ZOOM,
     paint: {
       'fill-extrusion-color': color,
-      'fill-extrusion-height': 80000,
+      'fill-extrusion-height': extrusionHeightExpression(80000),
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.55,
     },

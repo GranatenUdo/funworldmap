@@ -1,12 +1,12 @@
-/**
- * The hover/selection/compare fill-extrusion layers must carry a maxzoom:
- * without it the fixed 60–80 km column projects as a wall crossing the
- * viewport at the zooms tiny countries fly to (Vatican smear — 2026-07-10
- * review, batch-1 spec item 4).
- */
 import { describe, expect, it, vi } from 'vitest'
 import type maplibregl from 'maplibre-gl'
-import { addHoverLayers, addSelectionLayers, addCompareLayers } from '../mapLayers'
+import {
+  addHoverLayers,
+  addSelectionLayers,
+  addCompareLayers,
+  EXTRUSION_MAX_ZOOM,
+  extrusionHeightExpression,
+} from '../mapLayers'
 
 function captureAddedLayers(add: (map: maplibregl.Map) => void) {
   const specs: maplibregl.LayerSpecification[] = []
@@ -19,25 +19,36 @@ function captureAddedLayers(add: (map: maplibregl.Map) => void) {
 
 describe('highlight extrusion layers', () => {
   it.each([
-    ['hover', addHoverLayers],
-    ['selection', addSelectionLayers],
-    ['compare', addCompareLayers],
-  ])('%s stack caps its fill-extrusion at a maxzoom', (_name, add) => {
+    ['hover', addHoverLayers, 60000],
+    ['selection', addSelectionLayers, 80000],
+    ['compare', addCompareLayers, 80000],
+  ])('%s extrusion fades with zoom and keeps a maxzoom backstop', (_n, add, peak) => {
     const specs = captureAddedLayers(add)
     const extrusions = specs.filter((s) => s.type === 'fill-extrusion')
     expect(extrusions.length).toBeGreaterThan(0)
     for (const spec of extrusions) {
-      expect(spec.maxzoom).toBe(6)
+      expect(spec.maxzoom).toBe(EXTRUSION_MAX_ZOOM)
+      expect(spec.paint?.['fill-extrusion-height']).toEqual(extrusionHeightExpression(peak))
     }
+  })
+
+  it('fade expression interpolates peak → 0 across the fade band', () => {
+    expect(extrusionHeightExpression(80000)).toEqual([
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      4.5,
+      80000,
+      6.5,
+      0,
+    ])
   })
 
   it('non-extrusion highlight layers stay unbounded (highlight must never vanish)', () => {
     for (const add of [addHoverLayers, addSelectionLayers, addCompareLayers]) {
       const others = captureAddedLayers(add).filter((s) => s.type !== 'fill-extrusion')
       expect(others.length).toBeGreaterThan(0)
-      for (const spec of others) {
-        expect(spec.maxzoom).toBeUndefined()
-      }
+      for (const spec of others) expect(spec.maxzoom).toBeUndefined()
     }
   })
 })
