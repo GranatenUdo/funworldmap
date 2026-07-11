@@ -213,13 +213,17 @@ export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): v
  *  the single owner of the country baseline paint. */
 export function applyBorderPaintForMode(
   map: maplibregl.Map,
-  opts: { isDark: boolean; satellite: boolean },
+  opts: { isDark: boolean; satellite: boolean; gameActive?: boolean },
 ): void {
   if (opts.satellite) {
     map.setPaintProperty(LAYER.borders, 'line-color', borderLineColorForMode(opts.isDark, true))
-    map.setPaintProperty(LAYER.borders, 'line-opacity', 0.6)
+    // During play the hairline border is the only country signal on imagery —
+    // bold it so the pinning game is playable (batch-2 spec §1).
+    map.setPaintProperty(LAYER.borders, 'line-width', opts.gameActive ? 1.6 : 0.5)
+    map.setPaintProperty(LAYER.borders, 'line-opacity', opts.gameActive ? 0.9 : 0.6)
   } else {
     applyDefaultBorderPaint(map, opts.isDark)
+    map.setPaintProperty(LAYER.borders, 'line-width', 0.5)
   }
 }
 
@@ -248,7 +252,7 @@ export const LAYER = {
  *  effect happened to run last (the pre-2026-06 ordering bug class). */
 export function applyCountryBaselinePaint(
   map: maplibregl.Map,
-  opts: { satellite: boolean; inCompareView: boolean; isDark: boolean },
+  opts: { satellite: boolean; inCompareView: boolean; isDark: boolean; gameActive: boolean },
 ): void {
   if (opts.inCompareView) {
     // Compare view keeps the mode/theme border COLOUR but dims to a flat 0.15.
@@ -265,7 +269,11 @@ export function applyCountryBaselinePaint(
     // is 0.03; the vector 0.05 would brighten over imagery).
     map.setPaintProperty(LAYER.fill, 'fill-opacity', opts.satellite ? 0.03 : 0.05)
   } else {
-    applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite })
+    applyBorderPaintForMode(map, {
+      isDark: opts.isDark,
+      satellite: opts.satellite,
+      gameActive: opts.gameActive,
+    })
     map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(opts.satellite))
   }
 }

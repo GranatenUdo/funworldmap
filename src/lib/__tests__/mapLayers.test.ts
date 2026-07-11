@@ -4,6 +4,7 @@ import {
   addSelectionLayers,
   addCompareLayers,
   applyBasemapLayerVisibility,
+  applyCountryBaselinePaint,
   EXTRUSION_MAX_ZOOM,
   extrusionHeightExpression,
 } from '../mapLayers'
@@ -90,5 +91,46 @@ describe('applyBasemapLayerVisibility', () => {
     applyBasemapLayerVisibility(fake.map, { satellite: true, hideLabels: true })
     expect(visibilityOf(fake, 'water')).toBe('none')
     expect(visibilityOf(fake, 'place-labels')).toBe('none')
+  })
+})
+
+describe('applyCountryBaselinePaint game emphasis', () => {
+  const paintOf = (fake: ReturnType<typeof createFakeMapRef>, prop: string): unknown =>
+    fake.calls.setPaintProperty.mock.calls.filter((c) => c[1] === prop).at(-1)?.[2]
+
+  it('satellite + playing: borders 1.6px @ 0.9', () => {
+    const fake = createFakeMapRef()
+    applyCountryBaselinePaint(fake.map, {
+      satellite: true,
+      inCompareView: false,
+      isDark: false,
+      gameActive: true,
+    })
+    expect(paintOf(fake, 'line-width')).toBe(1.6)
+    expect(paintOf(fake, 'line-opacity')).toBe(0.9)
+  })
+
+  it('satellite idle: baseline 0.5px @ 0.6 restored', () => {
+    const fake = createFakeMapRef()
+    applyCountryBaselinePaint(fake.map, {
+      satellite: true,
+      inCompareView: false,
+      isDark: false,
+      gameActive: false,
+    })
+    expect(paintOf(fake, 'line-width')).toBe(0.5)
+    expect(paintOf(fake, 'line-opacity')).toBe(0.6)
+  })
+
+  it('map view + playing: vector border paint unchanged by the game', () => {
+    const fake = createFakeMapRef()
+    applyCountryBaselinePaint(fake.map, {
+      satellite: false,
+      inCompareView: false,
+      isDark: false,
+      gameActive: true,
+    })
+    expect(paintOf(fake, 'line-width')).toBe(0.5)
+    expect(paintOf(fake, 'line-opacity')).toBe(0.35)
   })
 })

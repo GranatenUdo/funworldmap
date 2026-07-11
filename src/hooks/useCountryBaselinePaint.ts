@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { applyCountryBaselinePaint } from '../lib/mapLayers'
 import { useMap } from './useMap'
+import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 
 interface Options {
   loaded: boolean
@@ -19,14 +20,21 @@ export function useCountryBaselinePaint({
   resolvedTheme,
 }: Options): void {
   const { mapRef } = useMap()
+  const { session } = useGameSessionContext()
+  const gameActive = session.status === 'playing'
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !loaded) return
     try {
-      applyCountryBaselinePaint(map, { satellite, inCompareView, isDark: resolvedTheme === 'dark' })
+      applyCountryBaselinePaint(map, {
+        satellite,
+        inCompareView,
+        isDark: resolvedTheme === 'dark',
+        gameActive,
+      })
     } catch {
       // Layers may not exist yet (e.g. fast toggle before load completes).
     }
-  }, [loaded, satellite, inCompareView, resolvedTheme, mapRef])
+  }, [loaded, satellite, inCompareView, resolvedTheme, gameActive, mapRef])
 }
