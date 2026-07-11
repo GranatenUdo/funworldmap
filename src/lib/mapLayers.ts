@@ -279,3 +279,28 @@ export function applySelectionColor(map: maplibregl.Map, color: string): void {
   map.setPaintProperty(LAYER.selectedGlow, 'line-color', color)
   map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', color)
 }
+
+/** Single owner of BASEMAP layer visibility (the repo's #111 pattern —
+ *  useSatelliteMode's satellite toggle and the in-game label hiding both go
+ *  through this rule, so neither can clobber the other):
+ *  custom layers (country-*, satellite-*) are never touched here; every
+ *  other layer is visible iff !satellite, and symbol layers (all text —
+ *  country/city/sea names leak game answers) additionally require
+ *  !hideLabels (2026-07-10 batch-2 spec §1). */
+export function applyBasemapLayerVisibility(
+  map: maplibregl.Map,
+  opts: { satellite: boolean; hideLabels: boolean },
+): void {
+  const style = map.getStyle()
+  if (!style?.layers) return
+  const customPrefixes = ['country-', 'satellite-']
+  for (const layer of style.layers) {
+    if (customPrefixes.some((p) => layer.id.startsWith(p))) continue
+    const visible = !opts.satellite && (layer.type !== 'symbol' || !opts.hideLabels)
+    try {
+      map.setLayoutProperty(layer.id, 'visibility', visible ? 'visible' : 'none')
+    } catch {
+      /* some layers don't support visibility */
+    }
+  }
+}
