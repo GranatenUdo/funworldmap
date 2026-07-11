@@ -37,11 +37,20 @@ export function flyToComparePair(map: maplibregl.Map, a: CountryData, b: Country
       Math.max(latA + rA, latB + rB),
     ],
   ]
-  const camera = map.cameraForBounds(bounds, {
+  const offsetCamera = map.cameraForBounds(bounds, {
     padding: 80,
     offset: panelScreenOffset('compare'),
   })
-  if (!camera) return
+  if (!offsetCamera) return
+  // At globe-scale zooms a screen offset equates to tens of degrees of
+  // rotation and swings one country past the horizon (Japan+USA, live pass
+  // 2026-07-11). The un-occluded viewport still shows the whole globe face
+  // there, so drop the offset instead.
+  const GLOBE_SCALE_ZOOM = 2.2
+  const camera =
+    (offsetCamera.zoom ?? 0) < GLOBE_SCALE_ZOOM
+      ? (map.cameraForBounds(bounds, { padding: 80 }) ?? offsetCamera)
+      : offsetCamera
 
   const reducedMotion = prefersReducedMotion()
   map.flyTo({

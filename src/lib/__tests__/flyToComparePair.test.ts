@@ -59,4 +59,17 @@ describe('flyToComparePair', () => {
     flyToComparePair(fake.map, FRANCE, GERMANY)
     expect(fake.calls.flyTo.mock.calls[0][0]).toMatchObject({ duration: 0, pitch: 0 })
   })
+
+  it('drops the panel offset at globe-scale zooms so wide pairs stay centered', () => {
+    const fake = createFakeMapRef()
+    ;(fake.map.cameraForBounds as ReturnType<typeof vi.fn>).mockReturnValue({
+      center: [-150, 37],
+      zoom: 1.6,
+    })
+    flyToComparePair(fake.map, JAPAN, USA)
+    expect(fake.calls.cameraForBounds).toHaveBeenCalledTimes(2)
+    const secondOpts = fake.calls.cameraForBounds.mock.calls[1][1]
+    expect(secondOpts).toEqual({ padding: 80 })
+    expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
+  })
 })
