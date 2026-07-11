@@ -25,10 +25,14 @@ describe('flyToComparePair', () => {
     const fake = createFakeMapRef()
     flyToComparePair(fake.map, FRANCE, GERMANY)
     const [bounds, opts] = fake.calls.cameraForBounds.mock.calls[0]
-    expect(bounds).toEqual([
-      [2, 46],
-      [9, 51],
-    ])
+    const [[west, south], [east, north]] = bounds as [[number, number], [number, number]]
+    // Centroid bounds are extended by area-derived half-extents (both fixtures
+    // share the France default area), so the raw centroid box [2,46]-[9,51]
+    // must be strictly grown in every direction, not just padded.
+    expect(west).toBeLessThan(2)
+    expect(south).toBeLessThan(46 - 3)
+    expect(east).toBeGreaterThan(9 + 3)
+    expect(north).toBeGreaterThan(51 + 2)
     expect(opts).toMatchObject({ padding: 80, offset: [-336, 0] })
     expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
   })
@@ -38,7 +42,7 @@ describe('flyToComparePair', () => {
     flyToComparePair(fake.map, JAPAN, USA)
     const [bounds] = fake.calls.cameraForBounds.mock.calls[0]
     const [[west], [east]] = bounds as [[number, number], [number, number]]
-    expect(east - west).toBeLessThan(180) // -97 shifted to +263
+    expect(east - west).toBeLessThan(200) // -97 shifted to +263, plus half-extents
     expect(east).toBeGreaterThan(180)
   })
 
