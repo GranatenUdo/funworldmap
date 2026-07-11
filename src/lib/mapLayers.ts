@@ -9,12 +9,17 @@ import { TEAL, TEAL_DIM, CORAL } from './mapPalette'
 
 const EMPTY_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
-/** Zoom at which the hover/selection/compare fill-extrusion layers switch off.
- *  The 60–80 km lift reads as a subtle raise at world/continent zooms, but at
- *  the zooms tiny countries fly to (Vatican ≈ z11.5, pitch 20°) the column
- *  projects as a ribbon crossing the whole viewport (2026-07-10 review).
- *  The fill/border/glow layers carry the highlight alone past this zoom. */
-const EXTRUSION_MAX_ZOOM = 6
+/** Backstop zoom for the highlight extrusions. The lift fades to 0 via
+ *  extrusionHeightExpression well before this; the maxzoom only guards
+ *  against a zero-height top-face render at high zoom. */
+export const EXTRUSION_MAX_ZOOM = 7
+
+/** Zoom-interpolated lift: full at z4.5, gone at z6.5. Replaces the hard
+ *  z6 cliff that popped the column off in one frame mid-flight
+ *  (2026-07-10 batch-2 spec §4.3). */
+export function extrusionHeightExpression(peakMeters: number): maplibregl.ExpressionSpecification {
+  return ['interpolate', ['linear'], ['zoom'], 4.5, peakMeters, 6.5, 0]
+}
 
 /** Add all non-country raster/DEM sources the map needs. */
 export function addRasterSources(map: maplibregl.Map): void {
@@ -83,12 +88,10 @@ export function addHoverLayers(map: maplibregl.Map): void {
     id: LAYER.extrusion,
     type: 'fill-extrusion',
     source: 'countries',
-    // Cap the 3D lift at continent zooms: at high zoom the fixed-height column
-    // renders as a wall crossing the viewport (Vatican smear, 2026-07-10 review).
     maxzoom: EXTRUSION_MAX_ZOOM,
     paint: {
       'fill-extrusion-color': TEAL,
-      'fill-extrusion-height': 60000,
+      'fill-extrusion-height': extrusionHeightExpression(60000),
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.65,
     },
@@ -131,11 +134,10 @@ function addHighlightStack(
     id: `${prefix}-extrusion`,
     type: 'fill-extrusion',
     source: 'countries',
-    // See EXTRUSION_MAX_ZOOM — prevents the high-zoom extrusion wall.
     maxzoom: EXTRUSION_MAX_ZOOM,
     paint: {
       'fill-extrusion-color': color,
-      'fill-extrusion-height': 80000,
+      'fill-extrusion-height': extrusionHeightExpression(80000),
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.55,
     },
@@ -211,13 +213,17 @@ export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): v
  *  the single owner of the country baseline paint. */
 export function applyBorderPaintForMode(
   map: maplibregl.Map,
-  opts: { isDark: boolean; satellite: boolean },
+  opts: { isDark: boolean; satellite: boolean; gameActive?: boolean },
 ): void {
   if (opts.satellite) {
     map.setPaintProperty(LAYER.borders, 'line-color', borderLineColorForMode(opts.isDark, true))
-    map.setPaintProperty(LAYER.borders, 'line-opacity', 0.6)
+    // During play the hairline border is the only country signal on imagery —
+    // bold it so the pinning game is playable (batch-2 spec §1).
+    map.setPaintProperty(LAYER.borders, 'line-width', opts.gameActive ? 1.6 : 0.5)
+    map.setPaintProperty(LAYER.borders, 'line-opacity', opts.gameActive ? 0.9 : 0.6)
   } else {
     applyDefaultBorderPaint(map, opts.isDark)
+    map.setPaintProperty(LAYER.borders, 'line-width', 0.5)
   }
 }
 
@@ -246,7 +252,7 @@ export const LAYER = {
  *  effect happened to run last (the pre-2026-06 ordering bug class). */
 export function applyCountryBaselinePaint(
   map: maplibregl.Map,
-  opts: { satellite: boolean; inCompareView: boolean; isDark: boolean },
+  opts: { satellite: boolean; inCompareView: boolean; isDark: boolean; gameActive: boolean },
 ): void {
   if (opts.inCompareView) {
     // Compare view keeps the mode/theme border COLOUR but dims to a flat 0.15.
@@ -258,12 +264,19 @@ export function applyCountryBaselinePaint(
       borderLineColorForMode(opts.isDark, opts.satellite),
     )
     map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
+    // Width must be owned here too: a game's emphasized 1.6px otherwise
+    // survives a browser-Back into a compare hash (final review 2026-07-11).
+    map.setPaintProperty(LAYER.borders, 'line-width', 0.5)
     // Hover layers are suppressed in compare view (useCompareViewHighlight),
     // so a scalar dim is fine — matched to the mode's baseline (satellite base
     // is 0.03; the vector 0.05 would brighten over imagery).
     map.setPaintProperty(LAYER.fill, 'fill-opacity', opts.satellite ? 0.03 : 0.05)
   } else {
-    applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite })
+    applyBorderPaintForMode(map, {
+      isDark: opts.isDark,
+      satellite: opts.satellite,
+      gameActive: opts.gameActive,
+    })
     map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(opts.satellite))
   }
 }
@@ -276,4 +289,29 @@ export function applySelectionColor(map: maplibregl.Map, color: string): void {
   map.setPaintProperty(LAYER.selectedBorder, 'line-color', color)
   map.setPaintProperty(LAYER.selectedGlow, 'line-color', color)
   map.setPaintProperty(LAYER.selectedExtrusion, 'fill-extrusion-color', color)
+}
+
+/** Single owner of BASEMAP layer visibility (the repo's #111 pattern —
+ *  useSatelliteMode's satellite toggle and the in-game label hiding both go
+ *  through this rule, so neither can clobber the other):
+ *  custom layers (country-*, satellite-*) are never touched here; every
+ *  other layer is visible iff !satellite, and symbol layers (all text —
+ *  country/city/sea names leak game answers) additionally require
+ *  !hideLabels (2026-07-10 batch-2 spec §1). */
+export function applyBasemapLayerVisibility(
+  map: maplibregl.Map,
+  opts: { satellite: boolean; hideLabels: boolean },
+): void {
+  const style = map.getStyle()
+  if (!style?.layers) return
+  const customPrefixes = ['country-', 'satellite-']
+  for (const layer of style.layers) {
+    if (customPrefixes.some((p) => layer.id.startsWith(p))) continue
+    const visible = !opts.satellite && (layer.type !== 'symbol' || !opts.hideLabels)
+    try {
+      map.setLayoutProperty(layer.id, 'visibility', visible ? 'visible' : 'none')
+    } catch {
+      /* some layers don't support visibility */
+    }
+  }
 }

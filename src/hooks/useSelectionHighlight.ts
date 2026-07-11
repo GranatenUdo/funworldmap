@@ -2,6 +2,7 @@ import { useEffect, type MutableRefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { flyToCountry } from '../lib/flyToCountry'
+import { flyToComparePair } from '../lib/flyToComparePair'
 import { EMPTY_FILTER as EMPTY, LAYER } from '../lib/mapLayers'
 import { useMap } from './useMap'
 import type { SelectionOrigin } from './useSelectedCountry'
@@ -62,5 +63,8 @@ export function useSelectionHighlight({
     const map = mapRef.current
     if (!map || !loaded) return
     applyOrClearFilter(map, COMPARE_LAYERS, compareWith?.ccn3 ?? null)
-  }, [compareWith, loaded, mapRef])
+    // Fly to frame BOTH countries; clearing compare never moves the camera
+    // (preserve-the-user's-view philosophy, batch-2 spec §3).
+    if (compareWith && selected) flyToComparePair(map, selected, compareWith)
+  }, [compareWith, selected, loaded, mapRef])
 }

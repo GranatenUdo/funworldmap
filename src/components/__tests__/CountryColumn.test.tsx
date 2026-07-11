@@ -39,8 +39,9 @@ describe('CountryColumn border chips', () => {
     expect(screen.getByRole('button', { name: 'Algeria' })).toBeTruthy()
     // ESH (Western Sahara) is not in the canonical 195 — it must not be
     // clickable: selecting it writes an unresolvable hash, which clears the
-    // selection and closes the whole compare panel.
+    // selection and closes the whole compare panel. It shows the resolved
+    // name, not the raw code.
     expect(screen.queryByRole('button', { name: 'ESH' })).toBeNull()
-    expect(screen.getByText('ESH')).toBeTruthy()
+    expect(screen.getByText('Western Sahara')).toBeTruthy()
   })
 })

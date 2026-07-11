@@ -158,3 +158,21 @@ describe('SingleCountryPanel — data-animation-state lifecycle', () => {
     }
   })
 })
+
+describe('SingleCountryPanel — heading, subtitle, and region-badge layout (2026-07-10 review)', () => {
+  it('heading wraps instead of truncating and carries no phantom focus-visible ring', () => {
+    const { getByRole } = renderPanel()
+    const heading = getByRole('heading', { name: 'France', level: 2 })
+    expect(heading.className).toContain('line-clamp-2')
+    expect(heading.className).not.toContain('truncate')
+    expect(heading.className).not.toContain('focus-visible:ring')
+  })
+
+  it('region badge is a full-width row, not nested inside the name column', () => {
+    const { getByRole, getByTestId } = renderPanel()
+    const heading = getByRole('heading', { name: 'France', level: 2 })
+    const badge = getByTestId('region-badge')
+    expect(badge.parentElement).not.toBe(heading.parentElement)
+    expect(badge.className).toContain('whitespace-nowrap')
+  })
+})

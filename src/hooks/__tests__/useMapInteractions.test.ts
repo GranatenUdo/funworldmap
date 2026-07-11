@@ -6,6 +6,7 @@ import type { CountryData } from '../../lib/types'
 import { EMPTY_FILTER, LAYER } from '../../lib/mapLayers'
 import { takeOrigin } from '../../lib/selectionOrigin'
 import { makeCountryData } from '../../test/countryFixtures'
+import { createFakeMapRef } from '../../test/fakeMapRef'
 
 // Stable refs (like MapProvider's useMemo'd refs) + a mutable session, so a
 // rerender that only changes session.status does NOT change any effect dep
@@ -118,43 +119,11 @@ describe('useMapInteractions movestart', () => {
   // A camera move without mouse movement (search select, deep link, reveal
   // fly-to) must not leave a hover highlight or tooltip describing the
   // previous view (2026-07-10 review, batch-1 spec item 2).
-  type Handler = (...args: unknown[]) => void
-
-  function makeInteractionMap() {
-    const handlers = new Map<string, Handler>()
-    const keyFor = (event: string, layerOrHandler: unknown) =>
-      typeof layerOrHandler === 'string' ? `${event}:${layerOrHandler}` : event
-
-    const setFeatureState = vi.fn()
-    const setFilter = vi.fn()
-    const map = {
-      on: vi.fn((event: string, layerOrHandler: unknown, maybeHandler?: unknown) => {
-        const handler = (
-          typeof layerOrHandler === 'function' ? layerOrHandler : maybeHandler
-        ) as Handler
-        handlers.set(keyFor(event, layerOrHandler), handler)
-      }),
-      off: vi.fn(),
-      setFeatureState,
-      setFilter,
-      getCanvas: () => ({ style: { cursor: '' } }) as HTMLCanvasElement,
-      doubleClickZoom: { disable: vi.fn() },
-      queryRenderedFeatures: vi.fn(() => []),
-    } as unknown as maplibregl.Map
-
-    const fire = (event: string, layer: string | null, payload?: unknown) => {
-      const handler = handlers.get(layer ? `${event}:${layer}` : event)
-      if (!handler) throw new Error(`no handler registered for ${event}${layer ? `:${layer}` : ''}`)
-      handler(payload)
-    }
-
-    return { map, fire, setFeatureState, setFilter }
-  }
 
   it('clears hover feature state, filters, and tooltip on a programmatic camera move', () => {
-    const { map, fire, setFeatureState, setFilter } = makeInteractionMap()
+    const fake = createFakeMapRef()
     const tooltip = document.createElement('div')
-    h.mapRef.current = map
+    h.mapRef.current = fake.map
     h.tooltipRef.current = tooltip
     const country = makeCountryData()
     renderHook(() =>
@@ -166,31 +135,31 @@ describe('useMapInteractions movestart', () => {
     )
 
     // Seed hover state via the layer mousemove handler.
-    fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
+    fake.fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
     expect(tooltip.classList.contains('visible')).toBe(true)
-    expect(setFeatureState).toHaveBeenCalledWith(
+    expect(fake.calls.setFeatureState).toHaveBeenCalledWith(
       { source: 'countries', id: country.ccn3 },
       { hover: true },
     )
-    setFeatureState.mockClear()
-    setFilter.mockClear()
+    fake.calls.setFeatureState.mockClear()
+    fake.calls.setFilter.mockClear()
 
     // Programmatic moves (flyTo/easeTo) carry no originalEvent.
-    fire('movestart', null, {})
+    fake.fire('movestart', null, {})
 
-    expect(setFeatureState).toHaveBeenCalledWith(
+    expect(fake.calls.setFeatureState).toHaveBeenCalledWith(
       { source: 'countries', id: country.ccn3 },
       { hover: false },
     )
-    expect(setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
-    expect(setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
+    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
     expect(tooltip.classList.contains('visible')).toBe(false)
   })
 
   it('preserves a live hover during USER camera gestures (wheel/drag carry originalEvent)', () => {
-    const { map, fire, setFeatureState, setFilter } = makeInteractionMap()
+    const fake = createFakeMapRef()
     const tooltip = document.createElement('div')
-    h.mapRef.current = map
+    h.mapRef.current = fake.map
     h.tooltipRef.current = tooltip
     const country = makeCountryData()
     renderHook(() =>
@@ -201,31 +170,31 @@ describe('useMapInteractions movestart', () => {
       }),
     )
 
-    fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
-    setFeatureState.mockClear()
-    setFilter.mockClear()
+    fake.fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
+    fake.calls.setFeatureState.mockClear()
+    fake.calls.setFilter.mockClear()
 
     // A stationary wheel-zoom fires movestart with the DOM event attached —
     // the hover under the cursor must survive it.
-    fire('movestart', null, { originalEvent: { type: 'wheel' } })
+    fake.fire('movestart', null, { originalEvent: { type: 'wheel' } })
 
-    expect(setFeatureState).not.toHaveBeenCalled()
-    expect(setFilter).not.toHaveBeenCalled()
+    expect(fake.calls.setFeatureState).not.toHaveBeenCalled()
+    expect(fake.calls.setFilter).not.toHaveBeenCalled()
     expect(tooltip.classList.contains('visible')).toBe(true)
   })
 
   it('is a safe no-op when nothing is hovered', () => {
-    const { map, fire, setFeatureState, setFilter } = makeInteractionMap()
+    const fake = createFakeMapRef()
     const tooltip = document.createElement('div')
-    h.mapRef.current = map
+    h.mapRef.current = fake.map
     h.tooltipRef.current = tooltip
     renderHook(() => useMapInteractions({ ...baseOptions, loaded: true }))
 
-    fire('movestart', null, {})
+    fake.fire('movestart', null, {})
 
-    expect(setFeatureState).not.toHaveBeenCalled()
-    expect(setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
-    expect(setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(fake.calls.setFeatureState).not.toHaveBeenCalled()
+    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
+    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
     expect(tooltip.classList.contains('visible')).toBe(false)
   })
 })
@@ -234,30 +203,6 @@ describe('useMapInteractions click-origin marking', () => {
   // markClickOrigin may only fire when the click will produce a selection
   // hashchange — takeOrigin() runs solely in resolveHash, so an unconsumed
   // mark leaks preserveZoom into the NEXT auto selection (2026-07-10 review).
-  type Handler = (...args: unknown[]) => void
-
-  function makeClickMap() {
-    const handlers = new Map<string, Handler>()
-    const map = {
-      on: vi.fn((event: string, layerOrHandler: unknown, maybeHandler?: unknown) => {
-        const handler = (
-          typeof layerOrHandler === 'function' ? layerOrHandler : maybeHandler
-        ) as Handler
-        handlers.set(
-          typeof layerOrHandler === 'string' ? `${event}:${layerOrHandler}` : event,
-          handler,
-        )
-      }),
-      off: vi.fn(),
-      setFeatureState: vi.fn(),
-      setFilter: vi.fn(),
-      getCanvas: () => ({ style: { cursor: '' } }) as HTMLCanvasElement,
-      doubleClickZoom: { disable: vi.fn() },
-      queryRenderedFeatures: vi.fn(() => []),
-    } as unknown as maplibregl.Map
-    const clickCountry = (payload: unknown) => handlers.get(`click:${LAYER.fill}`)!(payload)
-    return { map, clickCountry }
-  }
 
   function renderWithCountry(opts: { comparePickingMode?: boolean } = {}) {
     const country = makeCountryData() // FRA / ccn3 250
@@ -280,49 +225,49 @@ describe('useMapInteractions click-origin marking', () => {
   })
 
   it('marks click origin for a selection-changing click', () => {
-    const { map, clickCountry } = makeClickMap()
-    h.mapRef.current = map
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
     h.tooltipRef.current = document.createElement('div')
     const { country, onSelect } = renderWithCountry()
 
-    clickCountry({ features: [{ id: country.ccn3 }] })
+    fake.fire('click', LAYER.fill, { features: [{ id: country.ccn3 }] })
 
     expect(onSelect).toHaveBeenCalledWith('FRA')
     expect(takeOrigin()).toBe('click')
   })
 
   it('does NOT mark when re-clicking the already-selected country (no hashchange would consume it)', () => {
-    const { map, clickCountry } = makeClickMap()
-    h.mapRef.current = map
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
     h.tooltipRef.current = document.createElement('div')
     window.location.hash = '#FRA'
     const { country, onSelect } = renderWithCountry()
 
-    clickCountry({ features: [{ id: country.ccn3 }] })
+    fake.fire('click', LAYER.fill, { features: [{ id: country.ccn3 }] })
 
     expect(onSelect).toHaveBeenCalledWith('FRA')
     expect(takeOrigin()).toBe('auto')
   })
 
   it('does NOT mark during an active game (guess clicks never write the hash)', () => {
-    const { map, clickCountry } = makeClickMap()
-    h.mapRef.current = map
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
     h.tooltipRef.current = document.createElement('div')
     h.session = { modeId: 'country-pinning', status: 'playing' }
     const { country } = renderWithCountry()
 
-    clickCountry({ features: [{ id: country.ccn3 }] })
+    fake.fire('click', LAYER.fill, { features: [{ id: country.ccn3 }] })
 
     expect(takeOrigin()).toBe('auto')
   })
 
   it('does NOT mark while compare-picking (compareSelect writes a cmp hash, not a selection)', () => {
-    const { map, clickCountry } = makeClickMap()
-    h.mapRef.current = map
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
     h.tooltipRef.current = document.createElement('div')
     const { country } = renderWithCountry({ comparePickingMode: true })
 
-    clickCountry({ features: [{ id: country.ccn3 }] })
+    fake.fire('click', LAYER.fill, { features: [{ id: country.ccn3 }] })
 
     expect(takeOrigin()).toBe('auto')
   })

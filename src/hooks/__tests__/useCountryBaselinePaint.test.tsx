@@ -1,7 +1,18 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useCountryBaselinePaint } from '../useCountryBaselinePaint'
 import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
+
+const h = vi.hoisted(() => ({
+  session: { modeId: 'country-pinning', status: 'idle' },
+}))
+vi.mock('../../game/shared/GameSessionProvider', () => ({
+  useGameSessionContext: () => ({ session: h.session }),
+}))
+
+beforeEach(() => {
+  h.session = { modeId: 'country-pinning', status: 'idle' }
+})
 
 function paintValue(fake: ReturnType<typeof makeFakeMap>, layer: string, prop: string) {
   // Last write wins — mirror MapLibre semantics.
@@ -94,5 +105,25 @@ describe('useCountryBaselinePaint', () => {
       { wrapper: makeMapWrapper(fake) },
     )
     expect(fake.setPaintProperty).not.toHaveBeenCalled()
+  })
+
+  it('satellite + playing bolds the border, then restores it when the game ends', () => {
+    const fake = makeFakeMap()
+    h.session = { modeId: 'country-pinning', status: 'playing' }
+    const { rerender } = renderHook(
+      () =>
+        useCountryBaselinePaint({
+          loaded: true,
+          satellite: true,
+          inCompareView: false,
+          resolvedTheme: 'light',
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    expect(paintValue(fake, 'country-borders', 'line-width')).toBe(1.6)
+
+    h.session = { modeId: 'country-pinning', status: 'game-over' }
+    rerender()
+    expect(paintValue(fake, 'country-borders', 'line-width')).toBe(0.5)
   })
 })

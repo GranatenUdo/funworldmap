@@ -1,4 +1,5 @@
 import type { CountryData } from '../lib/types'
+import { nonSelectableNeighborName } from '../lib/neighborNames'
 
 interface Props {
   code: string
@@ -23,11 +24,13 @@ const SPAN_CLASSES = {
 } as const
 
 /** A neighbouring-country chip. Codes with no canonical match (e.g. ESH, HKG,
- *  UNK, GUF, MAC, GIB) render INERT — selecting them would write an
- *  unresolvable hash, which clears the selection and closes the panel. */
+ *  UNK, GUF, MAC, GIB) render INERT, showing the resolved name via
+ *  nonSelectableNeighborName (falling back to the raw code) — selecting them
+ *  would write an unresolvable hash, which clears the selection and closes
+ *  the panel. */
 export function BorderChip({ code, neighbor, onSelect, size }: Props) {
   if (!neighbor) {
-    return <span className={SPAN_CLASSES[size]}>{code}</span>
+    return <span className={SPAN_CLASSES[size]}>{nonSelectableNeighborName(code) ?? code}</span>
   }
   return (
     <button onClick={() => onSelect(code)} className={BUTTON_CLASSES[size]}>
