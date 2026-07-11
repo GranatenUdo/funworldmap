@@ -2,6 +2,7 @@ import type maplibregl from 'maplibre-gl'
 import type { CountryData } from './types'
 import { DEFAULT_PITCH, MAX_ZOOM } from './mapStyles'
 import { prefersReducedMotion } from './motion'
+import { panelScreenOffset } from './layoutConstants'
 
 /** Area-derived zoom. Retuned 2026-07-10 (batch-1 spec §5b): the previous
  *  11 − 1.7·log₁₀ clamped everything above ~196k km² to the world view, so
@@ -11,15 +12,6 @@ function zoomFromArea(areaKm2: number): number {
   if (areaKm2 <= 0) return 6
   const zoom = 10.8 - Math.log10(areaKm2) * 1.35
   return Math.max(2, Math.min(MAX_ZOOM, zoom))
-}
-
-/** Screen-space offset so the country centers in the area the panel does not
- *  cover. Selection always opens the panel: desktop (≥1024px, the
- *  useMediaQuery breakpoint) shows a right-4 w-[360px] card (376px), the
- *  mobile sheet is h-[40vh]. */
-function panelOffset(): [number, number] {
-  if (window.matchMedia('(min-width: 1024px)').matches) return [-188, 0]
-  return [0, -Math.round(window.innerHeight * 0.2)]
 }
 
 export interface FlyToCountryOptions {
@@ -42,7 +34,7 @@ export function flyToCountry(
   map.flyTo({
     center: [lng, lat],
     zoom,
-    offset: panelOffset(),
+    offset: panelScreenOffset('single'),
     pitch: reducedMotion ? 0 : DEFAULT_PITCH,
     duration: reducedMotion ? 0 : 1400,
     curve: 1.5,
