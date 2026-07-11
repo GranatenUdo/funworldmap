@@ -3,6 +3,7 @@ import type { CountryData, CountriesFile } from '../lib/types'
 import { BorderChip } from './BorderChip'
 import { CloseButton } from './CloseButton'
 import { FieldLabel } from './FieldLabel'
+import { TimezoneList } from './TimezoneList'
 import { dispatchToast } from '../lib/toast'
 
 interface Props {
@@ -176,12 +177,12 @@ export function SingleCountryPanel({
               <h2
                 ref={headingRef}
                 tabIndex={-1}
-                className="text-2xl font-bold text-sand-900 dark:text-dark-50 truncate tracking-tight leading-tight focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50 rounded"
+                className="text-2xl font-bold text-sand-900 dark:text-dark-50 line-clamp-2 break-words tracking-tight leading-tight focus:outline-none rounded"
               >
                 {country.name.common}
               </h2>
               {country.name.official !== country.name.common && (
-                <p className="text-xs text-sand-600 dark:text-dark-100 truncate mt-0.5">
+                <p className="text-xs text-sand-600 dark:text-dark-100 line-clamp-2 break-words mt-0.5">
                   {country.name.official}
                 </p>
               )}
@@ -190,16 +191,6 @@ export function SingleCountryPanel({
                   {country.capital[0]}
                 </p>
               )}
-              <span
-                data-testid="region-badge"
-                className={`inline-block text-[11px] font-medium px-2 py-0.5 rounded-full mt-1.5 ${
-                  REGION_BADGE[country.region] ||
-                  'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
-                }`}
-              >
-                {country.region}
-                {country.subregion && ` / ${country.subregion}`}
-              </span>
             </div>
           </div>
 
@@ -271,6 +262,17 @@ export function SingleCountryPanel({
             )}
           </div>
         </div>
+
+        <span
+          data-testid="region-badge"
+          className={`inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full mt-2 ${
+            REGION_BADGE[country.region] ||
+            'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
+          }`}
+        >
+          {country.region}
+          {country.subregion && ` / ${country.subregion}`}
+        </span>
       </div>
 
       <div className="mx-5 h-px bg-teal/10 dark:bg-teal-light/10" />
@@ -344,7 +346,7 @@ export function SingleCountryPanel({
                 )}
               </div>
               <DataCell label="Timezones" field="timezones" country={country} sources={sources}>
-                {country.timezones.join(', ')}
+                <TimezoneList timezones={country.timezones} />
               </DataCell>
             </div>
 
