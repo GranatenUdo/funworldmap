@@ -1,5 +1,46 @@
 import { test, expect, type Page } from '@playwright/test'
-import { finalizeGame, openLauncher, waitForMapLoaded } from './helpers'
+import { Buffer } from 'node:buffer'
+import { finalizeGame, openLauncher, routeMapTiles, waitForMapLoaded } from './helpers'
+
+// routeMapTiles's default embedded style stub has a single `background` layer
+// and no symbol layers — using it for the label-hiding assertion below would
+// make `expect(...).not.toContain('visible')` pass vacuously on an empty
+// array. Build a minimal style with exactly one symbol layer instead, mirroring
+// label-contrast.spec.ts's buildRichPositronStub (reduced to the one layer this
+// test needs) so getStyle().layers actually contains something to assert on.
+function buildLabelStub(): Buffer {
+  return Buffer.from(
+    JSON.stringify({
+      version: 8,
+      sources: {
+        openmaptiles: {
+          type: 'vector',
+          url: 'https://tiles.openfreemap.org/planet',
+        },
+      },
+      sprite: 'https://tiles.openfreemap.org/sprites/ofm_f384/ofm',
+      glyphs: 'https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf',
+      layers: [
+        {
+          id: 'background',
+          type: 'background',
+          paint: { 'background-color': 'rgb(242,243,240)' },
+        },
+        {
+          id: 'place-labels',
+          type: 'symbol',
+          source: 'openmaptiles',
+          'source-layer': 'place',
+          layout: {
+            'text-field': '{name}',
+            'text-font': ['Open Sans Regular'],
+            'text-size': 12,
+          },
+        },
+      ],
+    }),
+  )
+}
 
 // Open Country Pinning via the launcher mode card Play button.
 async function openCountryPinning(page: Page) {
@@ -194,5 +235,50 @@ test.describe('Country Pinning game', () => {
     await continueBtn.evaluate((el: HTMLButtonElement) => el.click())
 
     await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 5_000 })
+  })
+
+  test('basemap labels hidden during play in map view, restored after', async ({ page }) => {
+    // Custom style stub with a real symbol layer — see buildLabelStub's
+    // comment for why the default routeMapTiles stub can't be used here.
+    await routeMapTiles(page, { styleStub: buildLabelStub() })
+    await page.goto('/')
+    await waitForMapLoaded(page)
+
+    // The game only hides labels in MAP view (satellite hides the whole
+    // vector basemap, labels included, regardless of play state) — switch
+    // before starting the game. Satellite is on by default (aria-label
+    // 'Switch to map view').
+    const satelliteToggle = page.getByTestId('satellite-toggle')
+    await expect(satelliteToggle).toHaveAttribute('aria-label', 'Switch to map view')
+    await satelliteToggle.click()
+    await expect(satelliteToggle).toHaveAttribute('aria-label', 'Switch to satellite view')
+
+    // Basemap labels leak the answer — they must be hidden while playing and
+    // restored afterward (batch-2 spec §1).
+    const symbolVisibility = () =>
+      page.evaluate(() => {
+        const map = window.__funworldmap_map as {
+          getStyle: () => { layers: { id: string; type: string }[] }
+          getLayoutProperty: (id: string, prop: string) => string | undefined
+        }
+        const symbols = map
+          .getStyle()
+          .layers.filter((l) => l.type === 'symbol' && !l.id.startsWith('country-'))
+        return symbols.map((l) => map.getLayoutProperty(l.id, 'visibility'))
+      })
+    // Non-vacuous: the style stub must actually contain symbol layers, or the
+    // assertions below would pass trivially on an empty array.
+    expect(await symbolVisibility()).not.toHaveLength(0)
+
+    await openCountryPinning(page)
+    await expect(page.getByTestId('game-hud')).toBeVisible()
+    await expect.poll(symbolVisibility).not.toContain('visible')
+
+    await page.getByTestId('game-end').click()
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
+    await page.getByTestId('game-over-back').click()
+    await expect(page.getByTestId('game-hud')).toHaveCount(0)
+
+    await expect.poll(symbolVisibility).not.toContain('none')
   })
 })
