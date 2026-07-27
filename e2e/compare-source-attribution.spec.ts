@@ -33,6 +33,14 @@ test.describe('compare view source attribution footer', () => {
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 15_000 })
 
+    // App.tsx's panel-open effect moves focus to panel-close ~300ms after a
+    // selection first opens the panel (deep-linking straight into #FRA,DEU
+    // opens it on mount here). Wait for that autofocus to land BEFORE driving
+    // focus ourselves below — otherwise the timer can fire between our
+    // firstLink.focus() and the Tab press and steal focus back to
+    // panel-close mid-test, which is the ~1/3 flake this test used to hit.
+    await expect(page.getByTestId('panel-close')).toBeFocused({ timeout: 5_000 })
+
     const footer = page.getByTestId('compare-sources')
     await expect(footer).toBeVisible({ timeout: 10_000 })
 
