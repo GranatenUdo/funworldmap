@@ -22,8 +22,8 @@ work in recommended order. Four audit items conflict with previously settled dec
 
 - **Honors `2026-07-10-review-fixes-batch-1-design.md` settled decisions:** satellite-by-default
   stays; the space-dark backdrop in both themes stays (E1 evolves the backdrop *within* dark);
-  game-round camera carry-over stays (see Open question 1); search-Enter-commits-top-result is
-  shipped and untouched.
+  the game-round camera carry-over call is amended by F4 with owner approval of 2026-07-27 (see
+  Resolved questions); search-Enter-commits-top-result is shipped and untouched.
 - **Honors `2026-07-10-review-fixes-batch-2-design.md`:** the timezone "+N more" toggle, border
   legibility during play, compare camera offset, and layout constants shipped there are the
   baseline this spec builds on. B6 replaces the compare camera *mechanism* (offset → asymmetric
@@ -421,6 +421,14 @@ trade-off from the review.
   extending the v2 key scheme (the v1 daily-pollution lesson). Last selection persists next to
   `lastMode`. No separate difficulty system — region is the difficulty lever, and "Africa only"
   is the stated educator use case.
+- **F4. Round-start camera ease** (amends the 2026-07-10 carry-over call; owner-approved
+  2026-07-27 — see Resolved questions). On advance (`round-ended` → `playing`), ease the camera
+  to a fixed world-view zoom (~1.8–2.2) keeping the current center, so the whole globe is
+  reachable in one click while nothing hints at the target's location; `prefers-reduced-motion`
+  gets `jumpTo`. Implemented as a small effect in `useRevealMapEffects` keyed on round index
+  during `playing`. Test contract: update the existing round-start camera test to assert "no
+  move toward the target" instead of "no move at all"; e2e waits on `!map.isMoving()` via the
+  map seam (camera moves are invisible to `Element.getAnimations`).
 
 ## Workstream G — mobile platform feel
 
@@ -479,31 +487,21 @@ D3 → E-remainder. The floor that still honors the audit: A + B-core + E-founda
 D1/D2/D4(+G1). Every tranche is independently shippable; no tranche starts before its
 predecessor's review closes.
 
-## Open questions (owner decisions — not in scope until answered)
+## Resolved questions (owner decisions, 2026-07-27)
 
-1. **Round-start camera.** Settled 2026-07-10: "game-round camera carry-over is intended game
-   difficulty — no change." The audit's live run hit the friction case: target Bangladesh with
-   the camera parked over Europe — 2–4 seconds of pan/zoom chores per round that compound over a
-   run. If the settled call stands, nothing changes. The alternative preserving the no-hint
-   property: on advance, ease to a fixed world-view zoom (~1.8–2.2) keeping the current center
-   (reduced motion: `jumpTo`), and update the round-start camera test to assert "no move toward
-   the target" instead of "no move at all".
-2. **Light-theme top strip.** Settled 2026-07-10: space-dark backdrop in both themes. On light
-   mobile the dark band above the map reads as an unrendered strip (audit shot 12). E1 keeps the
-   backdrop dark regardless; if the strip is judged acceptable as intended design, no action —
-   otherwise the constraint itself needs revisiting (not proposed here).
-3. **Timezone fold shape.** Batch 2 just shipped "first 3 + N more" (#130). The audit notes the
-   collapsed state surfaces France's least representative offsets (three overseas territories;
-   Paris hidden behind the toggle). Optional refinement: multi-zone countries collapse to a range
-   summary "UTC−10:00 to UTC+12:00 (14 zones)" with the same expand toggle. Default if no call:
-   keep the shipped toggle.
-4. **Daily challenge.** Removed 2026-05-30 by owner call (the best-of-3 single-pair format did
-   not fit city guessing's 10-round game, the daily UI read as ceremony, and the owner chose to
-   drop it for both modes). The audit proposes a *different* mechanic: a date-seeded
-   PRNG through the existing injected `Picker` seam gives every visitor the same full-length
-   session per UTC day — no content pipeline, no best-of-N, no backend; pairs with F2's share
-   string. Reintroduction is a product decision that must explain why the 2026-05-30 rationale
-   doesn't apply to the new shape; if approved it gets its own spec.
+All four open questions were put to the owner on 2026-07-27 and decided:
+
+1. **Round-start camera — change approved.** The 2026-07-10 "carry-over is intended difficulty"
+   call is amended in light of the audit's friction evidence (target Bangladesh, camera parked
+   over Europe — 2–4 s of pan/zoom chores per round). The fix ships as **F4** (see workstream
+   F).
+2. **Light-theme top strip — accepted as intended.** The space-dark constraint stands; E1's
+   starfield treatment is expected to make the band read as deliberate sky. No action.
+3. **Timezone fold — keep the shipped "+N more" toggle** (#130). No action; the range-summary
+   idea is recorded here and can be revisited any time.
+4. **Daily challenge — stays removed.** The 2026-05-30 call stands; retention comes from
+   personal bests and F2's share loop. The date-seeded mechanic is recorded here should the
+   decision ever be revisited (it would need its own spec).
 
 ## Testing & verification commitments
 
