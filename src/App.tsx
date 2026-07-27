@@ -376,6 +376,7 @@ function AppInner({
           onSelect={onMapSelect}
           onClose={deselect}
           onEnterCompare={enterComparePicking}
+          onCancelCompare={exitCompare}
           onExitCompare={exitCompare}
           byCca3={byCca3}
         />
@@ -394,6 +395,9 @@ function AppInner({
           onClose={advanceRoundEndPanel}
           onEnterCompare={() => {
             /* no-op — hidden by inGameRound */
+          }}
+          onCancelCompare={() => {
+            /* no-op — picking mode is never active during a round */
           }}
           onExitCompare={() => {
             /* no-op — hidden by inGameRound */

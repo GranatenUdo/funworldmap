@@ -15,6 +15,7 @@ interface Props {
   onSelect: (cca3: string) => void
   onClose: () => void
   onEnterCompare: () => void
+  onCancelCompare: () => void
   byCca3: Map<string, CountryData>
   inGameRound?: boolean
 }
@@ -75,6 +76,7 @@ export function SingleCountryPanel({
   onSelect,
   onClose,
   onEnterCompare,
+  onCancelCompare,
   byCca3,
   inGameRound = false,
 }: Props) {
@@ -161,8 +163,29 @@ export function SingleCountryPanel({
     >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
         {comparePickingMode && (
-          <div className="mb-3 px-3 py-2 rounded-lg bg-teal/10 dark:bg-teal-light/10 border border-teal/20 dark:border-teal-light/20 text-xs text-teal dark:text-teal-light">
-            Pick a country to compare with...
+          <div
+            role="status"
+            className="mb-3 px-3 py-2 rounded-lg bg-teal/10 dark:bg-teal-light/10 border border-teal/20 dark:border-teal-light/20 text-xs text-teal dark:text-teal-light flex items-center justify-between gap-2"
+          >
+            <span>Pick a country to compare with...</span>
+            {/* A7: the only touch-reachable exit from picking mode (Escape is
+                keyboard-only). Calls the same exit path as Escape. */}
+            <button
+              type="button"
+              onClick={onCancelCompare}
+              data-testid="compare-picking-cancel"
+              aria-label="Cancel compare"
+              className="shrink-0 p-1 -m-1 rounded-md hover:bg-teal/20 dark:hover:bg-teal-light/20 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
         )}
         <div

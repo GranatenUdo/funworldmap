@@ -12,7 +12,7 @@
  * "no flaky tests" rule.
  */
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, render } from '@testing-library/react'
+import { act, fireEvent, render } from '@testing-library/react'
 import type { CountryData, CountriesFile } from '../../lib/types'
 import type { ComponentType } from 'react'
 import {
@@ -31,6 +31,7 @@ let SingleCountryPanel: ComponentType<{
   onSelect: (cca3: string) => void
   onClose: () => void
   onEnterCompare: () => void
+  onCancelCompare: () => void
   byCca3: Map<string, CountryData>
   inGameRound?: boolean
 }>
@@ -45,6 +46,7 @@ function renderPanel() {
       onSelect={() => {}}
       onClose={() => {}}
       onEnterCompare={() => {}}
+      onCancelCompare={() => {}}
       byCca3={new Map()}
     />,
   )
@@ -188,6 +190,7 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
         onSelect={() => {}}
         onClose={() => {}}
         onEnterCompare={() => {}}
+        onCancelCompare={() => {}}
         byCca3={new Map()}
       />,
     )
@@ -271,5 +274,34 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
     const { queryByText } = renderWith(makeCountry())
     expect(queryByText('UN observer state')).toBeNull()
     expect(queryByText('Not independent')).toBeNull()
+  })
+})
+
+describe('SingleCountryPanel — compare-picking banner (A7)', () => {
+  it('banner has role="status" and its inline Cancel calls onCancelCompare', () => {
+    const onCancelCompare = vi.fn()
+    const { getByRole, getByTestId } = render(
+      <SingleCountryPanel
+        country={makeCountry()}
+        comparePickingMode={true}
+        sources={sources}
+        isDesktop={true}
+        onSelect={() => {}}
+        onClose={() => {}}
+        onEnterCompare={() => {}}
+        onCancelCompare={onCancelCompare}
+        byCca3={new Map()}
+      />,
+    )
+    const banner = getByRole('status')
+    expect(banner.textContent).toContain('Pick a country to compare with')
+    fireEvent.click(getByTestId('compare-picking-cancel'))
+    expect(onCancelCompare).toHaveBeenCalledTimes(1)
+  })
+
+  it('renders no banner or Cancel button outside picking mode', () => {
+    const { queryByRole, queryByTestId } = renderPanel()
+    expect(queryByRole('status')).toBeNull()
+    expect(queryByTestId('compare-picking-cancel')).toBeNull()
   })
 })

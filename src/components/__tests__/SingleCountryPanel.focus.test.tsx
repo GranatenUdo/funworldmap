@@ -2,7 +2,12 @@ import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from 'vite
 import { render, screen } from '@testing-library/react'
 import type { CountryData, CountriesFile } from '../../lib/types'
 import type { ComponentType } from 'react'
-import { makeCountry, sources, stubMatchMedia, stubGetAnimations } from './singleCountryPanelTestUtils'
+import {
+  makeCountry,
+  sources,
+  stubMatchMedia,
+  stubGetAnimations,
+} from './singleCountryPanelTestUtils'
 
 // Dynamically loaded after matchMedia is stubbed.
 let SingleCountryPanel: ComponentType<{
@@ -13,6 +18,7 @@ let SingleCountryPanel: ComponentType<{
   onSelect: (cca3: string) => void
   onClose: () => void
   onEnterCompare: () => void
+  onCancelCompare: () => void
   byCca3: Map<string, CountryData>
   inGameRound?: boolean
 }>
@@ -57,6 +63,7 @@ describe('SingleCountryPanel — focus management on mount', () => {
     onSelect: () => {},
     onClose: () => {},
     onEnterCompare: () => {},
+    onCancelCompare: () => {},
     byCca3: new Map(),
   } as const
 
