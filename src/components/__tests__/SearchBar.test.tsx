@@ -8,7 +8,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SearchBar from '../SearchBar'
 import { makeCountryData } from '../../test/countryFixtures'
 import { stubMatchMedia } from '../../test/matchMediaStub'
-import { FINE_POINTER_MEDIA_QUERY } from '../../lib/layoutConstants'
+import { FINE_POINTER_QUERY } from '../../hooks/useMediaQuery'
 
 const FRANCE = makeCountryData()
 const GERMANY = makeCountryData({
@@ -28,7 +28,7 @@ let finePointer = false
 let restoreMatchMedia: () => void
 
 beforeEach(() => {
-  restoreMatchMedia = stubMatchMedia((query) => query === FINE_POINTER_MEDIA_QUERY && finePointer)
+  restoreMatchMedia = stubMatchMedia((query) => query === FINE_POINTER_QUERY && finePointer)
 })
 
 afterEach(() => {
@@ -164,5 +164,24 @@ describe('"/" shortcut chip (A11)', () => {
     expect(screen.queryByTestId('search-shortcut-hint')).toBeNull()
     fireEvent.blur(input)
     expect(screen.getByTestId('search-shortcut-hint')).toBeTruthy()
+  })
+})
+
+describe('SearchBar keyboard-hint footer (A14)', () => {
+  it('renders the kbd footer on fine-pointer devices', async () => {
+    finePointer = true
+    const { input } = setup()
+    fireEvent.change(input, { target: { value: 'fran' } })
+    await screen.findByRole('option', { name: /France/ })
+    expect(screen.getByTestId('search-keyboard-hint')).toBeTruthy()
+  })
+
+  it('drops the kbd footer on coarse pointers', async () => {
+    restoreMatchMedia()
+    restoreMatchMedia = stubMatchMedia(() => false)
+    const { input } = setup()
+    fireEvent.change(input, { target: { value: 'fran' } })
+    await screen.findByRole('option', { name: /France/ })
+    expect(screen.queryByTestId('search-keyboard-hint')).toBeNull()
   })
 })

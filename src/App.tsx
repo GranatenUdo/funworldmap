@@ -7,11 +7,11 @@ import Toast from './components/Toast'
 import { useCountryData } from './hooks/useCountryData'
 import { useCityData } from './hooks/useCityData'
 import { useSelectedCountry } from './hooks/useSelectedCountry'
-import { useMediaQuery } from './hooks/useMediaQuery'
+import { FINE_POINTER_QUERY, useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { useMapReady } from './hooks/useMapReady'
-import { useFirstVisitHint } from './hooks/useFirstVisitHint'
+import { hintCopy, useFirstVisitHint } from './hooks/useFirstVisitHint'
 import { useLiveAnnouncements } from './hooks/useLiveAnnouncements'
 import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
@@ -100,7 +100,8 @@ function AppInner({
     show: showLauncher,
   } = useLauncherVisibility()
   const mapReady = useMapReady()
-  const { showHint } = useFirstVisitHint({
+  const finePointer = useMediaQuery(FINE_POINTER_QUERY)
+  const { hint } = useFirstVisitHint({
     mapReady,
     hasSelection: !!selected,
     gameActive: session.status !== 'idle',
@@ -356,13 +357,13 @@ function AppInner({
 
       <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
-      {showHint && !selected && !gameActive && (
+      {hint && !selected && !gameActive && (
         <div
           role="status"
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg pointer-events-none"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
-          Click a country to explore — or press / to search
+          {hintCopy(hint, finePointer)}
         </div>
       )}
 

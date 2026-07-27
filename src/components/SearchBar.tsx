@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCountrySearch } from '../hooks/useCountrySearch'
-import { useMediaQuery } from '../hooks/useMediaQuery'
-import { FINE_POINTER_MEDIA_QUERY } from '../lib/layoutConstants'
+import { FINE_POINTER_QUERY, useMediaQuery } from '../hooks/useMediaQuery'
 import type { CountryData } from '../lib/types'
 
 interface Props {
@@ -34,7 +33,7 @@ export default function SearchBar({
   const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { results, isStale } = useCountrySearch(countries, query)
-  const isFinePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
+  const finePointer = useMediaQuery(FINE_POINTER_QUERY)
 
   useEffect(() => {
     // Gate entirely on query being non-empty so that stale results left over
@@ -173,7 +172,7 @@ export default function SearchBar({
           focus shortcut. Coexistence with the clear button: clear renders iff
           query !== '', this chip iff query === '' — disjoint on query, so the
           two can never occupy right-2.5 at the same time. */}
-      {isFinePointer && !isFocused && query === '' && (
+      {finePointer && !isFocused && query === '' && (
         <kbd
           aria-hidden="true"
           data-testid="search-shortcut-hint"
@@ -245,7 +244,7 @@ export default function SearchBar({
                   No countries found for &ldquo;{query}&rdquo;
                 </li>
               )}
-          {results.length > 0 && (
+          {results.length > 0 && finePointer && (
             <li role="presentation" aria-hidden="true">
               <div
                 className="px-3 py-2 border-t border-sand-200/60 dark:border-dark-200/30 text-[11px] text-sand-500 dark:text-dark-100 flex gap-3 justify-end sticky bottom-0 bg-sand-50/95 dark:bg-dark-400/95"
