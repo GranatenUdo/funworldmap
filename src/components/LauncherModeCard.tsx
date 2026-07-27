@@ -54,6 +54,14 @@ export function LauncherModeCard({ modeId, onPlay }: Props) {
   const testIdBase = `launcher-card-${modeId}`
   const { best } = usePersonalBests(modeId)
   const hasPlayed = best.gamesPlayed > 0
+  const gamesCount = `${best.gamesPlayed} ${best.gamesPlayed === 1 ? 'game' : 'games'}`
+  // "Best 0 pts" carries no information — when no scoring run exists yet, show
+  // only how many games were played (A16).
+  const bestsLine = !hasPlayed
+    ? 'No games yet — play your first'
+    : best.bestScore === 0
+      ? `${gamesCount} played`
+      : `Best ${formatPersonalBest(best, modeId)} · ${gamesCount}`
 
   return (
     <div
@@ -83,14 +91,7 @@ export function LauncherModeCard({ modeId, onPlay }: Props) {
         className="text-xs text-sand-600 dark:text-dark-100 mt-2 text-center tabular-nums"
         data-testid={`${testIdBase}-best`}
       >
-        {hasPlayed ? (
-          <>
-            Best {formatPersonalBest(best, modeId)} · {best.gamesPlayed}{' '}
-            {best.gamesPlayed === 1 ? 'game' : 'games'}
-          </>
-        ) : (
-          'No games yet — play your first'
-        )}
+        {bestsLine}
       </div>
     </div>
   )

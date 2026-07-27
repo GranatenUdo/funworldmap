@@ -40,4 +40,12 @@ describe('LauncherModeCard (free-play)', () => {
     expect(best).toMatch(/920/)
     expect(best).not.toMatch(/streak/i) // streak is country-pinning only
   })
+
+  it('shows only the games count when games were played but the best score is 0', () => {
+    record('city-guessing', 0, 0)
+    render(<LauncherModeCard modeId="city-guessing" onPlay={vi.fn()} />)
+    const best = screen.getByTestId('launcher-card-city-guessing-best').textContent ?? ''
+    expect(best).not.toMatch(/best/i) // no "Best 0 pts" noise
+    expect(best).toMatch(/1 game played/)
+  })
 })

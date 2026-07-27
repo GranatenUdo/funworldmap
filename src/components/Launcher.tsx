@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MODE_IDS } from '../game/modes'
 import { readLastMode, writeLastMode } from '../game/shared/lastMode'
+import { usePersonalBests } from '../game/shared/usePersonalBests'
 import type { ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
@@ -25,6 +26,11 @@ function focusSearchInput(): void {
 export function Launcher({ onDismiss }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
+  // A16: "beat your best" presumes a best exists — gate on either mode having
+  // a recorded game. Two static calls because hooks can't run in a loop.
+  const { best: countryBest } = usePersonalBests('country-pinning')
+  const { best: cityBest } = usePersonalBests('city-guessing')
+  const hasPlayedAnyMode = countryBest.gamesPlayed > 0 || cityBest.gamesPlayed > 0
 
   const dismissWithCloseButton = useCallback(() => {
     track('launcher_dismissed', { path: 'close' })
@@ -157,7 +163,7 @@ export function Launcher({ onDismiss }: Props) {
             className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2"
             data-testid="launcher-subtitle"
           >
-            Pick a mode and beat your best
+            {hasPlayedAnyMode ? 'Pick a mode and beat your best' : 'Two quick geography games'}
           </p>
         </div>
 
