@@ -120,3 +120,43 @@ test.describe('A8 — map clicks while comparing', () => {
     await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('')
   })
 })
+
+test.describe('ocean click during compare-picking mode (regression)', () => {
+  // Picking mode is entered from a single-country panel (compareWith is still
+  // null — see App.tsx's enterComparePicking), so it is a distinct state from
+  // the active-pair scenarios above. An ocean click here used to run
+  // deselect() (compareWith is null, so the A8 guard doesn't apply) without
+  // clearing comparePickingMode, wedging every later selection into a no-op
+  // until Escape or a game start — touch users had no recovery at all.
+  test('ocean click exits picking mode AND the next country click selects normally', async ({
+    page,
+  }) => {
+    await gotoAndWaitForMap(page, '/#FRA')
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toContainText('France', { timeout: 15_000 })
+    await waitForCountryTilesRendered(page)
+
+    // Enter picking mode via the panel's compare entry button.
+    await page.getByRole('button', { name: 'Compare with another country' }).click()
+    const banner = page.getByRole('status').filter({ hasText: 'Pick a country to compare with' })
+    await expect(banner).toBeVisible()
+
+    const oceanClickedId = await fireClickWhere(page, { kind: 'ocean' })
+    // Precondition (CLAUDE.md): the synthetic point must NOT land on a country.
+    expect(oceanClickedId).toBe('')
+
+    // Picking mode banner is gone, the panel closed (Task 13's deselect path),
+    // and the hash cleared — all synchronous with the click.
+    await expect(banner).not.toBeAttached()
+    await expect(panel).not.toBeAttached()
+    expect(await page.evaluate(() => window.location.hash)).toBe('')
+
+    // The regression: comparePickingMode stuck true means this next click
+    // would silently no-op (onMapSelect's picking branch requires a
+    // `selected` country, which is now null). Asserting it selects normally
+    // is the pin for the fix.
+    const clickedId = await fireClickWhere(page, { kind: 'country' })
+    expect(clickedId).not.toBeNull()
+    await expect(panel).toBeVisible()
+  })
+})

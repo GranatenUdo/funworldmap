@@ -202,8 +202,18 @@ function AppInner({
 
   // A8 — an ocean click must not tear down an active comparison; Escape and
   // the compare header's Exit compare / × are the only exits.
+  //
+  // comparePickingMode is only ever true while compareWith is null (picking
+  // starts from a single-country panel — see enterComparePicking), so the
+  // compareWith guard above never protects picking mode. Without clearing it
+  // here, an ocean click during picking deselects (closing the panel, per
+  // Task 13) but leaves comparePickingMode stuck true — the picking branch of
+  // onMapSelect then requires a `selected` country that no longer exists, so
+  // every later map click or search selection silently no-ops until Escape
+  // (keyboard-only) or a game start resets it. Touch users had no recovery.
   const onMapDeselect = useCallback(() => {
     if (compareWith) return
+    setComparePickingMode(false)
     deselect()
   }, [compareWith, deselect])
 
