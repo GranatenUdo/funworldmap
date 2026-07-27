@@ -97,7 +97,7 @@ export function CountryColumn({
               Borders
             </div>
             <div className="flex flex-wrap gap-1">
-              {country.borders.slice(0, 6).map((code) => (
+              {country.borders.map((code) => (
                 <BorderChip
                   key={code}
                   code={code}
@@ -106,11 +106,6 @@ export function CountryColumn({
                   size="compare"
                 />
               ))}
-              {country.borders.length > 6 && (
-                <span className="px-2 py-0.5 text-[11px] text-sand-400 dark:text-dark-100">
-                  +{country.borders.length - 6}
-                </span>
-              )}
             </div>
           </div>
         )}

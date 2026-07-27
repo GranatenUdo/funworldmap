@@ -32,9 +32,17 @@ export function CompareCountryPanel({
       role="complementary"
       aria-label="Country comparison"
       data-testid="country-panel"
-      style={isDesktop ? { animation: 'panel-card-in 250ms cubic-bezier(0.34, 1.3, 0.64, 1)' } : undefined}
+      style={
+        isDesktop
+          ? { animation: 'panel-card-in 250ms cubic-bezier(0.34, 1.3, 0.64, 1)' }
+          : undefined
+      }
     >
-      <div className={isDesktop ? 'grid grid-cols-2 h-full' : 'flex flex-col h-full'}>
+      {/* grid-rows-1 = repeat(1, minmax(0, 1fr)): pins the single row to the
+          panel height so each column's overflow-y-auto engages — without it
+          the implicit auto row grows past the panel and long content (now all
+          border chips) clips instead of scrolling. */}
+      <div className={isDesktop ? 'grid grid-cols-2 grid-rows-1 h-full' : 'flex flex-col h-full'}>
         <div
           className={
             isDesktop
@@ -68,7 +76,9 @@ export function CompareCountryPanel({
         className="px-4 py-3 border-t border-sand-200/50 dark:border-dark-200/30 text-xs text-sand-600 dark:text-dark-100"
         data-testid="compare-sources"
       >
-        <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">Sources:</span>{' '}
+        <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">
+          Sources:
+        </span>{' '}
         {Object.values(sources).map((s, i) => (
           <span key={s.name}>
             {i > 0 && ' · '}
