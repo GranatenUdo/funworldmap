@@ -6,6 +6,7 @@ import { FieldLabel } from './FieldLabel'
 import { TimezoneList } from './TimezoneList'
 import SourceTooltip from './SourceTooltip'
 import { dispatchToast } from '../lib/toast'
+import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_22 } from '../lib/layoutConstants'
 
 interface Props {
   country: CountryData
@@ -175,7 +176,7 @@ export function SingleCountryPanel({
               onClick={onCancelCompare}
               data-testid="compare-picking-cancel"
               aria-label="Cancel compare"
-              className="shrink-0 p-1 -m-1 rounded-md hover:bg-teal/20 dark:hover:bg-teal-light/20 transition-colors"
+              className={`shrink-0 p-1 -m-1 rounded-md hover:bg-teal/20 dark:hover:bg-teal-light/20 transition-colors ${TOUCH_TARGET_FROM_22}`}
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -238,7 +239,7 @@ export function SingleCountryPanel({
             {!comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}
-                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-teal dark:text-teal-light transition-colors"
+                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-teal dark:text-teal-light transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Compare with another country"
                 title="Compare"
               >
@@ -252,7 +253,7 @@ export function SingleCountryPanel({
             {!inGameRound && (
               <button
                 onClick={onShareLink}
-                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
+                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Copy link to this country"
                 title="Copy link"
               >
@@ -270,7 +271,7 @@ export function SingleCountryPanel({
             {!isDesktop && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
+                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
               >
                 <svg
@@ -293,7 +294,7 @@ export function SingleCountryPanel({
                 type="button"
                 onClick={onClose}
                 data-testid="game-continue"
-                className="px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
+                className={`px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60 ${TOUCH_TARGET_FROM_36}`}
               >
                 Continue
               </button>

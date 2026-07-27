@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCountrySearch } from '../hooks/useCountrySearch'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import { FINE_POINTER_MEDIA_QUERY } from '../lib/layoutConstants'
+import { FINE_POINTER_MEDIA_QUERY, TOUCH_TARGET_FROM_24 } from '../lib/layoutConstants'
 import type { CountryData } from '../lib/types'
 
 interface Props {
@@ -154,7 +154,7 @@ export default function SearchBar({
             setIsOpen(false)
             inputRef.current?.focus()
           }}
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-sand-400 hover:text-sand-600 dark:text-dark-100 dark:hover:text-dark-50"
+          className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-sand-400 hover:text-sand-600 dark:text-dark-100 dark:hover:text-dark-50 ${TOUCH_TARGET_FROM_24}`}
           aria-label="Clear search"
           data-testid="search-clear"
         >

@@ -2,6 +2,7 @@ import type { CountryData, CountriesFile } from '../lib/types'
 import { CloseButton } from './CloseButton'
 import { CountryColumn } from './CountryColumn'
 import { dispatchToast } from '../lib/toast'
+import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstants'
 
 interface Props {
   country: CountryData
@@ -63,7 +64,7 @@ export function CompareCountryPanel({
           <button
             type="button"
             onClick={onShareLink}
-            className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
+            className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
             aria-label="Copy link to this comparison"
             title="Copy link"
           >
@@ -84,7 +85,7 @@ export function CompareCountryPanel({
             type="button"
             onClick={onExitCompare}
             data-testid="exit-compare"
-            className="px-3 py-1.5 rounded-xl text-sm font-medium text-teal-accessible dark:text-teal-light hover:bg-sand-200 dark:hover:bg-dark-300 transition-colors"
+            className={`px-3 py-1.5 rounded-xl text-sm font-medium text-teal-accessible dark:text-teal-light hover:bg-sand-200 dark:hover:bg-dark-300 transition-colors ${TOUCH_TARGET_FROM_32}`}
           >
             Exit compare
           </button>
