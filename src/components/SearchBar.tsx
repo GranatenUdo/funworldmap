@@ -136,7 +136,7 @@ export default function SearchBar({
         onFocus={() => {
           if (query.trim()) setIsOpen(true)
         }}
-        className="w-full pl-10 pr-9 py-3 rounded-xl bg-sand-100/80 dark:bg-dark-400/80 backdrop-blur-md border border-sand-300/50 dark:border-dark-200/30 text-sand-900 dark:text-dark-50 text-sm placeholder-sand-400 dark:placeholder-dark-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/40 focus:border-teal/40 dark:focus:border-teal-light/30 transition-all duration-150"
+        className="w-full pl-10 pr-9 py-3 rounded-xl bg-sand-100/80 dark:bg-dark-400/80 backdrop-blur-md border border-sand-300/50 dark:border-dark-200/30 text-sand-900 dark:text-dark-50 text-sm max-sm:text-base placeholder-sand-400 dark:placeholder-dark-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/40 focus:border-teal/40 dark:focus:border-teal-light/30 transition-all duration-150"
         id="search-input"
         data-testid="search-input"
       />

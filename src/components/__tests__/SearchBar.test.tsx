@@ -96,3 +96,16 @@ describe('SearchBar Enter behavior', () => {
     expect(onSelect).toHaveBeenCalledWith('DEU')
   })
 })
+
+describe('search input font-size floor (A2)', () => {
+  it('pins max-sm:text-base + text-sm on the input (iOS auto-zoom guard)', () => {
+    const { input } = setup()
+    // jsdom cannot evaluate media queries, so pin the class literals - the
+    // layoutConstants.test.ts drift-alarm style. max-sm:text-base keeps the
+    // focused input at >=16px below sm so mobile Safari does not force-zoom;
+    // text-sm keeps the compact 14px at sm+. (Note: "max-sm:text-base" does
+    // not substring-match "text-sm", so both assertions are independent.)
+    expect(input.className).toContain('max-sm:text-base')
+    expect(input.className).toContain('text-sm')
+  })
+})
