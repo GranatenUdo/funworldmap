@@ -159,6 +159,37 @@ Small, unanimously endorsed fixes. Each item is one commit-sized change; the bat
   Suppress "Best 0 pts" whenever `bestScore === 0` (show games count only). The
   rules-at-a-glance line lands with E6, not here.
 
+**A-batch commit structure** (from the 2026-07-27 interaction audit — the 16 items are not 16
+independent commits; the A plan follows this shape, ~10 commits):
+
+1. Parallel singles, any order: A1, A6, A10, A16 (all verified free of hidden test breakage).
+2. Panel commit: **A4+A5 merged** (they rewrite the same SingleCountryPanel blocks; separate
+   commits guarantee conflicts). Ships with two e2e updates in the same commit:
+   `panel-and-deeplink.spec.ts` (CI-covered) re-anchors its mobile peek-state sentinel from the
+   deleted "UN Member" cell to a surviving field, and `source-tooltip-edge.spec.ts` repoints its
+   "first Source button" anchor at the new first DataCell. Interim attribution: the header
+   caption and region badge absorb fields that carried source rings — the caption keeps a
+   `SourceTooltip` affordance for capital/region until D2's consolidated footer lands (no silent
+   attribution regression). Then A7, noting it threads a new cancel callback App →
+   CountryPanel → SingleCountryPanel.
+3. Search sequence: A2 → A11 → A14's search half (one input `className` line; the kbd chip and
+   clear button must have an explicit coexistence rule), with A3's search-field line rebased
+   knowingly.
+4. Hint commit: **A12 + A14's hint half merged**, including the `useFirstVisitHint` unit-test
+   rewrite (it pins the sessionStorage gate) and `pointer-events-none` on the pill — A12 makes
+   the pill appear in a state many specs click through.
+5. Compare sequence: **A9 → A15 → A8** (A8's contract names A15's Exit-compare control; A9
+   edits the chip block A8 rewires). A8 is descoped to the map-click semantics (third country
+   replaces B; A/ocean no-op) with its 4-case e2e matrix; the border-chip-per-column clause
+   moves to workstream C, whose C1/C2/C6 rebuild those columns. A8's plan must resolve the
+   interaction with the click-origin mark in `useMapInteractions` (a replace-B click now changes
+   the hash and feeds `preserveZoom` into the compare camera path).
+6. A13 last, after the panel and search restructures, so hit-area padding applies once to the
+   final button set.
+7. One-hour **B1 glyph spike** rides along: a throwaway symbol layer confirming
+   `Noto Sans Bold` renders from the existing endpoint (expected to pass; live-verified at the
+   HTTP level 2026-07-27).
+
 ## Workstream B — a political map that shows its politics
 
 The default satellite view hides every basemap label (`applyBasemapLayerVisibility` hides all
@@ -167,18 +198,29 @@ zoom; the vector view at mid-zoom is dominated by roads and admin-1 labels flatt
 AA-failing gray. This workstream is the "batch 3" political-legibility design cycle batch 2
 anticipated.
 
-- **B1. App-owned country labels on satellite.** A symbol layer built from bundled data
-  (`country.latlng` centroids + `name.common`): area-ranked `minzoom` and `text-size` (giants
-  from z1.5, microstates from ~z5), white text with a dark halo. Glyphs: MapLibre symbol layers
-  need PBF glyph stacks — either self-host generated PBFs for the brand font (size-checked per
-  the Testing commitments; the CI bundle budget does not see `public/` assets today) or use a
-  font the existing style endpoint already serves. Game gating requires new work, not the
-  existing rule: `applyBasemapLayerVisibility` deliberately never touches custom `country-*`
+- **B1. App-owned country labels on satellite.** A `country-labels` symbol layer (the
+  `country-` prefix is required for the visibility owner's custom-layer skip; register it in the
+  `LAYER` registry, added last in the onLoad sequence) over a small app-built point-geometry
+  GeoJSON source from bundled data (`country.latlng` centroids + `name.common` + an `areaRank`
+  property): area-ranked `minzoom` and `text-size` (giants from z1.5, microstates from ~z5) and
+  `symbol-sort-key` by area rank so globe-scale label collision drops microstates before giants
+  deterministically; white text with a dark halo (~1.5px). Glyphs — **decided, live-verified
+  2026-07-27**: `text-font: ['Noto Sans Bold']` via the positron style's existing glyphs
+  endpoint, which is live in every mode (satellite is a raster layer inside the always-loaded
+  positron style, not a style swap) and serves Noto Sans (one cached ~77 KB PBF covers all 249
+  names — every `name.common` is Latin-1). The default MapLibre font stack would 404 on this
+  endpoint, so `text-font` must be explicit. Self-hosting brand-font PBFs is **rejected**: the
+  glyphs URL is style-global in MapLibre 5, so overriding it breaks every vector-mode basemap
+  label. No font assets ship; no bundle-budget change needed. Game gating requires new work, not
+  the existing rule: `applyBasemapLayerVisibility` deliberately never touches custom `country-*`
   layers, and its generic symbol rule would wrongly hide the new layer in satellite mode — so
   the owner gains an explicit rule for the label layer, **visible iff `satellite && !hideLabels`**,
   applied from the same `{ satellite, playing }` change site. Extend the batch-2 truth-table unit
   test with the new rows (including toggle-satellite-mid-game ordering), and add an e2e assertion
-  via the map test seam that the layer's visibility is `none` while a session is `playing`.
+  via the map test seam that the layer's visibility is `none` while a session is `playing` —
+  seam assertions only, never rendered-text pixels, because the e2e tile stub serves empty glyph
+  PBFs. The B1 task budgets a half-day tuning pass (minzoom/text-size curve, halo over bright
+  imagery, pitch-60 terrain-occlusion check over mountainous countries).
 - **B2. Cased country borders on satellite.** Replace the single 0.5px hairline with a cased pair
   (≈1.6px dark casing under a ≈0.9px light line), zoom-interpolated, via
   `applyCountryBaselinePaint` — the single paint owner, which batch 2 already taught to write
@@ -201,7 +243,10 @@ anticipated.
   ~0.25 dark opacity; drop selection fill to ≤0.10; keep the selection border with a tighter
   glow (4px, blur 2, from 10px/blur 5). Border color: today's coral until E4 lands, then E4's
   ice (B ships first under the recommended order — the spotlight mechanism is color-agnostic).
-  Compare mode excludes both A and B from the dim filter.
+  Compare mode excludes both A and B from the dim filter. Invariant to preserve: every
+  `queryRenderedFeatures` call in app and e2e code is layer-scoped today, which is why a new
+  fill layer cannot pollute click handling or ocean-click preconditions — future callers must
+  stay layer-scoped.
 - **B5. Reveal fill pulse.** At reveal, the answer country gets only a recolored hover-border and
   doesn't pop. Add a dedicated `country-reveal-fill` layer (not a borrowed selection layer — the
   single-owner lesson) pulsing fill-opacity 0.35 → 0.12 over two beats, settling at 0.15 for the
@@ -214,7 +259,7 @@ anticipated.
   symmetric padding with `cameraForBounds(bounds, { padding: { right: <panel footprint from
   layoutConstants> + margin, ... } })`. Keep the >110° wide-pair midpoint fallback; re-verify the
   `GLOBE_SCALE_ZOOM` guard with the Japan+USA and France+Germany live cases before removing it.
-  A/B centroid markers ride on B1's glyph work (defer if B1 hasn't landed).
+  A/B centroid markers ride on B1's label-layer pattern (defer if B1 hasn't landed).
 - **B7. Map control polish.** The controls are already app-styled (not stock); the real gaps are
   ~29px targets, the ambiguous hand-built reset glyph, and dark-only styling. Enlarge to 44px,
   redraw the reset glyph (crosshair-globe or home), add the light-theme variant with A3.
@@ -330,7 +375,11 @@ trade-off from the review.
   camera-dependent specs scan around viewport center). The E-workstream plan audits specs that
   assume the initial camera. (b) Idle auto-rotation ~1°/s that stops permanently on first
   pointer/keyboard interaction; disabled under `prefers-reduced-motion` **and** whenever
-  `VITE_TEST_HOOKS` is set; rotating/idle state exposed as a data attribute so camera-dependent
+  `VITE_TEST_HOOKS` is set; **paused while `document.visibilityState` is hidden and self-stopped
+  after ~120 s even without interaction** — the recurring cost of rotation is the WebGL render
+  loop, not tile fetches (at the default z1.8 the whole-world raster pyramid is a few dozen
+  tiles, fetched once and cached — analysis recorded here so the CDN-churn question stays
+  answered); rotating/idle state exposed as a data attribute so camera-dependent
   e2e specs can assert it is off. (c) Bias the default view slightly (zoom/center) so the hint
   pill isn't orphaned at the bottom edge. (d, optional flourish) A small mono coordinate
   readout of the viewport center (lat/lng) bottom-left on fine-pointer viewports, hidden during
@@ -398,18 +447,37 @@ trade-off from the review.
 
 ## Sequencing and dependencies
 
-1. **A first** — independent, unanimous, one plan.
-2. **Foundations before consumers:** E2 (type roles) and E4 (semantic tokens) land before D1
-   (hero stats), C2 (bar colors), E6 (card accents), and F1 (heart states). They ship as a small
-   standalone foundations slice inside whichever of **C/D/E/F** ships first — under the
-   recommended order below, that means they open workstream C's plan. B4 is the one consumer
-   that ships earlier: it launches with the interim coral border and is re-skinned to ice when
-   E4 lands (stated in B4).
-3. **B1 before B6's markers** (glyph stack); B7's light variant with A3.
-4. **C1 before C2/C6** (field list). **G1 before D4's grabber:** if D ships before G (as
-   recommended), G1 ships inside D's plan and workstream G shrinks to G3/G4. The exception-marker
-   definition ships with whichever of C4/D2 lands first (item C4).
-5. B–G otherwise land in owner-priority order; the recommended order is B, C, D, E, F, G.
+Tranche order (final, from the 2026-07-27 de-risk review):
+
+1. **A** — quick wins per the A-batch commit structure above, including the one-hour B1 glyph
+   spike.
+2. **B-core** — B1, B2, B4 (interim coral border), B5, B6, B7: all pure paint-owner work with
+   verified owners and no unknowns. B1 precedes B6's markers. **B3 is severed** from this
+   tranche (see 6).
+3. **E-foundations as its own atomic tranche** — E2 type utilities + E4 token definitions + the
+   complete teal→ice / coral-retirement migration across chrome AND map paint in one change:
+   `mapPalette.ts`, the highlight stacks, `useCompareViewHighlight`, B4's border re-skin, the
+   light-theme accessible variant, and an interim ice recolor of the hex-tile stroke (the
+   backdrop data URI hardcodes `#5eead4`, which otherwise survives until E1). By diff surface
+   this is the largest single visual change in the program (~92 teal occurrences across 29
+   files) — it gets its own plan, review, and both-theme live pass so users never see a
+   mixed-accent state (e.g. ice/signal compare bars inside teal chrome over coral fills).
+4. **C** — compare redesign; C2's bars now truthfully match the already-migrated map fills
+   (signal-A / ice-B). C1 before C2/C6 (field list); the exception-marker definition ships with
+   whichever of C4/D2 lands first (item C4).
+5. **D** — panel redesign, with G1 (sheet fundamentals/grabber) inside D's plan; workstream G
+   shrinks to G3/G4.
+6. **B3** — vector political pass: the program's one real drift-risk item (upstream style ids),
+   severable because it only affects the non-default view and nothing downstream depends on it.
+   Safe to slide later or cut.
+7. **E-remainder** — E1, E3, E5, E6, E7, E8. B7's light variant ships with A3 (workstream A).
+8. **F** — game feel.
+9. **G-remainder** — G3, G4 (G4 sequenced with E7, which also wants header space).
+
+**Pre-agreed cut line** (if the program stops early, cut in this order): B3 → G4/E7 → E5 → F3 →
+D3 → E-remainder. The floor that still honors the audit: A + B-core + E-foundations + C +
+D1/D2/D4(+G1). Every tranche is independently shippable; no tranche starts before its
+predecessor's review closes.
 
 ## Open questions (owner decisions — not in scope until answered)
 
@@ -449,11 +517,26 @@ trade-off from the review.
   fake-map unit tests capturing `setPaintProperty`/`setLayoutProperty`.
 - B3's matcher is unit-tested against a committed style-snapshot fixture (no network in
   `npm run check`) and fails open at runtime; fixture refresh is a documented manual step.
-- Asset budget: the CI bundle budget scans only `dist/assets/`, so fonts and glyph PBFs are
-  invisible to it today. The PR that adds glyph PBFs (B1) must also
-  extend `scripts/bundle-budget/check.ts` + `budgets.json` with a fonts/glyphs category over
-  `dist/fonts/` (fail-closed, like the existing unaccounted-asset check). Glyph measurement
-  basis: the sum of all committed range PBFs.
+- Asset budget: **no longer applicable to B1** — the glyph decision (existing endpoint, no
+  self-hosted PBFs) means no `public/` font assets ship and no bundle-budget extension is
+  needed. Should any future item add `public/` assets, the CI budget scans only `dist/assets/`
+  and would need a new category first.
+- Analytics: every workstream plan either declares its new `track()` events — name, props,
+  assigned column slot (never a reserved daily slot), `KNOWN_EVENTS` in the Worker,
+  `docs/systems/analytics.md` table update, and the manual wrangler deploy step — or states "no
+  new telemetry" explicitly. At minimum F3 records the selected region as a new prop on
+  `free_started`, or the educator use case it exists for is unmeasurable. Candidates: A8/A15
+  (compare interactions), C5 (compare entry), E7 (About opened), F2 (result copied), F3
+  (region).
+- Brand assets: workstream E's exit criteria include regenerating `public/og-image.png` and
+  `docs/assets/hero.png` from the Observatory look and updating the `theme-color` metas in
+  `index.html` — otherwise every shared link unfurls with the retired teal/coral look. A15/F2
+  accept that deep links unfurl as the generic homepage card (static host, no per-route OG) —
+  decided, not forgotten.
+- Roadmap bookkeeping: `docs/roadmap.md`'s own rules require striking out items picked up with
+  a spec link. F3 promotes the twice-deferred region-filter entries (strike both when F3's plan
+  opens); F2 partially supersedes the share-score entries (text share string ships; the OG-card
+  image stays deferred — annotate, don't strike).
 - New/changed chrome passes axe (`@axe-core/playwright` is already a dev dependency) and manual
   AA contrast checks on both themes.
 - Per workstream: `npm run check` green, affected e2e specs green locally with `--workers=2`,
