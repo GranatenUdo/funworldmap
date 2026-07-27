@@ -66,8 +66,10 @@ const REGION_BADGE: Record<string, string> = {
 
 // A5: near-constant booleans render as exceptions only. Muted amber is a data
 // encoding (like the region badge), not a chrome accent — kept through E4.
+// inline-flex + items-center (not inline-block): each badge carries a
+// SourceTooltip affordance and needs to align it with the label text.
 const EXCEPTION_BADGE =
-  'inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
+  'inline-flex items-center whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
 
 export function SingleCountryPanel({
   country,
@@ -318,11 +320,23 @@ export function SingleCountryPanel({
           {country.unMember === false && (
             <span data-testid="exception-badge-un-member" className={EXCEPTION_BADGE}>
               UN observer state
+              {/* Field-level attribution is a constitution item (never silently
+                  regress) — mirrors the capital caption's SourceTooltip (A4). */}
+              <SourceTooltip
+                field="unMember"
+                fieldSources={country._fieldSources}
+                sources={sources}
+              />
             </span>
           )}
           {country.independent === false && (
             <span data-testid="exception-badge-independent" className={EXCEPTION_BADGE}>
               Not independent
+              <SourceTooltip
+                field="independent"
+                fieldSources={country._fieldSources}
+                sources={sources}
+              />
             </span>
           )}
         </div>

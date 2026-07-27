@@ -12,7 +12,7 @@
  * "no flaky tests" rule.
  */
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, fireEvent, render } from '@testing-library/react'
+import { act, fireEvent, render, within } from '@testing-library/react'
 import type { CountryData, CountriesFile } from '../../lib/types'
 import type { ComponentType } from 'react'
 import {
@@ -229,8 +229,8 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
     expect(getByRole('button', { name: 'Source: REST Countries' })).toBeTruthy()
   })
 
-  it('Vatican (unMember false, independent true) renders only the UN observer badge', () => {
-    const { getByText, queryByText } = renderWith(
+  it('Vatican (unMember false, independent true) renders only the UN observer badge, with source attribution', () => {
+    const { getByText, queryByText, getByTestId } = renderWith(
       makeCountry({
         cca3: 'VAT',
         cca2: 'VA',
@@ -244,14 +244,20 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
         governmentType: 'ecclesiastical elective monarchy',
         unMember: false,
         independent: true,
+        _fieldSources: { unMember: 'restcountries' },
       }),
     )
     expect(getByText('UN observer state')).toBeTruthy()
     expect(queryByText('Not independent')).toBeNull()
+    // Field-level attribution is a constitution item — the badge must carry
+    // the same SourceTooltip affordance as every other data field (A5/A4).
+    within(getByTestId('exception-badge-un-member')).getByRole('button', {
+      name: 'Source: REST Countries',
+    })
   })
 
-  it('Palestine (unMember false, independent false) renders both exception badges', () => {
-    const { getByText } = renderWith(
+  it('Palestine (unMember false, independent false) renders both exception badges, each with source attribution', () => {
+    const { getByText, getByTestId } = renderWith(
       makeCountry({
         cca3: 'PSE',
         cca2: 'PS',
@@ -264,10 +270,33 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
         area: 6_220,
         unMember: false,
         independent: false,
+        _fieldSources: { unMember: 'restcountries', independent: 'restcountries' },
       }),
     )
     expect(getByText('UN observer state')).toBeTruthy()
     expect(getByText('Not independent')).toBeTruthy()
+    within(getByTestId('exception-badge-un-member')).getByRole('button', {
+      name: 'Source: REST Countries',
+    })
+    within(getByTestId('exception-badge-independent')).getByRole('button', {
+      name: 'Source: REST Countries',
+    })
+  })
+
+  it('exception badges render no source affordance when _fieldSources omits the field', () => {
+    const { getByTestId } = renderWith(
+      makeCountry({
+        cca3: 'PSE',
+        cca2: 'PS',
+        ccn3: '275',
+        name: { common: 'Palestine', official: 'State of Palestine' },
+        unMember: false,
+        independent: false,
+        _fieldSources: {},
+      }),
+    )
+    expect(within(getByTestId('exception-badge-un-member')).queryByRole('button')).toBeNull()
+    expect(within(getByTestId('exception-badge-independent')).queryByRole('button')).toBeNull()
   })
 
   it('a UN member (France) renders no exception badges', () => {
