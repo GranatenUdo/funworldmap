@@ -1,9 +1,9 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import type { CityLike, CountryLike } from './shared/types'
 import { useGameSessionContext } from './shared/GameSessionProvider'
-import { isCountryPinning } from './shared/modePredicates'
 import { usePersonalBests } from './shared/usePersonalBests'
 import { useGameTestSeams } from './hooks/useGameTestSeams'
+import { useEscapeExit } from './hooks/useEscapeExit'
 import { useGameAnnouncements } from './hooks/useGameAnnouncements'
 import { useRevealMapEffects } from './hooks/useRevealMapEffects'
 import { useHashGameRouter } from './hooks/useHashGameRouter'
@@ -75,22 +75,17 @@ export function GameController({ countries, cities, byCca3 }: Props) {
   })
   useRevealMapEffects({ session, mapRef, byCca3, submitGuessInput })
 
-  // Escape exits.
-  // Country-pinning round-ended: Escape is owned by the round-end effect above (advance, not exit).
-  useEffect(() => {
-    if (session.status === 'idle') return
-    if (session.status === 'round-ended' && isCountryPinning(session.modeId)) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return
-      const tgt = e.target as HTMLElement | null
-      if (tgt && tgt.matches('input, textarea, [contenteditable]')) return
-      e.preventDefault()
+  // Escape exits — per-status routing (record via finishFree vs full exit)
+  // lives in useEscapeExit.
+  useEscapeExit({
+    status: session.status,
+    modeId: session.modeId,
+    finishFree,
+    exitToIdle: () => {
       endGame()
       writeIdleHash()
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [session.status, session.modeId, endGame])
+    },
+  })
 
   const onEndGame = () => {
     if (session.status !== 'idle' && session.status !== 'game-over') {

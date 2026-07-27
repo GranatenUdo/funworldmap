@@ -161,6 +161,25 @@ test.describe('Country Pinning game', () => {
     expect(page.url().endsWith('/')).toBe(true)
   })
 
+  test('Escape mid-round records the run: game-over shows instead of a silent exit', async ({
+    page,
+  }) => {
+    await page.goto('/#game/country-pinning/play')
+    await waitForMapLoaded(page)
+    await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
+
+    // A1: mid-run Escape routes through finishFree() → game-over overlay
+    // (score shown, personal best recorded), matching the HUD End-game button —
+    // instead of the old endGame() + hash reset that discarded the run.
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
+
+    // A second Escape on game-over keeps the old full exit: HUD gone, hash cleared.
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('game-hud')).toHaveCount(0)
+    expect(page.url().endsWith('/')).toBe(true)
+  })
+
   test('game-over overlay moves focus to Play again', async ({ page }) => {
     await page.goto('/#game/country-pinning/play')
     await waitForMapLoaded(page)
