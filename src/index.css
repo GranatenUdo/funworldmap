@@ -171,7 +171,9 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Country name tooltip — positioned by JS, not React */
+/* Country name tooltip — positioned by JS, not React.
+   Base = light chrome (A3): sand surface, teal-accessible text; the .dark
+   overrides below restore the original dark values exactly. */
 .country-tooltip {
   position: absolute;
   /* Initial resting position. Without this the hidden tooltip sits at its
@@ -183,8 +185,9 @@ body {
   z-index: 100;
   padding: 6px 10px;
   border-radius: 8px;
-  background: rgba(18, 21, 24, 0.88);
-  color: #5eead4;
+  background: rgba(250, 247, 242, 0.92);
+  border: 1px solid var(--color-sand-300);
+  color: var(--color-teal-accessible);
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
@@ -194,6 +197,13 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   opacity: 0;
   transition: opacity 100ms ease-out;
+}
+
+/* Dark keeps a near-invisible border (not `none`) so box metrics match light. */
+.dark .country-tooltip {
+  background: rgba(18, 21, 24, 0.88);
+  border-color: rgba(51, 65, 85, 0.35);
+  color: #5eead4;
 }
 
 .country-tooltip.visible {
@@ -217,59 +227,105 @@ body {
 .country-tooltip .tooltip-name {
   font-weight: 500;
   font-size: 13px;
+  color: var(--color-teal-accessible);
+}
+
+.dark .country-tooltip .tooltip-name {
   color: #5eead4;
 }
 
 .country-tooltip .tooltip-capital {
   font-size: 11px;
+  color: var(--color-sand-600);
+}
+
+.dark .country-tooltip .tooltip-capital {
   color: rgba(148, 163, 184, 0.7);
 }
 
-/* MapLibre navigation control restyling — scoped to bottom-right */
+/* MapLibre navigation control restyling — scoped to bottom-right.
+   Base = light chrome (A3); .dark restores the original dark look. */
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
-  background: rgba(18, 21, 24, 0.88);
-  border: 1px solid rgba(94, 234, 212, 0.25);
+  background: rgba(250, 247, 242, 0.92);
+  border: 1px solid var(--color-sand-300);
   border-radius: 10px;
   backdrop-filter: blur(8px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
+.dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+  background: rgba(18, 21, 24, 0.88);
+  border-color: rgba(94, 234, 212, 0.25);
+}
+
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
-  color: #5eead4;
+  color: var(--color-teal-accessible);
   background: transparent;
 }
 
+.dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
+  color: #5eead4;
+}
+
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover {
+  background: rgba(6, 95, 86, 0.08);
+}
+
+.dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover {
   background: rgba(94, 234, 212, 0.12);
 }
 
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
-  border-top: 1px solid rgba(94, 234, 212, 0.15);
+  border-top: 1px solid var(--color-sand-300);
 }
 
-/* MapLibre compass/zoom icon color override (uses an img element with filter) */
-.maplibregl-ctrl-bottom-right .maplibregl-ctrl-icon {
+.dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
+  border-top-color: rgba(94, 234, 212, 0.15);
+}
+
+/* MapLibre compass/zoom icon color override (uses an img element with filter).
+   Dark only — MapLibre's stock icons are dark gray, already correct on the
+   light sand surface. */
+.dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-icon {
   filter: brightness(0) saturate(100%) invert(83%) sepia(37%) saturate(356%) hue-rotate(122deg) brightness(92%) contrast(93%);
 }
 
-/* MapLibre attribution control — legible against the dark hex-grid backdrop.
-   Default MapLibre styles assume a light basemap; on our dark canvas the
-   links become low-contrast. WCAG AA requires ≥4.5:1 for small text. */
-.maplibregl-ctrl-attrib,
-.maplibregl-ctrl-attrib-inner {
-  background: rgba(4, 6, 13, 0.82) !important;
-  color: #cbd5e1 !important;
+/* MapLibre attribution control — theme-scoped, no !important. MapLibre's own
+   sheet styles the pill at up to (0,2,0) specificity
+   (.maplibregl-ctrl-attrib.maplibregl-compact); prefixing .maplibregl-map
+   plus the .maplibregl-ctrl double class gives (0,3,0), which outranks it
+   regardless of stylesheet import order. WCAG AA needs >=4.5:1 for the
+   small link text on both themes. */
+.maplibregl-map .maplibregl-ctrl.maplibregl-ctrl-attrib,
+.maplibregl-map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {
+  background: rgba(250, 247, 242, 0.9);
+  color: var(--color-sand-600);
 }
 
-.maplibregl-ctrl-attrib a,
-.maplibregl-ctrl-attrib-inner a {
-  color: #7dd3c0 !important;
+.dark .maplibregl-map .maplibregl-ctrl.maplibregl-ctrl-attrib,
+.dark .maplibregl-map .maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-inner {
+  background: rgba(4, 6, 13, 0.82);
+  color: #cbd5e1;
 }
 
-.maplibregl-ctrl-attrib a:hover,
-.maplibregl-ctrl-attrib-inner a:hover {
-  color: #5eead4 !important;
+/* Covers links in both the pill and its inner container (descendant match). */
+.maplibregl-map .maplibregl-ctrl-attrib a {
+  color: var(--color-teal-accessible);
+}
+
+.dark .maplibregl-map .maplibregl-ctrl-attrib a {
+  color: #7dd3c0;
+}
+
+.maplibregl-map .maplibregl-ctrl-attrib a:hover {
+  color: var(--color-teal-accessible);
+  text-decoration: underline;
+}
+
+.dark .maplibregl-map .maplibregl-ctrl-attrib a:hover {
+  color: #5eead4;
+  text-decoration: none;
 }
 
 /* Compare A/B badges */
