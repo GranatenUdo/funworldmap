@@ -6,6 +6,10 @@
 /** Must match useMediaQuery's default query. */
 export const DESKTOP_MEDIA_QUERY = '(min-width: 1024px)'
 
+/** Fine-pointer capability gate (spec A11/A14): keyboard-shortcut affordances
+ *  render only where a hover-capable fine pointer (mouse/trackpad) exists. */
+export const FINE_POINTER_MEDIA_QUERY = '(hover: hover) and (pointer: fine)'
+
 /** SingleCountryPanel: right-4 (16px) + w-[360px]. */
 export const SINGLE_PANEL_FOOTPRINT_PX = 376
 

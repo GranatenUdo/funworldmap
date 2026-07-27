@@ -1,5 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCountrySearch } from '../hooks/useCountrySearch'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import { FINE_POINTER_MEDIA_QUERY } from '../lib/layoutConstants'
 import type { CountryData } from '../lib/types'
 
 interface Props {
@@ -29,8 +31,10 @@ export default function SearchBar({
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(-1)
   const [isOpen, setIsOpen] = useState(false)
+  const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { results, isStale } = useCountrySearch(countries, query)
+  const isFinePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
 
   useEffect(() => {
     // Gate entirely on query being non-empty so that stale results left over
@@ -134,8 +138,10 @@ export default function SearchBar({
         }}
         onKeyDown={onKeyDown}
         onFocus={() => {
+          setIsFocused(true)
           if (query.trim()) setIsOpen(true)
         }}
+        onBlur={() => setIsFocused(false)}
         className="w-full pl-10 pr-9 py-3 rounded-xl bg-sand-100/80 dark:bg-dark-400/80 backdrop-blur-md border border-sand-300/50 dark:border-dark-200/30 text-sand-900 dark:text-dark-50 text-sm max-sm:text-base placeholder-sand-400 dark:placeholder-dark-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/40 focus:border-teal/40 dark:focus:border-teal-light/30 transition-all duration-150"
         id="search-input"
         data-testid="search-input"
@@ -161,6 +167,20 @@ export default function SearchBar({
             />
           </svg>
         </button>
+      )}
+
+      {/* "/" shortcut affordance (A11) — advertises the App.tsx global "/"
+          focus shortcut. Coexistence with the clear button: clear renders iff
+          query !== '', this chip iff query === '' — disjoint on query, so the
+          two can never occupy right-2.5 at the same time. */}
+      {isFinePointer && !isFocused && query === '' && (
+        <kbd
+          aria-hidden="true"
+          data-testid="search-shortcut-hint"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none px-1.5 py-0.5 rounded-md border border-sand-300/60 dark:border-dark-200/40 bg-sand-200/60 dark:bg-dark-300/60 text-[11px] font-medium text-sand-500 dark:text-dark-100"
+        >
+          /
+        </kbd>
       )}
 
       {isOpen && (
