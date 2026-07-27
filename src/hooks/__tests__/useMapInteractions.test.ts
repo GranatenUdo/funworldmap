@@ -272,3 +272,34 @@ describe('useMapInteractions click-origin marking', () => {
     expect(takeOrigin()).toBe('auto')
   })
 })
+
+describe('useMapInteractions tooltip clamping (A10)', () => {
+  it('flips the tooltip to the other side of the cursor at the container edges', () => {
+    const fake = createFakeMapRef()
+    // The fake map has no getContainer; give it a fixed 800×600 box.
+    Object.assign(fake.map, {
+      getContainer: () => ({ clientWidth: 800, clientHeight: 600 }) as unknown as HTMLElement,
+    })
+    const tooltip = document.createElement('div')
+    // jsdom has no layout — pin the measured size the clamp math reads.
+    Object.defineProperty(tooltip, 'offsetWidth', { value: 160 })
+    Object.defineProperty(tooltip, 'offsetHeight', { value: 44 })
+    tooltip.classList.add('visible')
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = tooltip
+    // Run the coalescing rAF synchronously so the position write is observable.
+    const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      cb(0)
+      return 1
+    })
+    try {
+      renderHook(() => useMapInteractions({ ...baseOptions, loaded: true }))
+      // Cursor near the bottom-right corner: +15/+15 would overflow → flip.
+      fake.fire('mousemove', null, { point: { x: 780, y: 590 } })
+      expect(tooltip.style.left).toBe('605px') // 780 − 15 − 160
+      expect(tooltip.style.top).toBe('531px') // 590 − 15 − 44
+    } finally {
+      rafSpy.mockRestore()
+    }
+  })
+})

@@ -3,6 +3,7 @@ import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { EMPTY_FILTER, LAYER } from '../lib/mapLayers'
 import { markClickOrigin } from '../lib/selectionOrigin'
+import { clampTooltipPosition } from '../lib/tooltipPosition'
 import { useMap } from './useMap'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 import type { GameStatus } from '../game/shared/types'
@@ -130,8 +131,19 @@ export function useMapInteractions({
         pendingFrame = null
         const tooltip = tooltipRef.current
         if (!tooltip || !tooltip.classList.contains('visible')) return
-        tooltip.style.left = `${pendingX + 15}px`
-        tooltip.style.top = `${pendingY + 15}px`
+        // Clamp-and-flip against the map container box so the tooltip never
+        // clips at the right/bottom edges or under the open panel (A10).
+        const container = map.getContainer()
+        const { left, top } = clampTooltipPosition({
+          x: pendingX,
+          y: pendingY,
+          tooltipWidth: tooltip.offsetWidth,
+          tooltipHeight: tooltip.offsetHeight,
+          containerWidth: container.clientWidth,
+          containerHeight: container.clientHeight,
+        })
+        tooltip.style.left = `${left}px`
+        tooltip.style.top = `${top}px`
       })
     }
 
