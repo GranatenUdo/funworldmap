@@ -48,8 +48,9 @@ work in recommended order. Four audit items conflict with previously settled dec
 2. Compare answers "which is bigger, by how much?" at a glance, on desktop and mobile.
 3. The country panel answers scale questions ("is France big?"), reaches WCAG AA for source
    attribution, and invites a next step instead of dead-ending.
-4. The visual identity commits to a direction ("night atlas") instead of the generic
-   dark-plus-teal template, without touching settled constraints.
+4. The visual identity commits to a direction ("observatory", chosen by the owner on
+   2026-07-27) instead of the generic dark-plus-teal template, without touching settled
+   constraints.
 5. The games celebrate what the player does and teach what they missed.
 6. The first three minutes on a phone are free of platform-level friction (auto-zoom, sub-44px
    targets, content under the home indicator).
@@ -155,8 +156,8 @@ Small, unanimously endorsed fixes. Each item is one commit-sized change; the bat
   Escape keeps the staged exit (compare → single → closed).
 - **A16. Launcher first-run copy.** The subtitle "Pick a mode and beat your best" addresses a
   player with no bests. Until either mode has `gamesPlayed > 0`, use "Two quick geography games".
-  Suppress "Best 0 pts" whenever `bestScore === 0` (show games count only). Rules-at-a-glance
-  chips land with E6, not here.
+  Suppress "Best 0 pts" whenever `bestScore === 0` (show games count only). The
+  rules-at-a-glance line lands with E6, not here.
 
 ## Workstream B — a political map that shows its politics
 
@@ -197,8 +198,10 @@ anticipated.
 - **B4. Selection as spotlight, not sticker.** Selecting France covers it with coral fill at 0.32
   opacity — the requested country becomes the least legible thing on screen. Invert: add a
   `country-dim` fill layer filtered to everything *except* the selection (and compare partner) at
-  ~0.25 dark opacity; drop selection fill to ≤0.10; keep the coral border with a tighter glow
-  (4px, blur 2, from 10px/blur 5). Compare mode excludes both A and B from the dim filter.
+  ~0.25 dark opacity; drop selection fill to ≤0.10; keep the selection border with a tighter
+  glow (4px, blur 2, from 10px/blur 5). Border color: today's coral until E4 lands, then E4's
+  ice (B ships first under the recommended order — the spotlight mechanism is color-agnostic).
+  Compare mode excludes both A and B from the dim filter.
 - **B5. Reveal fill pulse.** At reveal, the answer country gets only a recolored hover-border and
   doesn't pop. Add a dedicated `country-reveal-fill` layer (not a borrowed selection layer — the
   single-owner lesson) pulsing fill-opacity 0.35 → 0.12 over two beats, settling at 0.15 for the
@@ -227,7 +230,8 @@ anticipated.
   UN-membership/independence render via A5's exception badges in the column headers — no
   near-constant boolean rows, and no Capital row duplicating the caption.
 - **C2. Shared-row comparison table.** For numeric fields (population, area, density): one row
-  per field with paired horizontal bars (plain divs) scaled to max(A, B), coral-A / teal-B
+  per field with paired horizontal bars (plain divs) scaled to max(A, B), signal-A / ice-B
+  (E4 tokens)
   matching the map fills, and a delta chip ("Germany 1.26× population"). For categorical fields:
   collapse identical values into one centered "Both: euro (€)" row; highlight differences.
 - **C3. Derived density row.** population / area, computed in-place for both countries.
@@ -252,7 +256,7 @@ Desktop grid and mobile list consume the same field-definition array from C1.
 - **D1. Hero stats row.** Population and area render as compact primary numerals ("66.4M",
   "544K km²"; exact figures in `title`), each with a "#20 of 195" world-rank sub-line, plus
   derived density as a third stat. Ranks and density are computed from the in-memory 195-country
-  dataset (already passed to the panel) — zero data cost. Uses E2's `.text-stat` role (see
+  dataset (already passed to the panel) — zero data cost. Uses E2's `.text-readout` role (see
   sequencing).
 - **D2. Attribution: one footer, exceptions inline.** Delete the 11 per-field "i" rings
   (hover-only, `tabIndex={-1}`, keyboard-unreachable — a documented trade-off this design
@@ -271,42 +275,53 @@ Desktop grid and mobile list consume the same field-definition array from C1.
   collapsed sheet answers population/area without expanding. The expand affordance becomes G1's
   grabber (single implementation); the chevron stays as the labeled a11y control.
 
-## Workstream E — "night atlas" visual identity
+## Workstream E — "observatory" visual identity
 
-The current dark look (near-black navy + lone teal accent + uniform hex grid + grain) sits in the
-generic template cluster, while the palette's own name — "Warm Explorer", with a full unused sand
-ramp — points somewhere more distinctive. Direction: **night atlas** — the globe as the lit
-object in a warm-dark cartographic space. The backdrop stays dark in both themes (settled).
+Direction chosen by the owner on 2026-07-27 from a three-option design review (Night Atlas /
+Observatory / Expedition Ledger — see the review artifact): **Observatory**. Commit fully to the
+instrument idea the current console look only gestures at — the globe is the observed object and
+the chrome is a calibrated instrument. Cool deep space, a sparse starfield instead of the hex
+tile, corner-tick frames on data surfaces, readouts in the system mono face, and one signal hue
+that only ever means "live". The backdrop stays dark in both themes (settled). The "fun" in
+funworldmap lives in copy and game feedback (F1/F2), not in the hue system — a deliberate
+trade-off from the review.
 
-- **E1. Backdrop evolution (within space-dark).** Warm the radial gradient's outer stop from
-  `#04060d` toward an ink-brown blend of `sand-900` (#1e1b18) so dark reads "night atlas", not
-  "server room". Replace the uniform hex tile with a faint graticule — latitude/longitude arcs at
-  ~0.06 opacity that visually continue the globe's own grid into the sky. (Fallback design:
-  hexes fading with distance from center via a radial mask. Decision point: the E1 plan builds
-  the graticule first; the owner picks graticule vs faded-hex from a screenshot pair at the plan
-  checkpoint before the item merges.) Keep the grain.
-  Deepen the existing vignette overlay (`App.tsx` already has one — deepen, don't stack a second
-  layer). Add a soft atmospheric rim halo behind the globe canvas (teal-light ~8% fading over
-  ~60px past the globe edge). Validate every text token against the new surfaces for AA.
-- **E2. Typographic roles.** Gate: verify the self-hosted `outfit-latin.woff2` actually retains a
-  300–800 weight axis before widening the `@font-face` declaration (currently `400 700`); if the
-  file was instanced, re-subset from the Outfit variable source (self-hosted, budget-checked).
-  Then define utilities: `.text-stat` (large, light-weight, `font-variant-numeric: tabular-nums`),
-  `.text-display` (700–800, tight tracking — panel country names, "Game over"), `.text-label`
-  (the existing 11px uppercase). Apply `.text-stat` to panel values, compare values, and game
-  scores. Note: single-panel DataCells, the HUD ScoreBadge, and the game-over stats already set
-  tabular-nums — the only tabular-nums gap is CompareField; for game scores `.text-stat` is a
-  size/weight upgrade, not an alignment fix.
-- **E3. Wordmark.** One device, committed: "fun" in coral-light, "worldmap" in the neutral
-  foreground, extracted as a `<Wordmark size>` component absorbing the three call sites (Header,
-  Launcher, App loading screen). No globe glyph, no second device. The launcher variant scales
+- **E1. Backdrop + staging (within space-dark).** Replace the uniform hex tile with a sparse
+  starfield — a handful of 1px radial-gradient points baked into the body background (no image
+  asset) — over a cool radial gradient (`#0E1622` center → `#060A12` edges; final values
+  AA-validated). Keep the grain. Stage the globe with one thin orbit ring (ice at low opacity
+  with a single bright node) as a chrome-side element behind the canvas edge, plus a soft
+  atmospheric rim halo behind the globe (ice ~8% fading over ~60px past the globe edge). Deepen
+  the existing vignette overlay (`App.tsx` already has one — deepen, don't stack a second
+  layer). Decision point: the E1 plan presents a screenshot pair (two starfield densities) at
+  the plan checkpoint before the item merges. Validate every text token against the new
+  surfaces for AA.
+- **E2. Typographic roles.** Outfit stays for display and body — the existing `400 700` range
+  is sufficient, so the font-axis verification gate from the earlier draft is gone and no
+  re-subset happens. Data readouts move to the system mono stack (`ui-monospace, 'Cascadia
+  Mono', Consolas, monospace` — zero bundle cost). Utilities: `.text-readout` (mono,
+  `font-variant-numeric: tabular-nums`, used for panel stats and ranks, compare values, game
+  scores, coordinates), `.text-display` (Outfit 700, tight tracking — panel country names,
+  "Game over"), `.text-label` (the existing 11px uppercase, tracking widened to ~0.12em).
+  Note: single-panel DataCells, the HUD ScoreBadge, and the game-over stats already set
+  tabular-nums — the only tabular-nums gap is CompareField; for those surfaces `.text-readout`
+  is a face change, not an alignment fix.
+- **E3. Wordmark.** One device, committed: "funworldmap" in the starlight foreground with a
+  reticle mark (crosshair-in-circle, one small inline SVG in ice) as the brand glyph after the
+  name, extracted as a `<Wordmark size>` component absorbing the three call sites (Header,
+  Launcher, App loading screen). No color-split, no second device. The launcher variant scales
   the same device up with tighter tracking.
-- **E4. Semantic color tokens.** New tokens over the raw ramps, documented in `mapPalette.ts`:
-  `--color-selection` (coral — selection and compare-A, consistent with the map), compare-B teal,
-  and **all negative game feedback on amber** (matching the existing amber wrong-guess reveal):
-  hearts render neutral sand and turn amber-tinged when lost, replacing today's coral hearts that
-  make loss read as a grey-out and overload coral. Region badges stay as they are (they are
-  region-keyed, verified correct).
+- **E4. Semantic color tokens.** Two accents, one meaning each, documented in `mapPalette.ts`:
+  **ice** (`#7DD3FC` family) = interactive and wayfinding — links, focus, search, basemap
+  toggle, map selection border/glow, compare-B; **signal** (`#FF8A4C` family) = live game state
+  and loss — score changes, streaks, lost hearts, the wrong-guess reveal (absorbing the current
+  amber role into the signal family), compare-A. Coral retires entirely; existing teal chrome
+  migrates to ice. A dark ice-accessible variant is defined for light-mode text, following the
+  `--color-teal-accessible` pattern (A3 ships first with the current teal tokens and is
+  re-skinned by this migration). Hearts render neutral starlight and turn signal when lost.
+  Region badges stay as they are (they are region-keyed, verified correct), and A5's exception
+  badges keep their muted amber — like region badges, they are data encodings outside the
+  two-accent chrome system, not accents.
 - **E5. Landing behavior.** (a) Initial globe longitude derived from
   `Intl.DateTimeFormat().resolvedOptions().timeZone` via a static timezone → longitude table (no
   geolocation, no network) so visitors land on their own region. Determinism: like the rotation,
@@ -317,24 +332,30 @@ object in a warm-dark cartographic space. The backdrop stays dark in both themes
   pointer/keyboard interaction; disabled under `prefers-reduced-motion` **and** whenever
   `VITE_TEST_HOOKS` is set; rotating/idle state exposed as a data attribute so camera-dependent
   e2e specs can assert it is off. (c) Bias the default view slightly (zoom/center) so the hint
-  pill isn't orphaned at the bottom edge.
-- **E6. Launcher card identity.** Per-mode accents from E4 (Country coral, City teal), distinct
-  icons, a rules-at-a-glance chip row rendered with the app's own glyphs — no emoji ("3 lives ·
-  endless" / "10 rounds · ~2 min"), and personal bests as two small stat tiles using `.text-stat`
-  instead of the dot-separated sentence. Existing mode names, stagger animation, and testids
-  stay. A16's zero-state behavior carries over: the subtitle gate is unchanged, and when
-  `bestScore === 0` the score tile is omitted — only the games-count tile renders.
+  pill isn't orphaned at the bottom edge. (d, optional flourish) A small mono coordinate
+  readout of the viewport center (lat/lng) bottom-left on fine-pointer viewports, hidden during
+  play and behind the same attribution-corner spacing rules.
+- **E6. Launcher card identity.** Tick-framed instrument cards: per-mode accents from E4
+  (Country signal, City ice), distinct icons, a rules line in the readout face — no emoji
+  ("3 LIVES · ENDLESS" / "10 ROUNDS · ~2 MIN"), and personal bests as two small stat tiles using
+  `.text-readout` instead of the dot-separated sentence. Existing mode names, stagger animation,
+  and testids stay. A16's zero-state behavior carries over: the subtitle gate is unchanged, and
+  when `bestScore === 0` the score tile is omitted — only the games-count tile renders.
 - **E7. About surface + mobile brand.** A small "i" button (header, next to the theme toggle)
   opens a lightweight About modal reusing the launcher's focus-trap plumbing: one-sentence value
   prop, keyboard shortcuts, data-source credits, and the two game modes. Restore a compact
   wordmark on mobile when no panel is open (today mobile shows no product name anywhere).
+- **E8. Instrument chrome grammar.** Corner-tick frames (1.5px ticks, ~7px legs) and tight ~4px
+  radii are reserved for **data surfaces** — stat readouts, launcher cards, HUD badges. Overlay
+  shells (panel, launcher backdrop, modals) keep the existing soft-radius + backdrop-blur
+  grammar. One boldness locus: the readouts; everything around them stays quiet.
 
 ## Workstream F — game feel
 
 - **F1. HUD feedback.** Three reduced-motion-gated, CSS-only beats, each exposing
   `data-animation-state` per CLAUDE.md: a floating "+N pts" chip that drifts up from the
   ScoreBadge (which scale-pulses on change); a brief scale-down + shake on a lost heart before it
-  desaturates to E4's lost state; streak milestones at 3/5/10 swapping the pill copy with a
+  recolors to E4's lost (signal) state; streak milestones at 3/5/10 swapping the pill copy with a
   one-shot flare — expressed typographically in the app's voice, no emoji. Implementation: CSS
   keyframes + a `usePrevious` hook, no libraries.
 - **F2. Game-over recap.** Add `history: RoundOutcome[]` to the session reducer (appended in the
@@ -381,7 +402,9 @@ object in a warm-dark cartographic space. The backdrop stays dark in both themes
 2. **Foundations before consumers:** E2 (type roles) and E4 (semantic tokens) land before D1
    (hero stats), C2 (bar colors), E6 (card accents), and F1 (heart states). They ship as a small
    standalone foundations slice inside whichever of **C/D/E/F** ships first — under the
-   recommended order below, that means they open workstream C's plan.
+   recommended order below, that means they open workstream C's plan. B4 is the one consumer
+   that ships earlier: it launches with the interim coral border and is re-skinned to ice when
+   E4 lands (stated in B4).
 3. **B1 before B6's markers** (glyph stack); B7's light variant with A3.
 4. **C1 before C2/C6** (field list). **G1 before D4's grabber:** if D ships before G (as
    recommended), G1 ships inside D's plan and workstream G shrinks to G3/G4. The exception-marker
@@ -427,7 +450,7 @@ object in a warm-dark cartographic space. The backdrop stays dark in both themes
 - B3's matcher is unit-tested against a committed style-snapshot fixture (no network in
   `npm run check`) and fails open at runtime; fixture refresh is a documented manual step.
 - Asset budget: the CI bundle budget scans only `dist/assets/`, so fonts and glyph PBFs are
-  invisible to it today. The PR that adds glyph PBFs (B1) or a re-subsetted font (E2) must also
+  invisible to it today. The PR that adds glyph PBFs (B1) must also
   extend `scripts/bundle-budget/check.ts` + `budgets.json` with a fonts/glyphs category over
   `dist/fonts/` (fail-closed, like the existing unaccounted-asset check). Glyph measurement
   basis: the sum of all committed range PBFs.
@@ -448,8 +471,13 @@ object in a warm-dark cartographic space. The backdrop stays dark in both themes
 - **B3 upstream drift** — the positron layer matcher depends on third-party style layer ids; the
   pinning test turns silent drift into a loud failure, and the matcher must fail open (unstyled,
   not broken).
-- **E2 font axis** — if the woff2 was instanced to 400–700, the wider declaration silently does
-  nothing; the verification gate is mandatory before any `.text-stat` work.
+- **E2 mono stack variance** — `ui-monospace` resolves to different faces per OS (SF Mono,
+  Cascadia, Consolas), so readout metrics differ across platforms; `.text-readout` surfaces are
+  checked on Windows and macOS at minimum, and layouts must not depend on exact glyph widths
+  (tabular alignment within one platform is the guarantee, not cross-platform pixel parity).
+- **Observatory tone** — the instrument direction reads technical; the "fun" register is
+  carried by copy and game feedback (F1/F2), which stay playful. If the live pass reads cold,
+  the correction is copy and motion, not new hues.
 - **B6 globe-projection regressions** — the existing wide-pair and globe-scale guards encode live
   findings; they are kept until the padding approach passes the same live cases.
 - **A8 semantics** — replace-B redefines an existing interaction; the e2e compare spec must cover
