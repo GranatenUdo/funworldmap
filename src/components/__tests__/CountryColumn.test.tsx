@@ -30,10 +30,8 @@ describe('CountryColumn border chips', () => {
         country={morocco}
         byCca3={byCca3}
         onSelect={vi.fn()}
-        onClose={() => {}}
         badgeLetter="A"
         badgeColor="a"
-        showColumnClose={false}
       />,
     )
     expect(screen.getByRole('button', { name: 'Algeria' })).toBeTruthy()
@@ -75,10 +73,8 @@ describe('CountryColumn borders show every neighbour (A9)', () => {
         country={germany}
         byCca3={byCca3}
         onSelect={vi.fn()}
-        onClose={() => {}}
         badgeLetter="A"
         badgeColor="a"
-        showColumnClose={false}
       />,
     )
     // 8 borders — the old code sliced to 6 chips and rendered an inert "+2".

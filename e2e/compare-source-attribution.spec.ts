@@ -61,3 +61,39 @@ test.describe('compare view source attribution footer', () => {
     expect(firstLinkText?.trim()).toBeTruthy()
   })
 })
+
+test.describe('compare header controls (A15)', () => {
+  test('copy-link copies the compare deep link and shows the toast', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 15_000 })
+
+    await page.getByRole('button', { name: 'Copy link to this comparison' }).click()
+
+    // Observe the toast, never navigator.clipboard.readText (readText hangs
+    // under automation — project memory). clipboard-write is granted
+    // project-wide in playwright.config.ts.
+    await expect(page.getByText('Link copied')).toBeVisible()
+  })
+
+  test('"Exit compare" returns to the single-country panel', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('exit-compare')).toBeVisible({ timeout: 15_000 })
+
+    await page.getByTestId('exit-compare').click()
+
+    await expect(page.getByTestId('exit-compare')).not.toBeAttached()
+    await expect(page.getByTestId('country-panel')).toBeVisible()
+    await expect(page.getByTestId('country-panel')).toContainText('France')
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('#FRA')
+  })
+
+  test('the top-right × closes the whole panel', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('panel-close')).toBeVisible({ timeout: 15_000 })
+
+    await page.getByTestId('panel-close').click()
+
+    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('')
+  })
+})
