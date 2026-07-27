@@ -7,7 +7,7 @@ import Toast from './components/Toast'
 import { useCountryData } from './hooks/useCountryData'
 import { useCityData } from './hooks/useCityData'
 import { useSelectedCountry } from './hooks/useSelectedCountry'
-import { FINE_POINTER_QUERY, useMediaQuery } from './hooks/useMediaQuery'
+import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { useMapReady } from './hooks/useMapReady'
@@ -20,6 +20,7 @@ import { GameController } from './game/GameController'
 import type { CityLike, CountryLike } from './game/shared/types'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
+import { FINE_POINTER_MEDIA_QUERY } from './lib/layoutConstants'
 import { track } from './lib/analytics'
 import { dispatchToast } from './lib/toast'
 
@@ -100,7 +101,7 @@ function AppInner({
     show: showLauncher,
   } = useLauncherVisibility()
   const mapReady = useMapReady()
-  const finePointer = useMediaQuery(FINE_POINTER_QUERY)
+  const finePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
   const { hint } = useFirstVisitHint({
     mapReady,
     hasSelection: !!selected,

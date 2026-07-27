@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCountrySearch } from '../hooks/useCountrySearch'
-import { FINE_POINTER_QUERY, useMediaQuery } from '../hooks/useMediaQuery'
+import { useMediaQuery } from '../hooks/useMediaQuery'
+import { FINE_POINTER_MEDIA_QUERY } from '../lib/layoutConstants'
 import type { CountryData } from '../lib/types'
 
 interface Props {
@@ -33,7 +34,7 @@ export default function SearchBar({
   const [isFocused, setIsFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const { results, isStale } = useCountrySearch(countries, query)
-  const finePointer = useMediaQuery(FINE_POINTER_QUERY)
+  const finePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
 
   useEffect(() => {
     // Gate entirely on query being non-empty so that stale results left over

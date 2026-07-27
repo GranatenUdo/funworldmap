@@ -8,7 +8,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SearchBar from '../SearchBar'
 import { makeCountryData } from '../../test/countryFixtures'
 import { stubMatchMedia } from '../../test/matchMediaStub'
-import { FINE_POINTER_QUERY } from '../../hooks/useMediaQuery'
+import { FINE_POINTER_MEDIA_QUERY } from '../../lib/layoutConstants'
 
 const FRANCE = makeCountryData()
 const GERMANY = makeCountryData({
@@ -28,7 +28,7 @@ let finePointer = false
 let restoreMatchMedia: () => void
 
 beforeEach(() => {
-  restoreMatchMedia = stubMatchMedia((query) => query === FINE_POINTER_QUERY && finePointer)
+  restoreMatchMedia = stubMatchMedia((query) => query === FINE_POINTER_MEDIA_QUERY && finePointer)
 })
 
 afterEach(() => {
