@@ -325,7 +325,6 @@ body {
 
 .dark .maplibregl-map .maplibregl-ctrl-attrib a:hover {
   color: #5eead4;
-  text-decoration: none;
 }
 
 /* Compare A/B badges */
