@@ -22,6 +22,7 @@ import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { FINE_POINTER_MEDIA_QUERY } from './lib/layoutConstants'
 import { track } from './lib/analytics'
+import { compareMapClick } from './lib/compareMapClick'
 import { dispatchToast } from './lib/toast'
 
 export default function App() {
@@ -184,6 +185,28 @@ function AppInner({
     ],
   )
 
+  // A8 — map-click semantics while a compare pair is active. Scoped to MAP
+  // clicks only: search and border chips still route through onMapSelect and
+  // keep select() (per-column chip semantics land with workstream C).
+  const onMapCountryClick = useCallback(
+    (cca3: string) => {
+      if (!gameActive && !comparePickingMode && selected && compareWith) {
+        const action = compareMapClick(cca3, selected.cca3, compareWith.cca3)
+        if (action.kind === 'replace-b') compareSelect(action.cca3)
+        return
+      }
+      onMapSelect(cca3)
+    },
+    [gameActive, comparePickingMode, selected, compareWith, compareSelect, onMapSelect],
+  )
+
+  // A8 — an ocean click must not tear down an active comparison; Escape and
+  // the compare header's Exit compare / × are the only exits.
+  const onMapDeselect = useCallback(() => {
+    if (compareWith) return
+    deselect()
+  }, [compareWith, deselect])
+
   useEffect(() => {
     if (session.status !== 'playing' || session.roundIndex !== 0) return
     if (selected) deselect()
@@ -336,8 +359,8 @@ function AppInner({
           comparePickingMode={comparePickingMode}
           resolvedTheme={resolved}
           satellite={satellite}
-          onSelect={onMapSelect}
-          onDeselect={deselect}
+          onSelect={onMapCountryClick}
+          onDeselect={onMapDeselect}
         />
       </main>
       <Header

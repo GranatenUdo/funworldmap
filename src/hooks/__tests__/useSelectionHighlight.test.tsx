@@ -144,4 +144,32 @@ describe('useSelectionHighlight', () => {
     rerender({ compareWith: null })
     expect(flyToComparePair).toHaveBeenCalledTimes(1)
   })
+
+  it('replacing B reframes the pair and never re-flies the single-selection camera (A8 camera decision)', () => {
+    const fake = makeFakeMap()
+    const selected = makeCountry('250')
+    const germany = makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] })
+    const spain = makeCountryData({ cca3: 'ESP', ccn3: '724', latlng: [40, -4] })
+    // Stable ref across rerenders (like the real hook's useRef). 'click'
+    // simulates a consumed click-origin mark: even then the compare path must
+    // ignore preserveZoom — the batch-2 §3 framing contract wins on replace-B.
+    const origin = originRef('click')
+    const { rerender } = renderHook<void, { compareWith: CountryData | null }>(
+      (props) =>
+        useSelectionHighlight({
+          loaded: true,
+          selected,
+          selectionOriginRef: origin,
+          compareWith: props.compareWith,
+        }),
+      { wrapper: makeMapWrapper(fake), initialProps: { compareWith: germany } },
+    )
+    expect(flyToCountry).toHaveBeenCalledTimes(1) // mount only
+
+    rerender({ compareWith: spain })
+
+    expect(flyToComparePair).toHaveBeenCalledTimes(2)
+    expect(flyToComparePair).toHaveBeenLastCalledWith(expect.anything(), selected, spain)
+    expect(flyToCountry).toHaveBeenCalledTimes(1) // replace-B never re-flies the single camera
+  })
 })
