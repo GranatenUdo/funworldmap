@@ -93,6 +93,18 @@ describe('A13 touch-target convention drift alarm', () => {
     expect(hudShellSource).toContain('text-xs')
     expect(cityGuessingHudSource).toContain('text-xs')
   })
+
+  it('SearchBar clear button pins load-bearing absolute class and base size', () => {
+    // Clear button (p-1 + w-4 h-4 = 24px visual box) is `absolute` positioned,
+    // which establishes the containing block for TOUCH_TARGET_FROM_24's ::after
+    // overlay. Removing `absolute` would cause the ::after to re-anchor to a higher
+    // positioned ancestor, silently mis-positioning the hit area. This test pins the
+    // load-bearing class alongside the base size classes and constant.
+    expect(searchBarSource).toContain('p-1')
+    expect(searchBarSource).toContain('w-4 h-4')
+    expect(searchBarSource).toContain('absolute')
+    expect(searchBarSource).toContain('TOUCH_TARGET_FROM_24')
+  })
 })
 
 describe('A13 supplemental touch targets (Task 6 ledger + Task 12 compare header)', () => {
