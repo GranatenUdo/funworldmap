@@ -122,7 +122,6 @@ body {
 .panel-field-in-1 { animation: panel-field-in 200ms ease-out 50ms both; }
 .panel-field-in-2 { animation: panel-field-in 200ms ease-out 100ms both; }
 .panel-field-in-3 { animation: panel-field-in 200ms ease-out 150ms both; }
-.panel-field-in-4 { animation: panel-field-in 200ms ease-out 200ms both; }
 
 @keyframes dropdown-in {
   from {

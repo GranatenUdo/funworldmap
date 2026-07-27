@@ -74,10 +74,11 @@ test.describe('Bottom sheet on mobile', () => {
 
   test('expand button shows secondary fields on mobile', async ({ page }) => {
     const panel = await openPanel(page, 'JPN', 'Japan')
-    // Peek state: secondary fields (UN Member, Languages, Government…)
-    // only render once showSecondary is true.
-    await expect(panel.getByText('UN Member')).toBeHidden()
+    // Peek state: secondary fields (Currencies, Timezones) only render once
+    // showSecondary is true. Currencies is the sentinel — the prime grid
+    // (Population, Area, Government, Languages) is always visible after A4+A5.
+    await expect(panel.getByText('Currencies')).toBeHidden()
     await page.getByLabel('Expand panel').click()
-    await expect(panel.getByText('UN Member')).toBeVisible({ timeout: 10_000 })
+    await expect(panel.getByText('Currencies')).toBeVisible({ timeout: 10_000 })
   })
 })

@@ -16,7 +16,7 @@ const DEFAULT_CLASSNAME =
  *  merge). Pass the full Tailwind string for the variant you want. */
 export function FieldLabel({ label, field, country, sources, className }: Props) {
   return (
-    <div className={className ?? DEFAULT_CLASSNAME}>
+    <div className={className ?? DEFAULT_CLASSNAME} data-field={field}>
       {label}
       <SourceTooltip field={field} fieldSources={country._fieldSources} sources={sources} />
     </div>

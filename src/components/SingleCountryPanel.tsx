@@ -4,6 +4,7 @@ import { BorderChip } from './BorderChip'
 import { CloseButton } from './CloseButton'
 import { FieldLabel } from './FieldLabel'
 import { TimezoneList } from './TimezoneList'
+import SourceTooltip from './SourceTooltip'
 import { dispatchToast } from '../lib/toast'
 
 interface Props {
@@ -60,6 +61,11 @@ const REGION_BADGE: Record<string, string> = {
   Oceania: 'bg-teal-100/80 text-teal-800 dark:bg-teal/20 dark:text-teal-light',
   Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
+
+// A5: near-constant booleans render as exceptions only. Muted amber is a data
+// encoding (like the region badge), not a chrome accent — kept through E4.
+const EXCEPTION_BADGE =
+  'inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
 
 export function SingleCountryPanel({
   country,
@@ -187,8 +193,19 @@ export function SingleCountryPanel({
                 </p>
               )}
               {country.capital.length > 0 && (
-                <p className="text-xs text-teal dark:text-teal-light truncate mt-0.5">
-                  {country.capital[0]}
+                <p
+                  data-testid="capital-caption"
+                  className="text-xs text-teal dark:text-teal-light mt-0.5 flex items-center min-w-0"
+                >
+                  <span className="truncate">{country.capital.join(', ')}</span>
+                  {/* Interim attribution (A4): the caption absorbed the deleted
+                      Capital DataCell; the region badge shares this source.
+                      Superseded by D2's consolidated footer. */}
+                  <SourceTooltip
+                    field="capital"
+                    fieldSources={country._fieldSources}
+                    sources={sources}
+                  />
                 </p>
               )}
             </div>
@@ -263,33 +280,47 @@ export function SingleCountryPanel({
           </div>
         </div>
 
-        <span
-          data-testid="region-badge"
-          className={`inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full mt-2 ${
-            REGION_BADGE[country.region] ||
-            'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
-          }`}
-        >
-          {country.region}
-          {country.subregion && ` / ${country.subregion}`}
-        </span>
+        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+          <span
+            data-testid="region-badge"
+            className={`inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full ${
+              REGION_BADGE[country.region] ||
+              'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
+            }`}
+          >
+            {country.region}
+            {country.subregion && ` / ${country.subregion}`}
+          </span>
+          {country.unMember === false && (
+            <span data-testid="exception-badge-un-member" className={EXCEPTION_BADGE}>
+              UN observer state
+            </span>
+          )}
+          {country.independent === false && (
+            <span data-testid="exception-badge-independent" className={EXCEPTION_BADGE}>
+              Not independent
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mx-5 h-px bg-teal/10 dark:bg-teal-light/10" />
 
       <div className="px-5 py-3">
         <div className="grid grid-cols-2 gap-x-4 panel-field-in-1">
-          <DataCell label="Capital" field="capital" country={country} sources={sources}>
-            {country.capital.length > 0 ? country.capital.join(', ') : '\u2014'}
-          </DataCell>
           <DataCell label="Population" field="population" country={country} sources={sources}>
             {formatPopulation(country.population)}
           </DataCell>
           <DataCell label="Area" field="area" country={country} sources={sources}>
             {formatArea(country.area)}
           </DataCell>
-          <DataCell label="Region" field="region" country={country} sources={sources}>
-            {country.region}
+          <DataCell label="Government" field="governmentType" country={country} sources={sources}>
+            {country.governmentType || '\u2014'}
+          </DataCell>
+          <DataCell label="Languages" field="languages" country={country} sources={sources}>
+            {Object.keys(country.languages).length > 0
+              ? Object.values(country.languages).join(', ')
+              : '\u2014'}
           </DataCell>
         </div>
 
@@ -298,53 +329,13 @@ export function SingleCountryPanel({
             <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
 
             <div className="panel-field-in-2">
-              {country.governmentType && (
-                <DataCell
-                  label="Government"
-                  field="governmentType"
-                  country={country}
-                  sources={sources}
-                >
-                  {country.governmentType}
+              {Object.keys(country.currencies).length > 0 && (
+                <DataCell label="Currencies" field="currencies" country={country} sources={sources}>
+                  {Object.values(country.currencies)
+                    .map((c) => `${c.name} (${c.symbol})`)
+                    .join(', ')}
                 </DataCell>
               )}
-              <div className="grid grid-cols-2 gap-x-4">
-                <DataCell label="UN Member" field="unMember" country={country} sources={sources}>
-                  {country.unMember ? 'Yes' : 'No'}
-                </DataCell>
-                <DataCell
-                  label="Independent"
-                  field="independent"
-                  country={country}
-                  sources={sources}
-                >
-                  {country.independent ? 'Yes' : 'No'}
-                </DataCell>
-              </div>
-            </div>
-
-            <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
-
-            <div className="panel-field-in-3">
-              <div className="grid grid-cols-2 gap-x-4">
-                {Object.keys(country.languages).length > 0 && (
-                  <DataCell label="Languages" field="languages" country={country} sources={sources}>
-                    {Object.values(country.languages).join(', ')}
-                  </DataCell>
-                )}
-                {Object.keys(country.currencies).length > 0 && (
-                  <DataCell
-                    label="Currencies"
-                    field="currencies"
-                    country={country}
-                    sources={sources}
-                  >
-                    {Object.values(country.currencies)
-                      .map((c) => `${c.name} (${c.symbol})`)
-                      .join(', ')}
-                  </DataCell>
-                )}
-              </div>
               <DataCell label="Timezones" field="timezones" country={country} sources={sources}>
                 <TimezoneList timezones={country.timezones} />
               </DataCell>
@@ -353,7 +344,7 @@ export function SingleCountryPanel({
             {country.borders.length > 0 && (
               <>
                 <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
-                <div className="panel-field-in-4">
+                <div className="panel-field-in-3">
                   <FieldLabel
                     label="Borders"
                     field="borders"

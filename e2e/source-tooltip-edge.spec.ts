@@ -12,9 +12,9 @@ import { gotoAndWaitForMap } from './helpers'
  * left-column field caused the tooltip to be clipped at the left viewport edge.
  * Visible symptom: "ORLD FACTBOOK" and "://GITHUB.COM/..." (W and HTTPS cut).
  *
- * This test targets the "Capital" field source button on France (/#FRA), which
- * lives in the left column of the two-column grid and historically triggered
- * the clip.
+ * This test targets the "Population" field source button on France (/#FRA) —
+ * the first DataCell (left column) after the A4/A5 panel restructure — which
+ * triggers the same left-edge geometry as the original "Capital" cell.
  */
 test.describe('Source tooltip edge collision', () => {
   test('tooltip for left-column field stays within viewport bounds', async ({ page }) => {
@@ -24,13 +24,17 @@ test.describe('Source tooltip edge collision', () => {
     await expect(panel).toBeVisible({ timeout: 15_000 })
     await expect(panel).toContainText('France', { timeout: 10_000 })
 
-    // First Source button in DOM order = the Capital cell (first DataCell). The edge test only needs an 'i' button near the panel's left edge; update if cell order changes.
-    const capitalSourceBtn = page.getByRole('button', { name: /^Source:/i }).first()
-    await expect(capitalSourceBtn).toBeVisible({ timeout: 10_000 })
+    // Population is the first DataCell (left column) after A4/A5. Anchor via
+    // FieldLabel's data-field so the header caption's capital tooltip (now the
+    // first Source button in DOM order) can't shift this test's target.
+    const populationSourceBtn = panel
+      .locator('[data-field="population"]')
+      .getByRole('button', { name: /^Source:/i })
+    await expect(populationSourceBtn).toBeVisible({ timeout: 10_000 })
 
     // Hover to trigger the tooltip (Floating UI useHover handles this on
     // pointer-capable devices; desktop Chromium always has hover: hover).
-    await capitalSourceBtn.hover()
+    await populationSourceBtn.hover()
 
     // Wait for the tooltip to appear — no waitForTimeout, use role assertion.
     const tooltip = page.getByRole('tooltip')
@@ -70,9 +74,10 @@ test.describe('Source tooltip edge collision', () => {
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 15_000 })
 
-    // Focus the source button to open the tooltip
-    const capitalSourceBtn = page.getByRole('button', { name: /^Source:/i }).first()
-    await capitalSourceBtn.focus()
+    // Focus the first Source button (after A4/A5 this is the header caption's
+    // capital tooltip) — any Source button exercises the useDismiss path.
+    const firstSourceBtn = page.getByRole('button', { name: /^Source:/i }).first()
+    await firstSourceBtn.focus()
     await expect(page.getByRole('tooltip')).toBeVisible({ timeout: 5_000 })
 
     // Move focus away — tooltip should close
