@@ -221,7 +221,7 @@ body {
 }
 
 /* Country name tooltip — positioned by JS, not React.
-   Base = light chrome (A3): sand surface, teal-accessible text; the .dark
+   Base = light chrome (A3): sand surface, ice-accessible text; the .dark
    overrides below restore the original dark values exactly. */
 .country-tooltip {
   position: absolute;
@@ -236,7 +236,7 @@ body {
   border-radius: 8px;
   background: rgba(250, 247, 242, 0.92);
   border: 1px solid var(--color-sand-300);
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
@@ -252,7 +252,7 @@ body {
 .dark .country-tooltip {
   background: rgba(18, 21, 24, 0.88);
   border-color: rgba(51, 65, 85, 0.35);
-  color: #5eead4;
+  color: var(--color-ice);
 }
 
 .country-tooltip.visible {
@@ -276,11 +276,11 @@ body {
 .country-tooltip .tooltip-name {
   font-weight: 500;
   font-size: 13px;
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
 }
 
 .dark .country-tooltip .tooltip-name {
-  color: #5eead4;
+  color: var(--color-ice);
 }
 
 .country-tooltip .tooltip-capital {
@@ -305,24 +305,24 @@ body {
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
   background: rgba(18, 21, 24, 0.88);
-  border-color: rgba(94, 234, 212, 0.25);
+  border-color: rgba(125, 211, 252, 0.25);
 }
 
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
   background: transparent;
 }
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
-  color: #5eead4;
+  color: var(--color-ice);
 }
 
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover {
-  background: rgba(6, 95, 86, 0.08);
+  background: rgba(7, 89, 133, 0.08);
 }
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover {
-  background: rgba(94, 234, 212, 0.12);
+  background: rgba(125, 211, 252, 0.12);
 }
 
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
@@ -330,7 +330,7 @@ body {
 }
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
-  border-top-color: rgba(94, 234, 212, 0.15);
+  border-top-color: rgba(125, 211, 252, 0.15);
 }
 
 /* B7 coarse-pointer touch targets: grow the vendor ctrl buttons from
@@ -357,7 +357,11 @@ body {
    Dark only — MapLibre's stock icons are dark gray, already correct on the
    light sand surface. */
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-icon {
-  filter: brightness(0) saturate(100%) invert(83%) sepia(37%) saturate(356%) hue-rotate(122deg) brightness(92%) contrast(93%);
+  /* Recolors MapLibre's stock icon sprites to ice: brightness(0) flattens
+     to black, then the chain maps black → exactly rgb(125, 211, 252)
+     (#7dd3fc) under the CSS filter-effects matrix math (solver-verified
+     2026-07-28 — re-solve if --color-ice ever changes). */
+  filter: brightness(0) saturate(100%) invert(71%) sepia(68%) saturate(509%) hue-rotate(172deg) brightness(103%) contrast(98%);
 }
 
 /* MapLibre attribution control — theme-scoped, no !important. MapLibre's own
@@ -380,23 +384,27 @@ body {
 
 /* Covers links in both the pill and its inner container (descendant match). */
 .maplibregl-map .maplibregl-ctrl-attrib a {
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
 }
 
+/* Ice on the dark pill (rgba(4,6,13,0.82)) = 12.15:1; hover #bae6fd = 15.26:1. */
 .dark .maplibregl-map .maplibregl-ctrl-attrib a {
-  color: #7dd3c0;
+  color: var(--color-ice);
 }
 
 .maplibregl-map .maplibregl-ctrl-attrib a:hover {
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
   text-decoration: underline;
 }
 
 .dark .maplibregl-map .maplibregl-ctrl-attrib a:hover {
-  color: #5eead4;
+  color: #bae6fd;
 }
 
-/* Compare A/B badges */
+/* Compare A/B badges — E4 accents: A = signal (live/compare-A), B = ice
+   (wayfinding/compare-B), matching mapPalette's SIGNAL/ICE compare fills.
+   Dark ink instead of white: #121518 on #ff8a4c = 7.85:1, on #7dd3fc =
+   10.99:1 (the old white-on-coral/teal-dim pair was 3.67:1 / 3.74:1). */
 .compare-badge {
   display: inline-flex;
   align-items: center;
@@ -406,16 +414,16 @@ body {
   border-radius: 50%;
   font-size: 10px;
   font-weight: 700;
-  color: white;
+  color: var(--color-dark-500);
   flex-shrink: 0;
 }
 
 .compare-badge-a {
-  background: #f43f5e;
+  background: var(--color-signal);
 }
 
 .compare-badge-b {
-  background: #0d9488;
+  background: var(--color-ice);
 }
 
 @media (prefers-reduced-motion: reduce) {
