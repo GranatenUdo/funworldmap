@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test'
 import { waitForRevealLineCoords, openLauncher, waitForMapLoaded } from './helpers'
+import { LAYER } from '../src/lib/mapLayers'
+import { REVEAL_FILL_REDUCED } from '../src/game/shared/revealAnimation'
 
 // Playwright 1.59 has no dedicated `reducedMotion` test option; it must go
 // through `contextOptions` (a bare `reducedMotion` key is silently dropped).
@@ -29,5 +31,18 @@ test.describe('reveal animation — reduced motion', () => {
     const handle = await waitForRevealLineCoords(page, { minPoints: 1 })
     const coords = await handle.jsonValue()
     expect(coords).toHaveLength(65)
+
+    // B5 reduced motion: no pulse loop runs — the reveal fill is written
+    // once, synchronously, as the static REVEAL_FILL_REDUCED value.
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(
+            (layerId) => window.__funworldmap_map?.getPaintProperty(layerId, 'fill-opacity'),
+            LAYER.revealFill,
+          ),
+        { timeout: 5_000 },
+      )
+      .toBe(REVEAL_FILL_REDUCED)
   })
 })

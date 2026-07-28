@@ -130,8 +130,9 @@ e2e/
   game-country-pinning.spec.ts  # country-pinning flow via the __funworldmap_game seam
   game-city-guessing.spec.ts    # city-guessing flow
   satellite-default.spec.ts     # boots into satellite mode
+  country-labels.spec.ts        # B1 satellite country labels — seam visibility contract
   compare-view-dimming.spec.ts  # compare + satellite: dimmed borders restore on exit
-  …                             # 38 specs total — see playwright.config.ts testMatch
+  …                             # 40 specs total — see playwright.config.ts testMatch
 ```
 
 ## What Runs in CI
@@ -143,7 +144,7 @@ cross-browser baseline (roadmap). On top of that, the chromium project's
 `testIgnore` excludes ten specs on CI pending a self-hosted GPU runner
 (tracking issue #106; `docs/roadmap.md` § "Flaky-on-free-CI specs (need GPU runner)").
 
-Net effect: **13 of 38 spec files run locally only** — the ten `testIgnore`d
+Net effect: **13 of 40 spec files run locally only** — the ten `testIgnore`d
 specs plus `mobile-smoke`, `mobile-tap`, and `mobile-free-play`. Run them
 before merging changes that touch their areas:
 

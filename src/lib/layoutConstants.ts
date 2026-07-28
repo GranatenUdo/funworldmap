@@ -2,6 +2,7 @@
  *  cannot consume these constants, so layoutConstants.test.ts pins the class
  *  strings to these values — restyling a panel fails that test and names the
  *  constant to update (batch-2 spec §4.1). */
+import type { PaddingOptions } from 'maplibre-gl'
 
 /** Must match useMediaQuery's default query. */
 export const DESKTOP_MEDIA_QUERY = '(min-width: 1024px)'
@@ -22,13 +23,34 @@ export const SHEET_COLLAPSED_FRACTION = 0.4
 /** Mobile compare / expanded sheet: h-[80vh]. */
 export const COMPARE_SHEET_FRACTION = 0.8
 
-/** Screen-space camera offset so a fly-to target centers in the area the
- *  open panel does not cover. */
-export function panelScreenOffset(kind: 'single' | 'compare'): [number, number] {
-  const footprint = kind === 'compare' ? COMPARE_PANEL_FOOTPRINT_PX : SINGLE_PANEL_FOOTPRINT_PX
-  if (window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return [-footprint / 2, 0]
-  const fraction = kind === 'compare' ? COMPARE_SHEET_FRACTION : SHEET_COLLAPSED_FRACTION
-  return [0, -Math.round((window.innerHeight * fraction) / 2)]
+/** Screen-space camera offset so the SINGLE-country fly-to centers in the
+ *  area the open panel does not cover. Compare framing stopped consuming
+ *  this in B6 (2026-07-28): an offset only shifts the center while
+ *  cameraForBounds sizes zoom to the FULL viewport, so country B slid under
+ *  the compare panel — comparePanelPadding() replaced it. */
+export function panelScreenOffset(): [number, number] {
+  if (window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return [-SINGLE_PANEL_FOOTPRINT_PX / 2, 0]
+  return [0, -Math.round((window.innerHeight * SHEET_COLLAPSED_FRACTION) / 2)]
+}
+
+/** Breathing room around the framed compare pair on every un-occluded side. */
+export const COMPARE_FRAME_PADDING_PX = 80
+
+/** cameraForBounds padding that frames the compare pair in the area the
+ *  compare panel does not cover (B6, 2026-07-28). Desktop reserves the panel
+ *  footprint as extra `right` padding — cameraForBounds folds padding into
+ *  BOTH zoom and center, which the replaced screen offset could not do.
+ *  Mobile deliberately stays flat: the sheet-aware bottom padding
+ *  (innerHeight × COMPARE_SHEET_FRACTION) ships with C6's compare-sheet
+ *  redesign, which owns mobile compare framing (spec C6/G3). */
+export function comparePanelPadding(): PaddingOptions {
+  const panel = window.matchMedia(DESKTOP_MEDIA_QUERY).matches ? COMPARE_PANEL_FOOTPRINT_PX : 0
+  return {
+    top: COMPARE_FRAME_PADDING_PX,
+    bottom: COMPARE_FRAME_PADDING_PX,
+    left: COMPARE_FRAME_PADDING_PX,
+    right: COMPARE_FRAME_PADDING_PX + panel,
+  }
 }
 
 /** ── A13 touch-target convention ────────────────────────────────────────
@@ -70,3 +92,12 @@ export const TOUCH_TARGET_FROM_22 = `relative ${TOUCH_TARGET_BASE} pointer-coars
  *  Continue CTA precedent of applying the constrained dimension's math to
  *  all four sides even though the other dimension is already oversized. */
 export const TOUCH_TARGET_FROM_32 = `relative ${TOUCH_TARGET_BASE} pointer-coarse:after:-inset-1.5`
+
+/** ── B7 map-control touch targets ───────────────────────────────────────
+ * The convention floor (px) that all the TOUCH_TARGET_* insets above are
+ * computed against, named once. MapLibre's ctrl buttons are vendor-built
+ * DOM with no className hook for the Tailwind constants, so index.css
+ * grows them directly with `min-width/min-height: 44px` under
+ * `@media (pointer: coarse)` — layoutConstants.test.ts pins that raw CSS
+ * to this constant. */
+export const TOUCH_TARGET_MIN_PX = 44

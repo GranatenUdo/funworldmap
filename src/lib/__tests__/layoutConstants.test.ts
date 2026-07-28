@@ -12,6 +12,7 @@ import searchBarSource from '../../components/SearchBar.tsx?raw'
 import closeButtonSource from '../../components/CloseButton.tsx?raw'
 import hudShellSource from '../../game/shared/hud/HudShell.tsx?raw'
 import cityGuessingHudSource from '../../game/modes/city-guessing/CityGuessingHud.tsx?raw'
+import indexCssSource from '../../index.css?raw'
 import {
   DESKTOP_MEDIA_QUERY,
   SINGLE_PANEL_FOOTPRINT_PX,
@@ -19,12 +20,15 @@ import {
   SHEET_COLLAPSED_FRACTION,
   COMPARE_SHEET_FRACTION,
   panelScreenOffset,
+  COMPARE_FRAME_PADDING_PX,
+  comparePanelPadding,
   TOUCH_TARGET_BASE,
   TOUCH_TARGET_FROM_36,
   TOUCH_TARGET_FROM_24,
   TOUCH_TARGET_TEXT_XS,
   TOUCH_TARGET_FROM_22,
   TOUCH_TARGET_FROM_32,
+  TOUCH_TARGET_MIN_PX,
 } from '../layoutConstants'
 
 afterEach(() => vi.unstubAllGlobals())
@@ -45,20 +49,39 @@ describe('layout constants ↔ panel classes drift alarm', () => {
     expect(useMediaQuerySource).toContain(DESKTOP_MEDIA_QUERY)
   })
 
-  it('panelScreenOffset centers in the un-occluded area', () => {
+  it('panelScreenOffset centers the single-country fly-to in the un-occluded area', () => {
     vi.stubGlobal(
       'matchMedia',
       vi.fn(() => ({ matches: true })),
     )
-    expect(panelScreenOffset('single')).toEqual([-SINGLE_PANEL_FOOTPRINT_PX / 2, 0])
-    expect(panelScreenOffset('compare')).toEqual([-COMPARE_PANEL_FOOTPRINT_PX / 2, 0])
+    expect(panelScreenOffset()).toEqual([-SINGLE_PANEL_FOOTPRINT_PX / 2, 0])
     vi.stubGlobal(
       'matchMedia',
       vi.fn(() => ({ matches: false })),
     )
     vi.stubGlobal('innerHeight', 800)
-    expect(panelScreenOffset('single')).toEqual([0, -160]) // 800 * 0.4 / 2
-    expect(panelScreenOffset('compare')).toEqual([0, -320]) // 800 * 0.8 / 2
+    expect(panelScreenOffset()).toEqual([0, -160]) // 800 * 0.4 / 2
+  })
+
+  it('comparePanelPadding reserves the panel footprint on desktop, stays flat on mobile (B6)', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: true })),
+    )
+    expect(comparePanelPadding()).toEqual({
+      top: COMPARE_FRAME_PADDING_PX,
+      bottom: COMPARE_FRAME_PADDING_PX,
+      left: COMPARE_FRAME_PADDING_PX,
+      right: COMPARE_FRAME_PADDING_PX + COMPARE_PANEL_FOOTPRINT_PX,
+    })
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: false })),
+    )
+    // Mobile compare framing (sheet-fraction bottom padding) is C6's change —
+    // B6 deliberately ships flat 80s there (spec: "Mobile compare framing is
+    // C6's padding change").
+    expect(comparePanelPadding()).toEqual({ top: 80, bottom: 80, left: 80, right: 80 })
   })
 })
 
@@ -136,5 +159,26 @@ describe('A13 supplemental touch targets (Task 6 ledger + Task 12 compare header
     expect(compareCountryPanelSource).toContain('exit-compare')
     expect(compareCountryPanelSource).toContain('py-1.5')
     expect(compareCountryPanelSource).toContain('text-sm')
+  })
+})
+
+describe('B7 map-control touch-target drift alarm', () => {
+  it('index.css grows vendor ctrl buttons to the convention floor under pointer: coarse', () => {
+    // MapLibre's ctrl buttons are vendor-built DOM — the Tailwind
+    // TOUCH_TARGET_* class strings can't reach them, so index.css sizes
+    // them directly. This pin ties the raw CSS to the named constant:
+    // change either side and this test names the other.
+    expect(TOUCH_TARGET_MIN_PX).toBe(44)
+    // Normalize CRLF -> LF: Windows checkouts with core.autocrlf=true convert
+    // the committed LF blob to CRLF on disk; the git blob (and CI's Linux
+    // checkout) stay LF. Normalizing keeps this pin platform-agnostic.
+    expect(indexCssSource.replace(/\r\n/g, '\n')).toContain(
+      `@media (pointer: coarse) {
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
+    min-width: ${TOUCH_TARGET_MIN_PX}px;
+    min-height: ${TOUCH_TARGET_MIN_PX}px;
+  }
+}`,
+    )
   })
 })

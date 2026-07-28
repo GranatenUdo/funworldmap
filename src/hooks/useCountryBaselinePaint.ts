@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { applyCountryBaselinePaint } from '../lib/mapLayers'
 import { useMap } from './useMap'
-import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 
 interface Options {
   loaded: boolean
@@ -10,9 +9,11 @@ interface Options {
   resolvedTheme: 'light' | 'dark'
 }
 
-/** Single owner of the country-fill opacity + country-borders baseline paint.
- *  Replaces the pre-2026-06 pattern where useSatelliteMode and the compare
- *  hook each wrote these with call-order deciding the winner (#111 item 1). */
+/** Single owner of the country-fill opacity + country-borders(-casing)
+ *  baseline paint. Replaces the pre-2026-06 pattern where useSatelliteMode
+ *  and the compare hook each wrote these with call-order deciding the winner
+ *  (#111 item 1). The batch-2 game-status dependency is retired with B2's
+ *  cased baseline — paint no longer varies with the game session. */
 export function useCountryBaselinePaint({
   loaded,
   satellite,
@@ -20,8 +21,6 @@ export function useCountryBaselinePaint({
   resolvedTheme,
 }: Options): void {
   const { mapRef } = useMap()
-  const { session } = useGameSessionContext()
-  const gameActive = session.status === 'playing'
 
   useEffect(() => {
     const map = mapRef.current
@@ -31,10 +30,9 @@ export function useCountryBaselinePaint({
         satellite,
         inCompareView,
         isDark: resolvedTheme === 'dark',
-        gameActive,
       })
     } catch {
       // Layers may not exist yet (e.g. fast toggle before load completes).
     }
-  }, [loaded, satellite, inCompareView, resolvedTheme, gameActive, mapRef])
+  }, [loaded, satellite, inCompareView, resolvedTheme, mapRef])
 }

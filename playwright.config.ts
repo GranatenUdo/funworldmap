@@ -80,6 +80,7 @@ export default defineConfig({
         'meta-and-static.spec.ts',
         'panel-focus.spec.ts',
         'satellite-default.spec.ts',
+        'country-labels.spec.ts',
         'a11y-contrast.spec.ts',
         'a11y-keyboard-smoke.spec.ts',
         'launcher.spec.ts',

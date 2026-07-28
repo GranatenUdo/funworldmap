@@ -1,11 +1,12 @@
 import type maplibregl from 'maplibre-gl'
+import type { CountryData } from './types'
 import {
   SATELLITE_TILES,
   SATELLITE_ATTRIBUTION,
   TERRAIN_TILES,
   TERRAIN_ATTRIBUTION,
 } from './mapStyles'
-import { TEAL, TEAL_DIM, CORAL } from './mapPalette'
+import { TEAL, TEAL_DIM, CORAL, SPOTLIGHT_DIM, REVEAL_WRONG } from './mapPalette'
 
 const EMPTY_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
@@ -66,11 +67,94 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
     },
   })
 
+  // B2: dark casing rendered UNDER the light border line (added first, so
+  // the light line draws on top). Paint is owned by applyCountryBaselinePaint;
+  // opacity 0 keeps it invisible until the owner first runs.
+  map.addLayer({
+    id: LAYER.bordersCasing,
+    type: 'line',
+    source: 'countries',
+    paint: {
+      'line-color': BORDER_CASING_COLOR,
+      'line-width': CASING_LINE_WIDTH,
+      'line-opacity': 0,
+    },
+  })
+
   map.addLayer({
     id: LAYER.borders,
     type: 'line',
     source: 'countries',
     paint: { 'line-color': '#334155', 'line-width': 0.5, 'line-opacity': 0.4 },
+  })
+}
+
+/** GeoJSON source id for the app-built country-label points (B1). */
+export const COUNTRY_LABEL_SOURCE = 'country-label-points'
+
+/** Zoom-stepped areaRank admission — the "area-ranked minzoom" from the B1
+ *  design: area giants label from the base zoom, each stop admits the next
+ *  tier, everything (incl. microstates) labels from z5. Zoom expressions in
+ *  FILTERS must be a top-level step/interpolate on ['zoom'] (style-spec
+ *  rule), hence the whole filter is one step; filters evaluate at integer
+ *  zooms, which is fine for tier admission. Stops are tuned in the B1 e2e
+ *  task's live pass. */
+const LABEL_RANK_FILTER: maplibregl.ExpressionSpecification = [
+  'step',
+  ['zoom'],
+  ['<=', ['get', 'areaRank'], 40],
+  3,
+  ['<=', ['get', 'areaRank'], 100],
+  4,
+  ['<=', ['get', 'areaRank'], 160],
+  5,
+  true,
+]
+
+/** Area-ranked text size: giants render larger than microstates at every
+ *  zoom; both grow with zoom. Outer interpolate must be on zoom (composite
+ *  expression order); inner is on the areaRank data property. Tuned in the
+ *  B1 e2e task's live pass. */
+const LABEL_TEXT_SIZE: maplibregl.ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  1.5,
+  ['interpolate', ['linear'], ['get', 'areaRank'], 1, 13, 195, 9],
+  6,
+  ['interpolate', ['linear'], ['get', 'areaRank'], 1, 18, 195, 12],
+]
+
+/** Add the app-owned country-name label layer (B1). Called LAST in WorldMap's
+ *  onLoad so labels render above every other app layer. Starts hidden:
+ *  applyBasemapLayerVisibility is the single visibility owner (visible iff
+ *  satellite && !hideLabels) and runs from useSatelliteMode once loaded —
+ *  the initial 'none' prevents a label flash on a deep-linked game cold load
+ *  before the owner's first pass. */
+export function addCountryLabelLayer(map: maplibregl.Map, labels: GeoJSON.FeatureCollection): void {
+  map.addSource(COUNTRY_LABEL_SOURCE, { type: 'geojson', data: labels })
+  map.addLayer({
+    id: LAYER.countryLabels,
+    type: 'symbol',
+    source: COUNTRY_LABEL_SOURCE,
+    filter: LABEL_RANK_FILTER,
+    layout: {
+      // Explicit font is load-bearing: the positron glyphs endpoint serves
+      // Noto Sans; MapLibre's default font stack would 404 there (B1 glyph
+      // spike, docs/superpowers/notes/2026-07-28-b1-glyph-spike.md).
+      'text-font': ['Noto Sans Bold'],
+      'text-field': ['get', 'name'],
+      'text-size': LABEL_TEXT_SIZE,
+      // Lower sort key places first → giants win the collision pass
+      // deterministically; microstates drop first in dense views.
+      'symbol-sort-key': ['get', 'areaRank'],
+      visibility: 'none',
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1.5,
+    },
   })
 }
 
@@ -111,7 +195,9 @@ function addHighlightStack(
     id: `${prefix}-glow`,
     type: 'line',
     source: 'countries',
-    paint: { 'line-color': color, 'line-width': 10, 'line-blur': 5, 'line-opacity': 0.3 },
+    // B4 spotlight: tight glow (was 10px / blur 5) — the country-dim scrim
+    // now carries the emphasis; the glow only crisps the outline.
+    paint: { 'line-color': color, 'line-width': 4, 'line-blur': 2, 'line-opacity': 0.3 },
     filter: EMPTY_FILTER,
   })
   // Compare's fill keeps the '-fill' suffix to preserve historic ids.
@@ -120,7 +206,9 @@ function addHighlightStack(
     id: fillId,
     type: 'fill',
     source: 'countries',
-    paint: { 'fill-color': color, 'fill-opacity': 0.32 },
+    // B4 spotlight: faint fill (was 0.32) — the selected country must be the
+    // MOST legible thing on screen, so the sticker fill nearly disappears.
+    paint: { 'fill-color': color, 'fill-opacity': 0.1 },
     filter: EMPTY_FILTER,
   })
   map.addLayer({
@@ -153,6 +241,60 @@ export function addSelectionLayers(map: maplibregl.Map): void {
 /** Add the compare (teal-dim) highlight stack. */
 export function addCompareLayers(map: maplibregl.Map): void {
   addHighlightStack(map, 'country-compare', TEAL_DIM)
+}
+
+/** Lazily add the game reveal fill layer (`country-reveal-fill`) — a
+ *  dedicated fill over the answer country, pulsed by useRevealMapEffects at
+ *  round end (B5, 2026-07-26 spec). Dedicated on purpose: borrowing the
+ *  selection stack would couple reveal paint to selection paint (the
+ *  single-owner lesson). Added lazily on first country reveal, like the
+ *  reveal marker/line layers; idempotent. The `country-` prefix keeps it out
+ *  of applyBasemapLayerVisibility's basemap sweep. Runtime paint/filter is
+ *  owned by useRevealMapEffects (the reveal-paint owner). */
+export function ensureRevealFillLayer(map: maplibregl.Map): void {
+  if (map.getLayer(LAYER.revealFill)) return
+  map.addLayer({
+    id: LAYER.revealFill,
+    type: 'fill',
+    source: 'countries',
+    paint: { 'fill-color': REVEAL_WRONG, 'fill-opacity': 0 },
+    filter: EMPTY_FILTER,
+  })
+}
+
+/** Add the B4 spotlight scrim: a dark fill over every country EXCEPT the
+ *  current selection (and both compare countries). WorldMap's onLoad adds it
+ *  between the base layers and the hover/highlight stacks, so highlights
+ *  render above the scrim (layers stack in add order). Starts matching
+ *  nothing; useSelectionHighlight is the single owner of the filter (via
+ *  spotlightDimFilter). Never hit-tested: every queryRenderedFeatures caller
+ *  in app and e2e code is scoped to LAYER.fill — keep it that way. */
+export function addSpotlightDimLayer(map: maplibregl.Map): void {
+  map.addLayer({
+    id: LAYER.dim,
+    type: 'fill',
+    source: 'countries',
+    paint: { 'fill-color': SPOTLIGHT_DIM, 'fill-opacity': 0.25 },
+    filter: EMPTY_FILTER,
+  })
+}
+
+/** The `country-dim` filter for the current selection state (single owner of
+ *  the expression shape; useSelectionHighlight applies it):
+ *  - no selection: EMPTY_FILTER — the scrim matches nothing. This is also the
+ *    game guarantee: game start deselects (App.tsx, round 0), and the reveal
+ *    path (useRevealMapEffects) never touches selection state, so the scrim
+ *    stays off for the whole session without any gameActive gating.
+ *  - selection: everything except the selected country;
+ *  - compare: everything except BOTH countries. */
+export function spotlightDimFilter(
+  selectedCcn3: string | null,
+  compareCcn3: string | null,
+): maplibregl.FilterSpecification {
+  if (!selectedCcn3) return EMPTY_FILTER
+  const notSelected: maplibregl.ExpressionSpecification = ['!=', ['get', 'id'], selectedCcn3]
+  if (!compareCcn3) return notSelected
+  return ['all', notSelected, ['!=', ['get', 'id'], compareCcn3]]
 }
 
 /** Apply the warm directional lighting. */
@@ -201,29 +343,61 @@ function borderLineColorForMode(isDark: boolean, satellite: boolean): string {
   return satellite ? 'rgba(255,255,255,0.35)' : isDark ? '#1e293b' : '#94a3b8'
 }
 
+/** B2 cased satellite borders: a dark casing under the light line, both
+ *  zoom-interpolated. Supersedes the batch-2 play emphasis (1.6px/0.9 via
+ *  the retired gameActive branch) — those values were near-identical to
+ *  this resting state, so play and rest now render the same cased pair. */
+const BORDER_CASING_COLOR = '#0f172a'
+const CASING_LINE_WIDTH: maplibregl.ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  1,
+  1.2,
+  5,
+  1.6,
+  10,
+  2.6,
+]
+const CASED_LINE_WIDTH: maplibregl.ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  1,
+  0.7,
+  5,
+  0.9,
+  10,
+  1.5,
+]
+
 /** Apply the theme-appropriate paint to `country-borders` (color + opacity). */
 export function applyDefaultBorderPaint(map: maplibregl.Map, isDark: boolean): void {
   map.setPaintProperty(LAYER.borders, 'line-color', borderLineColorForMode(isDark, false))
   map.setPaintProperty(LAYER.borders, 'line-opacity', isDark ? 0.5 : 0.35)
 }
 
-/** Apply border paint for the current visual mode. Satellite mode uses a
- *  white-ish translucent border over imagery; vector mode uses the theme's
- *  default border color and opacity. Called from applyCountryBaselinePaint,
- *  the single owner of the country baseline paint. */
+/** Apply border paint for the current visual mode. Satellite mode renders a
+ *  cased pair over imagery — dark casing under a light line (B2); vector
+ *  mode keeps the theme hairline and hides the casing. Called from
+ *  applyCountryBaselinePaint, the single owner of the country baseline
+ *  paint. The batch-2 gameActive emphasis is retired: play and rest render
+ *  the same legible cased borders. */
 export function applyBorderPaintForMode(
   map: maplibregl.Map,
-  opts: { isDark: boolean; satellite: boolean; gameActive?: boolean },
+  opts: { isDark: boolean; satellite: boolean },
 ): void {
   if (opts.satellite) {
     map.setPaintProperty(LAYER.borders, 'line-color', borderLineColorForMode(opts.isDark, true))
-    // During play the hairline border is the only country signal on imagery —
-    // bold it so the pinning game is playable (batch-2 spec §1).
-    map.setPaintProperty(LAYER.borders, 'line-width', opts.gameActive ? 1.6 : 0.5)
-    map.setPaintProperty(LAYER.borders, 'line-opacity', opts.gameActive ? 0.9 : 0.6)
+    map.setPaintProperty(LAYER.borders, 'line-width', CASED_LINE_WIDTH)
+    map.setPaintProperty(LAYER.borders, 'line-opacity', 0.9)
+    map.setPaintProperty(LAYER.bordersCasing, 'line-color', BORDER_CASING_COLOR)
+    map.setPaintProperty(LAYER.bordersCasing, 'line-width', CASING_LINE_WIDTH)
+    map.setPaintProperty(LAYER.bordersCasing, 'line-opacity', 0.85)
   } else {
     applyDefaultBorderPaint(map, opts.isDark)
     map.setPaintProperty(LAYER.borders, 'line-width', 0.5)
+    map.setPaintProperty(LAYER.bordersCasing, 'line-opacity', 0)
   }
 }
 
@@ -233,6 +407,8 @@ export function applyBorderPaintForMode(
 export const LAYER = {
   fill: 'country-fill',
   borders: 'country-borders',
+  dim: 'country-dim',
+  bordersCasing: 'country-borders-casing',
   hoverBorder: 'country-hover-border',
   extrusion: 'country-extrusion',
   selected: 'country-selected',
@@ -243,40 +419,43 @@ export const LAYER = {
   compareBorder: 'country-compare-border',
   compareGlow: 'country-compare-glow',
   compareExtrusion: 'country-compare-extrusion',
+  compareMarkers: 'country-compare-markers',
+  countryLabels: 'country-labels',
+  revealFill: 'country-reveal-fill',
   satellite: 'satellite-layer',
 } as const
 
-/** Single owner of the country-fill opacity + country-borders baseline paint.
- *  Called from useCountryBaselinePaint for every {satellite, compare, theme}
+/** Single owner of the country-fill opacity + country-borders(-casing)
+ *  baseline paint. Called from useCountryBaselinePaint for every {satellite, compare, theme}
  *  change, so the winning value is decided by THIS logic — not by which hook's
  *  effect happened to run last (the pre-2026-06 ordering bug class). */
 export function applyCountryBaselinePaint(
   map: maplibregl.Map,
-  opts: { satellite: boolean; inCompareView: boolean; isDark: boolean; gameActive: boolean },
+  opts: { satellite: boolean; inCompareView: boolean; isDark: boolean },
 ): void {
   if (opts.inCompareView) {
     // Compare view keeps the mode/theme border COLOUR but dims to a flat 0.15.
     // Set the colour directly rather than via applyBorderPaintForMode, so we
-    // don't write the mode opacity (0.6 / 0.5 / 0.35) only to overwrite it.
+    // don't write the mode opacity (0.9 / 0.5 / 0.35) only to overwrite it.
     map.setPaintProperty(
       LAYER.borders,
       'line-color',
       borderLineColorForMode(opts.isDark, opts.satellite),
     )
     map.setPaintProperty(LAYER.borders, 'line-opacity', 0.15)
-    // Width must be owned here too: a game's emphasized 1.6px otherwise
-    // survives a browser-Back into a compare hash (final review 2026-07-11).
+    // Width must be owned here too: satellite's cased width expression
+    // otherwise survives a browser-Back into a compare hash (final review
+    // 2026-07-11, re-confirmed for B2).
     map.setPaintProperty(LAYER.borders, 'line-width', 0.5)
+    // The casing is a satellite-legibility device; compare dims to the flat
+    // hairline, so hide it (paint-owned, mirrors the width reset above).
+    map.setPaintProperty(LAYER.bordersCasing, 'line-opacity', 0)
     // Hover layers are suppressed in compare view (useCompareViewHighlight),
     // so a scalar dim is fine — matched to the mode's baseline (satellite base
     // is 0.03; the vector 0.05 would brighten over imagery).
     map.setPaintProperty(LAYER.fill, 'fill-opacity', opts.satellite ? 0.03 : 0.05)
   } else {
-    applyBorderPaintForMode(map, {
-      isDark: opts.isDark,
-      satellite: opts.satellite,
-      gameActive: opts.gameActive,
-    })
+    applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite })
     map.setPaintProperty(LAYER.fill, 'fill-opacity', fillOpacityForMode(opts.satellite))
   }
 }
@@ -294,10 +473,12 @@ export function applySelectionColor(map: maplibregl.Map, color: string): void {
 /** Single owner of BASEMAP layer visibility (the repo's #111 pattern —
  *  useSatelliteMode's satellite toggle and the in-game label hiding both go
  *  through this rule, so neither can clobber the other):
- *  custom layers (country-*, satellite-*) are never touched here; every
- *  other layer is visible iff !satellite, and symbol layers (all text —
- *  country/city/sea names leak game answers) additionally require
- *  !hideLabels (2026-07-10 batch-2 spec §1). */
+ *  custom layers (country-*, satellite-*) are never touched here — EXCEPT
+ *  the app-owned country-labels layer, which gets an explicit rule (B1):
+ *  visible iff satellite && !hideLabels. Every other layer is visible iff
+ *  !satellite, and symbol layers (all text — country/city/sea names leak
+ *  game answers) additionally require !hideLabels (2026-07-10 batch-2
+ *  spec §1). */
 export function applyBasemapLayerVisibility(
   map: maplibregl.Map,
   opts: { satellite: boolean; hideLabels: boolean },
@@ -306,6 +487,18 @@ export function applyBasemapLayerVisibility(
   if (!style?.layers) return
   const customPrefixes = ['country-', 'satellite-']
   for (const layer of style.layers) {
+    // B1: the app-owned label layer gets an explicit rule BEFORE the
+    // custom-prefix skip — visible iff satellite && !hideLabels. Labels ride
+    // the satellite view only (basemap symbols cover vector mode), and
+    // hideLabels gates them the same way so game answers never leak.
+    if (layer.id === LAYER.countryLabels) {
+      map.setLayoutProperty(
+        layer.id,
+        'visibility',
+        opts.satellite && !opts.hideLabels ? 'visible' : 'none',
+      )
+      continue
+    }
     if (customPrefixes.some((p) => layer.id.startsWith(p))) continue
     const visible = !opts.satellite && (layer.type !== 'symbol' || !opts.hideLabels)
     try {
@@ -314,4 +507,61 @@ export function applyBasemapLayerVisibility(
       /* some layers don't support visibility */
     }
   }
+}
+
+/** Compare A/B centroid markers — one symbol layer labelling the pair on the
+ *  map in the compare badge colors (A coral / B teal-dim; index.css's
+ *  .compare-badge-a/-b hardcode the same mapPalette hexes). Rides on B1's
+ *  label-layer pattern: `text-font` MUST be explicit because the positron
+ *  glyphs endpoint 404s MapLibre's default font stack (B1 glyph decision,
+ *  live-verified 2026-07-27). The `country-` prefix keeps
+ *  applyBasemapLayerVisibility's custom-layer skip in force. Add AFTER B1's
+ *  country-labels layer so A/B draw above the name labels. */
+export function addCompareMarkerLayer(map: maplibregl.Map): void {
+  map.addSource('compare-markers', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  })
+  map.addLayer({
+    id: LAYER.compareMarkers,
+    type: 'symbol',
+    source: 'compare-markers',
+    layout: {
+      visibility: 'none',
+      'text-field': ['get', 'label'],
+      'text-font': ['Noto Sans Bold'],
+      'text-size': 14,
+      'text-allow-overlap': true,
+      'text-ignore-placement': true,
+    },
+    paint: {
+      'text-color': ['match', ['get', 'label'], 'A', CORAL, TEAL_DIM],
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1.5,
+    },
+  })
+}
+
+/** Single owner of the compare-marker source data + visibility (the repo's
+ *  single-paint-owner rule). Pass the pair to label A/B at their centroids,
+ *  or null to clear — called from useSelectionHighlight's compare effect. */
+export function applyCompareMarkers(
+  map: maplibregl.Map,
+  pair: { a: CountryData; b: CountryData } | null,
+): void {
+  const source = map.getSource<maplibregl.GeoJSONSource>('compare-markers')
+  if (!source) return
+  const features: GeoJSON.Feature<GeoJSON.Point>[] = pair
+    ? [
+        { label: 'A', c: pair.a },
+        { label: 'B', c: pair.b },
+      ].map(({ label, c }) => ({
+        type: 'Feature',
+        // country.latlng is [lat, lng]; GeoJSON wants [lng, lat]
+        geometry: { type: 'Point', coordinates: [c.latlng[1], c.latlng[0]] },
+        properties: { label },
+      }))
+    : []
+  source.setData({ type: 'FeatureCollection', features })
+  map.setLayoutProperty(LAYER.compareMarkers, 'visibility', pair ? 'visible' : 'none')
 }

@@ -44,3 +44,33 @@ export function computeRevealAnimationPlan(
     durationMs: scaledDuration(reveal.distanceKm, reducedMotion),
   }
 }
+
+/** Reveal fill pulse (B5) — fill-opacity waveform for the dedicated
+ *  `country-reveal-fill` layer (see ensureRevealFillLayer in
+ *  src/lib/mapLayers.ts; driven by useRevealMapEffects). Map paint
+ *  animations are invisible to Element.getAnimations, so this pure
+ *  function is the unit-tested animation contract — the same pattern as
+ *  computeRevealAnimationPlan above. */
+export const REVEAL_FILL_PEAK = 0.35
+export const REVEAL_FILL_TROUGH = 0.12
+export const REVEAL_FILL_SETTLED = 0.15
+/** Static fill under prefers-reduced-motion — no rAF loop runs at all. */
+export const REVEAL_FILL_REDUCED = 0.2
+/** Two beats of 600 ms each. */
+export const REVEAL_FILL_PULSE_MS = 1200
+const PULSE_BEATS = 2
+
+/**
+ * Fill opacity at `elapsedMs` since reveal: two cosine beats
+ * (peak → trough → peak → trough) blended linearly toward the settled
+ * value, so the pulse visibly decays and lands exactly on
+ * REVEAL_FILL_SETTLED at REVEAL_FILL_PULSE_MS with no discontinuity.
+ */
+export function revealFillOpacityAt(elapsedMs: number): number {
+  if (elapsedMs >= REVEAL_FILL_PULSE_MS) return REVEAL_FILL_SETTLED
+  const t = Math.max(0, elapsedMs) / REVEAL_FILL_PULSE_MS
+  const wave =
+    REVEAL_FILL_TROUGH +
+    ((REVEAL_FILL_PEAK - REVEAL_FILL_TROUGH) * (1 + Math.cos(2 * Math.PI * PULSE_BEATS * t))) / 2
+  return wave + (REVEAL_FILL_SETTLED - wave) * t
+}

@@ -49,12 +49,17 @@ export class ResetViewControl implements maplibregl.IControl {
     meridian.setAttribute('rx', '3')
     meridian.setAttribute('ry', '7')
 
-    const arrow = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    arrow.setAttribute('d', 'M20 4 L20 9 L15 9')
+    // Crosshair-globe: the globe (circle + meridian) centered in a reticle —
+    // four crosshair ticks with a 1px gap to the circle edge (circle spans
+    // y 5..19; ticks run 1→4 and 20→23). Reads as "re-center the globe" and
+    // echoes the reticle brand mark (spec 2026-07-26, B7 + E3). Replaces the
+    // ambiguous corner-arrow glyph, which read as "redo/refresh".
+    const ticks = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    ticks.setAttribute('d', 'M12 1v3 M12 20v3 M1 12h3 M20 12h3')
 
     svg.appendChild(circle)
     svg.appendChild(meridian)
-    svg.appendChild(arrow)
+    svg.appendChild(ticks)
     button.appendChild(svg)
 
     button.addEventListener('click', () => flyToHome(map))

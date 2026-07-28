@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest'
-import { computeRevealAnimationPlan } from '../revealAnimation'
+import {
+  computeRevealAnimationPlan,
+  revealFillOpacityAt,
+  REVEAL_FILL_PEAK,
+  REVEAL_FILL_TROUGH,
+  REVEAL_FILL_SETTLED,
+  REVEAL_FILL_PULSE_MS,
+} from '../revealAnimation'
 import type { CountryLike, CountryReveal, PointReveal } from '../types'
 
 const FRA: CountryLike = {
@@ -135,5 +142,49 @@ describe('computeRevealAnimationPlan', () => {
       distanceKm: 0,
     }
     expect(computeRevealAnimationPlan(reveal, byCca3, false)).toBeNull()
+  })
+})
+
+describe('revealFillOpacityAt', () => {
+  // Waveform: two cosine beats (peak at 0 and PULSE/2, troughs at PULSE/4 and
+  // 3·PULSE/4) blended linearly toward the settled value so the pulse decays
+  // and lands exactly on REVEAL_FILL_SETTLED with no snap.
+  it('starts at the 0.35 peak', () => {
+    expect(revealFillOpacityAt(0)).toBeCloseTo(REVEAL_FILL_PEAK, 10)
+  })
+
+  it('dips to the first-beat trough at a quarter of the pulse', () => {
+    // wave = 0.12, blend t = 0.25 → 0.12 + (0.15 − 0.12) · 0.25 = 0.1275
+    expect(revealFillOpacityAt(REVEAL_FILL_PULSE_MS * 0.25)).toBeCloseTo(0.1275, 4)
+  })
+
+  it('rebounds into a decayed second beat at the halfway point', () => {
+    // wave = 0.35, blend t = 0.5 → 0.35 + (0.15 − 0.35) · 0.5 = 0.25
+    const secondPeak = revealFillOpacityAt(REVEAL_FILL_PULSE_MS * 0.5)
+    expect(secondPeak).toBeCloseTo(0.25, 4)
+    expect(secondPeak).toBeLessThan(REVEAL_FILL_PEAK)
+    expect(secondPeak).toBeGreaterThan(REVEAL_FILL_SETTLED)
+  })
+
+  it('dips to the second-beat trough at three quarters', () => {
+    // wave = 0.12, blend t = 0.75 → 0.12 + (0.15 − 0.12) · 0.75 = 0.1425
+    expect(revealFillOpacityAt(REVEAL_FILL_PULSE_MS * 0.75)).toBeCloseTo(0.1425, 4)
+  })
+
+  it('settles at exactly 0.15 from the pulse end onward', () => {
+    expect(revealFillOpacityAt(REVEAL_FILL_PULSE_MS)).toBe(REVEAL_FILL_SETTLED)
+    expect(revealFillOpacityAt(REVEAL_FILL_PULSE_MS * 5)).toBe(REVEAL_FILL_SETTLED)
+  })
+
+  it('stays within [trough, peak] for the whole pulse', () => {
+    for (let ms = 0; ms <= REVEAL_FILL_PULSE_MS; ms += 10) {
+      const v = revealFillOpacityAt(ms)
+      expect(v).toBeLessThanOrEqual(REVEAL_FILL_PEAK)
+      expect(v).toBeGreaterThanOrEqual(REVEAL_FILL_TROUGH)
+    }
+  })
+
+  it('clamps negative elapsed to the starting peak', () => {
+    expect(revealFillOpacityAt(-50)).toBeCloseTo(REVEAL_FILL_PEAK, 10)
   })
 })

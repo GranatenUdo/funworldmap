@@ -15,7 +15,7 @@
 
 The map offers two basemaps, switched from the header (the **satellite** button):
 
-- **Satellite + 3D terrain (default).** The app boots into satellite mode (`App.tsx` — `useState(true)`). Imagery is **EOX Sentinel-2 Cloudless** raster tiles; a terrain DEM from **AWS Terrain Tiles** drives 3D relief (`map.setTerrain`, exaggeration 1.5) with the camera pitched 20° (`DEFAULT_PITCH`; flattened to 0 under `prefers-reduced-motion`). In this mode the OpenFreeMap vector layers are hidden, country borders are tinted for contrast against the imagery, and the country-fill opacity is lowered so imagery shows through.
+- **Satellite + 3D terrain (default).** The app boots into satellite mode (`App.tsx` — `useState(true)`). Imagery is **EOX Sentinel-2 Cloudless** raster tiles; a terrain DEM from **AWS Terrain Tiles** drives 3D relief (`map.setTerrain`, exaggeration 1.5) with the camera pitched 20° (`DEFAULT_PITCH`; flattened to 0 under `prefers-reduced-motion`). In this mode the OpenFreeMap vector layers are hidden, country borders render as a cased pair — a dark `country-borders-casing` line under the light `country-borders` line — for contrast against the imagery, and the country-fill opacity is lowered so imagery shows through. App-owned country-name labels (`country-labels` symbol layer, `Noto Sans Bold` served by the positron style's existing glyphs endpoint — no shipped font assets) render in this mode only and are hidden during active play so game answers don't leak: `applyBasemapLayerVisibility`'s explicit rule is visible iff satellite && not playing.
 - **Vector map (toggle-off).** **OpenFreeMap** Positron — a clean, minimal, light vector style. In dark mode its layer colors are modified programmatically (see Dark Mode below).
 
 All tile URLs are constants in `lib/mapStyles.ts` (`SATELLITE_TILES`, `TERRAIN_TILES`, `BASEMAP_STYLE`).
@@ -49,15 +49,17 @@ MapLibre GL as a GeoJSON source with multiple layers
 
 ### Map Layers
 
-Three visual layers render on top of the basemap:
+Five visual layers render on top of the basemap:
 
-| Layer              | Purpose                        | Style                                                                          |
-| ------------------ | ------------------------------ | ------------------------------------------------------------------------------ |
-| `country-fill`     | Clickable area, hover feedback | Semi-transparent fill. Opacity increases on hover via `feature-state`.         |
-| `country-borders`  | Political boundary lines       | Thin gray/white lines.                                                         |
-| `country-selected` | Selected country highlight     | Thicker border + stronger fill. Filtered to show only the selected country ID. |
+| Layer                    | Purpose                        | Style                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------ | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `country-fill`           | Clickable area, hover feedback | Semi-transparent fill. Opacity increases on hover via `feature-state`.                                                                                                                                                                                                                                                                                                           |
+| `country-borders-casing` | Satellite border legibility    | Dark casing rendered under `country-borders`; hidden in vector and compare view.                                                                                                                                                                                                                                                                                                 |
+| `country-borders`        | Political boundary lines       | Cased light line on satellite; thin gray hairline on the vector basemap.                                                                                                                                                                                                                                                                                                         |
+| `country-dim`            | Selection spotlight scrim (B4) | Dark 25% fill over every country EXCEPT the selection (and both compare countries). Sits above the base layers, below the hover/highlight stacks. Filter owned by `useSelectionHighlight` via `spotlightDimFilter`; matches nothing when no country is selected, so games never show it. Never hit-tested — every `queryRenderedFeatures` caller stays scoped to `country-fill`. |
+| `country-selected`       | Selected country highlight     | Tight border glow (4px, blur 2) + faint 10% fill — the spotlight scrim carries the emphasis. Filtered to show only the selected country ID.                                                                                                                                                                                                                                      |
 
-These are the three core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, and the satellite raster complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (13 ids).
+These are the five core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above), the compare A/B centroid marker layer (`country-compare-markers`, B6 — coral "A" / teal-dim "B" symbols over the compared pair, owned by `applyCompareMarkers`), and the game reveal fill (`country-reveal-fill`, pulsed by `useRevealMapEffects` at round end) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (18 ids).
 
 ### Interaction Model
 

@@ -172,4 +172,89 @@ describe('useSelectionHighlight', () => {
     expect(flyToComparePair).toHaveBeenLastCalledWith(expect.anything(), selected, spain)
     expect(flyToCountry).toHaveBeenCalledTimes(1) // replace-B never re-flies the single camera
   })
+
+  it('B4: selection sets the country-dim filter to everything-except-selection', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: makeCountry('250'),
+          selectionOriginRef: originRef(),
+          compareWith: null,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    const call = fake.calls.setFilter.find((c) => c[0] === 'country-dim')
+    expect(call?.[1]).toEqual(['!=', ['get', 'id'], '250'])
+  })
+
+  it('B4: compare excludes BOTH countries from the country-dim filter', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: makeCountry('250'),
+          selectionOriginRef: originRef(),
+          compareWith: makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] }),
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    const call = fake.calls.setFilter.filter((c) => c[0] === 'country-dim').at(-1)
+    expect(call?.[1]).toEqual(['all', ['!=', ['get', 'id'], '250'], ['!=', ['get', 'id'], '276']])
+  })
+
+  it('B4: no selection leaves country-dim matching nothing (games stay scrim-free)', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: null,
+          selectionOriginRef: originRef(),
+          compareWith: null,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    const call = fake.calls.setFilter.find((c) => c[0] === 'country-dim')
+    expect(call?.[1]).toEqual(['==', ['get', 'id'], ''])
+  })
+
+  it('writes A/B centroid markers while comparing and clears them when compare ends (B6)', () => {
+    const fake = makeFakeMap()
+    const selected = makeCountry('250') // France, latlng [46, 2]
+    const compareWith = makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] })
+    const { rerender } = renderHook<void, { compareWith: CountryData | null }>(
+      (props) =>
+        useSelectionHighlight({
+          loaded: true,
+          selected,
+          selectionOriginRef: originRef(),
+          compareWith: props.compareWith,
+        }),
+      { wrapper: makeMapWrapper(fake), initialProps: { compareWith } },
+    )
+    const written = fake.calls.setData.at(-1)?.[0] as GeoJSON.FeatureCollection
+    expect(written.features.map((f) => f.properties?.label as string | undefined)).toEqual([
+      'A',
+      'B',
+    ])
+    // country.latlng is [lat, lng]; GeoJSON points are [lng, lat]
+    expect((written.features[0].geometry as GeoJSON.Point).coordinates).toEqual([2, 46])
+    expect(fake.calls.setLayoutProperty.at(-1)).toEqual([
+      'country-compare-markers',
+      'visibility',
+      'visible',
+    ])
+
+    rerender({ compareWith: null })
+    const cleared = fake.calls.setData.at(-1)?.[0] as GeoJSON.FeatureCollection
+    expect(cleared.features).toEqual([])
+    expect(fake.calls.setLayoutProperty.at(-1)).toEqual([
+      'country-compare-markers',
+      'visibility',
+      'none',
+    ])
+  })
 })

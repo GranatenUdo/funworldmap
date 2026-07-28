@@ -1,6 +1,8 @@
 import { test, expect } from '@playwright/test'
 import { waitForRevealLineCoords, openLauncher, waitForMapLoaded } from './helpers'
 import { REVEAL_LINE_SOURCE } from '../src/game/shared/revealLayers'
+import { LAYER } from '../src/lib/mapLayers'
+import { REVEAL_FILL_SETTLED } from '../src/game/shared/revealAnimation'
 
 test.describe('reveal animation', () => {
   test('wrong country guess renders a tessellated line from guess → target', async ({ page }) => {
@@ -49,6 +51,30 @@ test.describe('reveal animation', () => {
     expect(center!.lng).toBeCloseTo(2, 0)
     expect(center!.lat).toBeCloseTo(46, 0)
 
+    // B5: the reveal fill pulse settles at REVEAL_FILL_SETTLED over the
+    // answer country. Map paint animations are invisible to
+    // Element.getAnimations, so poll the paint property through the map
+    // seam (the seam-based contract from the 2026-07-26 spec). The layer is
+    // guaranteed to exist here: it is ensured in the same effect that wrote
+    // the arc geometry we already waited for.
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(
+            (layerId) => window.__funworldmap_map?.getPaintProperty(layerId, 'fill-opacity'),
+            LAYER.revealFill,
+          ),
+        { timeout: 10_000 },
+      )
+      .toBe(REVEAL_FILL_SETTLED)
+    // And it is filtered to the answer country (FRA), not the guess.
+    expect(
+      await page.evaluate(
+        (layerId) => window.__funworldmap_map?.getFilter(layerId),
+        LAYER.revealFill,
+      ),
+    ).toEqual(['==', ['get', 'id'], 'FRA'])
+
     // Advance to the next round and confirm reveal artifacts cleared.
     // The round-end panel opens with a "Continue" button
     // (data-testid="game-continue"). Clicking it calls
@@ -76,6 +102,19 @@ test.describe('reveal animation', () => {
           await page.evaluate(
             (sourceId) => window.__funworldmap_map?.querySourceFeatures(sourceId).length ?? -1,
             REVEAL_LINE_SOURCE,
+          ),
+        { timeout: 5_000 },
+      )
+      .toBe(0)
+
+    // B5 teardown: advancing to the next round restores the reveal fill to
+    // fully transparent (the layer persists; only its paint/filter reset).
+    await expect
+      .poll(
+        async () =>
+          await page.evaluate(
+            (layerId) => window.__funworldmap_map?.getPaintProperty(layerId, 'fill-opacity'),
+            LAYER.revealFill,
           ),
         { timeout: 5_000 },
       )

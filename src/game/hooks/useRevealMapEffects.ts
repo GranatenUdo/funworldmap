@@ -1,10 +1,15 @@
 import { useEffect, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryLike, GameSession, GuessInput } from '../shared/types'
-import { LAYER } from '../../lib/mapLayers'
+import { EMPTY_FILTER, ensureRevealFillLayer, LAYER } from '../../lib/mapLayers'
 import { REVEAL_CORRECT, REVEAL_WRONG, TEAL } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
-import { computeRevealAnimationPlan } from '../shared/revealAnimation'
+import {
+  computeRevealAnimationPlan,
+  revealFillOpacityAt,
+  REVEAL_FILL_PULSE_MS,
+  REVEAL_FILL_REDUCED,
+} from '../shared/revealAnimation'
 import { isCityGuessing } from '../shared/modePredicates'
 import { prefersReducedMotion } from '../../lib/motion'
 import {
@@ -127,14 +132,75 @@ export function useRevealMapEffects({
     const reveal = session.lastOutcome.reveal
     const reduced = prefersReducedMotion()
 
+    // Reveal fill pulse (B5): rAF handle for the two-beat fill-opacity pulse
+    // on the dedicated country-reveal-fill layer. Declared ahead of the
+    // country block so both cleanup paths below can cancel it. This is a
+    // separate loop from the arc's rAF on purpose — the arc loop only exists
+    // for wrong guesses with a known click, while the pulse also runs on
+    // correct guesses and skips.
+    let pulseFrameId: number | null = null
+
     if (reveal.kind === 'country') {
       try {
         map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], reveal.targetCca3])
         const colour = reveal.correct ? REVEAL_CORRECT : REVEAL_WRONG
         map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
         map.setPaintProperty(LAYER.hoverBorder, 'line-width', reduced ? 3 : 4)
+
+        // B5: pulse the answer country's fill. Paint animations are
+        // invisible to Element.getAnimations, so the waveform is the pure
+        // unit-tested revealFillOpacityAt (revealAnimation.ts) and e2e
+        // asserts the settled value through the map seam. Reduced motion:
+        // one static write, no rAF.
+        ensureRevealFillLayer(map)
+        map.setFilter(LAYER.revealFill, ['==', ['get', 'id'], reveal.targetCca3])
+        map.setPaintProperty(LAYER.revealFill, 'fill-color', colour)
+        if (reduced) {
+          map.setPaintProperty(LAYER.revealFill, 'fill-opacity', REVEAL_FILL_REDUCED)
+        } else {
+          // Write the peak synchronously so the fill is in a deterministic
+          // state before the first rAF tick (mirrors the arc's entry
+          // line-gradient write).
+          map.setPaintProperty(LAYER.revealFill, 'fill-opacity', revealFillOpacityAt(0))
+          const pulseStart = performance.now()
+          let lastOpacity = revealFillOpacityAt(0)
+          const pulseStep = (now: number) => {
+            const elapsed = now - pulseStart
+            // Quantise to 1/1000 to skip redundant paint updates when rAF
+            // fires faster than a visible change (mirrors the arc loop's
+            // 1/64 line-gradient quantiser).
+            const quantised = Math.round(revealFillOpacityAt(elapsed) * 1000) / 1000
+            if (quantised !== lastOpacity) {
+              lastOpacity = quantised
+              try {
+                map.setPaintProperty(LAYER.revealFill, 'fill-opacity', quantised)
+              } catch {
+                /* layer torn down */
+              }
+            }
+            pulseFrameId =
+              elapsed < REVEAL_FILL_PULSE_MS ? window.requestAnimationFrame(pulseStep) : null
+          }
+          pulseFrameId = window.requestAnimationFrame(pulseStep)
+        }
       } catch {
         /* layer may not exist */
+      }
+    }
+
+    // Teardown for the reveal fill: cancel the pulse and restore the layer
+    // to its inert state (empty filter, transparent). Shared by both cleanup
+    // paths (planless early-return and the arc path), mirroring how the
+    // hover-border filter is restored. The layer itself persists, like the
+    // reveal marker/line layers.
+    const clearRevealFill = () => {
+      if (pulseFrameId !== null) window.cancelAnimationFrame(pulseFrameId)
+      if (reveal.kind !== 'country') return
+      try {
+        map.setFilter(LAYER.revealFill, EMPTY_FILTER)
+        map.setPaintProperty(LAYER.revealFill, 'fill-opacity', 0)
+      } catch {
+        /* no-op */
       }
     }
 
@@ -156,6 +222,7 @@ export function useRevealMapEffects({
         }
       }
       return () => {
+        clearRevealFill()
         if (reveal.kind === 'country') {
           try {
             map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
@@ -263,6 +330,7 @@ export function useRevealMapEffects({
 
     return () => {
       if (frameId !== null) window.cancelAnimationFrame(frameId)
+      clearRevealFill()
       if (reveal.kind === 'country') {
         try {
           map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])

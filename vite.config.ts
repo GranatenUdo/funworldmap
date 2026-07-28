@@ -22,11 +22,7 @@ const cfBeaconProdOnly = {
 
 export default defineConfig({
   base: '/',
-  plugins: [
-    react(),
-    tailwindcss(),
-    cfBeaconProdOnly,
-  ],
+  plugins: [react(), tailwindcss(), cfBeaconProdOnly],
   build: {
     chunkSizeWarningLimit: 1700, // MapLibre GL is ~1.6MB unminified, not tree-shakeable
   },
@@ -34,5 +30,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     exclude: ['e2e/**', '**/node_modules/**', 'dist/**', '.worktrees/**'],
+    css: { include: [/index\.css/] },
   },
 })

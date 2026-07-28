@@ -73,9 +73,10 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ### Map Controls
 
 - MapLibre's built-in `NavigationControl` (zoom +/−, compass)
-- Custom "Reset view" button — flies the camera back to the default world view (longitude 0, latitude 20, zoom 1.8, pitch 20°, bearing 0). It does not touch selection: an open panel and the URL hash are preserved. (The Home key does the same while the map has focus.)
+- Custom "Reset view" button — a crosshair-globe (reticle) glyph; flies the camera back to the default world view (longitude 0, latitude 20, zoom 1.8, pitch 20°, bearing 0). It does not touch selection: an open panel and the URL hash are preserved. (The Home key does the same while the map has focus.)
 - Positioned bottom-right on desktop
 - Repositioned to avoid bottom sheet overlap on mobile
+- On coarse pointers every control button grows to the 44px touch-target floor (`TOUCH_TARGET_MIN_PX` in `src/lib/layoutConstants.ts`, applied via `@media (pointer: coarse)` in `src/index.css` — vendor DOM, so real enlargement instead of the A13 `::after` hit extension); fine-pointer desktops keep MapLibre's stock 29px. Styled for both themes (light base + `.dark` overrides, shipped with A3).
 
 ### Country Panel
 
@@ -105,7 +106,7 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 
 ### Compare
 
-From an open country panel, a **Compare** action puts search into "pick a country to compare" mode (placeholder "Choose country to compare…"; entered via `enterComparePicking` in `App.tsx`, available only while a country is selected). Choosing a second country opens `CompareCountryPanel` — two `CountryColumn`s side by side. Unlike the single-country panel, fields here are not individually source-tagged; a shared footer (`data-testid="compare-sources"`) lists the comparison's data sources. On the map, both countries are highlighted (A = coral, B = teal-dim) while the other countries' borders are dimmed; exiting compare (Escape or the exit control) clears the second country and restores the borders (`useCompareViewHighlight.ts` + `useCountryBaselinePaint.ts`). Covered by `e2e/compare-view-dimming.spec.ts` and `e2e/compare-source-attribution.spec.ts`.
+From an open country panel, a **Compare** action puts search into "pick a country to compare" mode (placeholder "Choose country to compare…"; entered via `enterComparePicking` in `App.tsx`, available only while a country is selected). Choosing a second country opens `CompareCountryPanel` — two `CountryColumn`s side by side. Unlike the single-country panel, fields here are not individually source-tagged; a shared footer (`data-testid="compare-sources"`) lists the comparison's data sources. On the map, both countries are highlighted (A = coral, B = teal-dim) while every non-compared country is dimmed by the `country-dim` spotlight layer; exiting compare (Escape or the exit control) clears the second country and restores the borders (`useCompareViewHighlight.ts` + `useCountryBaselinePaint.ts`). Covered by `e2e/compare-view-dimming.spec.ts` and `e2e/compare-source-attribution.spec.ts`.
 
 ## Theme System
 
