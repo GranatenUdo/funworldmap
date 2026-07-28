@@ -7,6 +7,8 @@ import { TimezoneList } from './TimezoneList'
 import SourceTooltip from './SourceTooltip'
 import { dispatchToast } from '../lib/toast'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_22 } from '../lib/layoutConstants'
+import { formatPopulation, formatArea } from '../lib/compareFields'
+import { EXCEPTION_BADGE, activeExceptionBadges } from './exceptionBadge'
 
 interface Props {
   country: CountryData
@@ -47,14 +49,6 @@ function DataCell({
   )
 }
 
-function formatPopulation(n: number): string {
-  return n.toLocaleString('en-US')
-}
-
-function formatArea(n: number): string {
-  return `${n.toLocaleString('en-US')} km\u00B2`
-}
-
 const REGION_BADGE: Record<string, string> = {
   Africa: 'bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
   Americas: 'bg-emerald-100/80 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
@@ -63,13 +57,6 @@ const REGION_BADGE: Record<string, string> = {
   Oceania: 'bg-teal-100/80 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300',
   Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
-
-// A5: near-constant booleans render as exceptions only. Muted amber is a data
-// encoding (like the region badge), not a chrome accent — kept through E4.
-// inline-flex + items-center (not inline-block): each badge carries a
-// SourceTooltip affordance and needs to align it with the label text.
-const EXCEPTION_BADGE =
-  'inline-flex items-center whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
 
 export function SingleCountryPanel({
   country,
@@ -317,28 +304,18 @@ export function SingleCountryPanel({
             {country.region}
             {country.subregion && ` / ${country.subregion}`}
           </span>
-          {country.unMember === false && (
-            <span data-testid="exception-badge-un-member" className={EXCEPTION_BADGE}>
-              UN observer state
+          {activeExceptionBadges(country).map((b) => (
+            <span key={b.field} data-testid={b.testId} className={EXCEPTION_BADGE}>
+              {b.label}
               {/* Field-level attribution is a constitution item (never silently
                   regress) — mirrors the capital caption's SourceTooltip (A4). */}
               <SourceTooltip
-                field="unMember"
+                field={b.field}
                 fieldSources={country._fieldSources}
                 sources={sources}
               />
             </span>
-          )}
-          {country.independent === false && (
-            <span data-testid="exception-badge-independent" className={EXCEPTION_BADGE}>
-              Not independent
-              <SourceTooltip
-                field="independent"
-                fieldSources={country._fieldSources}
-                sources={sources}
-              />
-            </span>
-          )}
+          ))}
         </div>
       </div>
 

@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { CountryColumn } from '../CountryColumn'
 import { makeCountry } from './singleCountryPanelTestUtils'
+import { COMPARE_FIELDS } from '../../lib/compareFields'
 
 describe('CountryColumn border chips', () => {
   it('renders unmatched border codes as inert text, not buttons', () => {
@@ -82,5 +83,50 @@ describe('CountryColumn borders show every neighbour (A9)', () => {
       expect(screen.getByRole('button', { name: common })).toBeTruthy()
     }
     expect(screen.queryByText('+2')).toBeNull()
+  })
+})
+
+function renderColumn(country: ReturnType<typeof makeCountry>) {
+  render(
+    <CountryColumn
+      country={country}
+      byCca3={new Map()}
+      onSelect={vi.fn()}
+      badgeLetter="A"
+      badgeColor="a"
+    />,
+  )
+}
+
+describe('CountryColumn — C1 shared field list', () => {
+  it('renders every COMPARE_FIELDS row, with em-dash placeholders for missing values', () => {
+    renderColumn(makeCountry({ governmentType: '', languages: {}, currencies: {}, timezones: [] }))
+    for (const f of COMPARE_FIELDS) expect(screen.getByText(f.label)).toBeTruthy()
+    // Government, Languages, Currencies, Timezones are missing on this fixture.
+    expect(screen.getAllByText('—')).toHaveLength(4)
+  })
+
+  it('restores Timezones as a real row and drops the UN Member row', () => {
+    renderColumn(makeCountry())
+    expect(screen.getByText('Timezones')).toBeTruthy()
+    expect(screen.getByText('UTC+01:00')).toBeTruthy()
+    expect(screen.queryByText('UN Member')).toBeNull()
+  })
+
+  it('joins ALL capitals in the header caption', () => {
+    renderColumn(makeCountry({ capital: ['Pretoria', 'Bloemfontein', 'Cape Town'] }))
+    expect(screen.getByText('Pretoria, Bloemfontein, Cape Town')).toBeTruthy()
+  })
+
+  it('renders A5 exception badges in the header only when the flags are false', () => {
+    renderColumn(makeCountry({ unMember: false, independent: false }))
+    expect(screen.getByTestId('exception-badge-un-member').textContent).toBe('UN observer state')
+    expect(screen.getByTestId('exception-badge-independent').textContent).toBe('Not independent')
+  })
+
+  it('renders no exception badges for a default (UN member, independent) country', () => {
+    renderColumn(makeCountry())
+    expect(screen.queryByTestId('exception-badge-un-member')).toBeNull()
+    expect(screen.queryByTestId('exception-badge-independent')).toBeNull()
   })
 })

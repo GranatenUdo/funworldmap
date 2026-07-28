@@ -1,5 +1,7 @@
 import type { CountryData } from '../lib/types'
 import { BorderChip } from './BorderChip'
+import { COMPARE_FIELDS, EM_DASH } from '../lib/compareFields'
+import { EXCEPTION_BADGE, activeExceptionBadges } from './exceptionBadge'
 
 function CompareField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -22,7 +24,10 @@ interface Props {
 
 export function CountryColumn({ country, byCca3, onSelect, badgeLetter, badgeColor }: Props) {
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
+    <div
+      className="flex flex-col h-full overflow-y-auto"
+      data-testid={`compare-column-${badgeColor}`}
+    >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
         <div className="flex items-start justify-between gap-3">
           <div
@@ -42,43 +47,35 @@ export function CountryColumn({ country, byCca3, onSelect, badgeLetter, badgeCol
               </h2>
               {country.capital.length > 0 && (
                 <p className="text-xs text-ice-accessible dark:text-ice truncate mt-0.5">
-                  {country.capital[0]}
+                  {country.capital.join(', ')}
                 </p>
               )}
-              <span
-                data-testid="region-badge"
-                className="inline-block text-[11px] font-medium px-2 py-0.5 rounded-full mt-1.5 bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100"
-              >
-                {country.region}
-              </span>
+              <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                <span
+                  data-testid="region-badge"
+                  className="inline-block text-[11px] font-medium px-2 py-0.5 rounded-full bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100"
+                >
+                  {country.region}
+                </span>
+                {/* C4: compare attribution stays consolidated in the footer,
+                    so the badges render bare — no per-badge SourceTooltip. */}
+                {activeExceptionBadges(country).map((b) => (
+                  <span key={b.field} data-testid={b.testId} className={EXCEPTION_BADGE}>
+                    {b.label}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="px-5 py-3 space-y-2">
-        <CompareField label="Population">{country.population.toLocaleString('en-US')}</CompareField>
-        <CompareField label="Area">{`${country.area.toLocaleString('en-US')} km\u00B2`}</CompareField>
-        <CompareField label="Region">
-          {country.region}
-          {country.subregion && ` / ${country.subregion}`}
-        </CompareField>
-        {country.governmentType && (
-          <CompareField label="Government">{country.governmentType}</CompareField>
-        )}
-        {Object.keys(country.languages).length > 0 && (
-          <CompareField label="Languages">
-            {Object.values(country.languages).join(', ')}
+        {COMPARE_FIELDS.map((f) => (
+          <CompareField key={f.key} label={f.label}>
+            {f.format(country) ?? EM_DASH}
           </CompareField>
-        )}
-        {Object.keys(country.currencies).length > 0 && (
-          <CompareField label="Currencies">
-            {Object.values(country.currencies)
-              .map((c) => `${c.name} (${c.symbol})`)
-              .join(', ')}
-          </CompareField>
-        )}
-        <CompareField label="UN Member">{country.unMember ? 'Yes' : 'No'}</CompareField>
+        ))}
         {country.borders.length > 0 && (
           <div>
             <div className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-1.5">
