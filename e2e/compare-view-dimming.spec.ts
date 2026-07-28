@@ -234,4 +234,40 @@ test.describe('C5 — labeled compare entry', () => {
     // Desktop project viewport (1280px ≥ 1024px cutoff): visible text label.
     await expect(compareBtn).toContainText('Compare')
   })
+
+  test('tip fires once on the second distinct selection, hands off to the game hint on close, never re-fires', async ({
+    page,
+  }) => {
+    await page.goto('/#FRA')
+    await waitForMapLoaded(page)
+    await expect(page.getByTestId('country-panel')).toContainText('France', { timeout: 15_000 })
+
+    // First distinct selection (the deep link) — no tip yet.
+    const pill = page.getByTestId('onboarding-hint')
+    await expect(pill).not.toBeAttached()
+
+    // Second distinct selection via the hash — the same select path the app
+    // uses (this file's exit-compare tests already drive selection this way).
+    await page.evaluate(() => {
+      window.location.hash = '#DEU'
+    })
+    await expect(page.getByTestId('country-panel')).toContainText('Germany')
+    await expect(pill).toBeVisible()
+    await expect(pill).toHaveText('Tip: compare two countries side by side')
+
+    // Closing the panel dismisses the tip; with a fresh localStorage the
+    // never-shown game hint takes over the pill — the documented sequential
+    // handoff (compare → game), pinned here on the copy swap.
+    await page.keyboard.press('Escape')
+    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+    await expect(pill).toHaveText('Try a game — guess countries and cities')
+
+    // A third distinct selection dismisses the game hint and must NOT
+    // re-fire the compare tip — its localStorage gate is burned.
+    await page.evaluate(() => {
+      window.location.hash = '#ESP'
+    })
+    await expect(page.getByTestId('country-panel')).toContainText('Spain')
+    await expect(pill).not.toBeAttached()
+  })
 })

@@ -104,11 +104,6 @@ function AppInner({
   } = useLauncherVisibility()
   const mapReady = useMapReady()
   const finePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
-  const { hint } = useFirstVisitHint({
-    mapReady,
-    hasSelection: !!selected,
-    gameActive: session.status !== 'idle',
-  })
   const liveRegionRef = useLiveAnnouncements(selected?.name.common ?? null)
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
@@ -117,6 +112,17 @@ function AppInner({
     dismissLauncher()
   }, [dismissLauncher])
   const [comparePickingMode, setComparePickingMode] = useState(false)
+
+  // Below comparePickingMode's declaration because the hint machine consumes
+  // it (compareActive marks the compare tip moot — C5). Hook order is still
+  // stable across renders; only the source position moved.
+  const { hint } = useFirstVisitHint({
+    mapReady,
+    selectedCca3: selected?.cca3 ?? null,
+    gameActive: session.status !== 'idle',
+    compareActive: !!compareWith || comparePickingMode,
+    isDesktop,
+  })
 
   const enterComparePicking = useCallback(() => {
     if (selected) setComparePickingMode(true)
@@ -407,9 +413,13 @@ function AppInner({
 
       <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
-      {hint && !selected && !gameActive && (
+      {/* explore/game hints render on the empty map; the compare tip (C5)
+          renders while a panel is open. Same pill, pointer-events-none,
+          non-focusable — it can never intercept clicks or shift Tab order. */}
+      {hint && !gameActive && (hint === 'compare' ? !!selected : !selected) && (
         <div
           role="status"
+          data-testid="onboarding-hint"
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-ice/20 text-ice text-sm shadow-lg pointer-events-none"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
