@@ -3,7 +3,11 @@ import { flyToComparePair } from '../flyToComparePair'
 import { prefersReducedMotion } from '../motion'
 import { makeCountryData } from '../../test/countryFixtures'
 import { createFakeMapRef } from '../../test/fakeMapRef'
-import { COMPARE_FRAME_PADDING_PX, COMPARE_PANEL_FOOTPRINT_PX } from '../layoutConstants'
+import {
+  COMPARE_FRAME_PADDING_PX,
+  COMPARE_PANEL_FOOTPRINT_PX,
+  COMPARE_SHEET_FRACTION,
+} from '../layoutConstants'
 
 vi.mock('../motion', () => ({ prefersReducedMotion: vi.fn(() => false) }))
 
@@ -54,22 +58,43 @@ describe('flyToComparePair', () => {
     expect(fake.calls.flyTo).toHaveBeenCalledTimes(1)
   })
 
-  it('mobile: flat symmetric padding (the sheet-aware bottom padding is C6, not B6)', () => {
+  it('mobile: sheet-aware bottom padding frames the pair in the strip above the sheet (C6)', () => {
     vi.stubGlobal(
       'matchMedia',
       vi.fn(() => ({ matches: false })),
     )
+    vi.stubGlobal('innerHeight', 800)
     const fake = createFakeMapRef()
     flyToComparePair(fake.map, FRANCE, GERMANY)
     const opts = fake.calls.cameraForBounds.mock.calls[0][1]
     expect(opts).toEqual({
       padding: {
         top: COMPARE_FRAME_PADDING_PX,
-        bottom: COMPARE_FRAME_PADDING_PX,
+        bottom: Math.round(800 * COMPARE_SHEET_FRACTION), // 640
         left: COMPARE_FRAME_PADDING_PX,
         right: COMPARE_FRAME_PADDING_PX,
       },
     })
+  })
+
+  it('mobile: the globe-scale symmetric fallback never fires — it would re-center the pair under the sheet (C6)', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: false })),
+    )
+    vi.stubGlobal('innerHeight', 800)
+    const fake = createFakeMapRef()
+    ;(fake.map.cameraForBounds as ReturnType<typeof vi.fn>).mockReturnValue({
+      center: [-25, 0],
+      zoom: 1.6,
+    })
+    flyToComparePair(fake.map, BRAZIL, NIGERIA)
+    // The GLOBE_SCALE_ZOOM guard exists for DESKTOP's horizontal footprint
+    // swing. On mobile the padded zoom sits below 2.2 routinely (the fitting
+    // strip is ~20% of the viewport), so a firing guard would systematically
+    // undo C6's framing. Exactly one cameraForBounds call = no fallback.
+    expect(fake.calls.cameraForBounds).toHaveBeenCalledTimes(1)
+    expect(fake.calls.flyTo.mock.calls[0][0]).toMatchObject({ zoom: 1.6 })
   })
 
   it('falls back to the pair midpoint at world zoom when the span exceeds a globe face (Japan+USA)', () => {

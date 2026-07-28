@@ -2,7 +2,11 @@ import type maplibregl from 'maplibre-gl'
 import type { CountryData } from './types'
 import { DEFAULT_PITCH, DEFAULT_ZOOM } from './mapStyles'
 import { prefersReducedMotion } from './motion'
-import { COMPARE_FRAME_PADDING_PX, comparePanelPadding } from './layoutConstants'
+import {
+  COMPARE_FRAME_PADDING_PX,
+  comparePanelPadding,
+  DESKTOP_MEDIA_QUERY,
+} from './layoutConstants'
 
 /** Approximate a country's half-extent in degrees of latitude: half the side
  *  of the equivalent-area square (sqrt(area) km / 2) at ~111 km per degree.
@@ -78,9 +82,16 @@ export function flyToComparePair(map: maplibregl.Map, a: CountryData, b: Country
   // offset-era zooms this 2.2 threshold was tuned against (the footprint now
   // shrinks the fitting area by ~672px), so the guard fires for more pairs
   // than before — part of what the live step evaluates.
+  // DESKTOP-ONLY (C6, 2026-07-28): the guard exists for the horizontal
+  // footprint swing above. On mobile the asymmetry is vertical (the sheet's
+  // bottom padding) and the fitting strip is only ~20% of the viewport, so
+  // padded zooms sit below 2.2 routinely — a firing guard would fall back
+  // to symmetric padding and re-center the pair under the sheet, undoing
+  // C6's framing. If the vertical swing ever shows a past-the-horizon case
+  // on device, fix it with a mobile-specific clamp, not this fallback.
   const GLOBE_SCALE_ZOOM = 2.2
   const camera =
-    (paddedCamera.zoom ?? 0) < GLOBE_SCALE_ZOOM
+    window.matchMedia(DESKTOP_MEDIA_QUERY).matches && (paddedCamera.zoom ?? 0) < GLOBE_SCALE_ZOOM
       ? (map.cameraForBounds(bounds, { padding: COMPARE_FRAME_PADDING_PX }) ?? paddedCamera)
       : paddedCamera
 
