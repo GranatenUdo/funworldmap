@@ -49,19 +49,6 @@
   --color-dark-400: #161a22;
   --color-dark-500: #121518;
 
-  /* RETIRING (E4): teal and coral survive only until this tranche's final
-     sweep task deletes them (zero-usage grep gate). Do not add consumers. */
-  --color-teal: #14b8a6;
-  --color-teal-light: #5eead4;
-  --color-teal-dim: #0d9488;
-  /* Deep teal: WCAG AA on white/sand-50 (≥4.5:1). Use for interactive text
-     and primary CTA backgrounds in light mode where teal / teal-dim fall short. */
-  --color-teal-accessible: #065f56;
-
-  --color-coral: #f43f5e;
-  --color-coral-light: #fb7185;
-  --color-coral-dim: #e11d48;
-
   /* E4 two-accent system (Observatory). One meaning per accent:
      ice = interactive + wayfinding (links, focus, search, selection,
      compare-B); signal = live game state + loss (score changes, streaks,
@@ -77,7 +64,7 @@
      (ice-dim #0369a1 on dark-400 #161a22 is ~2.9:1, below WCAG AA text floor). */
 
   /* Deep ice (sky-800): WCAG AA for light-mode interactive text, following
-     the --color-teal-accessible pattern. Contrast (WCAG relative-luminance
+     the retired teal-accessible pattern. Contrast (WCAG relative-luminance
      formula): 7.4:1 on sand-50 #fefdfb, 7.1:1 on sand-100 #faf7f2, 7.6:1 on
      white — all ≥4.5:1 (AA normal text). */
   --color-ice-accessible: #075985;

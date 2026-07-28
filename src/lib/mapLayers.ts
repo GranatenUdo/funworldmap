@@ -515,8 +515,9 @@ export function applyBasemapLayerVisibility(
 
 /** Compare A/B centroid markers — one symbol layer labelling the pair on the
  *  map in the compare badge colors (A signal / B ice-dim; index.css's
- *  .compare-badge-a hardcodes the same mapPalette SIGNAL hex — see
- *  mapPalette.ts's ICE_DIM doc for why .compare-badge-b does not). Rides on B1's
+ *  .compare-badge-a consumes var(--color-signal), which equals the same
+ *  mapPalette SIGNAL hex — see mapPalette.ts's ICE_DIM doc for why
+ *  .compare-badge-b consumes plain --color-ice, not ICE_DIM). Rides on B1's
  *  label-layer pattern: `text-font` MUST be explicit because the positron
  *  glyphs endpoint 404s MapLibre's default font stack (B1 glyph decision,
  *  live-verified 2026-07-27). The `country-` prefix keeps
