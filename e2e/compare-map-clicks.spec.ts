@@ -7,6 +7,7 @@ import { gotoAndWaitForMap, waitForCountryTilesRendered } from './helpers'
  *   2. clicking A is a no-op
  *   3. clicking ocean is a no-op (must NOT close the compare panel)
  *   4. Escape keeps the staged exit: compare → single → closed
+ *   5. border-chip clicks inside the panel are column-scoped (C1)
  *
  * Clicks are synthetic `map.fire('click', …)` — camera-agnostic (CLAUDE.md).
  * Every fired point carries a queryRenderedFeatures precondition so the test
@@ -191,5 +192,43 @@ test.describe('B6 — compare framing clears the panel footprint', () => {
         { timeout: 10_000 },
       )
       .toBe(true)
+  })
+})
+
+test.describe('C1 — border-chip clicks are column-scoped', () => {
+  // Would have failed before C1: chips routed to select(), tearing the pair
+  // down to a single panel. Real bundled data: ESP and DEU are France's
+  // border chips; POL is one of Germany's.
+  test('a chip in column A replaces A and keeps B', async ({ page }) => {
+    await openComparePair(page)
+
+    await page.getByTestId('compare-column-a').getByRole('button', { name: 'Spain' }).click()
+
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('#ESP,DEU')
+    await expect(page.getByTestId('exit-compare')).toBeVisible()
+    await expect(page.getByTestId('compare-column-a')).toContainText('Spain')
+    await expect(page.getByTestId('compare-column-b')).toContainText('Germany')
+  })
+
+  test('a chip in column B replaces B and keeps A', async ({ page }) => {
+    await openComparePair(page)
+
+    await page.getByTestId('compare-column-b').getByRole('button', { name: 'Poland' }).click()
+
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('#FRA,POL')
+    await expect(page.getByTestId('exit-compare')).toBeVisible()
+    await expect(page.getByTestId('compare-column-b')).toContainText('Poland')
+  })
+
+  test("a chip naming the OTHER column's country is a no-op (no X-vs-X pair)", async ({ page }) => {
+    await openComparePair(page)
+
+    // Germany (the current B) is one of France's border chips.
+    await page.getByTestId('compare-column-a').getByRole('button', { name: 'Germany' }).click()
+
+    // A regression writes the hash synchronously inside the click handler,
+    // so this immediate read is a deterministic signal (existing pattern).
+    expect(await page.evaluate(() => window.location.hash)).toBe('#FRA,DEU')
+    await expect(page.getByTestId('exit-compare')).toBeVisible()
   })
 })
