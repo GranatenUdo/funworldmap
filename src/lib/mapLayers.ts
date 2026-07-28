@@ -5,7 +5,7 @@ import {
   TERRAIN_TILES,
   TERRAIN_ATTRIBUTION,
 } from './mapStyles'
-import { TEAL, TEAL_DIM, CORAL, SPOTLIGHT_DIM } from './mapPalette'
+import { TEAL, TEAL_DIM, CORAL, SPOTLIGHT_DIM, REVEAL_WRONG } from './mapPalette'
 
 const EMPTY_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
@@ -242,6 +242,25 @@ export function addCompareLayers(map: maplibregl.Map): void {
   addHighlightStack(map, 'country-compare', TEAL_DIM)
 }
 
+/** Lazily add the game reveal fill layer (`country-reveal-fill`) — a
+ *  dedicated fill over the answer country, pulsed by useRevealMapEffects at
+ *  round end (B5, 2026-07-26 spec). Dedicated on purpose: borrowing the
+ *  selection stack would couple reveal paint to selection paint (the
+ *  single-owner lesson). Added lazily on first country reveal, like the
+ *  reveal marker/line layers; idempotent. The `country-` prefix keeps it out
+ *  of applyBasemapLayerVisibility's basemap sweep. Runtime paint/filter is
+ *  owned by useRevealMapEffects (the reveal-paint owner). */
+export function ensureRevealFillLayer(map: maplibregl.Map): void {
+  if (map.getLayer(LAYER.revealFill)) return
+  map.addLayer({
+    id: LAYER.revealFill,
+    type: 'fill',
+    source: 'countries',
+    paint: { 'fill-color': REVEAL_WRONG, 'fill-opacity': 0 },
+    filter: EMPTY_FILTER,
+  })
+}
+
 /** Add the B4 spotlight scrim: a dark fill over every country EXCEPT the
  *  current selection (and both compare countries). WorldMap's onLoad adds it
  *  between the base layers and the hover/highlight stacks, so highlights
@@ -400,6 +419,7 @@ export const LAYER = {
   compareGlow: 'country-compare-glow',
   compareExtrusion: 'country-compare-extrusion',
   countryLabels: 'country-labels',
+  revealFill: 'country-reveal-fill',
   satellite: 'satellite-layer',
 } as const
 

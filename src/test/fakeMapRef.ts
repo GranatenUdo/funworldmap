@@ -11,6 +11,7 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
   const setLayoutProperty = vi.fn()
   const setFeatureState = vi.fn()
   const getSource = vi.fn(() => ({ setData }))
+  const getLayer = vi.fn((): unknown => undefined)
   const addSource = vi.fn()
   const addedLayers: maplibregl.LayerSpecification[] = []
   const addLayer = vi.fn((spec: maplibregl.LayerSpecification) => {
@@ -48,6 +49,7 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
     setLayoutProperty,
     setFeatureState,
     getSource,
+    getLayer,
     addSource,
     addLayer,
     on,
@@ -83,6 +85,7 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
       setLayoutProperty,
       setFeatureState,
       getSource,
+      getLayer,
       addSource,
       addLayer,
       on,

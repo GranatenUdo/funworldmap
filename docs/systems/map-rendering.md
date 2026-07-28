@@ -59,7 +59,7 @@ Five visual layers render on top of the basemap:
 | `country-dim`            | Selection spotlight scrim (B4) | Dark 25% fill over every country EXCEPT the selection (and both compare countries). Sits above the base layers, below the hover/highlight stacks. Filter owned by `useSelectionHighlight` via `spotlightDimFilter`; matches nothing when no country is selected, so games never show it. Never hit-tested — every `queryRenderedFeatures` caller stays scoped to `country-fill`. |
 | `country-selected`       | Selected country highlight     | Tight border glow (4px, blur 2) + faint 10% fill — the spotlight scrim carries the emphasis. Filtered to show only the selected country ID.                                                                                                                                                                                                                                      |
 
-These are the five core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, and the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (16 ids).
+These are the five core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above), and the game reveal fill (`country-reveal-fill`, pulsed by `useRevealMapEffects` at round end) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (17 ids).
 
 ### Interaction Model
 

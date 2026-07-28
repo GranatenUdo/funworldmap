@@ -8,6 +8,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, cleanup } from '@testing-library/react'
 import { useRevealMapEffects } from '../useRevealMapEffects'
 import { REVEAL_CORRECT, REVEAL_WRONG } from '../../../lib/mapPalette'
+import { REVEAL_FILL_PEAK, REVEAL_FILL_REDUCED } from '../../shared/revealAnimation'
 import {
   makeCityRound,
   makeCountryReveal,
@@ -445,5 +446,113 @@ describe('useRevealMapEffects — city reveal', () => {
     const features = markerCalls.at(-1)!.features!
     expect(features).toHaveLength(1)
     expect(features[0].properties?.role).toBe('target')
+  })
+})
+
+describe('useRevealMapEffects — reveal fill pulse (B5)', () => {
+  // Reset matchMedia to non-reducing before each test — this describe is a
+  // sibling of the main 'useRevealMapEffects' block above, whose last test
+  // (line ~403) sets reduced-motion and never restores it. Without this
+  // reset, this suite would silently depend on sibling-describe test order.
+  beforeEach(() => {
+    stubMatchMedia()
+  })
+
+  // All country reveals here use clickedCca3: null so computeRevealAnimationPlan
+  // returns null and no arc rAF runs — any rAF observed is the pulse's.
+  function roundEnded(reveal: ReturnType<typeof makeCountryReveal | typeof makePointReveal>) {
+    return makeSession({
+      status: 'round-ended',
+      modeId: 'country-pinning',
+      lastOutcome: makeOutcome(reveal),
+    })
+  }
+
+  it('adds country-reveal-fill, targets the answer, pulses from the peak (correct = green)', () => {
+    const fake = createFakeMapRef()
+    const reveal = makeCountryReveal({ correct: true, clickedCca3: null, distanceKm: null })
+    renderRevealHook(buildRevealArgs({ session: roundEnded(reveal), mapRef: fake.ref }))
+    expect(fake.addedLayers.some((l) => l.id === 'country-reveal-fill')).toBe(true)
+    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-reveal-fill', [
+      '==',
+      ['get', 'id'],
+      'FRA',
+    ])
+    expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
+      'country-reveal-fill',
+      'fill-color',
+      REVEAL_CORRECT,
+    )
+    // Animated path writes the waveform peak synchronously before the first rAF tick.
+    expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
+      'country-reveal-fill',
+      'fill-opacity',
+      REVEAL_FILL_PEAK,
+    )
+  })
+
+  it('colors the fill amber on a wrong-country reveal', () => {
+    const fake = createFakeMapRef()
+    const reveal = makeCountryReveal({ correct: false, clickedCca3: null, distanceKm: null })
+    renderRevealHook(buildRevealArgs({ session: roundEnded(reveal), mapRef: fake.ref }))
+    expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
+      'country-reveal-fill',
+      'fill-color',
+      REVEAL_WRONG,
+    )
+  })
+
+  it('reduced motion: one static 0.2 write, no rAF loop', () => {
+    stubMatchMedia((q) => q.includes('reduce'))
+    const raf = vi.spyOn(window, 'requestAnimationFrame')
+    const fake = createFakeMapRef()
+    const reveal = makeCountryReveal({ correct: true, clickedCca3: null, distanceKm: null })
+    renderRevealHook(buildRevealArgs({ session: roundEnded(reveal), mapRef: fake.ref }))
+    expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
+      'country-reveal-fill',
+      'fill-opacity',
+      REVEAL_FILL_REDUCED,
+    )
+    expect(raf).not.toHaveBeenCalled()
+    raf.mockRestore()
+  })
+
+  it('never touches the reveal fill for point (city) reveals', () => {
+    const fake = createFakeMapRef()
+    const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'city-guessing',
+      lastOutcome: makeOutcome(reveal),
+    })
+    renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
+    expect(fake.addedLayers.some((l) => l.id === 'country-reveal-fill')).toBe(false)
+    const fillCalls = fake.calls.setPaintProperty.mock.calls.filter(
+      (c) => c[0] === 'country-reveal-fill',
+    )
+    expect(fillCalls).toHaveLength(0)
+  })
+
+  it('teardown on advance: filter emptied and fill-opacity reset to 0', () => {
+    const fake = createFakeMapRef()
+    const reveal = makeCountryReveal({ correct: true, clickedCca3: null, distanceKm: null })
+    const session = roundEnded(reveal)
+    const args = buildRevealArgs({ session, mapRef: fake.ref })
+    const { rerender } = renderHook(({ s }) => useRevealMapEffects({ ...args, session: s }), {
+      initialProps: { s: session },
+    })
+    fake.calls.setFilter.mockClear()
+    fake.calls.setPaintProperty.mockClear()
+    rerender({ s: makeSession({ ...session, status: 'playing', lastOutcome: null }) })
+    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-reveal-fill', [
+      '==',
+      ['get', 'id'],
+      '',
+    ])
+    expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
+      'country-reveal-fill',
+      'fill-opacity',
+      0,
+    )
   })
 })

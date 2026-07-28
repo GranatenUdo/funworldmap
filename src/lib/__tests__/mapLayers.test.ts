@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import type { FillLayerSpecification } from 'maplibre-gl'
 import {
   addBaseCountryLayers,
   addCountryLabelLayer,
@@ -8,6 +9,7 @@ import {
   addSpotlightDimLayer,
   applyBasemapLayerVisibility,
   applyCountryBaselinePaint,
+  ensureRevealFillLayer,
   spotlightDimFilter,
   COUNTRY_LABEL_SOURCE,
   EXTRUSION_MAX_ZOOM,
@@ -295,4 +297,24 @@ describe('B4 spotlight highlight-stack quieting', () => {
       })
     },
   )
+})
+
+describe('ensureRevealFillLayer', () => {
+  it('adds the dedicated country-reveal-fill layer, transparent and unfiltered', () => {
+    const fake = createFakeMapRef()
+    ensureRevealFillLayer(fake.map)
+    const spec = fake.addedLayers.find((l) => l.id === LAYER.revealFill)
+    expect(spec?.type).toBe('fill')
+    const fill = spec as FillLayerSpecification
+    expect(fill.source).toBe('countries')
+    expect(fill.paint?.['fill-opacity']).toBe(0)
+    expect(fill.filter).toEqual(['==', ['get', 'id'], ''])
+  })
+
+  it('is idempotent — no addLayer when the layer already exists', () => {
+    const fake = createFakeMapRef()
+    ;(fake.map.getLayer as ReturnType<typeof vi.fn>).mockReturnValue({ id: LAYER.revealFill })
+    ensureRevealFillLayer(fake.map)
+    expect(fake.calls.addLayer).not.toHaveBeenCalled()
+  })
 })
