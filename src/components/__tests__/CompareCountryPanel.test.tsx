@@ -199,6 +199,7 @@ describe('C4 exception source markers', () => {
   function renderWithMarkers(
     fieldSourcesA: Record<string, string> = FIELD_SOURCES,
     fieldSourcesB: Record<string, string> = FIELD_SOURCES,
+    isDesktop = true,
   ) {
     render(
       <CompareCountryPanel
@@ -209,7 +210,7 @@ describe('C4 exception source markers', () => {
           name: { common: 'Germany', official: 'Federal Republic of Germany' },
           _fieldSources: fieldSourcesB,
         })}
-        isDesktop={true}
+        isDesktop={isDesktop}
         onCompareColumnSelect={vi.fn()}
         onClose={vi.fn()}
         onExitCompare={vi.fn()}
@@ -245,6 +246,16 @@ describe('C4 exception source markers', () => {
     renderWithMarkers(allRest, allRest)
     expect(screen.queryAllByTestId('source-marker-cia-factbook')).toHaveLength(0)
     expect(within(screen.getByTestId('compare-sources')).queryByText('†')).toBeNull()
+  })
+
+  // C6 parity check: the mobile arm reuses the same CompareFieldRow + rowMarker
+  // wiring as desktop (this file's fix over the brief's literal step-12 code,
+  // which omitted the marker prop on mobile rows) — otherwise the shared
+  // footer's "†" footnote would reference a marker that never appears anywhere
+  // in the mobile UI.
+  it('mobile rows also carry the exception marker, keeping the footer footnote referenced (C6)', () => {
+    renderWithMarkers(FIELD_SOURCES, FIELD_SOURCES, false)
+    expect(screen.getAllByTestId('source-marker-cia-factbook').length).toBeGreaterThanOrEqual(1)
   })
 })
 

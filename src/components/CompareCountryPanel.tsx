@@ -199,7 +199,13 @@ export function CompareCountryPanel({
             </div>
             <div className="px-4 py-3 space-y-3">
               {COMPARE_FIELDS.map((field) => (
-                <CompareFieldRow key={field.key} field={field} a={country} b={compareWith} />
+                <CompareFieldRow
+                  key={field.key}
+                  field={field}
+                  a={country}
+                  b={compareWith}
+                  marker={rowMarker(field.key)}
+                />
               ))}
               {(
                 [
