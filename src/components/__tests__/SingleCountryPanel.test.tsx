@@ -21,6 +21,7 @@ import {
   stubMatchMedia,
   stubGetAnimations,
 } from './singleCountryPanelTestUtils'
+import { TOUCH_TARGET_FROM_36 } from '../../lib/layoutConstants'
 
 // Dynamically loaded after matchMedia is stubbed.
 let SingleCountryPanel: ComponentType<{
@@ -332,5 +333,42 @@ describe('SingleCountryPanel — compare-picking banner (A7)', () => {
     const { queryByRole, queryByTestId } = renderPanel()
     expect(queryByRole('status')).toBeNull()
     expect(queryByTestId('compare-picking-cancel')).toBeNull()
+  })
+})
+
+describe('SingleCountryPanel — labeled compare entry (C5)', () => {
+  function renderAt(isDesktop: boolean) {
+    return render(
+      <SingleCountryPanel
+        country={makeCountry()}
+        comparePickingMode={false}
+        sources={sources}
+        isDesktop={isDesktop}
+        onSelect={() => {}}
+        onClose={() => {}}
+        onEnterCompare={() => {}}
+        onCancelCompare={() => {}}
+        byCca3={new Map()}
+      />,
+    )
+  }
+
+  it('desktop: icon + "Compare" text pill, aria-label preserved, A13 constant consumed', () => {
+    const { getByRole } = renderAt(true)
+    // aria-label overrides content — every e2e locator keyed on this name
+    // keeps working (WCAG 2.5.3 holds: the name contains the visible text).
+    const btn = getByRole('button', { name: 'Compare with another country' })
+    expect(btn.textContent).toBe('Compare')
+    expect(btn.className).toContain('rounded-full')
+    expect(btn.className).toContain(TOUCH_TARGET_FROM_36)
+    expect(btn.getAttribute('data-testid')).toBe('compare-entry')
+  })
+
+  it('mobile: the entry stays icon-only (D4 owns the mobile labeled chip)', () => {
+    const { getByRole } = renderAt(false)
+    const btn = getByRole('button', { name: 'Compare with another country' })
+    expect(btn.textContent).toBe('')
+    expect(btn.className).toContain('p-2 rounded-xl')
+    expect(btn.className).toContain(TOUCH_TARGET_FROM_36)
   })
 })

@@ -228,7 +228,21 @@ export function SingleCountryPanel({
             {!comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}
-                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
+                data-testid="compare-entry"
+                // C5: desktop gets an icon + text pill (the 20px hover-title-only
+                // icon was the least discoverable control in the audit); mobile
+                // keeps the icon — D4 owns the sheet's labeled compare chip.
+                // Desktop pill box: py-2 (2·8px) + 20px icon/text-sm line = 36px,
+                // so TOUCH_TARGET_FROM_36 keeps the A13 44px coarse-pointer math
+                // honest on both branches. Text contrast (4.5:1 floor): ice-dim
+                // #0369a1 on sand-50 #fefdfb = 5.84:1; ice #7dd3fc on dark-400
+                // #161a22 = 10.4:1. aria-label preserved — it overrides content,
+                // so existing e2e locators and WCAG 2.5.3 both hold.
+                className={`${
+                  isDesktop
+                    ? 'flex items-center gap-1.5 px-3 py-2 rounded-full border border-ice-dim/30 dark:border-ice/30 text-sm font-medium'
+                    : 'p-2 rounded-xl'
+                } hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Compare with another country"
                 title="Compare"
               >
@@ -236,6 +250,7 @@ export function SingleCountryPanel({
                   <circle cx="9" cy="12" r="6" strokeWidth="1.75" />
                   <circle cx="15" cy="12" r="6" strokeWidth="1.75" />
                 </svg>
+                {isDesktop && <span>Compare</span>}
               </button>
             )}
 

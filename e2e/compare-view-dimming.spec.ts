@@ -218,3 +218,20 @@ test.describe('B4 spotlight: country-dim layer state via the map seam', () => {
       .toBe(JSON.stringify(['!=', ['get', 'id'], FRA_ID]))
   })
 })
+
+test.describe('C5 — labeled compare entry', () => {
+  test('desktop entry is an icon + "Compare" text pill with the preserved aria-label', async ({
+    page,
+  }) => {
+    await page.goto('/#FRA')
+    await waitForMapLoaded(page)
+    await expect(page.getByTestId('country-panel')).toContainText('France', { timeout: 15_000 })
+
+    // Same accessible name as before C5 — aria-label overrides content, so
+    // every pre-existing locator on this name still resolves.
+    const compareBtn = page.getByRole('button', { name: 'Compare with another country' })
+    await expect(compareBtn).toBeVisible()
+    // Desktop project viewport (1280px ≥ 1024px cutoff): visible text label.
+    await expect(compareBtn).toContainText('Compare')
+  })
+})
