@@ -74,6 +74,75 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
   })
 }
 
+/** GeoJSON source id for the app-built country-label points (B1). */
+export const COUNTRY_LABEL_SOURCE = 'country-label-points'
+
+/** Zoom-stepped areaRank admission — the "area-ranked minzoom" from the B1
+ *  design: area giants label from the base zoom, each stop admits the next
+ *  tier, everything (incl. microstates) labels from z5. Zoom expressions in
+ *  FILTERS must be a top-level step/interpolate on ['zoom'] (style-spec
+ *  rule), hence the whole filter is one step; filters evaluate at integer
+ *  zooms, which is fine for tier admission. Stops are tuned in the B1 e2e
+ *  task's live pass. */
+const LABEL_RANK_FILTER: maplibregl.ExpressionSpecification = [
+  'step',
+  ['zoom'],
+  ['<=', ['get', 'areaRank'], 40],
+  3,
+  ['<=', ['get', 'areaRank'], 100],
+  4,
+  ['<=', ['get', 'areaRank'], 160],
+  5,
+  true,
+]
+
+/** Area-ranked text size: giants render larger than microstates at every
+ *  zoom; both grow with zoom. Outer interpolate must be on zoom (composite
+ *  expression order); inner is on the areaRank data property. Tuned in the
+ *  B1 e2e task's live pass. */
+const LABEL_TEXT_SIZE: maplibregl.ExpressionSpecification = [
+  'interpolate',
+  ['linear'],
+  ['zoom'],
+  1.5,
+  ['interpolate', ['linear'], ['get', 'areaRank'], 1, 13, 195, 9],
+  6,
+  ['interpolate', ['linear'], ['get', 'areaRank'], 1, 18, 195, 12],
+]
+
+/** Add the app-owned country-name label layer (B1). Called LAST in WorldMap's
+ *  onLoad so labels render above every other app layer. Starts hidden:
+ *  applyBasemapLayerVisibility is the single visibility owner (visible iff
+ *  satellite && !hideLabels) and runs from useSatelliteMode once loaded —
+ *  the initial 'none' prevents a label flash on a deep-linked game cold load
+ *  before the owner's first pass. */
+export function addCountryLabelLayer(map: maplibregl.Map, labels: GeoJSON.FeatureCollection): void {
+  map.addSource(COUNTRY_LABEL_SOURCE, { type: 'geojson', data: labels })
+  map.addLayer({
+    id: LAYER.countryLabels,
+    type: 'symbol',
+    source: COUNTRY_LABEL_SOURCE,
+    filter: LABEL_RANK_FILTER,
+    layout: {
+      // Explicit font is load-bearing: the positron glyphs endpoint serves
+      // Noto Sans; MapLibre's default font stack would 404 there (B1 glyph
+      // spike, docs/superpowers/notes/2026-07-28-b1-glyph-spike.md).
+      'text-font': ['Noto Sans Bold'],
+      'text-field': ['get', 'name'],
+      'text-size': LABEL_TEXT_SIZE,
+      // Lower sort key places first → giants win the collision pass
+      // deterministically; microstates drop first in dense views.
+      'symbol-sort-key': ['get', 'areaRank'],
+      visibility: 'none',
+    },
+    paint: {
+      'text-color': '#ffffff',
+      'text-halo-color': '#0f172a',
+      'text-halo-width': 1.5,
+    },
+  })
+}
+
 /** Add hover / extrusion overlays for the currently hovered country. */
 export function addHoverLayers(map: maplibregl.Map): void {
   map.addLayer({
@@ -243,6 +312,7 @@ export const LAYER = {
   compareBorder: 'country-compare-border',
   compareGlow: 'country-compare-glow',
   compareExtrusion: 'country-compare-extrusion',
+  countryLabels: 'country-labels',
   satellite: 'satellite-layer',
 } as const
 
@@ -294,10 +364,12 @@ export function applySelectionColor(map: maplibregl.Map, color: string): void {
 /** Single owner of BASEMAP layer visibility (the repo's #111 pattern —
  *  useSatelliteMode's satellite toggle and the in-game label hiding both go
  *  through this rule, so neither can clobber the other):
- *  custom layers (country-*, satellite-*) are never touched here; every
- *  other layer is visible iff !satellite, and symbol layers (all text —
- *  country/city/sea names leak game answers) additionally require
- *  !hideLabels (2026-07-10 batch-2 spec §1). */
+ *  custom layers (country-*, satellite-*) are never touched here — EXCEPT
+ *  the app-owned country-labels layer, which gets an explicit rule (B1):
+ *  visible iff satellite && !hideLabels. Every other layer is visible iff
+ *  !satellite, and symbol layers (all text — country/city/sea names leak
+ *  game answers) additionally require !hideLabels (2026-07-10 batch-2
+ *  spec §1). */
 export function applyBasemapLayerVisibility(
   map: maplibregl.Map,
   opts: { satellite: boolean; hideLabels: boolean },
@@ -306,6 +378,18 @@ export function applyBasemapLayerVisibility(
   if (!style?.layers) return
   const customPrefixes = ['country-', 'satellite-']
   for (const layer of style.layers) {
+    // B1: the app-owned label layer gets an explicit rule BEFORE the
+    // custom-prefix skip — visible iff satellite && !hideLabels. Labels ride
+    // the satellite view only (basemap symbols cover vector mode), and
+    // hideLabels gates them the same way so game answers never leak.
+    if (layer.id === LAYER.countryLabels) {
+      map.setLayoutProperty(
+        layer.id,
+        'visibility',
+        opts.satellite && !opts.hideLabels ? 'visible' : 'none',
+      )
+      continue
+    }
     if (customPrefixes.some((p) => layer.id.startsWith(p))) continue
     const visible = !opts.satellite && (layer.type !== 'symbol' || !opts.hideLabels)
     try {

@@ -1,12 +1,15 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
+  addCountryLabelLayer,
   addHoverLayers,
   addSelectionLayers,
   addCompareLayers,
   applyBasemapLayerVisibility,
   applyCountryBaselinePaint,
+  COUNTRY_LABEL_SOURCE,
   EXTRUSION_MAX_ZOOM,
   extrusionHeightExpression,
+  LAYER,
 } from '../mapLayers'
 import { createFakeMapRef } from '../../test/fakeMapRef'
 
@@ -56,6 +59,7 @@ describe('applyBasemapLayerVisibility', () => {
     { id: 'water', type: 'fill' },
     { id: 'place-labels', type: 'symbol' },
     { id: 'country-fill', type: 'fill' },
+    { id: 'country-labels', type: 'symbol' },
     { id: 'satellite-layer', type: 'raster' },
   ]
   function makeMapWithStyle() {
@@ -91,6 +95,43 @@ describe('applyBasemapLayerVisibility', () => {
     applyBasemapLayerVisibility(fake.map, { satellite: true, hideLabels: true })
     expect(visibilityOf(fake, 'water')).toBe('none')
     expect(visibilityOf(fake, 'place-labels')).toBe('none')
+  })
+
+  // B1: the app-owned label layer is the ONE country-* layer this owner does
+  // write — the explicit rule (visible iff satellite && !hideLabels) runs
+  // before the customPrefixes skip.
+  it.each([
+    [true, false, 'visible'],
+    [true, true, 'none'],
+    [false, false, 'none'],
+    [false, true, 'none'],
+  ])('country-labels: satellite=%s hideLabels=%s → %s', (satellite, hideLabels, expected) => {
+    const fake = makeMapWithStyle()
+    applyBasemapLayerVisibility(fake.map, { satellite, hideLabels })
+    expect(visibilityOf(fake, 'country-labels')).toBe(expected)
+  })
+
+  it('the country-labels rule does not leak to other custom layers', () => {
+    const fake = makeMapWithStyle()
+    applyBasemapLayerVisibility(fake.map, { satellite: true, hideLabels: false })
+    expect(visibilityOf(fake, 'country-fill')).toBeUndefined()
+    expect(visibilityOf(fake, 'satellite-layer')).toBeUndefined()
+  })
+
+  it('toggle-satellite-mid-game ordering: hidden through both toggles, restored only when the game ends', () => {
+    const fake = makeMapWithStyle()
+    // Playing in satellite → hidden.
+    applyBasemapLayerVisibility(fake.map, { satellite: true, hideLabels: true })
+    expect(visibilityOf(fake, 'country-labels')).toBe('none')
+    // Player toggles to vector mid-game → still hidden.
+    applyBasemapLayerVisibility(fake.map, { satellite: false, hideLabels: true })
+    expect(visibilityOf(fake, 'country-labels')).toBe('none')
+    // Back to satellite while STILL playing → satellite alone must not reveal.
+    applyBasemapLayerVisibility(fake.map, { satellite: true, hideLabels: true })
+    expect(visibilityOf(fake, 'country-labels')).toBe('none')
+    // Game ends in satellite → labels return.
+    applyBasemapLayerVisibility(fake.map, { satellite: true, hideLabels: false })
+    expect(visibilityOf(fake, 'country-labels')).toBe('visible')
   })
 })
 
@@ -150,5 +191,64 @@ describe('applyCountryBaselinePaint game emphasis', () => {
     })
     expect(paintOf(fake, 'line-width')).toBe(0.5)
     expect(paintOf(fake, 'line-opacity')).toBe(0.15)
+  })
+})
+
+describe('addCountryLabelLayer', () => {
+  const labelFixture: GeoJSON.FeatureCollection = {
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [2, 46] },
+        properties: { cca3: 'FRA', name: 'France', areaRank: 48 },
+      },
+    ],
+  }
+
+  function addAndGetLayer() {
+    const fake = createFakeMapRef()
+    addCountryLabelLayer(fake.map, labelFixture)
+    const layer = fake.addedLayers.find((l) => l.id === LAYER.countryLabels)
+    if (layer?.type !== 'symbol') throw new Error('country-labels must be a symbol layer')
+    return { fake, layer }
+  }
+
+  it('adds the geojson source and a symbol layer registered as LAYER.countryLabels', () => {
+    const { fake, layer } = addAndGetLayer()
+    expect(fake.calls.addSource).toHaveBeenCalledWith(COUNTRY_LABEL_SOURCE, {
+      type: 'geojson',
+      data: labelFixture,
+    })
+    expect(layer.source).toBe(COUNTRY_LABEL_SOURCE)
+  })
+
+  it('uses the endpoint-verified Noto Sans Bold font (the default stack 404s on the positron glyphs endpoint)', () => {
+    const { layer } = addAndGetLayer()
+    expect(layer.layout?.['text-font']).toEqual(['Noto Sans Bold'])
+    expect(layer.layout?.['text-field']).toEqual(['get', 'name'])
+  })
+
+  it('sorts collisions by areaRank and starts hidden until the visibility owner runs', () => {
+    const { layer } = addAndGetLayer()
+    expect(layer.layout?.['symbol-sort-key']).toEqual(['get', 'areaRank'])
+    expect(layer.layout?.visibility).toBe('none')
+  })
+
+  it('zoom-stepped areaRank admission: a top-level step on zoom ending in admit-all', () => {
+    const { layer } = addAndGetLayer()
+    const filter = layer.filter as unknown[]
+    expect(filter[0]).toBe('step')
+    expect(filter[1]).toEqual(['zoom'])
+    expect(filter.at(-1)).toBe(true) // final branch admits all 195
+  })
+
+  it('white text with a dark halo inside the 1–2.5px legibility band', () => {
+    const { layer } = addAndGetLayer()
+    expect(layer.paint?.['text-color']).toBe('#ffffff')
+    expect(layer.paint?.['text-halo-color']).toBe('#0f172a')
+    const halo = layer.paint?.['text-halo-width'] as number
+    expect(halo).toBeGreaterThanOrEqual(1)
+    expect(halo).toBeLessThanOrEqual(2.5)
   })
 })

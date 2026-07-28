@@ -11,8 +11,10 @@ import {
   addHoverLayers,
   addSelectionLayers,
   addCompareLayers,
+  addCountryLabelLayer,
   applyWarmLighting,
 } from '../lib/mapLayers'
+import { COUNTRY_LABEL_COLLECTION } from '../lib/countryLabelFeatures'
 import { useMapInstance } from '../hooks/useMapInstance'
 import { useMapInteractions } from '../hooks/useMapInteractions'
 import { useSelectionHighlight } from '../hooks/useSelectionHighlight'
@@ -57,6 +59,9 @@ export default function WorldMap({
     addHoverLayers(map)
     addSelectionLayers(map)
     addCompareLayers(map)
+    // Added LAST so labels render above every other app layer. Starts hidden;
+    // useSatelliteMode's applyBasemapLayerVisibility pass owns its visibility.
+    addCountryLabelLayer(map, COUNTRY_LABEL_COLLECTION)
     applyWarmLighting(map)
   }, [])
 
