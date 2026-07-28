@@ -4,20 +4,19 @@ import { type ReactNode } from 'react'
 import { MapProvider, useMap } from '../useMap'
 import { useMapTheme } from '../useMapTheme'
 import { useCompareViewHighlight } from '../useCompareViewHighlight'
-import { CORAL, CORAL_LIGHT } from '../../lib/mapPalette'
+import { ICE, SIGNAL } from '../../lib/mapPalette'
 
 // Cross-hook ordering regression lock.
 //
 // useMapTheme and useCompareViewHighlight BOTH write the country-selected*
-// colours via applySelectionColor. In dark mode + compare view, useMapTheme
-// writes CORAL_LIGHT and useCompareViewHighlight must run AFTER it to pin
-// CORAL (the A-badge colour) — a guarantee that rests entirely on WorldMap
-// calling the hooks in that order (the "must run AFTER useMapTheme" comment in
-// useCompareViewHighlight). The per-hook unit tests render each hook in
-// isolation, and the compare e2e runs in light mode (where both write CORAL),
-// so the dark+compare cell — the only one where the order is load-bearing —
-// is otherwise untested. This test renders both hooks in WorldMap's order and
-// fails if the pin is ever lost (e.g. a hook reorder).
+// colours via applySelectionColor. While comparing, useMapTheme writes the
+// theme ice (ICE in dark, ICE_DEEP in light) and useCompareViewHighlight
+// must run AFTER it to pin SIGNAL (the A-badge colour) — a guarantee that
+// rests entirely on WorldMap calling the hooks in that order (the "must run
+// AFTER useMapTheme" comment in useCompareViewHighlight). Under E4 the pin
+// is load-bearing in BOTH themes; the compare e2e covers light, so this
+// test renders both hooks in WorldMap's order in dark and fails if the pin
+// is ever lost (e.g. a hook reorder).
 
 // Local fake: useMapTheme needs getLayer/getStyle (applyMapTheme) + setSky,
 // useCompareViewHighlight needs setFilter; both write via setPaintProperty.
@@ -61,7 +60,7 @@ function selectionFillWrites(fake: ReturnType<typeof makeThemeAwareFakeMap>) {
 }
 
 describe('selection colour ordering (useMapTheme → useCompareViewHighlight)', () => {
-  it('dark + compare: the selected-country fill pins CORAL, not the theme CORAL_LIGHT', () => {
+  it('dark + compare: the selected-country fill pins SIGNAL, not the theme ice', () => {
     const fake = makeThemeAwareFakeMap()
     renderHook(
       () => {
@@ -77,10 +76,10 @@ describe('selection colour ordering (useMapTheme → useCompareViewHighlight)', 
     )
 
     const writes = selectionFillWrites(fake)
-    // useMapTheme really wrote the dark theme coral first — so this test would
+    // useMapTheme really wrote the dark theme ice first — so this test would
     // catch a reorder, not silently pass because the theme write never ran.
-    expect(writes).toContain(CORAL_LIGHT)
-    // ...and the compare pin (running after) wins: the final colour is CORAL.
-    expect(writes.at(-1)).toBe(CORAL)
+    expect(writes).toContain(ICE)
+    // ...and the compare pin (running after) wins: the final colour is SIGNAL.
+    expect(writes.at(-1)).toBe(SIGNAL)
   })
 })

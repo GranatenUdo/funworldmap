@@ -6,7 +6,7 @@ import {
   TERRAIN_TILES,
   TERRAIN_ATTRIBUTION,
 } from './mapStyles'
-import { TEAL, TEAL_DIM, CORAL, SPOTLIGHT_DIM, REVEAL_WRONG } from './mapPalette'
+import { ICE_DEEP, ICE_DIM, SIGNAL, SPOTLIGHT_DIM, REVEAL_WRONG } from './mapPalette'
 
 const EMPTY_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
@@ -62,7 +62,7 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
     type: 'fill',
     source: 'countries',
     paint: {
-      'fill-color': TEAL,
+      'fill-color': ICE_DEEP,
       'fill-opacity': DEFAULT_FILL_OPACITY,
     },
   })
@@ -164,7 +164,7 @@ export function addHoverLayers(map: maplibregl.Map): void {
     id: LAYER.hoverBorder,
     type: 'line',
     source: 'countries',
-    paint: { 'line-color': TEAL, 'line-width': 2, 'line-opacity': 0.6 },
+    paint: { 'line-color': ICE_DEEP, 'line-width': 2, 'line-opacity': 0.6 },
     filter: EMPTY_FILTER,
   })
 
@@ -174,7 +174,7 @@ export function addHoverLayers(map: maplibregl.Map): void {
     source: 'countries',
     maxzoom: EXTRUSION_MAX_ZOOM,
     paint: {
-      'fill-extrusion-color': TEAL,
+      'fill-extrusion-color': ICE_DEEP,
       'fill-extrusion-height': extrusionHeightExpression(60000),
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.65,
@@ -184,8 +184,8 @@ export function addHoverLayers(map: maplibregl.Map): void {
 }
 
 /** Add a 4-layer highlight stack (glow / fill / border / extrusion) under a
- *  shared id prefix and color. Used for both selection (coral) and compare
- *  (teal-dim). The glow id keeps the `-glow` suffix; the fill is bare prefix. */
+ *  shared id prefix and color. Used for both selection (ice) and compare
+ *  (ice-dim). The glow id keeps the `-glow` suffix; the fill is bare prefix. */
 function addHighlightStack(
   map: maplibregl.Map,
   prefix: 'country-selected' | 'country-compare',
@@ -233,14 +233,18 @@ function addHighlightStack(
   })
 }
 
-/** Add the selection (coral) highlight stack. */
+/** Add the selection (ice) highlight stack. Initialized with the light-theme
+ *  deep ice; useMapTheme owns the per-theme value and useCompareViewHighlight
+ *  pins SIGNAL over it while comparing (E4). */
 export function addSelectionLayers(map: maplibregl.Map): void {
-  addHighlightStack(map, 'country-selected', CORAL)
+  addHighlightStack(map, 'country-selected', ICE_DEEP)
 }
 
-/** Add the compare (teal-dim) highlight stack. */
+/** Add the compare (ice-dim) highlight stack — a map-only mid-ice shade (E4;
+ *  see mapPalette.ts's ICE_DIM doc for why this does not equal the panel's
+ *  .compare-badge-b, which renders plain ice). */
 export function addCompareLayers(map: maplibregl.Map): void {
-  addHighlightStack(map, 'country-compare', TEAL_DIM)
+  addHighlightStack(map, 'country-compare', ICE_DIM)
 }
 
 /** Lazily add the game reveal fill layer (`country-reveal-fill`) — a
@@ -510,8 +514,9 @@ export function applyBasemapLayerVisibility(
 }
 
 /** Compare A/B centroid markers — one symbol layer labelling the pair on the
- *  map in the compare badge colors (A coral / B teal-dim; index.css's
- *  .compare-badge-a/-b hardcode the same mapPalette hexes). Rides on B1's
+ *  map in the compare badge colors (A signal / B ice-dim; index.css's
+ *  .compare-badge-a hardcodes the same mapPalette SIGNAL hex — see
+ *  mapPalette.ts's ICE_DIM doc for why .compare-badge-b does not). Rides on B1's
  *  label-layer pattern: `text-font` MUST be explicit because the positron
  *  glyphs endpoint 404s MapLibre's default font stack (B1 glyph decision,
  *  live-verified 2026-07-27). The `country-` prefix keeps
@@ -535,8 +540,10 @@ export function addCompareMarkerLayer(map: maplibregl.Map): void {
       'text-ignore-placement': true,
     },
     paint: {
-      'text-color': ['match', ['get', 'label'], 'A', CORAL, TEAL_DIM],
-      'text-halo-color': '#ffffff',
+      'text-color': ['match', ['get', 'label'], 'A', SIGNAL, ICE_DIM],
+      // Dark halo (B1's label halo): SIGNAL #ff8a4c is ~2.3:1 against white
+      // but ~7.3:1 against #0f172a; ICE_DIM is ~4.1:1 either way (E4).
+      'text-halo-color': '#0f172a',
       'text-halo-width': 1.5,
     },
   })

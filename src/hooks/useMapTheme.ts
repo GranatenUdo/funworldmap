@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { applyMapTheme } from '../lib/mapColors'
-import { TEAL, TEAL_LIGHT, CORAL, CORAL_LIGHT } from '../lib/mapPalette'
+import { ICE, ICE_DEEP } from '../lib/mapPalette'
 import { LAYER, applySelectionColor } from '../lib/mapLayers'
 import { useMap } from './useMap'
 
@@ -21,15 +21,17 @@ export function useMapTheme({ loaded, resolvedTheme }: Options): void {
     applyMapTheme(map, resolvedTheme)
 
     const isDark = resolvedTheme === 'dark'
-    const teal = isDark ? TEAL_LIGHT : TEAL
-    const coral = isDark ? CORAL_LIGHT : CORAL
+    const ice = isDark ? ICE : ICE_DEEP
 
     try {
-      map.setPaintProperty(LAYER.fill, 'fill-color', teal)
-      map.setPaintProperty(LAYER.extrusion, 'fill-extrusion-color', teal)
-      map.setPaintProperty(LAYER.hoverBorder, 'line-color', teal)
+      map.setPaintProperty(LAYER.fill, 'fill-color', ice)
+      map.setPaintProperty(LAYER.extrusion, 'fill-extrusion-color', ice)
+      map.setPaintProperty(LAYER.hoverBorder, 'line-color', ice)
 
-      applySelectionColor(map, coral)
+      // E4: the selection highlight is ice (wayfinding), the same family as
+      // the hover accents — coral is retired. useCompareViewHighlight pins
+      // SIGNAL over this while comparing.
+      applySelectionColor(map, ice)
 
       map.setSky({
         'sky-color': isDark ? '#0a1a2e' : '#88c6fc',

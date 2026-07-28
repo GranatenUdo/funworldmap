@@ -44,11 +44,14 @@ test.describe('compare view dimming interacts with satellite mode', () => {
 })
 
 test.describe('compare view A/B highlight colours match panel badges', () => {
-  // Badge colours defined in src/index.css .compare-badge-a / .compare-badge-b
-  const CORAL = '#f43f5e'
-  const TEAL_DIM = '#0d9488'
+  // Badge colours defined in src/index.css .compare-badge-a / .compare-badge-b;
+  // canonical hexes live in src/lib/mapPalette.ts (E4: A = SIGNAL, B = ICE_DIM).
+  const SIGNAL = '#ff8a4c'
+  const ICE_DIM = '#0284c7'
+  // The light-theme selection accent (mapPalette ICE_DEEP) — exit-restore colour.
+  const ICE_DEEP = '#0ea5e9'
 
-  test('in compare mode: A (selected) is coral and B (compareWith) is teal-dim', async ({
+  test('in compare mode: A (selected) is signal and B (compareWith) is ice-dim', async ({
     page,
   }) => {
     // Navigate directly into compare mode: FRA = A (selected), DEU = B (compareWith).
@@ -56,11 +59,13 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
     await waitForMapLoaded(page)
 
     // Poll until useCompareViewHighlight has applied the badge-matched paint props.
-    await expect.poll(() => getFillColor(page, 'country-selected'), { timeout: 15_000 }).toBe(CORAL)
+    await expect
+      .poll(() => getFillColor(page, 'country-selected'), { timeout: 15_000 })
+      .toBe(SIGNAL)
 
     await expect
       .poll(() => getFillColor(page, 'country-compare-fill'), { timeout: 15_000 })
-      .toBe(TEAL_DIM)
+      .toBe(ICE_DIM)
 
     // Camera must frame BOTH countries left of the compare panel (batch-2 §3).
     await expect
@@ -91,14 +96,14 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
     const bColor = await getFillColor(page, 'country-compare-fill')
 
     expect(aColor).not.toBe(bColor)
-    expect(aColor).toBe(CORAL)
-    expect(bColor).toBe(TEAL_DIM)
+    expect(aColor).toBe(SIGNAL)
+    expect(bColor).toBe(ICE_DIM)
   })
 
   test.describe('exit restoration in light mode', () => {
     test.use({ colorScheme: 'light' })
 
-    test('exiting compare mode restores selection to theme-appropriate coral', async ({ page }) => {
+    test('exiting compare mode restores selection to theme-appropriate ice', async ({ page }) => {
       // Start in compare mode.
       await page.goto('/#FRA,DEU')
       await waitForMapLoaded(page)
@@ -112,10 +117,10 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
       // Wait for compare mode to release (border opacity restores to 0.9).
       await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.9, 2)
 
-      // Light mode → CORAL is the restored colour (matches the badge).
-      // Verify that exiting compare restores the correct theme-appropriate fill-color.
+      // Light mode → deep ice is the restored colour (the theme accent; the
+      // SIGNAL badge colour belongs to compare mode only).
       const selColor = await getFillColor(page, 'country-selected')
-      expect(selColor).toBe(CORAL)
+      expect(selColor).toBe(ICE_DEEP)
     })
   })
 })

@@ -2,7 +2,7 @@ import { useEffect, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryLike, GameSession, GuessInput } from '../shared/types'
 import { EMPTY_FILTER, ensureRevealFillLayer, LAYER } from '../../lib/mapLayers'
-import { REVEAL_CORRECT, REVEAL_WRONG, TEAL } from '../../lib/mapPalette'
+import { REVEAL_CORRECT, REVEAL_WRONG, ICE_DEEP } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
 import {
   computeRevealAnimationPlan,
@@ -31,13 +31,14 @@ const TRANSPARENT = 'rgba(0,0,0,0)'
 
 /** Marker fill is role-driven so the two city-reveal markers are always
  *  distinguishable — even when a near-perfect guess lands on top of the city
- *  and the connecting arc is too short to see. The player's guess is teal; the
- *  actual city (and every country-reveal marker) falls through to amber. */
+ *  and the connecting arc is too short to see. The player's guess is deep ice
+ *  (E4 — the click is the player's wayfinding act); the actual city (and
+ *  every country-reveal marker) falls through to the reveal colour. */
 const MARKER_COLOR_BY_ROLE: maplibregl.ExpressionSpecification = [
   'match',
   ['get', 'role'],
   'guess',
-  TEAL,
+  ICE_DEEP,
   REVEAL_WRONG,
 ]
 
