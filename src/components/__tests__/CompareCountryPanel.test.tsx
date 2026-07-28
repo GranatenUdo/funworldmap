@@ -75,7 +75,12 @@ describe('CompareCountryPanel header controls (A15)', () => {
   })
 })
 
-describe('C1 — one shared field list drives both columns', () => {
+describe('C1 — one shared field list drives both columns (mobile)', () => {
+  // isDesktop:false — desktop moved to CompareFieldRow's shared-row table in
+  // C2/C3 (one row per field, both values side by side), so this per-column
+  // "every COMPARE_FIELDS row renders in each column" assertion now exercises
+  // the still-unchanged mobile CountryColumn path (see task-3-report.md for
+  // the desktop-side coverage: CompareFieldRow.test.tsx + the e2e additions).
   it('renders identical, ordered rows in both columns with em-dash placeholders', () => {
     const sparse = makeCountry({
       cca3: 'DEU',
@@ -88,7 +93,7 @@ describe('C1 — one shared field list drives both columns', () => {
       <CompareCountryPanel
         country={FRA}
         compareWith={sparse}
-        isDesktop={true}
+        isDesktop={false}
         onCompareColumnSelect={vi.fn()}
         onClose={vi.fn()}
         onExitCompare={vi.fn()}
@@ -110,6 +115,12 @@ describe('C1 — one shared field list drives both columns', () => {
 })
 
 describe('C1 — border chips are column-scoped', () => {
+  // Desktop (isDesktop:true, as rendered here): borders stayed column-scoped
+  // through the C2/C3 shared-row rewrite, but they're no longer inside a
+  // single per-column DOM subtree (CountryColumn) — CompareCountryPanel wraps
+  // each side's <CountryBorders> in its own compare-borders-a/b testid now
+  // (see CompareCountryPanel.tsx's desktop branch). compare-column-a/b still
+  // exists too, scoped to just the header.
   it('reports column "a" for chips in column A and column "b" for chips in column B', () => {
     const fra = makeCountry({ borders: ['ESP'] })
     const deu = makeCountry({
@@ -150,11 +161,11 @@ describe('C1 — border chips are column-scoped', () => {
       />,
     )
     fireEvent.click(
-      within(screen.getByTestId('compare-column-a')).getByRole('button', { name: 'Spain' }),
+      within(screen.getByTestId('compare-borders-a')).getByRole('button', { name: 'Spain' }),
     )
     expect(onCompareColumnSelect).toHaveBeenLastCalledWith('a', 'ESP')
     fireEvent.click(
-      within(screen.getByTestId('compare-column-b')).getByRole('button', { name: 'Poland' }),
+      within(screen.getByTestId('compare-borders-b')).getByRole('button', { name: 'Poland' }),
     )
     expect(onCompareColumnSelect).toHaveBeenLastCalledWith('b', 'POL')
   })

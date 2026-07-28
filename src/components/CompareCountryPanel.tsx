@@ -1,6 +1,8 @@
 import type { CountryData, CountriesFile } from '../lib/types'
 import { CloseButton } from './CloseButton'
-import { CountryColumn } from './CountryColumn'
+import { CountryColumn, CountryColumnHeader, CountryBorders } from './CountryColumn'
+import { CompareFieldRow } from './CompareFieldRow'
+import { COMPARE_FIELDS } from '../lib/compareFields'
 import { dispatchToast } from '../lib/toast'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstants'
 import type { CompareColumn } from '../lib/compareMapClick'
@@ -92,38 +94,77 @@ export function CompareCountryPanel({
           </button>
           <CloseButton onClick={onClose} ariaLabel="Close panel" testId="panel-close" />
         </div>
-        <div
-          className={
-            isDesktop
-              ? 'grid grid-cols-2 grid-rows-1 flex-1 min-h-0'
-              : 'flex flex-col flex-1 min-h-0'
-          }
-        >
-          <div
-            className={
-              isDesktop
-                ? 'border-r border-sand-200/50 dark:border-dark-200/30 min-h-0'
-                : 'flex-1 border-b-2 border-dashed border-sand-300/50 dark:border-dark-200/30 min-h-0'
-            }
-          >
-            <CountryColumn
-              country={country}
-              byCca3={byCca3}
-              onSelect={(cca3) => onCompareColumnSelect('a', cca3)}
-              badgeLetter="A"
-              badgeColor="a"
-            />
+        {isDesktop ? (
+          /* C2/C3 — desktop: ONE scroll of shared rows under paired sticky
+             headers. Columns diverge only for the per-country borders lists.
+             The header wrappers and the borders wrappers keep the
+             compare-column-a/b / compare-borders-a/b testids (the desktop
+             layout no longer has a single per-column DOM subtree spanning
+             header+fields+borders the way CountryColumn did, so the old
+             single-testid scope had to split into these two — see
+             task-3-report.md). */
+          <div className="flex-1 min-h-0 overflow-y-auto" data-testid="compare-rows">
+            <div className="grid grid-cols-2 sticky top-0 z-10">
+              <div
+                className="border-r border-sand-200/50 dark:border-dark-200/30"
+                data-testid="compare-column-a"
+              >
+                <CountryColumnHeader country={country} badgeLetter="A" badgeColor="a" />
+              </div>
+              <div data-testid="compare-column-b">
+                <CountryColumnHeader country={compareWith} badgeLetter="B" badgeColor="b" />
+              </div>
+            </div>
+            <div className="px-5 py-3 space-y-3">
+              {COMPARE_FIELDS.map((f) => (
+                <CompareFieldRow key={f.key} field={f} a={country} b={compareWith} />
+              ))}
+            </div>
+            {/* Borders stay per-country. Both columns keep the plain select
+                path here — the per-column replace semantics (the A8-descoped
+                border-chip clause) are wired by this plan's compare-entry
+                task, not this one. */}
+            <div className="grid grid-cols-2 gap-x-4 px-5 pb-4">
+              <div data-testid="compare-borders-a">
+                <CountryBorders
+                  country={country}
+                  byCca3={byCca3}
+                  onSelect={(cca3) => onCompareColumnSelect('a', cca3)}
+                />
+              </div>
+              <div data-testid="compare-borders-b">
+                <CountryBorders
+                  country={compareWith}
+                  byCca3={byCca3}
+                  onSelect={(cca3) => onCompareColumnSelect('b', cca3)}
+                />
+              </div>
+            </div>
           </div>
-          <div className={isDesktop ? 'min-h-0' : 'flex-1 min-h-0'}>
-            <CountryColumn
-              country={compareWith}
-              byCca3={byCca3}
-              onSelect={(cca3) => onCompareColumnSelect('b', cca3)}
-              badgeLetter="B"
-              badgeColor="b"
-            />
+        ) : (
+          /* Mobile keeps the stacked per-country columns until C6 replaces
+             them with these same shared rows under a compact sticky header. */
+          <div className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 border-b-2 border-dashed border-sand-300/50 dark:border-dark-200/30 min-h-0">
+              <CountryColumn
+                country={country}
+                byCca3={byCca3}
+                onSelect={(cca3) => onCompareColumnSelect('a', cca3)}
+                badgeLetter="A"
+                badgeColor="a"
+              />
+            </div>
+            <div className="flex-1 min-h-0">
+              <CountryColumn
+                country={compareWith}
+                byCca3={byCca3}
+                onSelect={(cca3) => onCompareColumnSelect('b', cca3)}
+                badgeLetter="B"
+                badgeColor="b"
+              />
+            </div>
           </div>
-        </div>
+        )}
         <footer
           className="px-4 py-3 border-t border-sand-200/50 dark:border-dark-200/30 text-xs text-sand-600 dark:text-dark-100"
           data-testid="compare-sources"

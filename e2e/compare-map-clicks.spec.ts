@@ -199,10 +199,17 @@ test.describe('C1 — border-chip clicks are column-scoped', () => {
   // Would have failed before C1: chips routed to select(), tearing the pair
   // down to a single panel. Real bundled data: ESP and DEU are France's
   // border chips; POL is one of Germany's.
+  //
+  // C2/C3 note: the desktop layout replaced the two-CountryColumn grid with
+  // paired sticky headers (compare-column-a/b) over one shared-row scroll,
+  // plus per-country borders wrapped in compare-borders-a/b — border chips
+  // are no longer inside the compare-column-a/b subtree, so the click
+  // targets below use compare-borders-a/b while the post-click name
+  // assertions keep using compare-column-a/b (the header).
   test('a chip in column A replaces A and keeps B', async ({ page }) => {
     await openComparePair(page)
 
-    await page.getByTestId('compare-column-a').getByRole('button', { name: 'Spain' }).click()
+    await page.getByTestId('compare-borders-a').getByRole('button', { name: 'Spain' }).click()
 
     await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('#ESP,DEU')
     await expect(page.getByTestId('exit-compare')).toBeVisible()
@@ -213,7 +220,7 @@ test.describe('C1 — border-chip clicks are column-scoped', () => {
   test('a chip in column B replaces B and keeps A', async ({ page }) => {
     await openComparePair(page)
 
-    await page.getByTestId('compare-column-b').getByRole('button', { name: 'Poland' }).click()
+    await page.getByTestId('compare-borders-b').getByRole('button', { name: 'Poland' }).click()
 
     await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('#FRA,POL')
     await expect(page.getByTestId('exit-compare')).toBeVisible()
@@ -224,7 +231,7 @@ test.describe('C1 — border-chip clicks are column-scoped', () => {
     await openComparePair(page)
 
     // Germany (the current B) is one of France's border chips.
-    await page.getByTestId('compare-column-a').getByRole('button', { name: 'Germany' }).click()
+    await page.getByTestId('compare-borders-a').getByRole('button', { name: 'Germany' }).click()
 
     // A regression writes the hash synchronously inside the click handler,
     // so this immediate read is a deterministic signal (existing pattern).

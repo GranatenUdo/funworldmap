@@ -105,3 +105,28 @@ test.describe('compare header controls (A15)', () => {
     await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('')
   })
 })
+
+test.describe('C2/C3 — shared-row comparison table (desktop)', () => {
+  test('numeric rows render paired bars and a directional delta chip', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('exit-compare')).toBeVisible({ timeout: 15_000 })
+
+    // Bars: presence via testid, never pixel measurements. Population and
+    // area both have values for FRA and DEU, so all four bars render.
+    await expect(page.getByTestId('compare-bar-a-population')).toBeVisible()
+    await expect(page.getByTestId('compare-bar-b-population')).toBeVisible()
+    await expect(page.getByTestId('compare-bar-a-area')).toBeVisible()
+    await expect(page.getByTestId('compare-bar-b-area')).toBeVisible()
+
+    // C3: the derived density row exists with its own bars.
+    await expect(page.getByTestId('compare-row-density')).toBeVisible()
+    await expect(page.getByTestId('compare-bar-a-density')).toBeVisible()
+
+    // Delta chip via accessible text. Germany's population exceeds
+    // France's in every data vintage; the exact ratio floats with data
+    // updates, so pin the phrasing shape, not the number.
+    await expect(page.getByTestId('compare-delta-population')).toHaveText(
+      /^Germany \d[\d,]*\.\d{2}× population$/,
+    )
+  })
+})
