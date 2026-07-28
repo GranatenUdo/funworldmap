@@ -1,31 +1,12 @@
 import type { CountryData } from '../lib/types'
 import { BorderChip } from './BorderChip'
-import { COMPARE_FIELDS, EM_DASH } from '../lib/compareFields'
 import { EXCEPTION_BADGE, activeExceptionBadges } from './exceptionBadge'
 
-function CompareField({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <div className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice">
-        {label}
-      </div>
-      <div className="text-readout text-sm text-sand-800 dark:text-dark-50">{children}</div>
-    </div>
-  )
-}
-
-interface Props {
-  country: CountryData
-  byCca3: Map<string, CountryData>
-  onSelect: (cca3: string) => void
-  badgeLetter: 'A' | 'B'
-  badgeColor: 'a' | 'b'
-}
-
 /** Sticky per-country header: flag, name, capital(s), region badge, and the
- *  A5 exception badges. Lifted verbatim from CountryColumn (C2/C3) so the
- *  desktop shared-row layout (CompareCountryPanel) can pair two headers over
- *  one shared-row scroll, while mobile keeps it via CountryColumn below. */
+ *  A5 exception badges. Extracted from the (now-deleted) composed
+ *  CountryColumn (C2/C3) so the desktop shared-row layout (CompareCountryPanel)
+ *  can pair two headers over one shared-row scroll. Mobile (C6) renders its
+ *  own compact header inline in CompareCountryPanel instead of reusing this. */
 export function CountryColumnHeader({
   country,
   badgeLetter,
@@ -108,26 +89,6 @@ export function CountryBorders({
             size="compare"
           />
         ))}
-      </div>
-    </div>
-  )
-}
-
-export function CountryColumn({ country, byCca3, onSelect, badgeLetter, badgeColor }: Props) {
-  return (
-    <div
-      className="flex flex-col h-full overflow-y-auto"
-      data-testid={`compare-column-${badgeColor}`}
-    >
-      <CountryColumnHeader country={country} badgeLetter={badgeLetter} badgeColor={badgeColor} />
-
-      <div className="px-5 py-3 space-y-2">
-        {COMPARE_FIELDS.map((f) => (
-          <CompareField key={f.key} label={f.label}>
-            {f.format(country) ?? EM_DASH}
-          </CompareField>
-        ))}
-        <CountryBorders country={country} byCca3={byCca3} onSelect={onSelect} />
       </div>
     </div>
   )

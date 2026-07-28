@@ -1,18 +1,27 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BorderChip } from '../BorderChip'
-import { CountryColumn } from '../CountryColumn'
+import { CompareFieldRow } from '../CompareFieldRow'
+import { COMPARE_FIELDS } from '../../lib/compareFields'
 import { makeCountry } from './singleCountryPanelTestUtils'
 
 import SearchBar from '../SearchBar'
 import { makeCountryData } from '../../test/countryFixtures'
 import { stubMatchMedia } from '../../test/matchMediaStub'
 
+function field(key: string) {
+  const f = COMPARE_FIELDS.find((f) => f.key === key)
+  if (!f) throw new Error(`no COMPARE_FIELDS entry '${key}'`)
+  return f
+}
+
 /** E4 two-accent migration drift alarm: chrome accents are the ice family;
  *  teal is retired from chrome (it survives ONLY in the Oceania region-badge
  *  data encodings, which render via REGION_BADGE/REGION_COLORS maps, not
- *  these components' accent classes). E2: CompareField values render in the
- *  .text-readout face. */
+ *  these components' accent classes). E2: CompareFieldRow values render in
+ *  the .text-readout face. (Migrated off the now-deleted composed
+ *  CountryColumn onto CompareFieldRow, its architectural successor — see
+ *  task-6-report.md.) */
 describe('E4 ice chrome + E2 readout drift alarm', () => {
   let restoreMatchMedia: () => void
 
@@ -35,14 +44,17 @@ describe('E4 ice chrome + E2 readout drift alarm', () => {
     expect(cls).not.toMatch(/teal/)
   })
 
-  it('CompareField labels are ice and values use .text-readout (E2)', () => {
+  it('CompareFieldRow labels are ice and values use .text-readout (E2)', () => {
     render(
-      <CountryColumn
-        country={makeCountry()}
-        byCca3={new Map()}
-        onSelect={vi.fn()}
-        badgeLetter="A"
-        badgeColor="a"
+      <CompareFieldRow
+        field={field('population')}
+        a={makeCountry()}
+        b={makeCountry({
+          cca3: 'DEU',
+          ccn3: '276',
+          name: { common: 'Germany', official: 'Federal Republic of Germany' },
+          population: 83_000_000,
+        })}
       />,
     )
     const label = screen.getByText('Population')

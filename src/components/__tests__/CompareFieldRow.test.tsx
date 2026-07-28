@@ -110,4 +110,28 @@ describe('CompareFieldRow — categorical rows (C2)', () => {
     expect(screen.getByText('Euro (€)')).toBeTruthy()
     expect(screen.getByText('Swiss franc (Fr.)')).toBeTruthy()
   })
+
+  // Migrated from the now-deleted CountryColumn.test.tsx ('C1 shared field
+  // list' — 'renders every COMPARE_FIELDS row, with em-dash placeholders for
+  // missing values'), which pinned this through the dead composed
+  // CountryColumn. Government/Languages/Currencies/Timezones had NO
+  // CompareFieldRow-level missing-value coverage before this (only Currencies'
+  // both/split states with two PRESENT values were tested above;
+  // compareRowModel.test.ts pins the split-kind MODEL for 'currencies' only,
+  // not the rendered em-dash for these four fields, and not that a missing
+  // value never collapses to "Both: —").
+  it('missing government/languages/currencies/timezones render em-dash in the split row, never "Both:"', () => {
+    const sparse = makeCountryData({
+      governmentType: '',
+      languages: {},
+      currencies: {},
+      timezones: [],
+    })
+    for (const key of ['governmentType', 'languages', 'currencies', 'timezones']) {
+      const { unmount } = render(<CompareFieldRow field={field(key)} a={sparse} b={DEU} />)
+      expect(screen.queryByTestId(`compare-both-${key}`)).toBeNull()
+      expect(screen.getByText('—')).toBeTruthy()
+      unmount()
+    }
+  })
 })

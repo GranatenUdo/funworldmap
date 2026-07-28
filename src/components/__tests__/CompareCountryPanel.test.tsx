@@ -174,6 +174,121 @@ describe('C1 — border chips are column-scoped', () => {
   })
 })
 
+// Migrated off the now-deleted composed CountryColumn (CountryColumn.tsx) and
+// its dedicated CountryColumn.test.tsx / chromeAccent.test.tsx assertions —
+// see task-6-report.md for the full per-assertion disposition. These exercise
+// CountryColumnHeader / CountryBorders through their real consumer,
+// CompareCountryPanel (desktop arm), rather than through the dead wrapper.
+describe('A9 — borders show every neighbour (migrated off dead CountryColumn)', () => {
+  it('renders a chip for every border with no inert "+N" overflow suffix', () => {
+    const neighbours = [
+      ['AUT', '040', 'Austria'],
+      ['BEL', '056', 'Belgium'],
+      ['CZE', '203', 'Czechia'],
+      ['DNK', '208', 'Denmark'],
+      ['FRA', '250', 'France'],
+      ['LUX', '442', 'Luxembourg'],
+      ['NLD', '528', 'Netherlands'],
+      ['POL', '616', 'Poland'],
+    ] as const
+    const byCca3 = new Map(
+      neighbours.map(([cca3, ccn3, common]) => [
+        cca3,
+        makeCountry({ cca3, ccn3, name: { common, official: common } }),
+      ]),
+    )
+    const germany = makeCountry({
+      cca3: 'DEU',
+      ccn3: '276',
+      name: { common: 'Germany', official: 'Federal Republic of Germany' },
+      borders: neighbours.map(([cca3]) => cca3),
+    })
+    render(
+      <CompareCountryPanel
+        country={germany}
+        compareWith={FRA}
+        isDesktop={true}
+        onCompareColumnSelect={vi.fn()}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={byCca3}
+        sources={sources}
+      />,
+    )
+    // 8 borders — the old CountryColumn code sliced to 6 chips and rendered
+    // an inert "+2"; CountryBorders (still live, unchanged) never did.
+    const columnABorders = screen.getByTestId('compare-borders-a')
+    for (const [, , common] of neighbours) {
+      expect(within(columnABorders).getByRole('button', { name: common })).toBeTruthy()
+    }
+    expect(screen.queryByText('+2')).toBeNull()
+  })
+})
+
+describe('A5 exception badges + multi-capital header caption (migrated off dead CountryColumn)', () => {
+  it('renders A5 exception badges in the header only when the flags are false', () => {
+    const vatican = makeCountry({
+      cca3: 'VAT',
+      name: { common: 'Vatican City', official: 'Vatican City State' },
+      unMember: false,
+      independent: false,
+    })
+    render(
+      <CompareCountryPanel
+        country={vatican}
+        compareWith={DEU}
+        isDesktop={true}
+        onCompareColumnSelect={vi.fn()}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={new Map()}
+        sources={sources}
+      />,
+    )
+    expect(screen.getByTestId('exception-badge-un-member').textContent).toBe('UN observer state')
+    expect(screen.getByTestId('exception-badge-independent').textContent).toBe('Not independent')
+  })
+
+  it('renders no exception badges for a default (UN member, independent) country', () => {
+    renderPanel()
+    expect(screen.queryByTestId('exception-badge-un-member')).toBeNull()
+    expect(screen.queryByTestId('exception-badge-independent')).toBeNull()
+  })
+
+  it('joins ALL capitals in the header caption', () => {
+    const zaf = makeCountry({
+      cca3: 'ZAF',
+      name: { common: 'South Africa', official: 'Republic of South Africa' },
+      capital: ['Pretoria', 'Bloemfontein', 'Cape Town'],
+    })
+    render(
+      <CompareCountryPanel
+        country={zaf}
+        compareWith={DEU}
+        isDesktop={true}
+        onCompareColumnSelect={vi.fn()}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={new Map()}
+        sources={sources}
+      />,
+    )
+    expect(screen.getByText('Pretoria, Bloemfontein, Cape Town')).toBeTruthy()
+  })
+})
+
+describe('C1 shared field list — Timezones restored, UN Member row dropped (migrated off dead CountryColumn)', () => {
+  it('Timezones renders as a real shared row with its joined value; no UN Member row exists', () => {
+    // The old per-column CountryColumn silently dropped Timezones; the
+    // "UN Member" row moved entirely to the A5 header exception badge — it
+    // was never a COMPARE_FIELDS row and must not reappear as one.
+    renderPanel() // FRA vs DEU, both default to timezones: ['UTC+01:00']
+    expect(screen.getByText('Timezones')).toBeTruthy()
+    expect(screen.getByTestId('compare-both-timezones').textContent).toBe('Both: UTC+01:00')
+    expect(screen.queryByText('UN Member')).toBeNull()
+  })
+})
+
 describe('C4 exception source markers', () => {
   // Real-data shape: every field restcountries except governmentType (cia-factbook).
   const FIELD_SOURCES: Record<string, string> = {
