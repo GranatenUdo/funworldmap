@@ -107,7 +107,7 @@ export default function WorldMap({
     <div className="relative h-screen w-screen overflow-hidden">
       <div
         ref={containerRef}
-        className="h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-teal dark:focus-visible:outline-teal-light"
+        className="h-full w-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-ice-dim dark:focus-visible:outline-ice"
         data-map-loaded={loaded || undefined}
         data-map-error={mapError ?? undefined}
         tabIndex={0}

@@ -5,7 +5,7 @@ import { formatPersonalBest } from '../game/shared/formatPersonalBest'
 const ICONS: Record<ModeId, React.ReactNode> = {
   'country-pinning': (
     <svg
-      className="w-8 h-8 text-teal dark:text-teal-light"
+      className="w-8 h-8 text-ice-dim dark:text-ice"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.75}
@@ -22,7 +22,7 @@ const ICONS: Record<ModeId, React.ReactNode> = {
   ),
   'city-guessing': (
     <svg
-      className="w-8 h-8 text-teal dark:text-teal-light"
+      className="w-8 h-8 text-ice-dim dark:text-ice"
       fill="none"
       stroke="currentColor"
       strokeWidth={1.75}
@@ -82,7 +82,7 @@ export function LauncherModeCard({ modeId, onPlay }: Props) {
         type="button"
         onClick={onPlay}
         data-testid={`${testIdBase}-play`}
-        className="w-full px-4 py-2 rounded-xl bg-teal text-white font-semibold hover:bg-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60"
+        className="w-full px-4 py-2 rounded-xl bg-ice-accessible text-white font-semibold hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60"
       >
         Play
       </button>

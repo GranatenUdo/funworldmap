@@ -85,7 +85,7 @@ export function CompareCountryPanel({
             type="button"
             onClick={onExitCompare}
             data-testid="exit-compare"
-            className={`px-3 py-1.5 rounded-xl text-sm font-medium text-teal-accessible dark:text-teal-light hover:bg-sand-200 dark:hover:bg-dark-300 transition-colors ${TOUCH_TARGET_FROM_32}`}
+            className={`px-3 py-1.5 rounded-xl text-sm font-medium text-ice-accessible dark:text-ice hover:bg-sand-200 dark:hover:bg-dark-300 transition-colors ${TOUCH_TARGET_FROM_32}`}
           >
             Exit compare
           </button>
@@ -127,7 +127,7 @@ export function CompareCountryPanel({
           className="px-4 py-3 border-t border-sand-200/50 dark:border-dark-200/30 text-xs text-sand-600 dark:text-dark-100"
           data-testid="compare-sources"
         >
-          <span className="uppercase tracking-wider text-teal dark:text-teal-light font-medium">
+          <span className="uppercase tracking-wider text-ice-accessible dark:text-ice font-medium">
             Sources:
           </span>{' '}
           {Object.values(sources).map((s, i) => (
@@ -137,7 +137,7 @@ export function CompareCountryPanel({
                 href={s.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-teal-accessible dark:text-teal-light hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 rounded"
+                className="text-ice-accessible dark:text-ice hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60 rounded"
               >
                 {s.name}
               </a>

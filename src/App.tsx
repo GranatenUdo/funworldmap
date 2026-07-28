@@ -310,13 +310,13 @@ function AppInner({
       className="grain"
     >
       <button
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-ice-accessible focus:text-white focus:rounded-lg"
         onClick={() => document.getElementById('search-input')?.focus()}
       >
         Skip to search
       </button>
       <button
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-40 focus:z-[100] focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-40 focus:z-[100] focus:px-4 focus:py-2 focus:bg-ice-accessible focus:text-white focus:rounded-lg"
         onClick={() => document.querySelector<HTMLDivElement>('[role="application"]')?.focus()}
       >
         Skip to map
@@ -335,14 +335,14 @@ function AppInner({
           aria-hidden="true"
           className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300 pointer-events-none"
         >
-          <span className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light mb-6">
+          <span className="text-2xl font-bold tracking-wide text-ice-accessible dark:text-ice mb-6">
             funworldmap
           </span>
           <div className="flex gap-1.5">
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="w-2 h-2 rounded-full bg-teal dark:bg-teal-light"
+                className="w-2 h-2 rounded-full bg-ice-accessible dark:bg-ice"
                 style={{ animation: `loading-dots 1.2s ease-in-out ${i * 0.15}s infinite` }}
               />
             ))}
@@ -394,7 +394,7 @@ function AppInner({
       {hint && !selected && !gameActive && (
         <div
           role="status"
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg pointer-events-none"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-ice/20 text-ice text-sm shadow-lg pointer-events-none"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
           {hintCopy(hint, finePointer)}

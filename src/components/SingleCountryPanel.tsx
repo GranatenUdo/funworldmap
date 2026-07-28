@@ -168,7 +168,7 @@ export function SingleCountryPanel({
         {comparePickingMode && (
           <div
             role="status"
-            className="mb-3 px-3 py-2 rounded-lg bg-teal/10 dark:bg-teal-light/10 border border-teal/20 dark:border-teal-light/20 text-xs text-teal dark:text-teal-light flex items-center justify-between gap-2"
+            className="mb-3 px-3 py-2 rounded-lg bg-ice-dim/10 dark:bg-ice/10 border border-ice-dim/20 dark:border-ice/20 text-xs text-ice-accessible dark:text-ice flex items-center justify-between gap-2"
           >
             <span>Pick a country to compare with...</span>
             {/* A7: the only touch-reachable exit from picking mode (Escape is
@@ -178,7 +178,7 @@ export function SingleCountryPanel({
               onClick={onCancelCompare}
               data-testid="compare-picking-cancel"
               aria-label="Cancel compare"
-              className={`shrink-0 p-1 -m-1 rounded-md hover:bg-teal/20 dark:hover:bg-teal-light/20 transition-colors ${TOUCH_TARGET_FROM_22}`}
+              className={`shrink-0 p-1 -m-1 rounded-md hover:bg-ice-dim/20 dark:hover:bg-ice/20 transition-colors ${TOUCH_TARGET_FROM_22}`}
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -221,7 +221,7 @@ export function SingleCountryPanel({
               {country.capital.length > 0 && (
                 <p
                   data-testid="capital-caption"
-                  className="text-xs text-teal dark:text-teal-light mt-0.5 flex items-center min-w-0"
+                  className="text-xs text-ice-accessible dark:text-ice mt-0.5 flex items-center min-w-0"
                 >
                   <span className="truncate">{country.capital.join(', ')}</span>
                   {/* Interim attribution (A4): the caption absorbed the deleted
@@ -241,7 +241,7 @@ export function SingleCountryPanel({
             {!comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}
-                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-teal dark:text-teal-light transition-colors ${TOUCH_TARGET_FROM_36}`}
+                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Compare with another country"
                 title="Compare"
               >
@@ -296,7 +296,7 @@ export function SingleCountryPanel({
                 type="button"
                 onClick={onClose}
                 data-testid="game-continue"
-                className={`px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60 ${TOUCH_TARGET_FROM_36}`}
+                className={`px-4 py-2 rounded-xl bg-ice-accessible text-white font-semibold text-sm hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-accessible/60 ${TOUCH_TARGET_FROM_36}`}
               >
                 Continue
               </button>
@@ -342,7 +342,7 @@ export function SingleCountryPanel({
         </div>
       </div>
 
-      <div className="mx-5 h-px bg-teal/10 dark:bg-teal-light/10" />
+      <div className="mx-5 h-px bg-ice-dim/10 dark:bg-ice/10" />
 
       <div className="px-5 py-3">
         <div className="grid grid-cols-2 gap-x-4 panel-field-in-1">
@@ -388,7 +388,7 @@ export function SingleCountryPanel({
                     field="borders"
                     country={country}
                     sources={sources}
-                    className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-2 flex items-center gap-1"
+                    className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-2 flex items-center gap-1"
                   />
                   <div className="flex flex-wrap gap-1.5">
                     {country.borders.map((code) => (

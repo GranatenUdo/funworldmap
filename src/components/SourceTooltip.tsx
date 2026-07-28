@@ -12,8 +12,7 @@ import {
 } from '@floating-ui/react'
 import type { CountriesFile } from '../lib/types'
 
-const SUPPORTS_HOVER =
-  typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches
+const SUPPORTS_HOVER = typeof window !== 'undefined' && window.matchMedia('(hover: hover)').matches
 
 interface Props {
   field: string
@@ -53,7 +52,7 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
         ref={refs.setReference}
         {...getReferenceProps()}
         tabIndex={-1}
-        className="text-sand-400 dark:text-dark-100 hover:text-teal dark:hover:text-teal-light text-xs w-4 h-4 rounded-full border border-sand-300 dark:border-dark-200 inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 transition-colors ml-1"
+        className="text-sand-400 dark:text-dark-100 hover:text-ice-accessible dark:hover:text-ice text-xs w-4 h-4 rounded-full border border-sand-300 dark:border-dark-200 inline-flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 transition-colors ml-1"
         aria-label={`Source: ${source.name}`}
       >
         i
@@ -72,7 +71,7 @@ export default function SourceTooltip({ field, fieldSources, sources }: Props) {
             target="_blank"
             rel="noopener noreferrer"
             tabIndex={-1}
-            className="text-teal-light hover:text-teal underline"
+            className="text-ice hover:text-ice/80 underline"
           >
             {source.url}
           </a>

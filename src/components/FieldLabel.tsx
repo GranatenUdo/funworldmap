@@ -10,7 +10,7 @@ interface Props {
 }
 
 const DEFAULT_CLASSNAME =
-  'text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-0.5 flex items-center gap-1'
+  'text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-0.5 flex items-center gap-1'
 
 /** Note: `className`, when provided, fully replaces DEFAULT_CLASSNAME (no
  *  merge). Pass the full Tailwind string for the variant you want. */

@@ -15,7 +15,7 @@ export function TimezoneList({ timezones }: { timezones: string[] }) {
         type="button"
         onClick={() => setExpanded((e) => !e)}
         aria-expanded={expanded}
-        className="text-teal-accessible dark:text-teal-light text-xs underline underline-offset-2 hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/40 rounded"
+        className="text-ice-accessible dark:text-ice text-xs underline underline-offset-2 hover:no-underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/40 dark:focus-visible:ring-ice/40 rounded"
       >
         {expanded ? 'Show less' : `+${timezones.length - COLLAPSED_COUNT} more`}
       </button>
