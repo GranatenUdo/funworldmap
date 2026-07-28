@@ -49,6 +49,8 @@
   --color-dark-400: #161a22;
   --color-dark-500: #121518;
 
+  /* RETIRING (E4): teal and coral survive only until this tranche's final
+     sweep task deletes them (zero-usage grep gate). Do not add consumers. */
   --color-teal: #14b8a6;
   --color-teal-light: #5eead4;
   --color-teal-dim: #0d9488;
@@ -59,16 +61,35 @@
   --color-coral: #f43f5e;
   --color-coral-light: #fb7185;
   --color-coral-dim: #e11d48;
+
+  /* E4 two-accent system (Observatory). One meaning per accent:
+     ice = interactive + wayfinding (links, focus, search, selection,
+     compare-B); signal = live game state + loss (score changes, streaks,
+     lost hearts, wrong-guess reveal, compare-A). Ice is the Tailwind sky
+     ramp: light=sky-200, base=sky-300, dim=sky-400. */
+  --color-ice: #7dd3fc;
+  --color-ice-light: #bae6fd;
+  --color-ice-dim: #38bdf8;
+  /* Deep ice (sky-800): WCAG AA for light-mode interactive text, following
+     the --color-teal-accessible pattern. Contrast (WCAG relative-luminance
+     formula): 7.4:1 on sand-50 #fefdfb, 7.1:1 on sand-100 #faf7f2, 7.6:1 on
+     white — all ≥4.5:1 (AA normal text). */
+  --color-ice-accessible: #075985;
+
+  --color-signal: #ff8a4c;
+  /* orange-500 — darker signal for borders/edges where the base is too hot */
+  --color-signal-dim: #f97316;
 }
 
 body {
   font-family: var(--font-body);
   /* Modern honeycomb / orbital-console backdrop: tileable hex-grid outlines
-     (teal at low opacity) overlaying a deep-navy radial gradient. Shows
+     (ice at low opacity — E4 interim recolor until E1's starfield replaces
+     the hex tile entirely) overlaying a deep-navy radial gradient. Shows
      through the map canvas's transparent basemap-background layer in the
      sky area around the globe. Space-dark in both themes. */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill='none' stroke='%235eead4' stroke-opacity='0.22' stroke-width='1'%3E%3Cpath d='M13.99 9.25 L27 16.75 L27 31.75 L13.99 39.25 L1 31.75 L1 16.75 Z'/%3E%3Cpath d='M0 0 L1 0.5 L1 8.5 M27 0.5 L28 0'/%3E%3Cpath d='M27 40.5 L28 41 L28 49 M0 49 L0 41 L1 40.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill='none' stroke='%237dd3fc' stroke-opacity='0.22' stroke-width='1'%3E%3Cpath d='M13.99 9.25 L27 16.75 L27 31.75 L13.99 39.25 L1 31.75 L1 16.75 Z'/%3E%3Cpath d='M0 0 L1 0.5 L1 8.5 M27 0.5 L28 0'/%3E%3Cpath d='M27 40.5 L28 41 L28 49 M0 49 L0 41 L1 40.5'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse at 50% 55%, #16213b 0%, #0a0f1f 55%, #04060d 100%);
   background-attachment: fixed;
   background-repeat: repeat;
@@ -122,6 +143,34 @@ body {
 .panel-field-in-1 { animation: panel-field-in 200ms ease-out 50ms both; }
 .panel-field-in-2 { animation: panel-field-in 200ms ease-out 100ms both; }
 .panel-field-in-3 { animation: panel-field-in 200ms ease-out 150ms both; }
+
+/* --- Type-role utilities (E2, Observatory) ---
+   Unlayered on purpose (like the panel utilities above) so a role class
+   wins over layered Tailwind utilities on the same element. No colors here:
+   color stays per-usage via Tailwind classes. */
+
+/* Data readouts — panel stats/ranks, compare values, game scores,
+   coordinates. System mono (zero bundle cost); tabular figures align digits. */
+.text-readout {
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+/* Display headings — panel country names, "Game over". */
+.text-display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+/* Micro-labels — field captions, HUD labels. Widens the legacy
+   tracking-wider (0.05em) convention to 0.12em. */
+.text-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
 
 @keyframes dropdown-in {
   from {
