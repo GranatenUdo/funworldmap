@@ -136,3 +136,17 @@ describe('backdrop hex-tile stroke (E4 interim recolor, replaced by E1)', () => 
     expect(css).not.toContain("stroke='%235eead4'")
   })
 })
+
+describe('C2 compare-bar tokens (index.css @theme)', () => {
+  it('defines the theme-invariant bar tiers (≥3:1 non-text on both panel surfaces)', () => {
+    // ice-mid #0284c7: 4.03:1 on sand-50, 4.26:1 on dark-400.
+    // signal-mid #ea580c: 3.50:1 on sand-50, 4.90:1 on dark-400.
+    // Full math in the tokens' own comment in index.css.
+    expect(css).toContain('--color-ice-mid: #0284c7;')
+    expect(css).toContain('--color-signal-mid: #ea580c;')
+  })
+
+  it('bar-B hex stays in sync with the compare-B map fill (mapPalette.ICE_MID)', () => {
+    expect(mapPaletteSource).toContain("export const ICE_MID = '#0284c7'")
+  })
+})

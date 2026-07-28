@@ -79,6 +79,20 @@
      (lost heart), ~6.3:1 on the signal/15 tint over sand-50 (streak text).
      Dark mode uses --color-signal directly (#ff8a4c on dark-400 ~7.4:1). */
   --color-signal-accessible: #9a3412;
+
+  /* C2 compare bars — one hex per side in BOTH themes (compare ignores
+     theme once pinned, matching the map compare fills — see mapPalette.ts).
+     WCAG 1.4.11 non-text floor 3:1 vs the panel surfaces (sand-50 #fefdfb
+     L=0.983; dark-400 #161a22 L=0.010):
+     - ice-mid #0284c7 (sky-600 — the EXACT compare-B map-fill hex,
+       mapPalette.ICE_MID): 4.03:1 light, 4.26:1 dark. Neither existing ice
+       token passes both (ice 1.64:1 light; ice-dim 2.94:1 dark).
+     - signal-mid #ea580c (orange-600): 3.50:1 light, 4.90:1 dark. One ramp
+       step deeper than the compare-A map fill because signal #ff8a4c is
+       2.30:1 on sand-50 (signal-dim 2.76:1; signal-accessible 2.38:1 on
+       dark-400). Same family, same meaning (compare-A / live). */
+  --color-ice-mid: #0284c7;
+  --color-signal-mid: #ea580c;
 }
 
 body {
