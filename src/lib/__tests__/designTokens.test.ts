@@ -96,6 +96,12 @@ describe('E4 retirement drift alarm — the teal/coral system must stay gone', (
     expect(css).toContain('background: var(--color-signal)')
     expect(css).toContain('background: var(--color-ice)')
   })
+
+  it('dark attribution hover consumes the ice-light token, not a raw hex', () => {
+    expect(css).toContain(`.dark .maplibregl-map .maplibregl-ctrl-attrib a:hover {
+  color: var(--color-ice-light);
+}`)
+  })
 })
 
 describe('E2 type-role utilities (index.css)', () => {

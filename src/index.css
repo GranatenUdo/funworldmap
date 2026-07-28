@@ -387,7 +387,7 @@ body {
   color: var(--color-ice-accessible);
 }
 
-/* Ice on the dark pill (rgba(4,6,13,0.82)) = 12.15:1; hover #bae6fd = 15.26:1. */
+/* Ice on the dark pill (rgba(4,6,13,0.82)) = 12.15:1; hover ice-light (#bae6fd) = 15.26:1. */
 .dark .maplibregl-map .maplibregl-ctrl-attrib a {
   color: var(--color-ice);
 }
@@ -398,7 +398,7 @@ body {
 }
 
 .dark .maplibregl-map .maplibregl-ctrl-attrib a:hover {
-  color: #bae6fd;
+  color: var(--color-ice-light);
 }
 
 /* Compare A/B badges — E4 accents: A = signal (live/compare-A), B = ice
