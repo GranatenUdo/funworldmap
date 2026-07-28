@@ -61,7 +61,7 @@ export function GameOverOverlay({
         <h2
           id="game-over-title"
           data-testid="game-over-title"
-          className="text-xl font-bold text-sand-900 dark:text-dark-50 mb-1"
+          className="text-display text-xl text-sand-900 dark:text-dark-50 mb-1"
         >
           Game over
         </h2>
@@ -75,7 +75,7 @@ export function GameOverOverlay({
           <div>
             <dt className="text-xs uppercase text-sand-600 dark:text-dark-100">Score</dt>
             <dd
-              className="text-2xl font-bold text-sand-900 dark:text-dark-50 tabular-nums"
+              className="text-readout text-2xl font-bold text-sand-900 dark:text-dark-50"
               data-testid="game-over-score"
             >
               {session.score}
@@ -85,7 +85,7 @@ export function GameOverOverlay({
             <div>
               <dt className="text-xs uppercase text-sand-600 dark:text-dark-100">Longest streak</dt>
               <dd
-                className="text-2xl font-bold text-sand-900 dark:text-dark-50 tabular-nums"
+                className="text-readout text-2xl font-bold text-sand-900 dark:text-dark-50"
                 data-testid="game-over-best-streak"
               >
                 {session.bestStreak}
@@ -96,7 +96,7 @@ export function GameOverOverlay({
 
         <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
           {stableBeatPB ? (
-            <span className="font-semibold text-teal-accessible dark:text-teal-light">
+            <span className="font-semibold text-ice-accessible dark:text-ice">
               New personal best!
             </span>
           ) : (
@@ -108,7 +108,7 @@ export function GameOverOverlay({
           <button
             type="button"
             onClick={onPlayAgain}
-            className="flex-1 px-4 py-2 rounded-xl bg-teal-accessible text-white font-medium hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/50"
+            className="flex-1 px-4 py-2 rounded-xl bg-ice-accessible text-white font-medium hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-accessible/50"
             data-testid="game-over-play-again"
           >
             Play again
@@ -116,7 +116,7 @@ export function GameOverOverlay({
           <button
             type="button"
             onClick={onBackToMap}
-            className="flex-1 px-4 py-2 rounded-xl bg-sand-200 dark:bg-dark-300 text-sand-900 dark:text-dark-50 font-medium hover:bg-sand-300 dark:hover:bg-dark-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50"
+            className="flex-1 px-4 py-2 rounded-xl bg-sand-200 dark:bg-dark-300 text-sand-900 dark:text-dark-50 font-medium hover:bg-sand-300 dark:hover:bg-dark-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice/50"
             data-testid="game-over-back"
           >
             Back to map

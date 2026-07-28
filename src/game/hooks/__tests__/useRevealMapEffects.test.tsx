@@ -112,7 +112,7 @@ describe('useRevealMapEffects', () => {
     )
   })
 
-  it('paints orange wrong-country border on round-ended (wrong country reveal)', () => {
+  it('paints signal wrong-country border on round-ended (wrong country reveal)', () => {
     const fake = createFakeMapRef()
     const reveal = makeCountryReveal({ correct: false, clickedCca3: null, distanceKm: null })
     const session = makeSession({
@@ -126,6 +126,11 @@ describe('useRevealMapEffects', () => {
       'line-color',
       REVEAL_WRONG,
     )
+  })
+
+  it('REVEAL_WRONG is the signal accent — E4 absorbed the old amber role', () => {
+    expect(REVEAL_WRONG).toBe('#ff8a4c')
+    expect(REVEAL_CORRECT).toBe('#22c55e') // outcome green, not an accent — unchanged
   })
 
   it('clears hoverBorder filter on cleanup (round-ended → playing)', () => {
@@ -491,7 +496,7 @@ describe('useRevealMapEffects — reveal fill pulse (B5)', () => {
     )
   })
 
-  it('colors the fill amber on a wrong-country reveal', () => {
+  it('colors the fill signal on a wrong-country reveal', () => {
     const fake = createFakeMapRef()
     const reveal = makeCountryReveal({ correct: false, clickedCca3: null, distanceKm: null })
     renderRevealHook(buildRevealArgs({ session: roundEnded(reveal), mapRef: fake.ref }))

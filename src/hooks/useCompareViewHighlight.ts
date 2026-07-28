@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { EMPTY_FILTER as EMPTY, applySelectionColor, LAYER } from '../lib/mapLayers'
-import { CORAL, CORAL_LIGHT, TEAL_DIM } from '../lib/mapPalette'
+import { ICE, ICE_DEEP, ICE_DIM, SIGNAL } from '../lib/mapPalette'
 import { useMap } from './useMap'
 
 interface Options {
@@ -10,12 +10,12 @@ interface Options {
 }
 
 /** Compare-view highlight management: suppress hover layers while picking is
- *  meaningless, and pin the A/B colours to the panel badges (A = coral,
- *  B = teal-dim). Baseline fill/border dimming lives in
+ *  meaningless, and pin the A/B colours to the panel badges (A = signal,
+ *  B = ice-dim; E4). Baseline fill/border dimming lives in
  *  useCountryBaselinePaint, so baseline-paint call order no longer matters
  *  (#111 item 1). Call order: must still run AFTER useMapTheme — both write
- *  the selection colours, and the compare CORAL pin must win over the
- *  theme's dark-mode CORAL_LIGHT. */
+ *  the selection colours, and the compare SIGNAL pin must win over the
+ *  theme's ice (ICE in dark, ICE_DEEP in light). */
 export function useCompareViewHighlight({ loaded, compareWith, resolvedTheme }: Options): void {
   const { mapRef } = useMap()
 
@@ -26,16 +26,16 @@ export function useCompareViewHighlight({ loaded, compareWith, resolvedTheme }: 
       if (compareWith !== null) {
         map.setFilter(LAYER.hoverBorder, EMPTY)
         map.setFilter(LAYER.extrusion, EMPTY)
-        // Pin A = coral badge colour, B = teal-dim badge colour, overriding
-        // whatever useMapTheme set (it uses CORAL_LIGHT in dark).
-        applySelectionColor(map, CORAL)
-        map.setPaintProperty(LAYER.compareFill, 'fill-color', TEAL_DIM)
-        map.setPaintProperty(LAYER.compareBorder, 'line-color', TEAL_DIM)
-        map.setPaintProperty(LAYER.compareGlow, 'line-color', TEAL_DIM)
-        map.setPaintProperty(LAYER.compareExtrusion, 'fill-extrusion-color', TEAL_DIM)
+        // Pin A = signal badge colour, B = ice-dim, overriding whatever
+        // useMapTheme set (it writes the theme ice in both themes).
+        applySelectionColor(map, SIGNAL)
+        map.setPaintProperty(LAYER.compareFill, 'fill-color', ICE_DIM)
+        map.setPaintProperty(LAYER.compareBorder, 'line-color', ICE_DIM)
+        map.setPaintProperty(LAYER.compareGlow, 'line-color', ICE_DIM)
+        map.setPaintProperty(LAYER.compareExtrusion, 'fill-extrusion-color', ICE_DIM)
       } else {
-        // Restore the selection highlight to the theme-appropriate coral.
-        applySelectionColor(map, resolvedTheme === 'dark' ? CORAL_LIGHT : CORAL)
+        // Restore the selection highlight to the theme-appropriate ice.
+        applySelectionColor(map, resolvedTheme === 'dark' ? ICE : ICE_DEEP)
       }
     } catch {
       // Layers may not exist yet.

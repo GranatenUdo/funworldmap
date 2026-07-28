@@ -58,8 +58,10 @@ test.describe('A11y + Contrast Pass', () => {
     // declaration. `toContain` is format-agnostic.
     const SAND_600_RGB = '107, 100, 89' // #6b6459
     const DARK_100_RGB = '148, 163, 184' // #94a3b8
-    const TEAL_ACCESSIBLE_RGB = '6, 95, 86' // #065f56 — --color-teal-accessible
-    const TEAL_LIGHT_RGB = '94, 234, 212' // #5eead4 — --color-teal-light
+    const ICE_ACCESSIBLE_RGB = '7, 89, 133' // #075985 — --color-ice-accessible
+    const ICE_RGB = '125, 211, 252' // #7dd3fc — --color-ice
+    const SIGNAL_RGB = '255, 138, 76' // #ff8a4c — --color-signal (compare-A)
+    const DARK_INK_RGB = '18, 21, 24' // #121518 — --color-dark-500 (compare-badge ink)
 
     async function computedColor(locator: Locator): Promise<string> {
       return locator.evaluate((el) => window.getComputedStyle(el).color)
@@ -89,34 +91,34 @@ test.describe('A11y + Contrast Pass', () => {
       expect(color).toContain(SAND_600_RGB)
     })
 
-    test('header wordmark uses teal-accessible in light mode', async ({ page }) => {
+    test('header wordmark uses ice-accessible in light mode', async ({ page }) => {
       await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
       await page.goto('/')
       await ensureLauncherDismissed(page)
       const wordmark = page.getByTestId('header-wordmark')
       await expect(wordmark).toBeVisible()
-      expect(await computedColor(wordmark)).toContain(TEAL_ACCESSIBLE_RGB)
+      expect(await computedColor(wordmark)).toContain(ICE_ACCESSIBLE_RGB)
     })
 
-    test('header Play button uses teal-accessible in light mode', async ({ page }) => {
+    test('header Play button uses ice-accessible in light mode', async ({ page }) => {
       await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
       await page.goto('/')
       await ensureLauncherDismissed(page)
       const play = page.getByTestId('header-play')
       await expect(play).toBeVisible()
-      expect(await computedColor(play)).toContain(TEAL_ACCESSIBLE_RGB)
+      expect(await computedColor(play)).toContain(ICE_ACCESSIBLE_RGB)
     })
 
-    test('header wordmark keeps teal-light in dark mode', async ({ page }) => {
+    test('header wordmark keeps ice in dark mode', async ({ page }) => {
       await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
       await page.goto('/')
       await ensureLauncherDismissed(page)
       const wordmark = page.getByTestId('header-wordmark')
       await expect(wordmark).toBeVisible()
-      expect(await computedColor(wordmark)).toContain(TEAL_LIGHT_RGB)
+      expect(await computedColor(wordmark)).toContain(ICE_RGB)
     })
 
-    test('map nav-control buttons use teal-accessible in light mode', async ({ page }) => {
+    test('map nav-control buttons use ice-accessible in light mode', async ({ page }) => {
       await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
       await page.goto('/')
       await ensureLauncherDismissed(page)
@@ -124,10 +126,10 @@ test.describe('A11y + Contrast Pass', () => {
         .locator('.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button')
         .first()
       await expect(button).toBeVisible()
-      expect(await computedColor(button)).toContain(TEAL_ACCESSIBLE_RGB)
+      expect(await computedColor(button)).toContain(ICE_ACCESSIBLE_RGB)
     })
 
-    test('map nav-control buttons keep teal-light in dark mode', async ({ page }) => {
+    test('map nav-control buttons keep ice in dark mode', async ({ page }) => {
       await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
       await page.goto('/')
       await ensureLauncherDismissed(page)
@@ -135,7 +137,31 @@ test.describe('A11y + Contrast Pass', () => {
         .locator('.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button')
         .first()
       await expect(button).toBeVisible()
-      expect(await computedColor(button)).toContain(TEAL_LIGHT_RGB)
+      expect(await computedColor(button)).toContain(ICE_RGB)
+    })
+
+    async function computedBackground(locator: Locator): Promise<string> {
+      return locator.evaluate((el) => window.getComputedStyle(el).backgroundColor)
+    }
+
+    test('compare badges: A is signal, B is ice, ink is dark-500 (AA on both)', async ({
+      page,
+    }) => {
+      await page.goto('/#FRA')
+      const panel = page.getByTestId('country-panel')
+      await expect(panel).toBeVisible({ timeout: 15_000 })
+      await panel.getByRole('button', { name: /Compare with another country/i }).click()
+      await panel.getByRole('button', { name: 'Germany' }).click()
+      const badgeA = page.locator('.compare-badge-a')
+      const badgeB = page.locator('.compare-badge-b')
+      await expect(badgeA).toBeVisible()
+      await expect(badgeB).toBeVisible()
+      // #121518 on #ff8a4c = 7.85:1, on #7dd3fc = 10.99:1 — the retired
+      // white-on-coral/teal-dim badges were 3.67:1 / 3.74:1 (sub-AA).
+      expect(await computedBackground(badgeA)).toContain(SIGNAL_RGB)
+      expect(await computedBackground(badgeB)).toContain(ICE_RGB)
+      expect(await computedColor(badgeA)).toContain(DARK_INK_RGB)
+      expect(await computedColor(badgeB)).toContain(DARK_INK_RGB)
     })
   })
 

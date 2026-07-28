@@ -49,26 +49,47 @@
   --color-dark-400: #161a22;
   --color-dark-500: #121518;
 
-  --color-teal: #14b8a6;
-  --color-teal-light: #5eead4;
-  --color-teal-dim: #0d9488;
-  /* Deep teal: WCAG AA on white/sand-50 (≥4.5:1). Use for interactive text
-     and primary CTA backgrounds in light mode where teal / teal-dim fall short. */
-  --color-teal-accessible: #065f56;
+  /* E4 two-accent system (Observatory). One meaning per accent:
+     ice = interactive + wayfinding (links, focus, search, selection,
+     compare-B); signal = live game state + loss (score changes, streaks,
+     lost hearts, wrong-guess reveal, compare-A). Ice is the Tailwind sky
+     ramp: light=sky-200, base=sky-300, dim=sky-700. */
+  --color-ice: #7dd3fc;
+  --color-ice-light: #bae6fd;
+  --color-ice-dim: #0369a1;
+  /* Muted/darker ice (sky-700): non-text UI accents (icons, borders, rings) and
+     CTA-hover backgrounds on light surfaces. Contrast (WCAG relative-luminance
+     formula): 5.55:1 on sand-100 #faf7f2, 5.93:1 under white text ≥3:1 non-text ✓.
+     WARNING: foreground use on dark surfaces needs dark: override to ice/ice-light
+     (ice-dim #0369a1 on dark-400 #161a22 is ~2.9:1, below WCAG AA text floor). */
 
-  --color-coral: #f43f5e;
-  --color-coral-light: #fb7185;
-  --color-coral-dim: #e11d48;
+  /* Deep ice (sky-800): WCAG AA for light-mode interactive text, following
+     the retired teal-accessible pattern. Contrast (WCAG relative-luminance
+     formula): 7.4:1 on sand-50 #fefdfb, 7.1:1 on sand-100 #faf7f2, 7.6:1 on
+     white — all ≥4.5:1 (AA normal text). */
+  --color-ice-accessible: #075985;
+
+  --color-signal: #ff8a4c;
+  /* orange-500 — darker signal for borders/edges where the base is too hot */
+  --color-signal-dim: #f97316;
+  /* orange-800: WCAG AA light-mode text variant, following the
+     --color-ice-accessible pattern (foundation gap found + fixed forward in
+     the game-surface task — the token task defined signal/signal-dim but
+     missed this one). Contrast (light mode, this hex): 7.1:1 on sand-50
+     (lost heart), ~6.3:1 on the signal/15 tint over sand-50 (streak text).
+     Dark mode uses --color-signal directly (#ff8a4c on dark-400 ~7.4:1). */
+  --color-signal-accessible: #9a3412;
 }
 
 body {
   font-family: var(--font-body);
   /* Modern honeycomb / orbital-console backdrop: tileable hex-grid outlines
-     (teal at low opacity) overlaying a deep-navy radial gradient. Shows
+     (ice at low opacity — E4 interim recolor until E1's starfield replaces
+     the hex tile entirely) overlaying a deep-navy radial gradient. Shows
      through the map canvas's transparent basemap-background layer in the
      sky area around the globe. Space-dark in both themes. */
   background:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill='none' stroke='%235eead4' stroke-opacity='0.22' stroke-width='1'%3E%3Cpath d='M13.99 9.25 L27 16.75 L27 31.75 L13.99 39.25 L1 31.75 L1 16.75 Z'/%3E%3Cpath d='M0 0 L1 0.5 L1 8.5 M27 0.5 L28 0'/%3E%3Cpath d='M27 40.5 L28 41 L28 49 M0 49 L0 41 L1 40.5'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill='none' stroke='%237dd3fc' stroke-opacity='0.22' stroke-width='1'%3E%3Cpath d='M13.99 9.25 L27 16.75 L27 31.75 L13.99 39.25 L1 31.75 L1 16.75 Z'/%3E%3Cpath d='M0 0 L1 0.5 L1 8.5 M27 0.5 L28 0'/%3E%3Cpath d='M27 40.5 L28 41 L28 49 M0 49 L0 41 L1 40.5'/%3E%3C/g%3E%3C/svg%3E"),
     radial-gradient(ellipse at 50% 55%, #16213b 0%, #0a0f1f 55%, #04060d 100%);
   background-attachment: fixed;
   background-repeat: repeat;
@@ -123,6 +144,34 @@ body {
 .panel-field-in-2 { animation: panel-field-in 200ms ease-out 100ms both; }
 .panel-field-in-3 { animation: panel-field-in 200ms ease-out 150ms both; }
 
+/* --- Type-role utilities (E2, Observatory) ---
+   Unlayered on purpose (like the panel utilities above) so a role class
+   wins over layered Tailwind utilities on the same element. No colors here:
+   color stays per-usage via Tailwind classes. */
+
+/* Data readouts — panel stats/ranks, compare values, game scores,
+   coordinates. System mono (zero bundle cost); tabular figures align digits. */
+.text-readout {
+    font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+/* Display headings — panel country names, "Game over". */
+.text-display {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
+/* Micro-labels — field captions, HUD labels. Widens the legacy
+   tracking-wider (0.05em) convention to 0.12em. */
+.text-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
 @keyframes dropdown-in {
   from {
     opacity: 0;
@@ -172,7 +221,7 @@ body {
 }
 
 /* Country name tooltip — positioned by JS, not React.
-   Base = light chrome (A3): sand surface, teal-accessible text; the .dark
+   Base = light chrome (A3): sand surface, ice-accessible text; the .dark
    overrides below restore the original dark values exactly. */
 .country-tooltip {
   position: absolute;
@@ -187,7 +236,7 @@ body {
   border-radius: 8px;
   background: rgba(250, 247, 242, 0.92);
   border: 1px solid var(--color-sand-300);
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
   font-size: 13px;
   font-weight: 500;
   white-space: nowrap;
@@ -203,7 +252,7 @@ body {
 .dark .country-tooltip {
   background: rgba(18, 21, 24, 0.88);
   border-color: rgba(51, 65, 85, 0.35);
-  color: #5eead4;
+  color: var(--color-ice);
 }
 
 .country-tooltip.visible {
@@ -227,11 +276,11 @@ body {
 .country-tooltip .tooltip-name {
   font-weight: 500;
   font-size: 13px;
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
 }
 
 .dark .country-tooltip .tooltip-name {
-  color: #5eead4;
+  color: var(--color-ice);
 }
 
 .country-tooltip .tooltip-capital {
@@ -256,24 +305,24 @@ body {
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
   background: rgba(18, 21, 24, 0.88);
-  border-color: rgba(94, 234, 212, 0.25);
+  border-color: rgba(125, 211, 252, 0.25);
 }
 
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
   background: transparent;
 }
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
-  color: #5eead4;
+  color: var(--color-ice);
 }
 
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover {
-  background: rgba(6, 95, 86, 0.08);
+  background: rgba(7, 89, 133, 0.08);
 }
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button:hover {
-  background: rgba(94, 234, 212, 0.12);
+  background: rgba(125, 211, 252, 0.12);
 }
 
 .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
@@ -281,7 +330,7 @@ body {
 }
 
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button + button {
-  border-top-color: rgba(94, 234, 212, 0.15);
+  border-top-color: rgba(125, 211, 252, 0.15);
 }
 
 /* B7 coarse-pointer touch targets: grow the vendor ctrl buttons from
@@ -308,7 +357,11 @@ body {
    Dark only — MapLibre's stock icons are dark gray, already correct on the
    light sand surface. */
 .dark .maplibregl-ctrl-bottom-right .maplibregl-ctrl-icon {
-  filter: brightness(0) saturate(100%) invert(83%) sepia(37%) saturate(356%) hue-rotate(122deg) brightness(92%) contrast(93%);
+  /* Recolors MapLibre's stock icon sprites to ice: brightness(0) flattens
+     to black, then the chain maps black → exactly rgb(125, 211, 252)
+     (#7dd3fc) under the CSS filter-effects matrix math (solver-verified
+     2026-07-28 — re-solve if --color-ice ever changes). */
+  filter: brightness(0) saturate(100%) invert(71%) sepia(68%) saturate(509%) hue-rotate(172deg) brightness(103%) contrast(98%);
 }
 
 /* MapLibre attribution control — theme-scoped, no !important. MapLibre's own
@@ -331,23 +384,27 @@ body {
 
 /* Covers links in both the pill and its inner container (descendant match). */
 .maplibregl-map .maplibregl-ctrl-attrib a {
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
 }
 
+/* Ice on the dark pill (rgba(4,6,13,0.82)) = 12.15:1; hover #bae6fd = 15.26:1. */
 .dark .maplibregl-map .maplibregl-ctrl-attrib a {
-  color: #7dd3c0;
+  color: var(--color-ice);
 }
 
 .maplibregl-map .maplibregl-ctrl-attrib a:hover {
-  color: var(--color-teal-accessible);
+  color: var(--color-ice-accessible);
   text-decoration: underline;
 }
 
 .dark .maplibregl-map .maplibregl-ctrl-attrib a:hover {
-  color: #5eead4;
+  color: #bae6fd;
 }
 
-/* Compare A/B badges */
+/* Compare A/B badges — E4 accents: A = signal (live/compare-A), B = ice
+   (wayfinding/compare-B), matching mapPalette's SIGNAL/ICE compare fills.
+   Dark ink instead of white: #121518 on #ff8a4c = 7.85:1, on #7dd3fc =
+   10.99:1 (the old white-on-coral/teal-dim pair was 3.67:1 / 3.74:1). */
 .compare-badge {
   display: inline-flex;
   align-items: center;
@@ -357,16 +414,16 @@ body {
   border-radius: 50%;
   font-size: 10px;
   font-weight: 700;
-  color: white;
+  color: var(--color-dark-500);
   flex-shrink: 0;
 }
 
 .compare-badge-a {
-  background: #f43f5e;
+  background: var(--color-signal);
 }
 
 .compare-badge-b {
-  background: #0d9488;
+  background: var(--color-ice);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -4,10 +4,10 @@ import { BorderChip } from './BorderChip'
 function CompareField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light">
+      <div className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice">
         {label}
       </div>
-      <div className="text-sm text-sand-800 dark:text-dark-50">{children}</div>
+      <div className="text-readout text-sm text-sand-800 dark:text-dark-50">{children}</div>
     </div>
   )
 }
@@ -41,7 +41,7 @@ export function CountryColumn({ country, byCca3, onSelect, badgeLetter, badgeCol
                 {country.name.common}
               </h2>
               {country.capital.length > 0 && (
-                <p className="text-xs text-teal dark:text-teal-light truncate mt-0.5">
+                <p className="text-xs text-ice-accessible dark:text-ice truncate mt-0.5">
                   {country.capital[0]}
                 </p>
               )}
@@ -81,7 +81,7 @@ export function CountryColumn({ country, byCca3, onSelect, badgeLetter, badgeCol
         <CompareField label="UN Member">{country.unMember ? 'Yes' : 'No'}</CompareField>
         {country.borders.length > 0 && (
           <div>
-            <div className="text-[11px] font-medium uppercase tracking-wider text-teal dark:text-teal-light mb-1.5">
+            <div className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-1.5">
               Borders
             </div>
             <div className="flex flex-wrap gap-1">

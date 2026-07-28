@@ -138,7 +138,7 @@ export function Launcher({ onDismiss }: Props) {
           onClick={dismissWithCloseButton}
           data-testid="launcher-close"
           aria-label="Close"
-          className="absolute -top-2 right-0 w-9 h-9 rounded-full text-sand-50 dark:text-dark-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/60 flex items-center justify-center"
+          className="absolute -top-2 right-0 w-9 h-9 rounded-full text-sand-50 dark:text-dark-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice/60 flex items-center justify-center"
         >
           <svg
             className="w-5 h-5"
@@ -156,7 +156,7 @@ export function Launcher({ onDismiss }: Props) {
           className="text-center mb-6 pointer-events-none"
           style={{ animation: 'launcher-text-in 240ms ease-out 60ms both' }}
         >
-          <div className="text-2xl font-bold tracking-wide text-teal dark:text-teal-light drop-shadow-sm">
+          <div className="text-2xl font-bold tracking-wide text-ice drop-shadow-sm">
             funworldmap
           </div>
           <p

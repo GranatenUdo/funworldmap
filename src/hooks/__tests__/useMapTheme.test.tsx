@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { makeMapWrapper } from '../../test/fakeMapHooks'
 import { useMapTheme } from '../useMapTheme'
-import { TEAL, TEAL_LIGHT } from '../../lib/mapPalette'
+import { ICE, ICE_DEEP } from '../../lib/mapPalette'
 
 function makeThemeFakeMap(layers: Array<{ id: string; type: string }>) {
   const calls: Record<string, unknown[][]> = { setPaintProperty: [], setSky: [] }
@@ -23,7 +23,7 @@ const LAYERS = [
 ]
 
 describe('useMapTheme', () => {
-  it('dark: applies dark overrides, recolors symbol text/halo, sets dark sky, teal-light accents', () => {
+  it('dark: applies dark overrides, recolors symbol text/halo, sets dark sky, ice accents', () => {
     const fake = makeThemeFakeMap(LAYERS)
     renderHook(() => useMapTheme({ loaded: true, resolvedTheme: 'dark' }), {
       wrapper: makeMapWrapper(fake),
@@ -38,13 +38,15 @@ describe('useMapTheme', () => {
     expect(fake.calls.setPaintProperty).toContainEqual(['water', 'fill-color', '#060a12'])
     // applyMapTheme: symbol loop recolors place-label text
     expect(fake.calls.setPaintProperty).toContainEqual(['place-label', 'text-color', '#64748b'])
-    // useMapTheme: LAYER.fill gets TEAL_LIGHT in dark mode
-    expect(fake.calls.setPaintProperty).toContainEqual(['country-fill', 'fill-color', TEAL_LIGHT])
+    // useMapTheme: LAYER.fill gets ICE in dark mode
+    expect(fake.calls.setPaintProperty).toContainEqual(['country-fill', 'fill-color', ICE])
+    // E4: the selection stack takes the SAME theme ice (coral is retired)
+    expect(fake.calls.setPaintProperty).toContainEqual(['country-selected', 'fill-color', ICE])
     // useMapTheme: setSky called exactly once
     expect(fake.setSky).toHaveBeenCalledTimes(1)
   })
 
-  it('light: light overrides and teal accents', () => {
+  it('light: light overrides and deep-ice accents', () => {
     const fake = makeThemeFakeMap(LAYERS)
     renderHook(() => useMapTheme({ loaded: true, resolvedTheme: 'light' }), {
       wrapper: makeMapWrapper(fake),
@@ -55,8 +57,9 @@ describe('useMapTheme', () => {
       'background-color',
       '#e8e3da',
     ])
-    // useMapTheme: LAYER.fill gets TEAL in light mode
-    expect(fake.calls.setPaintProperty).toContainEqual(['country-fill', 'fill-color', TEAL])
+    // useMapTheme: LAYER.fill gets deep ice in light mode
+    expect(fake.calls.setPaintProperty).toContainEqual(['country-fill', 'fill-color', ICE_DEEP])
+    expect(fake.calls.setPaintProperty).toContainEqual(['country-selected', 'fill-color', ICE_DEEP])
   })
 
   it('survives setPaintProperty throwing (fast toggle before layers commit)', () => {

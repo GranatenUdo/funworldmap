@@ -18,7 +18,7 @@ const REGION_COLORS: Record<string, string> = {
   Americas: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
   Asia: 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300',
   Europe: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-  Oceania: 'bg-teal-100 text-teal-800 dark:bg-teal/20 dark:text-teal-light',
+  Oceania: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300',
   Antarctic: 'bg-slate-100 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
 
@@ -105,9 +105,9 @@ export default function SearchBar({
         {announcement}
       </div>
 
-      {/* Search icon — teal colored */}
+      {/* Search icon — ice colored */}
       <svg
-        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-teal dark:text-teal-light pointer-events-none"
+        className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ice-dim dark:text-ice pointer-events-none"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -142,7 +142,7 @@ export default function SearchBar({
           if (query.trim()) setIsOpen(true)
         }}
         onBlur={() => setIsFocused(false)}
-        className="w-full pl-10 pr-9 py-3 rounded-xl bg-sand-100 dark:bg-dark-400/80 backdrop-blur-md border border-sand-300 dark:border-dark-200/30 text-sand-900 dark:text-dark-50 text-sm max-sm:text-base placeholder-sand-400 dark:placeholder-dark-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/40 focus:border-teal/40 dark:focus:border-teal-light/30 transition-all duration-150"
+        className="w-full pl-10 pr-9 py-3 rounded-xl bg-sand-100 dark:bg-dark-400/80 backdrop-blur-md border border-sand-300 dark:border-dark-200/30 text-sand-900 dark:text-dark-50 text-sm max-sm:text-base placeholder-sand-400 dark:placeholder-dark-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/40 dark:focus-visible:ring-ice/40 focus:border-ice-dim/40 dark:focus:border-ice/30 transition-all duration-150"
         id="search-input"
         data-testid="search-input"
       />
@@ -202,7 +202,7 @@ export default function SearchBar({
                   onMouseEnter={() => setActiveIndex(index)}
                   className={`flex items-center gap-3 px-4 py-2.5 cursor-pointer text-sm transition-colors duration-75 ${
                     index === activeIndex
-                      ? 'bg-teal/8 dark:bg-teal-light/10 border-l-3 border-l-teal dark:border-l-teal-light'
+                      ? 'bg-ice-dim/8 dark:bg-ice/10 border-l-3 border-l-ice-dim dark:border-l-ice'
                       : 'border-l-3 border-l-transparent hover:bg-sand-200/50 dark:hover:bg-dark-300/50'
                   }`}
                 >

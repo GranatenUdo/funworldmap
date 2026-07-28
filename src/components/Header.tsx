@@ -39,7 +39,7 @@ export default function Header({
         <div className="pointer-events-auto hidden lg:flex items-baseline mr-4 shrink-0">
           <span
             data-testid="header-wordmark"
-            className="text-lg font-bold tracking-wide text-teal-accessible dark:text-teal-light drop-shadow-sm"
+            className="text-lg font-bold tracking-wide text-ice-accessible dark:text-ice drop-shadow-sm"
           >
             funworldmap
           </span>
@@ -66,7 +66,7 @@ export default function Header({
               }}
               aria-label="Play"
               data-testid="header-play"
-              className="h-10 px-3 rounded-xl backdrop-blur-sm border flex items-center gap-2 font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-teal-accessible dark:text-teal-light hover:bg-sand-200/90 dark:hover:bg-dark-300/80"
+              className="h-10 px-3 rounded-xl backdrop-blur-sm border flex items-center gap-2 font-medium text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-ice-accessible dark:text-ice hover:bg-sand-200/90 dark:hover:bg-dark-300/80"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
@@ -81,9 +81,9 @@ export default function Header({
             title={satellite ? 'Switch to map view' : 'Switch to satellite view'}
             aria-pressed={satellite}
             data-satellite-active={satellite}
-            className={`w-10 h-10 rounded-xl backdrop-blur-sm border flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 ${
+            className={`w-10 h-10 rounded-xl backdrop-blur-sm border flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 ${
               satellite
-                ? 'bg-teal/20 dark:bg-teal-light/20 border-teal/40 dark:border-teal-light/30 text-teal-accessible dark:text-teal-light'
+                ? 'bg-ice-dim/20 dark:bg-ice/20 border-ice-dim/40 dark:border-ice/30 text-ice-accessible dark:text-ice'
                 : 'bg-sand-100/90 dark:bg-dark-400/80 border-sand-300/50 dark:border-dark-200/30 text-sand-500 dark:text-dark-100 hover:bg-sand-200/90 dark:hover:bg-dark-300/80'
             }`}
             data-testid="satellite-toggle"
