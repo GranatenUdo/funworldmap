@@ -23,6 +23,20 @@ export interface CompareFieldDef {
   numeric: boolean
   /** Formatted display value; null → the column renders EM_DASH. */
   format: (country: CountryData) => string | null
+  /** Raw numeric accessor for bar/delta math (numeric fields only, C2).
+   *  null → missing/non-positive: no bar, no delta; format renders '—'. */
+  raw?: (c: CountryData) => number | null
+}
+
+/** C3 — derived population density (people/km²). */
+export function densityOf(c: CountryData): number | null {
+  return c.population > 0 && c.area > 0 ? c.population / c.area : null
+}
+
+export function formatDensity(c: CountryData): string {
+  const d = densityOf(c)
+  if (d === null) return EM_DASH
+  return `${d.toLocaleString('en-US', { maximumFractionDigits: d < 10 ? 1 : 0 })} people/km²`
 }
 
 /** C1 — the single field-definition list driving BOTH compare columns.
@@ -39,13 +53,24 @@ export const COMPARE_FIELDS: readonly CompareFieldDef[] = [
     key: 'population',
     label: 'Population',
     numeric: true,
-    format: (c) => formatPopulation(c.population),
+    // Non-positive === missing, so format and raw agree (a bar-less,
+    // delta-less row would otherwise still print a misleading "0").
+    format: (c) => (c.population > 0 ? formatPopulation(c.population) : null),
+    raw: (c) => (c.population > 0 ? c.population : null),
   },
   {
     key: 'area',
     label: 'Area',
     numeric: true,
-    format: (c) => formatArea(c.area),
+    format: (c) => (c.area > 0 ? formatArea(c.area) : null),
+    raw: (c) => (c.area > 0 ? c.area : null),
+  },
+  {
+    key: 'density',
+    label: 'Density',
+    numeric: true,
+    raw: densityOf,
+    format: formatDensity,
   },
   {
     key: 'region',
