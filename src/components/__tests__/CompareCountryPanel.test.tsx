@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { CompareCountryPanel } from '../CompareCountryPanel'
 import { makeCountry, sources } from './singleCountryPanelTestUtils'
+import { COMPARE_FIELDS } from '../../lib/compareFields'
 
 const FRA = makeCountry()
 const DEU = makeCountry({
@@ -18,7 +19,7 @@ function renderPanel() {
       country={FRA}
       compareWith={DEU}
       isDesktop={true}
-      onSelect={vi.fn()}
+      onCompareColumnSelect={vi.fn()}
       onClose={onClose}
       onExitCompare={onExitCompare}
       byCca3={new Map()}
@@ -71,5 +72,90 @@ describe('CompareCountryPanel header controls (A15)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Exit compare' }))
     expect(onExitCompare).toHaveBeenCalledTimes(1)
     expect(onClose).not.toHaveBeenCalled()
+  })
+})
+
+describe('C1 — one shared field list drives both columns', () => {
+  it('renders identical, ordered rows in both columns with em-dash placeholders', () => {
+    const sparse = makeCountry({
+      cca3: 'DEU',
+      ccn3: '276',
+      name: { common: 'Germany', official: 'Federal Republic of Germany' },
+      governmentType: '',
+      currencies: {},
+    })
+    render(
+      <CompareCountryPanel
+        country={FRA}
+        compareWith={sparse}
+        isDesktop={true}
+        onCompareColumnSelect={vi.fn()}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={new Map()}
+        sources={sources}
+      />,
+    )
+    const expected = COMPARE_FIELDS.map((f) => f.label)
+    // Field labels are the .uppercase divs inside the fields wrapper
+    // (borders are empty on these fixtures, so no Borders label competes).
+    const rowLabels = (col: HTMLElement) =>
+      Array.from(col.querySelectorAll('.px-5.py-3 .uppercase')).map((el) => el.textContent)
+    expect(rowLabels(screen.getByTestId('compare-column-a'))).toEqual(expected)
+    expect(rowLabels(screen.getByTestId('compare-column-b'))).toEqual(expected)
+    // Germany's missing Government + Currencies render the placeholder; France has none.
+    expect(within(screen.getByTestId('compare-column-b')).getAllByText('—')).toHaveLength(2)
+    expect(within(screen.getByTestId('compare-column-a')).queryByText('—')).toBeNull()
+  })
+})
+
+describe('C1 — border chips are column-scoped', () => {
+  it('reports column "a" for chips in column A and column "b" for chips in column B', () => {
+    const fra = makeCountry({ borders: ['ESP'] })
+    const deu = makeCountry({
+      cca3: 'DEU',
+      ccn3: '276',
+      name: { common: 'Germany', official: 'Federal Republic of Germany' },
+      borders: ['POL'],
+    })
+    const byCca3 = new Map([
+      [
+        'ESP',
+        makeCountry({
+          cca3: 'ESP',
+          ccn3: '724',
+          name: { common: 'Spain', official: 'Kingdom of Spain' },
+        }),
+      ],
+      [
+        'POL',
+        makeCountry({
+          cca3: 'POL',
+          ccn3: '616',
+          name: { common: 'Poland', official: 'Republic of Poland' },
+        }),
+      ],
+    ])
+    const onCompareColumnSelect = vi.fn()
+    render(
+      <CompareCountryPanel
+        country={fra}
+        compareWith={deu}
+        isDesktop={true}
+        onCompareColumnSelect={onCompareColumnSelect}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={byCca3}
+        sources={sources}
+      />,
+    )
+    fireEvent.click(
+      within(screen.getByTestId('compare-column-a')).getByRole('button', { name: 'Spain' }),
+    )
+    expect(onCompareColumnSelect).toHaveBeenLastCalledWith('a', 'ESP')
+    fireEvent.click(
+      within(screen.getByTestId('compare-column-b')).getByRole('button', { name: 'Poland' }),
+    )
+    expect(onCompareColumnSelect).toHaveBeenLastCalledWith('b', 'POL')
   })
 })

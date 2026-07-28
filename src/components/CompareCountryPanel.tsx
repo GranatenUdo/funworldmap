@@ -3,12 +3,13 @@ import { CloseButton } from './CloseButton'
 import { CountryColumn } from './CountryColumn'
 import { dispatchToast } from '../lib/toast'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstants'
+import type { CompareColumn } from '../lib/compareMapClick'
 
 interface Props {
   country: CountryData
   compareWith: CountryData
   isDesktop: boolean
-  onSelect: (cca3: string) => void
+  onCompareColumnSelect: (column: CompareColumn, cca3: string) => void
   onClose: () => void
   onExitCompare: () => void
   byCca3: Map<string, CountryData>
@@ -19,7 +20,7 @@ export function CompareCountryPanel({
   country,
   compareWith,
   isDesktop,
-  onSelect,
+  onCompareColumnSelect,
   onClose,
   onExitCompare,
   byCca3,
@@ -108,7 +109,7 @@ export function CompareCountryPanel({
             <CountryColumn
               country={country}
               byCca3={byCca3}
-              onSelect={onSelect}
+              onSelect={(cca3) => onCompareColumnSelect('a', cca3)}
               badgeLetter="A"
               badgeColor="a"
             />
@@ -117,7 +118,7 @@ export function CompareCountryPanel({
             <CountryColumn
               country={compareWith}
               byCca3={byCca3}
-              onSelect={onSelect}
+              onSelect={(cca3) => onCompareColumnSelect('b', cca3)}
               badgeLetter="B"
               badgeColor="b"
             />

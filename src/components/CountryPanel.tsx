@@ -1,6 +1,7 @@
 import type { CountryData, CountriesFile } from '../lib/types'
 import { SingleCountryPanel } from './SingleCountryPanel'
 import { CompareCountryPanel } from './CompareCountryPanel'
+import type { CompareColumn } from '../lib/compareMapClick'
 
 interface Props {
   country: CountryData
@@ -13,6 +14,7 @@ interface Props {
   onEnterCompare: () => void
   onCancelCompare: () => void
   onExitCompare: () => void
+  onCompareColumnSelect: (column: CompareColumn, cca3: string) => void
   byCca3: Map<string, CountryData>
   inGameRound?: boolean
 }
@@ -28,6 +30,7 @@ export default function CountryPanel({
   onEnterCompare,
   onCancelCompare,
   onExitCompare,
+  onCompareColumnSelect,
   byCca3,
   inGameRound,
 }: Props) {
@@ -37,7 +40,7 @@ export default function CountryPanel({
         country={country}
         compareWith={compareWith}
         isDesktop={isDesktop}
-        onSelect={onSelect}
+        onCompareColumnSelect={onCompareColumnSelect}
         onClose={onClose}
         onExitCompare={onExitCompare}
         byCca3={byCca3}

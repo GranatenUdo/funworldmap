@@ -16,11 +16,18 @@ const DEU = makeCountryData({
   cca2: 'DE',
   name: { common: 'Germany', official: 'Germany' },
 })
+const ESP = makeCountryData({
+  cca3: 'ESP',
+  ccn3: '724',
+  cca2: 'ES',
+  name: { common: 'Spain', official: 'Kingdom of Spain' },
+})
 
 function makeByCca3() {
   const m = new Map<string, CountryData>()
   m.set('FRA', FRA)
   m.set('DEU', DEU)
+  m.set('ESP', ESP)
   return m
 }
 
@@ -124,5 +131,27 @@ describe('useSelectedCountry', () => {
     expect(result.current.selected).toBeNull()
     expect(result.current.compareWith).toBeNull()
     expect(window.location.hash).toBe('')
+  })
+
+  it('compareReplaceA() replaces the selected country and keeps the compare partner', async () => {
+    window.location.hash = '#FRA,DEU'
+    const { result } = renderHook(() => useSelectedCountry(makeByCca3()))
+    act(() => {
+      result.current.compareReplaceA('esp')
+    })
+    expect(window.location.hash).toBe('#ESP,DEU')
+    await waitFor(() => {
+      expect(result.current.selected).toBe(ESP)
+      expect(result.current.compareWith).toBe(DEU)
+    })
+  })
+
+  it('compareReplaceA() is a no-op without an active compare pair', () => {
+    window.location.hash = '#FRA'
+    const { result } = renderHook(() => useSelectedCountry(makeByCca3()))
+    act(() => {
+      result.current.compareReplaceA('ESP')
+    })
+    expect(window.location.hash).toBe('#FRA')
   })
 })

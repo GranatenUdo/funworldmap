@@ -22,7 +22,7 @@ import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { FINE_POINTER_MEDIA_QUERY } from './lib/layoutConstants'
 import { track } from './lib/analytics'
-import { compareMapClick } from './lib/compareMapClick'
+import { compareMapClick, compareChipClick, type CompareColumn } from './lib/compareMapClick'
 import { dispatchToast } from './lib/toast'
 
 export default function App() {
@@ -90,6 +90,7 @@ function AppInner({
     selectionOriginRef,
     select,
     compareSelect,
+    compareReplaceA,
     clearCompare,
     deselect,
   } = useSelectedCountry(byCca3)
@@ -186,8 +187,9 @@ function AppInner({
   )
 
   // A8 — map-click semantics while a compare pair is active. Scoped to MAP
-  // clicks only: search and border chips still route through onMapSelect and
-  // keep select() (per-column chip semantics land with workstream C).
+  // clicks only: search still routes through onMapSelect and keeps select().
+  // Border chips inside the compare panel are column-scoped (C1) — see
+  // onCompareColumnSelect below.
   const onMapCountryClick = useCallback(
     (cca3: string) => {
       if (!gameActive && !comparePickingMode && selected && compareWith) {
@@ -198,6 +200,20 @@ function AppInner({
       onMapSelect(cca3)
     },
     [gameActive, comparePickingMode, selected, compareWith, compareSelect, onMapSelect],
+  )
+
+  // C1 (A8's descoped border-chip clause) — chips inside the compare panel
+  // replace their OWN column's country: column A via compareReplaceA (keeps
+  // B), column B via compareSelect (keeps A). compareChipClick guards the
+  // X-vs-X case (a chip naming the other column's country is a no-op).
+  const onCompareColumnSelect = useCallback(
+    (column: CompareColumn, cca3: string) => {
+      if (!selected || !compareWith) return
+      const action = compareChipClick(column, cca3, selected.cca3, compareWith.cca3)
+      if (action.kind === 'replace-a') compareReplaceA(action.cca3)
+      else if (action.kind === 'replace-b') compareSelect(action.cca3)
+    },
+    [selected, compareWith, compareReplaceA, compareSelect],
   )
 
   // A8 — an ocean click must not tear down an active comparison; Escape and
@@ -413,6 +429,7 @@ function AppInner({
           onEnterCompare={enterComparePicking}
           onCancelCompare={exitCompare}
           onExitCompare={exitCompare}
+          onCompareColumnSelect={onCompareColumnSelect}
           byCca3={byCca3}
         />
       )}
@@ -436,6 +453,9 @@ function AppInner({
           }}
           onExitCompare={() => {
             /* no-op — hidden by inGameRound */
+          }}
+          onCompareColumnSelect={() => {
+            /* no-op — compare never renders during a round */
           }}
           byCca3={byCca3}
           inGameRound={true}
