@@ -1,8 +1,12 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BorderChip } from '../BorderChip'
 import { CountryColumn } from '../CountryColumn'
 import { makeCountry } from './singleCountryPanelTestUtils'
+
+import SearchBar from '../SearchBar'
+import { makeCountryData } from '../../test/countryFixtures'
+import { stubMatchMedia } from '../../test/matchMediaStub'
 
 /** E4 two-accent migration drift alarm: chrome accents are the ice family;
  *  teal is retired from chrome (it survives ONLY in the Oceania region-badge
@@ -10,6 +14,12 @@ import { makeCountry } from './singleCountryPanelTestUtils'
  *  these components' accent classes). E2: CompareField values render in the
  *  .text-readout face. */
 describe('E4 ice chrome + E2 readout drift alarm', () => {
+  let restoreMatchMedia: () => void
+
+  afterEach(() => {
+    restoreMatchMedia?.()
+  })
+
   it('BorderChip buttons use ice-family classes, no teal', () => {
     render(
       <BorderChip
@@ -42,5 +52,13 @@ describe('E4 ice chrome + E2 readout drift alarm', () => {
     // makeCountry defaults population to 67_000_000 (France fixture)
     const value = screen.getByText('67,000,000')
     expect(value.className).toContain('text-readout')
+  })
+
+  it('SearchBar input has focus ring width + ice color (WCAG 2.4.7)', () => {
+    restoreMatchMedia = stubMatchMedia(() => false)
+    render(<SearchBar countries={[makeCountryData()]} onSelect={vi.fn()} />)
+    const input = screen.getByRole('combobox')
+    expect(input.className).toContain('focus-visible:ring-2')
+    expect(input.className).toContain('focus-visible:ring-ice-dim/40')
   })
 })
