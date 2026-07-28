@@ -188,6 +188,15 @@ describe('useFirstVisitHint', () => {
       expect(localStorage.getItem('funworldmap-hint-compare-shown')).toBe(null)
     })
 
+    it('entering compare on mobile does NOT burn the gate — D4 can revisit later', () => {
+      const { result, rerender } = renderHook((p) => useFirstVisitHint(p), {
+        initialProps: args({ isDesktop: false, selectedCca3: 'FRA' }),
+      })
+      rerender(args({ isDesktop: false, selectedCca3: 'FRA', compareActive: true }))
+      expect(result.current.hint).toBe(null)
+      expect(localStorage.getItem('funworldmap-hint-compare-shown')).toBe(null)
+    })
+
     it('entering compare before the tip ever showed marks it moot', () => {
       const { result, rerender } = renderHook((p) => useFirstVisitHint(p), {
         initialProps: args({ selectedCca3: 'FRA' }),

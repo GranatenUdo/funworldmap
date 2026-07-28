@@ -112,12 +112,12 @@ export function useFirstVisitHint({
   useEffect(() => {
     if (gameActive || selectedCca3 === null) return
     distinctSelectionsRef.current.add(selectedCca3)
+    if (!isDesktop) return
     if (compareActive) {
       // The user already found compare on their own — never nag them.
       markShown(COMPARE_HINT_KEY)
       return
     }
-    if (!isDesktop) return
     if (distinctSelectionsRef.current.size < 2) return
     if (wasShown(COMPARE_HINT_KEY)) return
     setHint('compare')
