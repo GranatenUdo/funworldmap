@@ -8,6 +8,7 @@
  */
 import { describe, expect, it } from 'vitest'
 import indexCssSource from '../../index.css?raw'
+import mapPaletteSource from '../mapPalette.ts?raw'
 
 // Normalize CRLF -> LF: Windows checkouts with core.autocrlf=true convert
 // the committed LF blob to CRLF on disk; the git blob (and CI's Linux
@@ -30,16 +31,70 @@ describe('E4 accent tokens (index.css @theme)', () => {
   it('defines the signal ramp', () => {
     expect(css).toContain('--color-signal: #ff8a4c;')
     expect(css).toContain('--color-signal-dim: #f97316;')
+    expect(css).toContain('--color-signal-accessible: #9a3412;')
   })
 
-  it('teal/coral tokens survive until the final sweep task of this plan', () => {
-    // HANDOFF: the tranche-3 final sweep task deletes the teal and coral
-    // token blocks once its grep gate proves zero usages remain, and
-    // INVERTS these two pins to not.toContain in the same commit. Until
-    // then their premature removal must fail loudly — components still
-    // reference them.
-    expect(css).toContain('--color-teal: #14b8a6;')
-    expect(css).toContain('--color-coral: #f43f5e;')
+  it('teal/coral tokens are retired — the tranche-3 sweep task deleted them', () => {
+    // The tranche-3 final sweep task deleted the teal and coral token
+    // blocks once its grep gate proved zero usages remained. This pin is
+    // inverted from the original "survive until" assertion (see git
+    // history) — their reintroduction must fail loudly.
+    expect(css).not.toContain('--color-teal: #14b8a6;')
+    expect(css).not.toContain('--color-coral: #f43f5e;')
+  })
+})
+
+describe('E4 retirement drift alarm — the teal/coral system must stay gone', () => {
+  // Retired brand hexes: teal #14b8a6, teal-light #5eead4, teal-dim #0d9488,
+  // teal-accessible #065f56, the dark attribution-link teal #7dd3c0,
+  // coral #f43f5e, coral-light #fb7185, coral-dim #e11d48, and the amber
+  // reveal #f59e0b (absorbed into the signal family by E4). The Oceania
+  // region badge's teal-100/-300/-800/-900 classes are Tailwind's default
+  // numbered palette (a region-keyed data encoding), NOT these tokens.
+  const RETIRED_HEXES = [
+    '14b8a6',
+    '5eead4',
+    '0d9488',
+    '065f56',
+    '7dd3c0',
+    'f43f5e',
+    'fb7185',
+    'e11d48',
+    'f59e0b',
+  ]
+
+  it('@theme defines no --color-teal* or --color-coral* tokens (and nothing references them)', () => {
+    expect(css).not.toMatch(/--color-teal/)
+    expect(css).not.toMatch(/--color-coral/)
+  })
+
+  it('index.css carries no retired hex literal (includes the hex-tile backdrop data URI)', () => {
+    for (const hex of RETIRED_HEXES) {
+      expect(css.toLowerCase(), `retired hex #${hex} still in index.css`).not.toContain(hex)
+    }
+  })
+
+  it('mapPalette exports no TEAL/CORAL constants and no retired hex', () => {
+    // Matches `export const TEAL...`/`export const CORAL...` specifically —
+    // not a bare /TEAL|CORAL/ scan, which would false-positive on the
+    // file's own legitimate retirement-prose comments (e.g. "ex TEAL_LIGHT
+    // role", "Teal and coral are retired (E4)").
+    expect(mapPaletteSource).not.toMatch(/export const \w*(TEAL|CORAL)/)
+    for (const hex of RETIRED_HEXES) {
+      expect(
+        mapPaletteSource.toLowerCase(),
+        `retired hex #${hex} still in mapPalette.ts`,
+      ).not.toContain(hex)
+    }
+  })
+
+  it('compare badges consume the E4 tokens — badge ↔ map-fill match is by token, not copied hex', () => {
+    // .compare-badge-b consumes plain --color-ice, not --color-ice-dim —
+    // see mapPalette.ts's ICE_DIM doc for why that divergence is
+    // intentional and stays (T2's accessibility fix; adjudicated by this
+    // task).
+    expect(css).toContain('background: var(--color-signal)')
+    expect(css).toContain('background: var(--color-ice)')
   })
 })
 
