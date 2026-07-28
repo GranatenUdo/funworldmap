@@ -58,7 +58,7 @@ Four visual layers render on top of the basemap:
 | `country-borders`        | Political boundary lines       | Cased light line on satellite; thin gray hairline on the vector basemap.         |
 | `country-selected`       | Selected country highlight     | Thicker border + stronger fill. Filtered to show only the selected country ID.   |
 
-These are the four core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, and the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (14 ids).
+These are the four core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, and the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (15 ids).
 
 ### Interaction Model
 
