@@ -45,13 +45,13 @@ test.describe('compare view dimming interacts with satellite mode', () => {
 
 test.describe('compare view A/B highlight colours match panel badges', () => {
   // Badge colours defined in src/index.css .compare-badge-a / .compare-badge-b;
-  // canonical hexes live in src/lib/mapPalette.ts (E4: A = SIGNAL, B = ICE_DIM).
+  // canonical hexes live in src/lib/mapPalette.ts (E4: A = SIGNAL, B = ICE_MID).
   const SIGNAL = '#ff8a4c'
-  const ICE_DIM = '#0284c7'
+  const ICE_MID = '#0284c7'
   // The light-theme selection accent (mapPalette ICE_DEEP) — exit-restore colour.
   const ICE_DEEP = '#0ea5e9'
 
-  test('in compare mode: A (selected) is signal and B (compareWith) is ice-dim', async ({
+  test('in compare mode: A (selected) is signal and B (compareWith) is ice-mid', async ({
     page,
   }) => {
     // Navigate directly into compare mode: FRA = A (selected), DEU = B (compareWith).
@@ -65,7 +65,7 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
 
     await expect
       .poll(() => getFillColor(page, 'country-compare-fill'), { timeout: 15_000 })
-      .toBe(ICE_DIM)
+      .toBe(ICE_MID)
 
     // Camera must frame BOTH countries left of the compare panel (batch-2 §3).
     await expect
@@ -97,7 +97,7 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
 
     expect(aColor).not.toBe(bColor)
     expect(aColor).toBe(SIGNAL)
-    expect(bColor).toBe(ICE_DIM)
+    expect(bColor).toBe(ICE_MID)
   })
 
   test.describe('exit restoration in light mode', () => {

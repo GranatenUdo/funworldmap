@@ -90,7 +90,7 @@ describe('E4 retirement drift alarm — the teal/coral system must stay gone', (
 
   it('compare badges consume the E4 tokens — badge ↔ map-fill match is by token, not copied hex', () => {
     // .compare-badge-b consumes plain --color-ice, not --color-ice-dim —
-    // see mapPalette.ts's ICE_DIM doc for why that divergence is
+    // see mapPalette.ts's ICE_MID doc for why that divergence is
     // intentional and stays (T2's accessibility fix; adjudicated by this
     // task).
     expect(css).toContain('background: var(--color-signal)')
