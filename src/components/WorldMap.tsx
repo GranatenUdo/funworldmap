@@ -13,6 +13,7 @@ import {
   addSelectionLayers,
   addCompareLayers,
   addCountryLabelLayer,
+  addCompareMarkerLayer,
   applyWarmLighting,
 } from '../lib/mapLayers'
 import { COUNTRY_LABEL_COLLECTION } from '../lib/countryLabelFeatures'
@@ -66,6 +67,9 @@ export default function WorldMap({
     // Added LAST so labels render above every other app layer. Starts hidden;
     // useSatelliteMode's applyBasemapLayerVisibility pass owns its visibility.
     addCountryLabelLayer(map, COUNTRY_LABEL_COLLECTION)
+    // Markers draw above the name labels (added after, B6) — A/B stay legible
+    // over dense label areas.
+    addCompareMarkerLayer(map)
     applyWarmLighting(map)
   }, [])
 

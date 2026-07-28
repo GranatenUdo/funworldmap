@@ -34,7 +34,7 @@ export function flyToCountry(
   map.flyTo({
     center: [lng, lat],
     zoom,
-    offset: panelScreenOffset('single'),
+    offset: panelScreenOffset(),
     pitch: reducedMotion ? 0 : DEFAULT_PITCH,
     duration: reducedMotion ? 0 : 1400,
     curve: 1.5,

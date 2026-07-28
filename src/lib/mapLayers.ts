@@ -1,4 +1,5 @@
 import type maplibregl from 'maplibre-gl'
+import type { CountryData } from './types'
 import {
   SATELLITE_TILES,
   SATELLITE_ATTRIBUTION,
@@ -418,6 +419,7 @@ export const LAYER = {
   compareBorder: 'country-compare-border',
   compareGlow: 'country-compare-glow',
   compareExtrusion: 'country-compare-extrusion',
+  compareMarkers: 'country-compare-markers',
   countryLabels: 'country-labels',
   revealFill: 'country-reveal-fill',
   satellite: 'satellite-layer',
@@ -505,4 +507,61 @@ export function applyBasemapLayerVisibility(
       /* some layers don't support visibility */
     }
   }
+}
+
+/** Compare A/B centroid markers — one symbol layer labelling the pair on the
+ *  map in the compare badge colors (A coral / B teal-dim; index.css's
+ *  .compare-badge-a/-b hardcode the same mapPalette hexes). Rides on B1's
+ *  label-layer pattern: `text-font` MUST be explicit because the positron
+ *  glyphs endpoint 404s MapLibre's default font stack (B1 glyph decision,
+ *  live-verified 2026-07-27). The `country-` prefix keeps
+ *  applyBasemapLayerVisibility's custom-layer skip in force. Add AFTER B1's
+ *  country-labels layer so A/B draw above the name labels. */
+export function addCompareMarkerLayer(map: maplibregl.Map): void {
+  map.addSource('compare-markers', {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+  })
+  map.addLayer({
+    id: LAYER.compareMarkers,
+    type: 'symbol',
+    source: 'compare-markers',
+    layout: {
+      visibility: 'none',
+      'text-field': ['get', 'label'],
+      'text-font': ['Noto Sans Bold'],
+      'text-size': 14,
+      'text-allow-overlap': true,
+      'text-ignore-placement': true,
+    },
+    paint: {
+      'text-color': ['match', ['get', 'label'], 'A', CORAL, TEAL_DIM],
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 1.5,
+    },
+  })
+}
+
+/** Single owner of the compare-marker source data + visibility (the repo's
+ *  single-paint-owner rule). Pass the pair to label A/B at their centroids,
+ *  or null to clear — called from useSelectionHighlight's compare effect. */
+export function applyCompareMarkers(
+  map: maplibregl.Map,
+  pair: { a: CountryData; b: CountryData } | null,
+): void {
+  const source = map.getSource<maplibregl.GeoJSONSource>('compare-markers')
+  if (!source) return
+  const features: GeoJSON.Feature<GeoJSON.Point>[] = pair
+    ? [
+        { label: 'A', c: pair.a },
+        { label: 'B', c: pair.b },
+      ].map(({ label, c }) => ({
+        type: 'Feature',
+        // country.latlng is [lat, lng]; GeoJSON wants [lng, lat]
+        geometry: { type: 'Point', coordinates: [c.latlng[1], c.latlng[0]] },
+        properties: { label },
+      }))
+    : []
+  source.setData({ type: 'FeatureCollection', features })
+  map.setLayoutProperty(LAYER.compareMarkers, 'visibility', pair ? 'visible' : 'none')
 }

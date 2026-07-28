@@ -19,6 +19,8 @@ import {
   SHEET_COLLAPSED_FRACTION,
   COMPARE_SHEET_FRACTION,
   panelScreenOffset,
+  COMPARE_FRAME_PADDING_PX,
+  comparePanelPadding,
   TOUCH_TARGET_BASE,
   TOUCH_TARGET_FROM_36,
   TOUCH_TARGET_FROM_24,
@@ -45,20 +47,39 @@ describe('layout constants ↔ panel classes drift alarm', () => {
     expect(useMediaQuerySource).toContain(DESKTOP_MEDIA_QUERY)
   })
 
-  it('panelScreenOffset centers in the un-occluded area', () => {
+  it('panelScreenOffset centers the single-country fly-to in the un-occluded area', () => {
     vi.stubGlobal(
       'matchMedia',
       vi.fn(() => ({ matches: true })),
     )
-    expect(panelScreenOffset('single')).toEqual([-SINGLE_PANEL_FOOTPRINT_PX / 2, 0])
-    expect(panelScreenOffset('compare')).toEqual([-COMPARE_PANEL_FOOTPRINT_PX / 2, 0])
+    expect(panelScreenOffset()).toEqual([-SINGLE_PANEL_FOOTPRINT_PX / 2, 0])
     vi.stubGlobal(
       'matchMedia',
       vi.fn(() => ({ matches: false })),
     )
     vi.stubGlobal('innerHeight', 800)
-    expect(panelScreenOffset('single')).toEqual([0, -160]) // 800 * 0.4 / 2
-    expect(panelScreenOffset('compare')).toEqual([0, -320]) // 800 * 0.8 / 2
+    expect(panelScreenOffset()).toEqual([0, -160]) // 800 * 0.4 / 2
+  })
+
+  it('comparePanelPadding reserves the panel footprint on desktop, stays flat on mobile (B6)', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: true })),
+    )
+    expect(comparePanelPadding()).toEqual({
+      top: COMPARE_FRAME_PADDING_PX,
+      bottom: COMPARE_FRAME_PADDING_PX,
+      left: COMPARE_FRAME_PADDING_PX,
+      right: COMPARE_FRAME_PADDING_PX + COMPARE_PANEL_FOOTPRINT_PX,
+    })
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: false })),
+    )
+    // Mobile compare framing (sheet-fraction bottom padding) is C6's change —
+    // B6 deliberately ships flat 80s there (spec: "Mobile compare framing is
+    // C6's padding change").
+    expect(comparePanelPadding()).toEqual({ top: 80, bottom: 80, left: 80, right: 80 })
   })
 })
 

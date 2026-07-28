@@ -160,3 +160,36 @@ test.describe('ocean click during compare-picking mode (regression)', () => {
     await expect(panel).toBeVisible()
   })
 })
+
+test.describe('B6 — compare framing clears the panel footprint', () => {
+  // FRA+UKR spans ~40° of longitude, so the frame is width-constrained: under
+  // the replaced screen-offset mechanism cameraForBounds sized zoom to the
+  // FULL 1280px viewport and Ukraine's centroid projected under the 672px
+  // compare panel. Asymmetric padding sizes zoom to the un-occluded strip.
+  // Camera moves are invisible to Element.getAnimations — poll the map seam
+  // (the reveal-animation.spec.ts pattern), never data-animation-state.
+  test('both countries project into the un-occluded strip left of the panel', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,UKR')
+    await expect(page.getByTestId('exit-compare')).toBeVisible({ timeout: 15_000 })
+
+    // COMPARE_PANEL_FOOTPRINT_PX (src/lib/layoutConstants.ts): 16px inset + 656px panel.
+    const PANEL_FOOTPRINT = 672
+    await expect
+      .poll(
+        () =>
+          page.evaluate((footprint) => {
+            const map = window.__funworldmap_map
+            if (!map || map.isMoving()) return null // camera still settling
+            // latlng is [lat, lng] in bundled data; project() wants [lng, lat]
+            const fra = map.project([2, 46])
+            const ukr = map.project([32, 49])
+            const maxX = window.innerWidth - footprint
+            const inStrip = (p: { x: number; y: number }) =>
+              p.x > 0 && p.x < maxX && p.y > 0 && p.y < window.innerHeight
+            return inStrip(fra) && inStrip(ukr)
+          }, PANEL_FOOTPRINT),
+        { timeout: 10_000 },
+      )
+      .toBe(true)
+  })
+})

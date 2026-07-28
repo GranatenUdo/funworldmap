@@ -3,12 +3,21 @@ import { type ReactNode } from 'react'
 import { MapProvider, useMap } from '../hooks/useMap'
 
 /** Spy-backed stand-in for a MapLibre map, for hook tests that assert
- *  setFilter/setPaintProperty calls. */
+ *  setFilter/setPaintProperty/setLayoutProperty/GeoJSON-setData calls. */
 export function makeFakeMap() {
-  const calls: Record<string, unknown[][]> = { setFilter: [], setPaintProperty: [] }
+  const calls: Record<string, unknown[][]> = {
+    setFilter: [],
+    setPaintProperty: [],
+    setLayoutProperty: [],
+    setData: [],
+  }
+  const setData = vi.fn((...args: unknown[]) => calls.setData.push(args))
   return {
     setFilter: vi.fn((...args: unknown[]) => calls.setFilter.push(args)),
     setPaintProperty: vi.fn((...args: unknown[]) => calls.setPaintProperty.push(args)),
+    setLayoutProperty: vi.fn((...args: unknown[]) => calls.setLayoutProperty.push(args)),
+    getSource: vi.fn(() => ({ setData })),
+    setData,
     calls,
   }
 }

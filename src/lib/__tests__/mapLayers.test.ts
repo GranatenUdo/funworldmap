@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import type maplibregl from 'maplibre-gl'
 import type { FillLayerSpecification } from 'maplibre-gl'
 import {
   addBaseCountryLayers,
@@ -15,9 +16,12 @@ import {
   EXTRUSION_MAX_ZOOM,
   extrusionHeightExpression,
   LAYER,
+  addCompareMarkerLayer,
+  applyCompareMarkers,
 } from '../mapLayers'
 import { SPOTLIGHT_DIM } from '../mapPalette'
 import { createFakeMapRef } from '../../test/fakeMapRef'
+import { makeCountryData } from '../../test/countryFixtures'
 
 describe('highlight extrusion layers', () => {
   it.each([
@@ -316,5 +320,63 @@ describe('ensureRevealFillLayer', () => {
     ;(fake.map.getLayer as ReturnType<typeof vi.fn>).mockReturnValue({ id: LAYER.revealFill })
     ensureRevealFillLayer(fake.map)
     expect(fake.calls.addLayer).not.toHaveBeenCalled()
+  })
+})
+
+describe("compare A/B centroid markers (B6 — rides on B1's glyph pattern)", () => {
+  it('adds a country- prefixed symbol layer with explicit Noto Sans Bold, hidden by default', () => {
+    const fake = createFakeMapRef()
+    addCompareMarkerLayer(fake.map)
+    expect(fake.calls.addSource).toHaveBeenCalledWith('compare-markers', {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+    })
+    const spec = fake.addedLayers.find((s) => s.id === 'country-compare-markers') as
+      | maplibregl.SymbolLayerSpecification
+      | undefined
+    expect(spec?.type).toBe('symbol')
+    // The positron glyphs endpoint 404s MapLibre's default font stack — the
+    // explicit Noto Sans Bold is B1's live-verified glyph decision.
+    expect(spec?.layout?.['text-font']).toEqual(['Noto Sans Bold'])
+    // Hidden until applyCompareMarkers shows it; the country- prefix keeps
+    // applyBasemapLayerVisibility's custom-layer skip in force.
+    expect(spec?.layout?.visibility).toBe('none')
+  })
+
+  it('applyCompareMarkers writes [lng, lat]-swapped A/B points and toggles visibility', () => {
+    const fake = createFakeMapRef()
+    const a = makeCountryData() // France, latlng [46, 2]
+    const b = makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] })
+    applyCompareMarkers(fake.map, { a, b })
+    expect(fake.calls.setData).toHaveBeenCalledWith({
+      type: 'FeatureCollection',
+      features: [
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [2, 46] },
+          properties: { label: 'A' },
+        },
+        {
+          type: 'Feature',
+          geometry: { type: 'Point', coordinates: [9, 51] },
+          properties: { label: 'B' },
+        },
+      ],
+    })
+    expect(fake.calls.setLayoutProperty).toHaveBeenLastCalledWith(
+      'country-compare-markers',
+      'visibility',
+      'visible',
+    )
+    applyCompareMarkers(fake.map, null)
+    expect(fake.calls.setData).toHaveBeenLastCalledWith({
+      type: 'FeatureCollection',
+      features: [],
+    })
+    expect(fake.calls.setLayoutProperty).toHaveBeenLastCalledWith(
+      'country-compare-markers',
+      'visibility',
+      'none',
+    )
   })
 })

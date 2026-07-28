@@ -2,7 +2,7 @@ import type maplibregl from 'maplibre-gl'
 import type { CountryData } from './types'
 import { DEFAULT_PITCH, DEFAULT_ZOOM } from './mapStyles'
 import { prefersReducedMotion } from './motion'
-import { panelScreenOffset } from './layoutConstants'
+import { COMPARE_FRAME_PADDING_PX, comparePanelPadding } from './layoutConstants'
 
 /** Approximate a country's half-extent in degrees of latitude: half the side
  *  of the equivalent-area square (sqrt(area) km / 2) at ~111 km per degree.
@@ -13,15 +13,21 @@ function halfExtentDeg(country: CountryData): number {
 }
 
 /** Frame BOTH compared countries in the area the compare panel does not
- *  cover (batch-2 spec §3). Centroid bounds are extended by area-derived
- *  half-extents because raw centroid boxes underframe adjacent pairs (live
- *  pass 2026-07-11) — 80px padding alone can't absorb the shortfall for
- *  neighbours like France/Germany. Longitudes >180° apart are shifted so
- *  the box crosses the antimeridian instead of wrapping the long way.
- *  Pairs wider than a globe face (>110°, e.g. Japan+USA) skip framing
- *  entirely and fly to the pair's midpoint at world zoom instead — no
- *  offset trick can fit both countries in one globe-projection frame
- *  (spec §3's designed fallback; live pass 2026-07-11). */
+ *  cover. B6 (2026-07-28) replaced batch-2's screen offset with asymmetric
+ *  cameraForBounds padding (the panel footprint as extra `right` padding,
+ *  from comparePanelPadding): an offset only shifted the center while zoom
+ *  stayed sized to the FULL viewport, so country B still slid under the
+ *  panel — padding folds the occluded area into BOTH zoom and center, and
+ *  the returned camera bakes the shift in, so the flyTo needs no padding.
+ *  Centroid bounds are extended by area-derived half-extents because raw
+ *  centroid boxes underframe adjacent pairs (live pass 2026-07-11) — padding
+ *  alone can't absorb the shortfall for neighbours like France/Germany.
+ *  Longitudes >180° apart are shifted so the box crosses the antimeridian
+ *  instead of wrapping the long way. Pairs wider than a globe face (>110°,
+ *  e.g. Japan+USA) skip framing entirely and fly to the pair's midpoint at
+ *  world zoom instead — no padding trick can fit both countries in one
+ *  globe-projection frame (batch-2 spec §3's designed fallback, kept by B6;
+ *  live pass 2026-07-11). */
 export function flyToComparePair(map: maplibregl.Map, a: CountryData, b: CountryData): void {
   const [latA, lngA] = a.latlng
   const [latB, rawLngB] = b.latlng
@@ -44,7 +50,7 @@ export function flyToComparePair(map: maplibregl.Map, a: CountryData, b: Country
   const reducedMotion = prefersReducedMotion()
 
   const [[west], [east]] = bounds
-  // A globe face cannot frame a pair this wide no matter the offset — fall
+  // A globe face cannot frame a pair this wide no matter the padding — fall
   // back to the pair's midpoint at world zoom (spec §3's designed fallback;
   // Japan+USA live pass 2026-07-11). lngB is already antimeridian-shifted,
   // so the arithmetic midpoint is the circular midpoint.
@@ -60,20 +66,23 @@ export function flyToComparePair(map: maplibregl.Map, a: CountryData, b: Country
     return
   }
 
-  const offsetCamera = map.cameraForBounds(bounds, {
-    padding: 80,
-    offset: panelScreenOffset('compare'),
-  })
-  if (!offsetCamera) return
-  // At globe-scale zooms a screen offset equates to tens of degrees of
-  // rotation and swings one country past the horizon (Japan+USA, live pass
-  // 2026-07-11). The un-occluded viewport still shows the whole globe face
-  // there, so drop the offset instead.
+  const paddedCamera = map.cameraForBounds(bounds, { padding: comparePanelPadding() })
+  if (!paddedCamera) return
+  // At globe-scale zooms the panel-footprint padding equates to tens of
+  // degrees of rotation and can swing one country past the horizon (the
+  // failure mode batch-2's offset showed on Japan+USA, live pass 2026-07-11).
+  // The un-occluded viewport still shows the whole globe face there, so fall
+  // back to symmetric padding. B6 keeps this guard as the CONSERVATIVE
+  // DEFAULT — remove only after the live matrix in the B-core plan passes
+  // without it. NOTE: padded zooms run systematically lower than the
+  // offset-era zooms this 2.2 threshold was tuned against (the footprint now
+  // shrinks the fitting area by ~672px), so the guard fires for more pairs
+  // than before — part of what the live step evaluates.
   const GLOBE_SCALE_ZOOM = 2.2
   const camera =
-    (offsetCamera.zoom ?? 0) < GLOBE_SCALE_ZOOM
-      ? (map.cameraForBounds(bounds, { padding: 80 }) ?? offsetCamera)
-      : offsetCamera
+    (paddedCamera.zoom ?? 0) < GLOBE_SCALE_ZOOM
+      ? (map.cameraForBounds(bounds, { padding: COMPARE_FRAME_PADDING_PX }) ?? paddedCamera)
+      : paddedCamera
 
   map.flyTo({
     ...camera,
