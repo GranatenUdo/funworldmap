@@ -284,6 +284,26 @@ body {
   border-top-color: rgba(94, 234, 212, 0.15);
 }
 
+/* B7 coarse-pointer touch targets: grow the vendor ctrl buttons from
+   MapLibre's stock 29px to the app's 44px convention floor
+   (TOUCH_TARGET_MIN_PX in src/lib/layoutConstants.ts — this literal CSS is
+   pinned to it by layoutConstants.test.ts). Real enlargement, not the A13
+   invisible-::after hit extension, for two reasons: (1) the TOUCH_TARGET_*
+   constants are Tailwind className strings and MapLibre builds these
+   buttons imperatively — no JSX to attach them to; (2) the ctrl-group
+   stacks its buttons flush, so overlapping ::after hit boxes would let the
+   later sibling steal taps on the shared seam (WCAG 2.5.8 wants targets
+   non-overlapping). min-width/min-height outrank the stock
+   `width/height: 29px` without re-specifying them; the stock icon sprites
+   stay 29px centered (background-position: 50%, no background-size), so
+   glyphs don't scale. Fine pointers keep the stock 29px. */
+@media (pointer: coarse) {
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 /* MapLibre compass/zoom icon color override (uses an img element with filter).
    Dark only — MapLibre's stock icons are dark gray, already correct on the
    light sand surface. */

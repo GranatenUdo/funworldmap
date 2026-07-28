@@ -12,6 +12,7 @@ import searchBarSource from '../../components/SearchBar.tsx?raw'
 import closeButtonSource from '../../components/CloseButton.tsx?raw'
 import hudShellSource from '../../game/shared/hud/HudShell.tsx?raw'
 import cityGuessingHudSource from '../../game/modes/city-guessing/CityGuessingHud.tsx?raw'
+import indexCssSource from '../../index.css?raw'
 import {
   DESKTOP_MEDIA_QUERY,
   SINGLE_PANEL_FOOTPRINT_PX,
@@ -27,6 +28,7 @@ import {
   TOUCH_TARGET_TEXT_XS,
   TOUCH_TARGET_FROM_22,
   TOUCH_TARGET_FROM_32,
+  TOUCH_TARGET_MIN_PX,
 } from '../layoutConstants'
 
 afterEach(() => vi.unstubAllGlobals())
@@ -157,5 +159,26 @@ describe('A13 supplemental touch targets (Task 6 ledger + Task 12 compare header
     expect(compareCountryPanelSource).toContain('exit-compare')
     expect(compareCountryPanelSource).toContain('py-1.5')
     expect(compareCountryPanelSource).toContain('text-sm')
+  })
+})
+
+describe('B7 map-control touch-target drift alarm', () => {
+  it('index.css grows vendor ctrl buttons to the convention floor under pointer: coarse', () => {
+    // MapLibre's ctrl buttons are vendor-built DOM — the Tailwind
+    // TOUCH_TARGET_* class strings can't reach them, so index.css sizes
+    // them directly. This pin ties the raw CSS to the named constant:
+    // change either side and this test names the other.
+    expect(TOUCH_TARGET_MIN_PX).toBe(44)
+    // Normalize CRLF -> LF: Windows checkouts with core.autocrlf=true convert
+    // the committed LF blob to CRLF on disk; the git blob (and CI's Linux
+    // checkout) stay LF. Normalizing keeps this pin platform-agnostic.
+    expect(indexCssSource.replace(/\r\n/g, '\n')).toContain(
+      `@media (pointer: coarse) {
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button {
+    min-width: ${TOUCH_TARGET_MIN_PX}px;
+    min-height: ${TOUCH_TARGET_MIN_PX}px;
+  }
+}`,
+    )
   })
 })

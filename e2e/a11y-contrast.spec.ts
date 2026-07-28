@@ -115,6 +115,28 @@ test.describe('A11y + Contrast Pass', () => {
       await expect(wordmark).toBeVisible()
       expect(await computedColor(wordmark)).toContain(TEAL_LIGHT_RGB)
     })
+
+    test('map nav-control buttons use teal-accessible in light mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
+      await page.goto('/')
+      await ensureLauncherDismissed(page)
+      const button = page
+        .locator('.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button')
+        .first()
+      await expect(button).toBeVisible()
+      expect(await computedColor(button)).toContain(TEAL_ACCESSIBLE_RGB)
+    })
+
+    test('map nav-control buttons keep teal-light in dark mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
+      await page.goto('/')
+      await ensureLauncherDismissed(page)
+      const button = page
+        .locator('.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button')
+        .first()
+      await expect(button).toBeVisible()
+      expect(await computedColor(button)).toContain(TEAL_LIGHT_RGB)
+    })
   })
 
   test.describe('Tabular figures on DataCell', () => {
@@ -127,6 +149,37 @@ test.describe('A11y + Contrast Pass', () => {
         .first()
         .evaluate((el) => window.getComputedStyle(el).fontVariantNumeric)
       expect(variant).toContain('tabular-nums')
+    })
+  })
+
+  test.describe('Map control touch targets (B7)', () => {
+    // Pixel-7-like emulation: isMobile + hasTouch flip Chromium's CSS
+    // `pointer` media feature to coarse, so the `@media (pointer: coarse)`
+    // block in src/index.css applies. Fine-pointer desktop runs keep
+    // MapLibre's stock 29px buttons — that path is intentionally unasserted.
+    test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true })
+
+    test('every bottom-right map control button is >= 44px on coarse pointers', async ({
+      page,
+    }) => {
+      await page.goto('/')
+      await ensureLauncherDismissed(page)
+      const buttons = page.locator('.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group button')
+      await expect(buttons.first()).toBeVisible()
+      // zoom-in, zoom-out, compass (NavigationControl) + reset (ResetViewControl)
+      await expect(buttons).toHaveCount(4)
+      for (let i = 0; i < 4; i++) {
+        const box = await buttons.nth(i).boundingBox()
+        expect(box, `button ${i} bounding box`).not.toBeNull()
+        expect(box!.width, `button ${i} width`).toBeGreaterThanOrEqual(44)
+        expect(box!.height, `button ${i} height`).toBeGreaterThanOrEqual(44)
+      }
+    })
+
+    test('reset control keeps its accessible name', async ({ page }) => {
+      await page.goto('/')
+      await ensureLauncherDismissed(page)
+      await expect(page.getByRole('button', { name: 'Reset to world view' })).toBeVisible()
     })
   })
 })

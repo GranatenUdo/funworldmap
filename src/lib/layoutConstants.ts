@@ -92,3 +92,12 @@ export const TOUCH_TARGET_FROM_22 = `relative ${TOUCH_TARGET_BASE} pointer-coars
  *  Continue CTA precedent of applying the constrained dimension's math to
  *  all four sides even though the other dimension is already oversized. */
 export const TOUCH_TARGET_FROM_32 = `relative ${TOUCH_TARGET_BASE} pointer-coarse:after:-inset-1.5`
+
+/** ── B7 map-control touch targets ───────────────────────────────────────
+ * The convention floor (px) that all the TOUCH_TARGET_* insets above are
+ * computed against, named once. MapLibre's ctrl buttons are vendor-built
+ * DOM with no className hook for the Tailwind constants, so index.css
+ * grows them directly with `min-width/min-height: 44px` under
+ * `@media (pointer: coarse)` — layoutConstants.test.ts pins that raw CSS
+ * to this constant. */
+export const TOUCH_TARGET_MIN_PX = 44
