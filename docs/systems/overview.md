@@ -65,7 +65,7 @@ Flag images and country metadata are bundled into the build. Beyond the tile CDN
 3. Basemap tiles stream from OpenFreeMap as user pans/zooms
 4. world-atlas TopoJSON loads asynchronously (Vite code-split chunk). While it loads, the user sees the basemap without country boundaries — no loading indicator is shown, as the basemap provides immediate visual content and country polygons appear within seconds.
 5. TopoJSON converted to GeoJSON via `topojson-client`, added as map source
-6. Country boundaries render as interactive layers
+6. Country boundaries render as interactive layers; on the satellite basemap, app-owned `country-labels` name labels render above them (hidden while a game round is playing — see [Map Rendering](map-rendering.md))
 7. If URL has hash (e.g., `#FRA`), cca3 code is looked up → ccn3 numeric ID resolved → country selected and camera flies to it via `flyToCountry()`. Hash resolution is deferred until step 6 completes — the GeoJSON source must be loaded before a country can be selected and highlighted.
 8. If no hash, map shows default view: satellite basemap, centered at longitude 0, latitude 20, zoom 1.8, pitch 20° (3D; pitch 0 under `prefers-reduced-motion`)
 
