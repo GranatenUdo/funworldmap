@@ -1,18 +1,7 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useCountryBaselinePaint } from '../useCountryBaselinePaint'
 import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
-
-const h = vi.hoisted(() => ({
-  session: { modeId: 'country-pinning', status: 'idle' },
-}))
-vi.mock('../../game/shared/GameSessionProvider', () => ({
-  useGameSessionContext: () => ({ session: h.session }),
-}))
-
-beforeEach(() => {
-  h.session = { modeId: 'country-pinning', status: 'idle' }
-})
 
 function paintValue(fake: ReturnType<typeof makeFakeMap>, layer: string, prop: string) {
   // Last write wins — mirror MapLibre semantics.
@@ -24,15 +13,17 @@ const SAT_EXPR = ['case', ['boolean', ['feature-state', 'hover'], false], 0.32, 
 const VEC_EXPR = ['case', ['boolean', ['feature-state', 'hover'], false], 0.28, 0.05]
 
 describe('useCountryBaselinePaint', () => {
-  // Full {satellite × compare} matrix — these pin today's exact visuals so the
-  // hook rewiring in this phase cannot drift them.
+  // Full {satellite × compare} matrix — pins B2's cased-border baseline.
+  // The batch-2 gameActive emphasis is retired: play and rest render the
+  // same cased borders, so game status no longer appears in this table.
   const cases = [
     {
       satellite: true,
       inCompareView: false,
       fill: SAT_EXPR,
-      borderOpacity: 0.6,
+      borderOpacity: 0.9,
       borderColor: 'rgba(255,255,255,0.35)',
+      casingOpacity: 0.85,
     },
     {
       satellite: false,
@@ -40,6 +31,7 @@ describe('useCountryBaselinePaint', () => {
       fill: VEC_EXPR,
       borderOpacity: 0.35,
       borderColor: '#94a3b8',
+      casingOpacity: 0,
     },
     {
       satellite: true,
@@ -47,6 +39,7 @@ describe('useCountryBaselinePaint', () => {
       fill: 0.03,
       borderOpacity: 0.15,
       borderColor: 'rgba(255,255,255,0.35)',
+      casingOpacity: 0,
     },
     {
       satellite: false,
@@ -54,11 +47,12 @@ describe('useCountryBaselinePaint', () => {
       fill: 0.05,
       borderOpacity: 0.15,
       borderColor: '#94a3b8',
+      casingOpacity: 0,
     },
   ] as const
 
   for (const c of cases) {
-    it(`satellite=${c.satellite} compare=${c.inCompareView} → fill/border baseline`, () => {
+    it(`satellite=${c.satellite} compare=${c.inCompareView} → fill/border/casing baseline`, () => {
       const fake = makeFakeMap()
       renderHook(
         () =>
@@ -73,6 +67,7 @@ describe('useCountryBaselinePaint', () => {
       expect(paintValue(fake, 'country-fill', 'fill-opacity')).toEqual(c.fill)
       expect(paintValue(fake, 'country-borders', 'line-opacity')).toBe(c.borderOpacity)
       expect(paintValue(fake, 'country-borders', 'line-color')).toBe(c.borderColor)
+      expect(paintValue(fake, 'country-borders-casing', 'line-opacity')).toBe(c.casingOpacity)
     })
   }
 
@@ -105,25 +100,5 @@ describe('useCountryBaselinePaint', () => {
       { wrapper: makeMapWrapper(fake) },
     )
     expect(fake.setPaintProperty).not.toHaveBeenCalled()
-  })
-
-  it('satellite + playing bolds the border, then restores it when the game ends', () => {
-    const fake = makeFakeMap()
-    h.session = { modeId: 'country-pinning', status: 'playing' }
-    const { rerender } = renderHook(
-      () =>
-        useCountryBaselinePaint({
-          loaded: true,
-          satellite: true,
-          inCompareView: false,
-          resolvedTheme: 'light',
-        }),
-      { wrapper: makeMapWrapper(fake) },
-    )
-    expect(paintValue(fake, 'country-borders', 'line-width')).toBe(1.6)
-
-    h.session = { modeId: 'country-pinning', status: 'game-over' }
-    rerender()
-    expect(paintValue(fake, 'country-borders', 'line-width')).toBe(0.5)
   })
 })

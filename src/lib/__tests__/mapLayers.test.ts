@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import {
+  addBaseCountryLayers,
   addCountryLabelLayer,
   addHoverLayers,
   addSelectionLayers,
@@ -135,62 +136,52 @@ describe('applyBasemapLayerVisibility', () => {
   })
 })
 
-describe('applyCountryBaselinePaint game emphasis', () => {
-  const paintOf = (fake: ReturnType<typeof createFakeMapRef>, prop: string): unknown =>
-    fake.calls.setPaintProperty.mock.calls.filter((c) => c[1] === prop).at(-1)?.[2]
+describe('cased country borders (B2)', () => {
+  const paintOf = (
+    fake: ReturnType<typeof createFakeMapRef>,
+    layer: string,
+    prop: string,
+  ): unknown =>
+    fake.calls.setPaintProperty.mock.calls
+      .filter((c) => c[0] === layer && c[1] === prop)
+      .at(-1)?.[2]
 
-  it('satellite + playing: borders 1.6px @ 0.9', () => {
+  const CASING_WIDTH = ['interpolate', ['linear'], ['zoom'], 1, 1.2, 5, 1.6, 10, 2.6]
+  const CASED_WIDTH = ['interpolate', ['linear'], ['zoom'], 1, 0.7, 5, 0.9, 10, 1.5]
+
+  it('addBaseCountryLayers adds the casing directly under the light border line', () => {
     const fake = createFakeMapRef()
-    applyCountryBaselinePaint(fake.map, {
-      satellite: true,
-      inCompareView: false,
-      isDark: false,
-      gameActive: true,
-    })
-    expect(paintOf(fake, 'line-width')).toBe(1.6)
-    expect(paintOf(fake, 'line-opacity')).toBe(0.9)
+    addBaseCountryLayers(fake.map)
+    const ids = fake.addedLayers.map((l) => l.id)
+    expect(ids.indexOf(LAYER.bordersCasing)).toBeGreaterThanOrEqual(0)
+    expect(ids.indexOf(LAYER.bordersCasing)).toBe(ids.indexOf(LAYER.borders) - 1)
   })
 
-  it('satellite idle: baseline 0.5px @ 0.6 restored', () => {
+  it('satellite: light line at 0.9 opacity over a dark casing, both zoom-interpolated', () => {
     const fake = createFakeMapRef()
-    applyCountryBaselinePaint(fake.map, {
-      satellite: true,
-      inCompareView: false,
-      isDark: false,
-      gameActive: false,
-    })
-    expect(paintOf(fake, 'line-width')).toBe(0.5)
-    expect(paintOf(fake, 'line-opacity')).toBe(0.6)
+    applyCountryBaselinePaint(fake.map, { satellite: true, inCompareView: false, isDark: false })
+    expect(paintOf(fake, LAYER.borders, 'line-width')).toEqual(CASED_WIDTH)
+    expect(paintOf(fake, LAYER.borders, 'line-opacity')).toBe(0.9)
+    expect(paintOf(fake, LAYER.bordersCasing, 'line-color')).toBe('#0f172a')
+    expect(paintOf(fake, LAYER.bordersCasing, 'line-width')).toEqual(CASING_WIDTH)
+    expect(paintOf(fake, LAYER.bordersCasing, 'line-opacity')).toBe(0.85)
   })
 
-  it('map view + playing: vector border paint unchanged by the game', () => {
+  it('vector: hairline baseline unchanged, casing hidden', () => {
     const fake = createFakeMapRef()
-    applyCountryBaselinePaint(fake.map, {
-      satellite: false,
-      inCompareView: false,
-      isDark: false,
-      gameActive: true,
-    })
-    expect(paintOf(fake, 'line-width')).toBe(0.5)
-    expect(paintOf(fake, 'line-opacity')).toBe(0.35)
+    applyCountryBaselinePaint(fake.map, { satellite: false, inCompareView: false, isDark: false })
+    expect(paintOf(fake, LAYER.borders, 'line-width')).toBe(0.5)
+    expect(paintOf(fake, LAYER.borders, 'line-opacity')).toBe(0.35)
+    expect(paintOf(fake, LAYER.bordersCasing, 'line-opacity')).toBe(0)
   })
 
-  it('compare view resets line-width even after game emphasis', () => {
+  it('compare view: flat dim hairline, casing hidden (even arriving from satellite)', () => {
     const fake = createFakeMapRef()
-    applyCountryBaselinePaint(fake.map, {
-      satellite: true,
-      inCompareView: false,
-      isDark: false,
-      gameActive: true,
-    })
-    applyCountryBaselinePaint(fake.map, {
-      satellite: true,
-      inCompareView: true,
-      isDark: false,
-      gameActive: false,
-    })
-    expect(paintOf(fake, 'line-width')).toBe(0.5)
-    expect(paintOf(fake, 'line-opacity')).toBe(0.15)
+    applyCountryBaselinePaint(fake.map, { satellite: true, inCompareView: false, isDark: false })
+    applyCountryBaselinePaint(fake.map, { satellite: true, inCompareView: true, isDark: false })
+    expect(paintOf(fake, LAYER.borders, 'line-width')).toBe(0.5)
+    expect(paintOf(fake, LAYER.borders, 'line-opacity')).toBe(0.15)
+    expect(paintOf(fake, LAYER.bordersCasing, 'line-opacity')).toBe(0)
   })
 })
 

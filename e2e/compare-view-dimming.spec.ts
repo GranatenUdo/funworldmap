@@ -37,8 +37,9 @@ test.describe('compare view dimming interacts with satellite mode', () => {
     await page.evaluate(() => {
       window.location.hash = '#FRA'
     })
-    // Poll until dimming releases back to the satellite-default value (0.6).
-    await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.6, 2)
+    // Poll until dimming releases back to the satellite-default value
+    // (0.9 — B2's cased light line).
+    await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.9, 2)
   })
 })
 
@@ -108,8 +109,8 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
       await page.evaluate(() => {
         window.location.hash = '#FRA'
       })
-      // Wait for compare mode to release (border opacity restores).
-      await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.6, 2)
+      // Wait for compare mode to release (border opacity restores to 0.9).
+      await expect.poll(() => getBorderOpacity(page), { timeout: 15_000 }).toBeCloseTo(0.9, 2)
 
       // Light mode → CORAL is the restored colour (matches the badge).
       // Verify that exiting compare restores the correct theme-appropriate fill-color.
