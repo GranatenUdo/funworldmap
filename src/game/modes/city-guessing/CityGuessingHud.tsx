@@ -61,7 +61,7 @@ function CityGuessingHud({ session, onSkip }: Props) {
         <button
           type="button"
           onClick={onSkip}
-          className={`text-xs text-sand-500 dark:text-dark-100 hover:text-sand-700 dark:hover:text-dark-50 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-teal/50 rounded px-1 ${TOUCH_TARGET_TEXT_XS}`}
+          className={`text-xs text-sand-500 dark:text-dark-100 hover:text-sand-700 dark:hover:text-dark-50 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ice/50 rounded px-1 ${TOUCH_TARGET_TEXT_XS}`}
           data-testid="city-skip"
         >
           {MESSAGES.skipButton}

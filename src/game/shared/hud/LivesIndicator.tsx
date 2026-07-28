@@ -16,8 +16,10 @@ export function LivesIndicator({ lives }: Props) {
           <svg
             key={i}
             viewBox="0 0 24 24"
+            // E4: alive hearts are neutral (starlight in dark); a LOST heart is
+            // the signal accent — loss is live game state.
             className={`w-5 h-5 transition-colors duration-200 ${
-              active ? 'text-rose-500' : 'text-sand-300 dark:text-dark-200'
+              active ? 'text-sand-500 dark:text-dark-50' : 'text-signal-accessible dark:text-signal'
             }`}
             aria-hidden="true"
             fill="currentColor"

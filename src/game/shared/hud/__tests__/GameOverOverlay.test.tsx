@@ -113,4 +113,38 @@ describe('GameOverOverlay', () => {
     )
     expect(screen.getByText('Game ended early.')).toBeTruthy()
   })
+
+  it('applies the E2 type roles: display title, readout stats', () => {
+    render(
+      <GameOverOverlay
+        session={{ ...baseSession, maxRounds: null }}
+        personalBest={zeroBest}
+        beatPersonalBest={false}
+        onPlayAgain={() => {}}
+        onBackToMap={() => {}}
+      />,
+    )
+    expect(screen.getByTestId('game-over-title').className).toContain('text-display')
+    expect(screen.getByTestId('game-over-score').className).toContain('text-readout')
+    expect(screen.getByTestId('game-over-best-streak').className).toContain('text-readout')
+  })
+
+  it('uses the ice accent for PB text and action buttons (E4)', () => {
+    render(
+      <GameOverOverlay
+        session={{ ...baseSession, maxRounds: null }}
+        personalBest={zeroBest}
+        beatPersonalBest={true}
+        onPlayAgain={() => {}}
+        onBackToMap={() => {}}
+      />,
+    )
+    expect(screen.getByText(/new personal best/i).className).toContain(
+      'text-ice-accessible dark:text-ice',
+    )
+    const playAgain = screen.getByTestId('game-over-play-again')
+    expect(playAgain.className).toContain('bg-ice-accessible')
+    expect(playAgain.className).toContain('hover:bg-ice-dim')
+    expect(screen.getByTestId('game-over-back').className).toContain('focus-visible:ring-ice/50')
+  })
 })

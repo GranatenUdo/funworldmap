@@ -85,6 +85,13 @@
   --color-signal: #ff8a4c;
   /* orange-500 — darker signal for borders/edges where the base is too hot */
   --color-signal-dim: #f97316;
+  /* orange-800: WCAG AA light-mode text variant, following the
+     --color-ice-accessible pattern (foundation gap found + fixed forward in
+     the game-surface task — the token task defined signal/signal-dim but
+     missed this one). Contrast (light mode, this hex): 7.1:1 on sand-50
+     (lost heart), ~6.3:1 on the signal/15 tint over sand-50 (streak text).
+     Dark mode uses --color-signal directly (#ff8a4c on dark-400 ~7.4:1). */
+  --color-signal-accessible: #9a3412;
 }
 
 body {
