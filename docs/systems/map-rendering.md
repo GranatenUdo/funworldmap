@@ -49,16 +49,17 @@ MapLibre GL as a GeoJSON source with multiple layers
 
 ### Map Layers
 
-Four visual layers render on top of the basemap:
+Five visual layers render on top of the basemap:
 
-| Layer                    | Purpose                        | Style                                                                            |
-| ------------------------ | ------------------------------ | -------------------------------------------------------------------------------- |
-| `country-fill`           | Clickable area, hover feedback | Semi-transparent fill. Opacity increases on hover via `feature-state`.           |
-| `country-borders-casing` | Satellite border legibility    | Dark casing rendered under `country-borders`; hidden in vector and compare view. |
-| `country-borders`        | Political boundary lines       | Cased light line on satellite; thin gray hairline on the vector basemap.         |
-| `country-selected`       | Selected country highlight     | Thicker border + stronger fill. Filtered to show only the selected country ID.   |
+| Layer                    | Purpose                        | Style                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------ | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `country-fill`           | Clickable area, hover feedback | Semi-transparent fill. Opacity increases on hover via `feature-state`.                                                                                                                                                                                                                                                                                                           |
+| `country-borders-casing` | Satellite border legibility    | Dark casing rendered under `country-borders`; hidden in vector and compare view.                                                                                                                                                                                                                                                                                                 |
+| `country-borders`        | Political boundary lines       | Cased light line on satellite; thin gray hairline on the vector basemap.                                                                                                                                                                                                                                                                                                         |
+| `country-dim`            | Selection spotlight scrim (B4) | Dark 25% fill over every country EXCEPT the selection (and both compare countries). Sits above the base layers, below the hover/highlight stacks. Filter owned by `useSelectionHighlight` via `spotlightDimFilter`; matches nothing when no country is selected, so games never show it. Never hit-tested — every `queryRenderedFeatures` caller stays scoped to `country-fill`. |
+| `country-selected`       | Selected country highlight     | Tight border glow (4px, blur 2) + faint 10% fill — the spotlight scrim carries the emphasis. Filtered to show only the selected country ID.                                                                                                                                                                                                                                      |
 
-These are the four core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, and the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (15 ids).
+These are the five core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, and the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (16 ids).
 
 ### Interaction Model
 

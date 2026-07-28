@@ -5,13 +5,16 @@ import {
   addHoverLayers,
   addSelectionLayers,
   addCompareLayers,
+  addSpotlightDimLayer,
   applyBasemapLayerVisibility,
   applyCountryBaselinePaint,
+  spotlightDimFilter,
   COUNTRY_LABEL_SOURCE,
   EXTRUSION_MAX_ZOOM,
   extrusionHeightExpression,
   LAYER,
 } from '../mapLayers'
+import { SPOTLIGHT_DIM } from '../mapPalette'
 import { createFakeMapRef } from '../../test/fakeMapRef'
 
 describe('highlight extrusion layers', () => {
@@ -242,4 +245,54 @@ describe('addCountryLabelLayer', () => {
     expect(halo).toBeGreaterThanOrEqual(1)
     expect(halo).toBeLessThanOrEqual(2.5)
   })
+})
+
+describe('B4 spotlight dim layer', () => {
+  it('adds country-dim as a fill scrim that starts matching nothing', () => {
+    const fake = createFakeMapRef()
+    addSpotlightDimLayer(fake.map)
+    expect(fake.addedLayers).toHaveLength(1)
+    expect(fake.addedLayers[0]).toMatchObject({
+      id: 'country-dim',
+      type: 'fill',
+      source: 'countries',
+      paint: { 'fill-color': SPOTLIGHT_DIM, 'fill-opacity': 0.25 },
+      filter: ['==', ['get', 'id'], ''],
+    })
+  })
+
+  it('no selection matches nothing — games never show the scrim (game start deselects)', () => {
+    expect(spotlightDimFilter(null, null)).toEqual(['==', ['get', 'id'], ''])
+  })
+
+  it('selection dims everything except the selected country', () => {
+    expect(spotlightDimFilter('250', null)).toEqual(['!=', ['get', 'id'], '250'])
+  })
+
+  it('compare dims everything except BOTH countries', () => {
+    expect(spotlightDimFilter('250', '276')).toEqual([
+      'all',
+      ['!=', ['get', 'id'], '250'],
+      ['!=', ['get', 'id'], '276'],
+    ])
+  })
+})
+
+describe('B4 spotlight highlight-stack quieting', () => {
+  it.each([
+    ['selection', addSelectionLayers, 'country-selected', 'country-selected-glow'],
+    ['compare', addCompareLayers, 'country-compare-fill', 'country-compare-glow'],
+  ] as const)(
+    '%s fill drops to 0.10 and the glow tightens to 4px/blur 2',
+    (_n, add, fillId, glowId) => {
+      const fake = createFakeMapRef()
+      add(fake.map)
+      const fill = fake.addedLayers.find((s) => s.id === fillId)
+      expect(fill).toMatchObject({ paint: { 'fill-opacity': 0.1 } })
+      const glow = fake.addedLayers.find((s) => s.id === glowId)
+      expect(glow).toMatchObject({
+        paint: { 'line-width': 4, 'line-blur': 2, 'line-opacity': 0.3 },
+      })
+    },
+  )
 })

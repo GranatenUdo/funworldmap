@@ -172,4 +172,52 @@ describe('useSelectionHighlight', () => {
     expect(flyToComparePair).toHaveBeenLastCalledWith(expect.anything(), selected, spain)
     expect(flyToCountry).toHaveBeenCalledTimes(1) // replace-B never re-flies the single camera
   })
+
+  it('B4: selection sets the country-dim filter to everything-except-selection', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: makeCountry('250'),
+          selectionOriginRef: originRef(),
+          compareWith: null,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    const call = fake.calls.setFilter.find((c) => c[0] === 'country-dim')
+    expect(call?.[1]).toEqual(['!=', ['get', 'id'], '250'])
+  })
+
+  it('B4: compare excludes BOTH countries from the country-dim filter', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: makeCountry('250'),
+          selectionOriginRef: originRef(),
+          compareWith: makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] }),
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    const call = fake.calls.setFilter.filter((c) => c[0] === 'country-dim').at(-1)
+    expect(call?.[1]).toEqual(['all', ['!=', ['get', 'id'], '250'], ['!=', ['get', 'id'], '276']])
+  })
+
+  it('B4: no selection leaves country-dim matching nothing (games stay scrim-free)', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: null,
+          selectionOriginRef: originRef(),
+          compareWith: null,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    const call = fake.calls.setFilter.find((c) => c[0] === 'country-dim')
+    expect(call?.[1]).toEqual(['==', ['get', 'id'], ''])
+  })
 })

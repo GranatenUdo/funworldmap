@@ -5,7 +5,7 @@ import {
   TERRAIN_TILES,
   TERRAIN_ATTRIBUTION,
 } from './mapStyles'
-import { TEAL, TEAL_DIM, CORAL } from './mapPalette'
+import { TEAL, TEAL_DIM, CORAL, SPOTLIGHT_DIM } from './mapPalette'
 
 const EMPTY_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
@@ -194,7 +194,9 @@ function addHighlightStack(
     id: `${prefix}-glow`,
     type: 'line',
     source: 'countries',
-    paint: { 'line-color': color, 'line-width': 10, 'line-blur': 5, 'line-opacity': 0.3 },
+    // B4 spotlight: tight glow (was 10px / blur 5) — the country-dim scrim
+    // now carries the emphasis; the glow only crisps the outline.
+    paint: { 'line-color': color, 'line-width': 4, 'line-blur': 2, 'line-opacity': 0.3 },
     filter: EMPTY_FILTER,
   })
   // Compare's fill keeps the '-fill' suffix to preserve historic ids.
@@ -203,7 +205,9 @@ function addHighlightStack(
     id: fillId,
     type: 'fill',
     source: 'countries',
-    paint: { 'fill-color': color, 'fill-opacity': 0.32 },
+    // B4 spotlight: faint fill (was 0.32) — the selected country must be the
+    // MOST legible thing on screen, so the sticker fill nearly disappears.
+    paint: { 'fill-color': color, 'fill-opacity': 0.1 },
     filter: EMPTY_FILTER,
   })
   map.addLayer({
@@ -236,6 +240,41 @@ export function addSelectionLayers(map: maplibregl.Map): void {
 /** Add the compare (teal-dim) highlight stack. */
 export function addCompareLayers(map: maplibregl.Map): void {
   addHighlightStack(map, 'country-compare', TEAL_DIM)
+}
+
+/** Add the B4 spotlight scrim: a dark fill over every country EXCEPT the
+ *  current selection (and both compare countries). WorldMap's onLoad adds it
+ *  between the base layers and the hover/highlight stacks, so highlights
+ *  render above the scrim (layers stack in add order). Starts matching
+ *  nothing; useSelectionHighlight is the single owner of the filter (via
+ *  spotlightDimFilter). Never hit-tested: every queryRenderedFeatures caller
+ *  in app and e2e code is scoped to LAYER.fill — keep it that way. */
+export function addSpotlightDimLayer(map: maplibregl.Map): void {
+  map.addLayer({
+    id: LAYER.dim,
+    type: 'fill',
+    source: 'countries',
+    paint: { 'fill-color': SPOTLIGHT_DIM, 'fill-opacity': 0.25 },
+    filter: EMPTY_FILTER,
+  })
+}
+
+/** The `country-dim` filter for the current selection state (single owner of
+ *  the expression shape; useSelectionHighlight applies it):
+ *  - no selection: EMPTY_FILTER — the scrim matches nothing. This is also the
+ *    game guarantee: game start deselects (App.tsx, round 0), and the reveal
+ *    path (useRevealMapEffects) never touches selection state, so the scrim
+ *    stays off for the whole session without any gameActive gating.
+ *  - selection: everything except the selected country;
+ *  - compare: everything except BOTH countries. */
+export function spotlightDimFilter(
+  selectedCcn3: string | null,
+  compareCcn3: string | null,
+): maplibregl.FilterSpecification {
+  if (!selectedCcn3) return EMPTY_FILTER
+  const notSelected: maplibregl.ExpressionSpecification = ['!=', ['get', 'id'], selectedCcn3]
+  if (!compareCcn3) return notSelected
+  return ['all', notSelected, ['!=', ['get', 'id'], compareCcn3]]
 }
 
 /** Apply the warm directional lighting. */
@@ -348,6 +387,7 @@ export function applyBorderPaintForMode(
 export const LAYER = {
   fill: 'country-fill',
   borders: 'country-borders',
+  dim: 'country-dim',
   bordersCasing: 'country-borders-casing',
   hoverBorder: 'country-hover-border',
   extrusion: 'country-extrusion',

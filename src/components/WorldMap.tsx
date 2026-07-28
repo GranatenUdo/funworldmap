@@ -8,6 +8,7 @@ import {
   addRasterSources,
   addCountrySource,
   addBaseCountryLayers,
+  addSpotlightDimLayer,
   addHoverLayers,
   addSelectionLayers,
   addCompareLayers,
@@ -56,6 +57,9 @@ export default function WorldMap({
     addRasterSources(map)
     addCountrySource(map, geojson)
     addBaseCountryLayers(map)
+    // B4 spotlight scrim: above base fill/borders, below the hover +
+    // selection/compare stacks (layers render in add order).
+    addSpotlightDimLayer(map)
     addHoverLayers(map)
     addSelectionLayers(map)
     addCompareLayers(map)
