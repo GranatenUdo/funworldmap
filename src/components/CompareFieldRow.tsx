@@ -28,14 +28,22 @@ interface Props {
   field: CompareFieldDef
   a: CountryData
   b: CountryData
+  /** C4 seam: exception source marker, rendered inside the label element
+      immediately after the label text. */
+  marker?: React.ReactNode
 }
 
 /** One shared compare row (C2/C3). Pure — no hooks, no context, no layout
  *  assumptions beyond its own width — so the mobile single-scroll task (C6)
  *  reuses it verbatim. */
-export function CompareFieldRow({ field, a, b }: Props) {
+export function CompareFieldRow({ field, a, b, marker }: Props) {
   const model = buildRowModel(field, a, b)
-  const label = <span className="text-label text-ice-accessible dark:text-ice">{field.label}</span>
+  const label = (
+    <span className="text-label text-ice-accessible dark:text-ice">
+      {field.label}
+      {marker}
+    </span>
+  )
 
   // Numeric checked first: 'numeric' is disjoint from CategoricalRowModel's
   // whole 'both' | 'split' discriminant, so this early return narrows the

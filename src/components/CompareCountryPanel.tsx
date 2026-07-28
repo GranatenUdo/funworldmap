@@ -6,6 +6,8 @@ import { COMPARE_FIELDS } from '../lib/compareFields'
 import { dispatchToast } from '../lib/toast'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstants'
 import type { CompareColumn } from '../lib/compareMapClick'
+import { computeFieldSourceMarkers } from '../lib/fieldSourceMarkers'
+import { SourceMarker } from './SourceMarker'
 
 interface Props {
   country: CountryData
@@ -41,6 +43,18 @@ export function CompareCountryPanel({
     } else {
       window.prompt('Copy this link:', url)
     }
+  }
+
+  // C4: consolidated attribution with exception markers, computed across BOTH
+  // countries' _fieldSources — a row is marked when either country attributes
+  // that field to a non-dominant source. Single owner of the scheme:
+  // src/lib/fieldSourceMarkers.ts (D2 adopts the same exports for the single
+  // panel).
+  const fieldMarkers = computeFieldSourceMarkers(country._fieldSources, compareWith._fieldSources)
+  const rowMarker = (sourceField: string): React.ReactNode => {
+    const marker = fieldMarkers.markerByField.get(sourceField)
+    if (!marker) return null
+    return <SourceMarker glyph={marker.glyph} sourceKey={marker.source} sources={sources} />
   }
 
   const panelClasses = isDesktop
@@ -117,7 +131,13 @@ export function CompareCountryPanel({
             </div>
             <div className="px-5 py-3 space-y-3">
               {COMPARE_FIELDS.map((f) => (
-                <CompareFieldRow key={f.key} field={f} a={country} b={compareWith} />
+                <CompareFieldRow
+                  key={f.key}
+                  field={f}
+                  a={country}
+                  b={compareWith}
+                  marker={rowMarker(f.key)}
+                />
               ))}
             </div>
             {/* Borders stay per-country. Both columns keep the plain select
@@ -172,8 +192,8 @@ export function CompareCountryPanel({
           <span className="uppercase tracking-wider text-ice-accessible dark:text-ice font-medium">
             Sources:
           </span>{' '}
-          {Object.values(sources).map((s, i) => (
-            <span key={s.name}>
+          {Object.entries(sources).map(([key, s], i) => (
+            <span key={key}>
               {i > 0 && ' · '}
               <a
                 href={s.url}
@@ -181,6 +201,11 @@ export function CompareCountryPanel({
                 rel="noopener noreferrer"
                 className="text-ice-accessible dark:text-ice hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60 rounded"
               >
+                {/* C4 marker key: the glyph precedes the exception source's name
+                    so row superscripts resolve here. Dominant source: no glyph. */}
+                {fieldMarkers.markerBySource.has(key) && (
+                  <sup className="mr-0.5">{fieldMarkers.markerBySource.get(key)}</sup>
+                )}
                 {s.name}
               </a>
             </span>

@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor, within } from '@testing-library/rea
 import { CompareCountryPanel } from '../CompareCountryPanel'
 import { makeCountry, sources } from './singleCountryPanelTestUtils'
 import { COMPARE_FIELDS } from '../../lib/compareFields'
+import type { CountriesFile } from '../../lib/types'
 
 const FRA = makeCountry()
 const DEU = makeCountry({
@@ -168,5 +169,79 @@ describe('C1 — border chips are column-scoped', () => {
       within(screen.getByTestId('compare-borders-b')).getByRole('button', { name: 'Poland' }),
     )
     expect(onCompareColumnSelect).toHaveBeenLastCalledWith('b', 'POL')
+  })
+})
+
+describe('C4 exception source markers', () => {
+  // Real-data shape: every field restcountries except governmentType (cia-factbook).
+  const FIELD_SOURCES: Record<string, string> = {
+    population: 'restcountries',
+    area: 'restcountries',
+    region: 'restcountries',
+    languages: 'restcountries',
+    currencies: 'restcountries',
+    timezones: 'restcountries',
+    governmentType: 'cia-factbook',
+  }
+
+  const twoSources: CountriesFile['_sources'] = {
+    ...sources,
+    'cia-factbook': {
+      name: 'CIA World Factbook (archived)',
+      url: 'https://github.com/factbook/factbook.json',
+      description: 'CC0 JSON archive of the CIA World Factbook',
+      lastUpdated: '2026-01-22',
+    },
+  }
+
+  function renderWithMarkers(
+    fieldSourcesA: Record<string, string> = FIELD_SOURCES,
+    fieldSourcesB: Record<string, string> = FIELD_SOURCES,
+  ) {
+    render(
+      <CompareCountryPanel
+        country={makeCountry({ _fieldSources: fieldSourcesA })}
+        compareWith={makeCountry({
+          cca3: 'DEU',
+          ccn3: '276',
+          name: { common: 'Germany', official: 'Federal Republic of Germany' },
+          _fieldSources: fieldSourcesB,
+        })}
+        isDesktop={true}
+        onCompareColumnSelect={vi.fn()}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={new Map()}
+        sources={twoSources}
+      />,
+    )
+  }
+
+  it('marks only exception rows, Tab-reachable and labelled with the source name', () => {
+    renderWithMarkers()
+    // governmentType (cia-factbook) is the only non-dominant field.
+    const markers = screen.getAllByTestId('source-marker-cia-factbook')
+    expect(markers.length).toBeGreaterThanOrEqual(1)
+    for (const marker of markers) {
+      expect(marker.getAttribute('aria-label')).toBe('Source: CIA World Factbook (archived)')
+      expect(marker.tabIndex).toBe(0)
+    }
+    // Dominant-source rows carry no marker.
+    expect(screen.queryAllByTestId('source-marker-restcountries')).toHaveLength(0)
+  })
+
+  it('keys the footer: the exception source is listed with its glyph', () => {
+    renderWithMarkers()
+    const footer = screen.getByTestId('compare-sources')
+    expect(within(footer).getByText('†')).toBeTruthy()
+    expect(footer.textContent).toContain('CIA World Factbook (archived)')
+    expect(footer.textContent).toContain('REST Countries')
+  })
+
+  it('renders no markers and no footer glyph when all fields share one source', () => {
+    const allRest = { ...FIELD_SOURCES, governmentType: 'restcountries' }
+    renderWithMarkers(allRest, allRest)
+    expect(screen.queryAllByTestId('source-marker-cia-factbook')).toHaveLength(0)
+    expect(within(screen.getByTestId('compare-sources')).queryByText('†')).toBeNull()
   })
 })
