@@ -66,10 +66,16 @@
      ice = interactive + wayfinding (links, focus, search, selection,
      compare-B); signal = live game state + loss (score changes, streaks,
      lost hearts, wrong-guess reveal, compare-A). Ice is the Tailwind sky
-     ramp: light=sky-200, base=sky-300, dim=sky-400. */
+     ramp: light=sky-200, base=sky-300, dim=sky-700. */
   --color-ice: #7dd3fc;
   --color-ice-light: #bae6fd;
-  --color-ice-dim: #38bdf8;
+  --color-ice-dim: #0369a1;
+  /* Muted/darker ice (sky-700): non-text UI accents (icons, borders, rings) and
+     CTA-hover backgrounds on light surfaces. Contrast (WCAG relative-luminance
+     formula): 5.55:1 on sand-100 #faf7f2, 5.93:1 under white text ≥3:1 non-text ✓.
+     WARNING: foreground use on dark surfaces needs dark: override to ice/ice-light
+     (ice-dim #0369a1 on dark-400 #161a22 is ~2.9:1, below WCAG AA text floor). */
+
   /* Deep ice (sky-800): WCAG AA for light-mode interactive text, following
      the --color-teal-accessible pattern. Contrast (WCAG relative-luminance
      formula): 7.4:1 on sand-50 #fefdfb, 7.1:1 on sand-100 #faf7f2, 7.6:1 on

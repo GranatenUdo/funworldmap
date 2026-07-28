@@ -15,10 +15,10 @@ import indexCssSource from '../../index.css?raw'
 const css = indexCssSource.replace(/\r\n/g, '\n')
 
 describe('E4 accent tokens (index.css @theme)', () => {
-  it('defines the ice ramp (sky-200/300/400)', () => {
+  it('defines the ice ramp (sky-200/300/700)', () => {
     expect(css).toContain('--color-ice: #7dd3fc;')
     expect(css).toContain('--color-ice-light: #bae6fd;')
-    expect(css).toContain('--color-ice-dim: #38bdf8;')
+    expect(css).toContain('--color-ice-dim: #0369a1;')
   })
 
   it('defines the AA light-mode ice text variant (sky-800)', () => {

@@ -37,7 +37,7 @@
 - Consumes: existing `@theme` tokens in `src/index.css` (`--color-sand-*`, `--color-teal*`, `--color-coral*`, `--font-display`); `vite.config.ts` already has `test.css.include: [/index\.css/]` and `layoutConstants.test.ts` already proves `index.css?raw` imports work under Vitest — **no config change is needed or allowed in this task**.
 - Produces (the foundation every later task consumes):
   - `@theme` CSS custom properties, which Tailwind 4 exposes both as `var(--color-…)` and as generated utilities (`text-ice`, `bg-signal/20`, `border-ice/40`, `ring-ice/50`, `text-ice-accessible`, `dark:text-ice-light`, etc.):
-    - `--color-ice: #7dd3fc` (Tailwind sky-300), `--color-ice-light: #bae6fd` (sky-200), `--color-ice-dim: #38bdf8` (sky-400)
+    - `--color-ice: #7dd3fc` (Tailwind sky-300), `--color-ice-light: #bae6fd` (sky-200), `--color-ice-dim: #0369a1` (sky-700)
     - `--color-ice-accessible: #075985` (sky-800 — light-mode text variant, AA math below)
     - `--color-signal: #ff8a4c`, `--color-signal-dim: #f97316` (Tailwind orange-500; hue 24.6° vs signal's 20.8° — same family, one step darker)
   - Plain CSS utility classes (unlayered, like the existing `.panel-card-in` utilities, so they win over layered Tailwind utilities on the same element): `.text-readout`, `.text-display`, `.text-label`
@@ -72,10 +72,10 @@
   const css = indexCssSource.replace(/\r\n/g, '\n')
 
   describe('E4 accent tokens (index.css @theme)', () => {
-    it('defines the ice ramp (sky-200/300/400)', () => {
+    it('defines the ice ramp (sky-200/300/700)', () => {
       expect(css).toContain('--color-ice: #7dd3fc;')
       expect(css).toContain('--color-ice-light: #bae6fd;')
-      expect(css).toContain('--color-ice-dim: #38bdf8;')
+      expect(css).toContain('--color-ice-dim: #0369a1;')
     })
 
     it('defines the AA light-mode ice text variant (sky-800)', () => {
@@ -180,10 +180,10 @@
        ice = interactive + wayfinding (links, focus, search, selection,
        compare-B); signal = live game state + loss (score changes, streaks,
        lost hearts, wrong-guess reveal, compare-A). Ice is the Tailwind sky
-       ramp: light=sky-200, base=sky-300, dim=sky-400. */
+       ramp: light=sky-200, base=sky-300, dim=sky-700. */
     --color-ice: #7dd3fc;
     --color-ice-light: #bae6fd;
-    --color-ice-dim: #38bdf8;
+    --color-ice-dim: #0369a1;
     /* Deep ice (sky-800): WCAG AA for light-mode interactive text, following
        the --color-teal-accessible pattern. Contrast (WCAG relative-luminance
        formula): 7.4:1 on sand-50 #fefdfb, 7.1:1 on sand-100 #faf7f2, 7.6:1 on
