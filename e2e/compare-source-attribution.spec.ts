@@ -130,3 +130,44 @@ test.describe('C2/C3 — shared-row comparison table (desktop)', () => {
     )
   })
 })
+
+test.describe('exception source markers (C4)', () => {
+  test('the cia-factbook exception marker appears and keys to the footer', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 15_000 })
+
+    // Deterministic in the bundled data: FRA and DEU both attribute
+    // governmentType to cia-factbook while every other field comes from
+    // restcountries (the dominant source) — Government is the exception row.
+    const marker = page.getByTestId('source-marker-cia-factbook').first()
+    await expect(marker).toBeVisible({ timeout: 10_000 })
+    await expect(marker).toHaveText('†')
+    await expect(marker).toHaveAttribute('aria-label', 'Source: CIA World Factbook (archived)')
+    await expect(marker).toHaveAttribute('target', '_blank')
+
+    // Dominant-source rows carry no marker.
+    await expect(page.getByTestId('source-marker-restcountries')).toHaveCount(0)
+
+    // The footer lists the exception source with its marker key.
+    const footer = page.getByTestId('compare-sources')
+    await expect(footer).toContainText('†')
+    await expect(footer).toContainText('CIA World Factbook (archived)')
+  })
+
+  test('markers are keyboard-reachable, not hover-only', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 15_000 })
+    // Autofocus-settle (same rationale as the source-links test above):
+    // App.tsx's panel-open effect moves focus to panel-close ~300ms after the
+    // deep-linked panel mounts. Wait for it to land BEFORE driving focus, so
+    // the timer can't steal focus back mid-test.
+    await expect(page.getByTestId('panel-close')).toBeFocused({ timeout: 5_000 })
+
+    const marker = page.getByTestId('source-marker-cia-factbook').first()
+    await marker.focus()
+    await expect(marker).toBeFocused()
+    // tabIndex 0 = in sequential Tab order; regressing to the retired
+    // hover-only pattern (tabIndex={-1}) fails here.
+    expect(await marker.evaluate((el) => (el as HTMLElement).tabIndex)).toBe(0)
+  })
+})
