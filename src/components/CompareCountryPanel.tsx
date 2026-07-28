@@ -1,7 +1,8 @@
 import type { CountryData, CountriesFile } from '../lib/types'
 import { CloseButton } from './CloseButton'
-import { CountryColumn, CountryColumnHeader, CountryBorders } from './CountryColumn'
+import { CountryColumnHeader, CountryBorders } from './CountryColumn'
 import { CompareFieldRow } from './CompareFieldRow'
+import { BorderChip } from './BorderChip'
 import { COMPARE_FIELDS } from '../lib/compareFields'
 import { dispatchToast } from '../lib/toast'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstants'
@@ -59,7 +60,7 @@ export function CompareCountryPanel({
 
   const panelClasses = isDesktop
     ? 'fixed right-4 top-16 bottom-4 w-[656px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 rounded-2xl border border-sand-200/50 dark:border-dark-200/20 overflow-hidden'
-    : 'fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-2xl h-[80vh] overflow-hidden'
+    : 'fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-2xl h-[80dvh] overflow-hidden'
 
   return (
     <div
@@ -162,26 +163,70 @@ export function CompareCountryPanel({
             </div>
           </div>
         ) : (
-          /* Mobile keeps the stacked per-country columns until C6 replaces
-             them with these same shared rows under a compact sticky header. */
-          <div className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 border-b-2 border-dashed border-sand-300/50 dark:border-dark-200/30 min-h-0">
-              <CountryColumn
-                country={country}
-                byCca3={byCca3}
-                onSelect={(cca3) => onCompareColumnSelect('a', cca3)}
-                badgeLetter="A"
-                badgeColor="a"
-              />
+          /* C6: ONE scroll container — the pre-C6 stacked 35vh halves never
+             showed A's population on screen with B's. The compact header is
+             sticky INSIDE the scroll so both countries stay identified while
+             the shared rows scroll. */
+          <div className="flex-1 min-h-0 overflow-y-auto" data-testid="compare-mobile-scroll">
+            <div
+              data-testid="compare-mobile-header"
+              className="sticky top-0 z-10 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-4 py-2.5 border-b border-sand-200/50 dark:border-dark-200/30 space-y-1.5"
+            >
+              {(
+                [
+                  { c: country, letter: 'A', color: 'a' },
+                  { c: compareWith, letter: 'B', color: 'b' },
+                ] as const
+              ).map(({ c, letter, color }) => (
+                <div key={letter} className="flex items-center gap-2 min-w-0">
+                  <span className={`compare-badge compare-badge-${color}`}>{letter}</span>
+                  <img
+                    data-testid="country-flag"
+                    src={c.flag}
+                    alt={c.flagAlt || `Flag of ${c.name.common}`}
+                    className="w-7 h-5 object-cover rounded-sm shadow-sm shrink-0"
+                  />
+                  <h2 className="text-sm font-bold text-sand-900 dark:text-dark-50 truncate leading-tight">
+                    {c.name.common}
+                  </h2>
+                  {c.capital.length > 0 && (
+                    <span className="text-xs text-ice-accessible dark:text-ice truncate">
+                      {c.capital.join(', ')}
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
-            <div className="flex-1 min-h-0">
-              <CountryColumn
-                country={compareWith}
-                byCca3={byCca3}
-                onSelect={(cca3) => onCompareColumnSelect('b', cca3)}
-                badgeLetter="B"
-                badgeColor="b"
-              />
+            <div className="px-4 py-3 space-y-3">
+              {COMPARE_FIELDS.map((field) => (
+                <CompareFieldRow key={field.key} field={field} a={country} b={compareWith} />
+              ))}
+              {(
+                [
+                  { c: country, column: 'a' as const },
+                  { c: compareWith, column: 'b' as const },
+                ] as const
+              ).map(
+                ({ c, column }) =>
+                  c.borders.length > 0 && (
+                    <div key={c.cca3}>
+                      <div className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-1.5">
+                        Borders — {c.name.common}
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {c.borders.map((code) => (
+                          <BorderChip
+                            key={code}
+                            code={code}
+                            neighbor={byCca3.get(code)}
+                            onSelect={(cca3) => onCompareColumnSelect(column, cca3)}
+                            size="compare"
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ),
+              )}
             </div>
           </div>
         )}

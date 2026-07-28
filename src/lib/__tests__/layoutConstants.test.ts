@@ -42,7 +42,9 @@ describe('layout constants ↔ panel classes drift alarm', () => {
 
   it('CompareCountryPanel width/sheet classes match the constants', () => {
     expect(compareCountryPanelSource).toContain(`w-[${COMPARE_PANEL_FOOTPRINT_PX - 16}px]`)
-    expect(compareCountryPanelSource).toContain(`h-[${COMPARE_SHEET_FRACTION * 100}vh]`)
+    // C6: the compare sheet is dvh so the sheet and the camera's
+    // innerHeight-based bottom padding agree under dynamic mobile toolbars.
+    expect(compareCountryPanelSource).toContain(`h-[${COMPARE_SHEET_FRACTION * 100}dvh]`)
   })
 
   it('useMediaQuery default equals DESKTOP_MEDIA_QUERY', () => {

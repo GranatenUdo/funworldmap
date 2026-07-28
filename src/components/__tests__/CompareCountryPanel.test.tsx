@@ -76,13 +76,18 @@ describe('CompareCountryPanel header controls (A15)', () => {
   })
 })
 
-describe('C1 — one shared field list drives both columns (mobile)', () => {
-  // isDesktop:false — desktop moved to CompareFieldRow's shared-row table in
-  // C2/C3 (one row per field, both values side by side), so this per-column
-  // "every COMPARE_FIELDS row renders in each column" assertion now exercises
-  // the still-unchanged mobile CountryColumn path (see task-3-report.md for
-  // the desktop-side coverage: CompareFieldRow.test.tsx + the e2e additions).
-  it('renders identical, ordered rows in both columns with em-dash placeholders', () => {
+describe('C6 — shared field list drives the ONE mobile scroll (supersedes the old per-column test)', () => {
+  // Pre-C6, isDesktop:false rendered COMPARE_FIELDS via two independent
+  // CountryColumn instances (one full copy of every field per country) — this
+  // block asserted the two copies stayed row-for-row identical. C6 replaces
+  // that with the SAME shared CompareFieldRow the desktop arm already used
+  // (C2/C3), so each field now renders exactly once; the old "duplicate
+  // columns render identically" premise no longer applies. Em-dash-placeholder
+  // coverage for CompareFieldRow's own rendering lives in
+  // CompareFieldRow.test.tsx (C2/C3) — this test only checks the mobile
+  // integration: every field is present once, with the sparse side's missing
+  // values collapsing to the shared em-dash inside that one row.
+  it('renders every COMPARE_FIELDS row exactly once, with the em-dash for the sparse side', () => {
     const sparse = makeCountry({
       cca3: 'DEU',
       ccn3: '276',
@@ -102,16 +107,13 @@ describe('C1 — one shared field list drives both columns (mobile)', () => {
         sources={sources}
       />,
     )
-    const expected = COMPARE_FIELDS.map((f) => f.label)
-    // Field labels are the .uppercase divs inside the fields wrapper
-    // (borders are empty on these fixtures, so no Borders label competes).
-    const rowLabels = (col: HTMLElement) =>
-      Array.from(col.querySelectorAll('.px-5.py-3 .uppercase')).map((el) => el.textContent)
-    expect(rowLabels(screen.getByTestId('compare-column-a'))).toEqual(expected)
-    expect(rowLabels(screen.getByTestId('compare-column-b'))).toEqual(expected)
-    // Germany's missing Government + Currencies render the placeholder; France has none.
-    expect(within(screen.getByTestId('compare-column-b')).getAllByText('—')).toHaveLength(2)
-    expect(within(screen.getByTestId('compare-column-a')).queryByText('—')).toBeNull()
+    for (const f of COMPARE_FIELDS) {
+      expect(screen.getAllByTestId(`compare-row-${f.key}`)).toHaveLength(1)
+    }
+    // Germany's missing Government + Currencies render the categorical
+    // em-dash inside their shared row's B-side cell; France has none missing.
+    expect(within(screen.getByTestId('compare-row-governmentType')).getByText('—')).toBeTruthy()
+    expect(within(screen.getByTestId('compare-row-currencies')).getByText('—')).toBeTruthy()
   })
 })
 
@@ -243,5 +245,101 @@ describe('C4 exception source markers', () => {
     renderWithMarkers(allRest, allRest)
     expect(screen.queryAllByTestId('source-marker-cia-factbook')).toHaveLength(0)
     expect(within(screen.getByTestId('compare-sources')).queryByText('†')).toBeNull()
+  })
+})
+
+describe('C6 — mobile compare is one scroll', () => {
+  // Adaptation from the brief: Task 5 wired border-chip replacement as a
+  // single onCompareColumnSelect(column, cca3) callback (see CountryPanel.tsx
+  // / App.tsx), not the brief-anticipated separate onSelect/onCompareSelect
+  // props — CompareCountryPanel has no onSelect prop at all. The mobile arm
+  // below routes A's chips through onCompareColumnSelect('a', cca3) and B's
+  // through onCompareColumnSelect('b', cca3), mirroring the desktop arm's
+  // existing compare-borders-a/b wiring.
+  function renderMobile(over: { country?: typeof FRA; compareWith?: typeof DEU } = {}) {
+    const onCompareColumnSelect = vi.fn()
+    render(
+      <CompareCountryPanel
+        country={over.country ?? FRA}
+        compareWith={over.compareWith ?? DEU}
+        isDesktop={false}
+        onCompareColumnSelect={onCompareColumnSelect}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={new Map()}
+        sources={sources}
+      />,
+    )
+    return { onCompareColumnSelect }
+  }
+
+  it('renders ONE scroll container — the stacked per-country halves are gone', () => {
+    renderMobile()
+    expect(screen.getByTestId('compare-mobile-scroll')).toBeTruthy()
+    // The pre-C6 layout scrolled each 35vh half independently; CompareFieldRow
+    // is container-fluid by contract (no internal scroll), so exactly one
+    // overflow-y-auto element may exist in the mobile render.
+    expect(document.querySelectorAll('.overflow-y-auto')).toHaveLength(1)
+  })
+
+  it('sticky compact header carries both flags, names, and A/B badges', () => {
+    renderMobile()
+    const header = screen.getByTestId('compare-mobile-header')
+    expect(header.className).toContain('sticky')
+    expect(within(header).getByText('France')).toBeTruthy()
+    expect(within(header).getByText('Germany')).toBeTruthy()
+    expect(within(header).getByText('A')).toBeTruthy()
+    expect(within(header).getByText('B')).toBeTruthy()
+    expect(within(header).getAllByTestId('country-flag')).toHaveLength(2)
+  })
+
+  it('shared rows render once with both countries adjacent, not per-column', () => {
+    renderMobile()
+    // Two per-country columns rendered this field twice; the shared row
+    // renders it exactly once (testid contract from CompareFieldRow, Task 3).
+    expect(screen.getAllByTestId('compare-row-population')).toHaveLength(1)
+  })
+
+  it('border chips replace the country whose group they belong to (A and B both route through onCompareColumnSelect)', () => {
+    const fra = makeCountry({ borders: ['BEL'] })
+    const deu = makeCountry({
+      cca3: 'DEU',
+      ccn3: '276',
+      name: { common: 'Germany', official: 'Federal Republic of Germany' },
+      borders: ['AUT'],
+    })
+    const byCca3 = new Map([
+      [
+        'BEL',
+        makeCountry({
+          cca3: 'BEL',
+          name: { common: 'Belgium', official: 'Kingdom of Belgium' },
+        }),
+      ],
+      [
+        'AUT',
+        makeCountry({
+          cca3: 'AUT',
+          name: { common: 'Austria', official: 'Republic of Austria' },
+        }),
+      ],
+    ])
+    const onCompareColumnSelect = vi.fn()
+    render(
+      <CompareCountryPanel
+        country={fra}
+        compareWith={deu}
+        isDesktop={false}
+        onCompareColumnSelect={onCompareColumnSelect}
+        onClose={vi.fn()}
+        onExitCompare={vi.fn()}
+        byCca3={byCca3}
+        sources={sources}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Belgium' }))
+    expect(onCompareColumnSelect).toHaveBeenCalledWith('a', 'BEL')
+    fireEvent.click(screen.getByRole('button', { name: 'Austria' }))
+    expect(onCompareColumnSelect).toHaveBeenCalledWith('b', 'AUT')
   })
 })

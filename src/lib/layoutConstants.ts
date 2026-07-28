@@ -20,7 +20,8 @@ export const COMPARE_PANEL_FOOTPRINT_PX = 672
 /** Mobile bottom sheet, collapsed single-country state: h-[40vh]. */
 export const SHEET_COLLAPSED_FRACTION = 0.4
 
-/** Mobile compare / expanded sheet: h-[80vh]. */
+/** Mobile compare sheet: h-[80dvh] (C6). The single panel's expanded sheet
+ *  stays h-[80vh] until G1's dvh switch (workstream D's plan). */
 export const COMPARE_SHEET_FRACTION = 0.8
 
 /** Screen-space camera offset so the SINGLE-country fly-to centers in the
