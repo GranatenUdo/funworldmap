@@ -4,7 +4,9 @@ import { BorderChip } from './BorderChip'
 import { CloseButton } from './CloseButton'
 import { FieldLabel } from './FieldLabel'
 import { TimezoneList } from './TimezoneList'
+import SourceTooltip from './SourceTooltip'
 import { dispatchToast } from '../lib/toast'
+import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_22 } from '../lib/layoutConstants'
 
 interface Props {
   country: CountryData
@@ -14,6 +16,7 @@ interface Props {
   onSelect: (cca3: string) => void
   onClose: () => void
   onEnterCompare: () => void
+  onCancelCompare: () => void
   byCca3: Map<string, CountryData>
   inGameRound?: boolean
 }
@@ -61,6 +64,13 @@ const REGION_BADGE: Record<string, string> = {
   Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
 
+// A5: near-constant booleans render as exceptions only. Muted amber is a data
+// encoding (like the region badge), not a chrome accent — kept through E4.
+// inline-flex + items-center (not inline-block): each badge carries a
+// SourceTooltip affordance and needs to align it with the label text.
+const EXCEPTION_BADGE =
+  'inline-flex items-center whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
+
 export function SingleCountryPanel({
   country,
   comparePickingMode,
@@ -69,6 +79,7 @@ export function SingleCountryPanel({
   onSelect,
   onClose,
   onEnterCompare,
+  onCancelCompare,
   byCca3,
   inGameRound = false,
 }: Props) {
@@ -155,8 +166,29 @@ export function SingleCountryPanel({
     >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
         {comparePickingMode && (
-          <div className="mb-3 px-3 py-2 rounded-lg bg-teal/10 dark:bg-teal-light/10 border border-teal/20 dark:border-teal-light/20 text-xs text-teal dark:text-teal-light">
-            Pick a country to compare with...
+          <div
+            role="status"
+            className="mb-3 px-3 py-2 rounded-lg bg-teal/10 dark:bg-teal-light/10 border border-teal/20 dark:border-teal-light/20 text-xs text-teal dark:text-teal-light flex items-center justify-between gap-2"
+          >
+            <span>Pick a country to compare with...</span>
+            {/* A7: the only touch-reachable exit from picking mode (Escape is
+                keyboard-only). Calls the same exit path as Escape. */}
+            <button
+              type="button"
+              onClick={onCancelCompare}
+              data-testid="compare-picking-cancel"
+              aria-label="Cancel compare"
+              className={`shrink-0 p-1 -m-1 rounded-md hover:bg-teal/20 dark:hover:bg-teal-light/20 transition-colors ${TOUCH_TARGET_FROM_22}`}
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
           </div>
         )}
         <div
@@ -187,8 +219,19 @@ export function SingleCountryPanel({
                 </p>
               )}
               {country.capital.length > 0 && (
-                <p className="text-xs text-teal dark:text-teal-light truncate mt-0.5">
-                  {country.capital[0]}
+                <p
+                  data-testid="capital-caption"
+                  className="text-xs text-teal dark:text-teal-light mt-0.5 flex items-center min-w-0"
+                >
+                  <span className="truncate">{country.capital.join(', ')}</span>
+                  {/* Interim attribution (A4): the caption absorbed the deleted
+                      Capital DataCell; the region badge shares this source.
+                      Superseded by D2's consolidated footer. */}
+                  <SourceTooltip
+                    field="capital"
+                    fieldSources={country._fieldSources}
+                    sources={sources}
+                  />
                 </p>
               )}
             </div>
@@ -198,7 +241,7 @@ export function SingleCountryPanel({
             {!comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}
-                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-teal dark:text-teal-light transition-colors"
+                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-teal dark:text-teal-light transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Compare with another country"
                 title="Compare"
               >
@@ -212,7 +255,7 @@ export function SingleCountryPanel({
             {!inGameRound && (
               <button
                 onClick={onShareLink}
-                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
+                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Copy link to this country"
                 title="Copy link"
               >
@@ -230,7 +273,7 @@ export function SingleCountryPanel({
             {!isDesktop && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className="p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors"
+                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
               >
                 <svg
@@ -253,7 +296,7 @@ export function SingleCountryPanel({
                 type="button"
                 onClick={onClose}
                 data-testid="game-continue"
-                className="px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60"
+                className={`px-4 py-2 rounded-xl bg-teal-accessible text-white font-semibold text-sm hover:bg-teal-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-accessible/60 ${TOUCH_TARGET_FROM_36}`}
               >
                 Continue
               </button>
@@ -263,33 +306,59 @@ export function SingleCountryPanel({
           </div>
         </div>
 
-        <span
-          data-testid="region-badge"
-          className={`inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full mt-2 ${
-            REGION_BADGE[country.region] ||
-            'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
-          }`}
-        >
-          {country.region}
-          {country.subregion && ` / ${country.subregion}`}
-        </span>
+        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+          <span
+            data-testid="region-badge"
+            className={`inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full ${
+              REGION_BADGE[country.region] ||
+              'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
+            }`}
+          >
+            {country.region}
+            {country.subregion && ` / ${country.subregion}`}
+          </span>
+          {country.unMember === false && (
+            <span data-testid="exception-badge-un-member" className={EXCEPTION_BADGE}>
+              UN observer state
+              {/* Field-level attribution is a constitution item (never silently
+                  regress) — mirrors the capital caption's SourceTooltip (A4). */}
+              <SourceTooltip
+                field="unMember"
+                fieldSources={country._fieldSources}
+                sources={sources}
+              />
+            </span>
+          )}
+          {country.independent === false && (
+            <span data-testid="exception-badge-independent" className={EXCEPTION_BADGE}>
+              Not independent
+              <SourceTooltip
+                field="independent"
+                fieldSources={country._fieldSources}
+                sources={sources}
+              />
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="mx-5 h-px bg-teal/10 dark:bg-teal-light/10" />
 
       <div className="px-5 py-3">
         <div className="grid grid-cols-2 gap-x-4 panel-field-in-1">
-          <DataCell label="Capital" field="capital" country={country} sources={sources}>
-            {country.capital.length > 0 ? country.capital.join(', ') : '\u2014'}
-          </DataCell>
           <DataCell label="Population" field="population" country={country} sources={sources}>
             {formatPopulation(country.population)}
           </DataCell>
           <DataCell label="Area" field="area" country={country} sources={sources}>
             {formatArea(country.area)}
           </DataCell>
-          <DataCell label="Region" field="region" country={country} sources={sources}>
-            {country.region}
+          <DataCell label="Government" field="governmentType" country={country} sources={sources}>
+            {country.governmentType || '\u2014'}
+          </DataCell>
+          <DataCell label="Languages" field="languages" country={country} sources={sources}>
+            {Object.keys(country.languages).length > 0
+              ? Object.values(country.languages).join(', ')
+              : '\u2014'}
           </DataCell>
         </div>
 
@@ -298,53 +367,13 @@ export function SingleCountryPanel({
             <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
 
             <div className="panel-field-in-2">
-              {country.governmentType && (
-                <DataCell
-                  label="Government"
-                  field="governmentType"
-                  country={country}
-                  sources={sources}
-                >
-                  {country.governmentType}
+              {Object.keys(country.currencies).length > 0 && (
+                <DataCell label="Currencies" field="currencies" country={country} sources={sources}>
+                  {Object.values(country.currencies)
+                    .map((c) => `${c.name} (${c.symbol})`)
+                    .join(', ')}
                 </DataCell>
               )}
-              <div className="grid grid-cols-2 gap-x-4">
-                <DataCell label="UN Member" field="unMember" country={country} sources={sources}>
-                  {country.unMember ? 'Yes' : 'No'}
-                </DataCell>
-                <DataCell
-                  label="Independent"
-                  field="independent"
-                  country={country}
-                  sources={sources}
-                >
-                  {country.independent ? 'Yes' : 'No'}
-                </DataCell>
-              </div>
-            </div>
-
-            <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
-
-            <div className="panel-field-in-3">
-              <div className="grid grid-cols-2 gap-x-4">
-                {Object.keys(country.languages).length > 0 && (
-                  <DataCell label="Languages" field="languages" country={country} sources={sources}>
-                    {Object.values(country.languages).join(', ')}
-                  </DataCell>
-                )}
-                {Object.keys(country.currencies).length > 0 && (
-                  <DataCell
-                    label="Currencies"
-                    field="currencies"
-                    country={country}
-                    sources={sources}
-                  >
-                    {Object.values(country.currencies)
-                      .map((c) => `${c.name} (${c.symbol})`)
-                      .join(', ')}
-                  </DataCell>
-                )}
-              </div>
               <DataCell label="Timezones" field="timezones" country={country} sources={sources}>
                 <TimezoneList timezones={country.timezones} />
               </DataCell>
@@ -353,7 +382,7 @@ export function SingleCountryPanel({
             {country.borders.length > 0 && (
               <>
                 <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
-                <div className="panel-field-in-4">
+                <div className="panel-field-in-3">
                   <FieldLabel
                     label="Borders"
                     field="borders"

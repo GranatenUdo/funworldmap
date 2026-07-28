@@ -271,4 +271,74 @@ describe('useMapInteractions click-origin marking', () => {
 
     expect(takeOrigin()).toBe('auto')
   })
+
+  it('does NOT mark when clicking A while a compare pair is active (App no-ops — no hashchange would consume it)', () => {
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = document.createElement('div')
+    window.location.hash = '#FRA,DEU'
+    const { country, onSelect } = renderWithCountry() // FRA / ccn3 250
+
+    fake.fire('click', LAYER.fill, { features: [{ id: country.ccn3 }] })
+
+    expect(onSelect).toHaveBeenCalledWith('FRA')
+    // An unconsumed mark would leak preserveZoom into the NEXT auto selection.
+    expect(takeOrigin()).toBe('auto')
+  })
+
+  it('does NOT mark for a replace-B click (compare hashchange, not a selection — flyToComparePair ignores origin)', () => {
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = document.createElement('div')
+    window.location.hash = '#FRA,DEU'
+    const spain = makeCountryData({ cca3: 'ESP', ccn3: '724' })
+    const onSelect = vi.fn()
+    renderHook(() =>
+      useMapInteractions({
+        ...baseOptions,
+        onSelect,
+        byNumeric: new Map([[spain.ccn3, spain]]),
+        loaded: true,
+      }),
+    )
+
+    fake.fire('click', LAYER.fill, { features: [{ id: spain.ccn3 }] })
+
+    expect(onSelect).toHaveBeenCalledWith('ESP')
+    // #FRA,DEU → #FRA,ESP is a compare hash: selected is unchanged so
+    // flyToCountry (the only preserveZoom consumer) never runs, and
+    // flyToComparePair always reframes the pair (A8 camera decision).
+    expect(takeOrigin()).toBe('auto')
+  })
+})
+
+describe('useMapInteractions tooltip clamping (A10)', () => {
+  it('flips the tooltip to the other side of the cursor at the container edges', () => {
+    const fake = createFakeMapRef()
+    // The fake map has no getContainer; give it a fixed 800×600 box.
+    Object.assign(fake.map, {
+      getContainer: () => ({ clientWidth: 800, clientHeight: 600 }) as unknown as HTMLElement,
+    })
+    const tooltip = document.createElement('div')
+    // jsdom has no layout — pin the measured size the clamp math reads.
+    Object.defineProperty(tooltip, 'offsetWidth', { value: 160 })
+    Object.defineProperty(tooltip, 'offsetHeight', { value: 44 })
+    tooltip.classList.add('visible')
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = tooltip
+    // Run the coalescing rAF synchronously so the position write is observable.
+    const rafSpy = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      cb(0)
+      return 1
+    })
+    try {
+      renderHook(() => useMapInteractions({ ...baseOptions, loaded: true }))
+      // Cursor near the bottom-right corner: +15/+15 would overflow → flip.
+      fake.fire('mousemove', null, { point: { x: 780, y: 590 } })
+      expect(tooltip.style.left).toBe('605px') // 780 − 15 − 160
+      expect(tooltip.style.top).toBe('531px') // 590 − 15 − 44
+    } finally {
+      rafSpy.mockRestore()
+    }
+  })
 })

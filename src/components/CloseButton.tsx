@@ -1,3 +1,5 @@
+import { TOUCH_TARGET_FROM_36 } from '../lib/layoutConstants'
+
 interface Props {
   onClick: () => void
   ariaLabel: string
@@ -15,7 +17,7 @@ export function CloseButton({ onClick, ariaLabel, testId, className }: Props) {
       onClick={onClick}
       aria-label={ariaLabel}
       data-testid={testId}
-      className={className ?? DEFAULT_CLASSNAME}
+      className={`${className ?? DEFAULT_CLASSNAME} ${TOUCH_TARGET_FROM_36}`}
     >
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path

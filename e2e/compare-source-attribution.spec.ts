@@ -33,6 +33,14 @@ test.describe('compare view source attribution footer', () => {
     const panel = page.getByTestId('country-panel')
     await expect(panel).toBeVisible({ timeout: 15_000 })
 
+    // App.tsx's panel-open effect moves focus to panel-close ~300ms after a
+    // selection first opens the panel (deep-linking straight into #FRA,DEU
+    // opens it on mount here). Wait for that autofocus to land BEFORE driving
+    // focus ourselves below — otherwise the timer can fire between our
+    // firstLink.focus() and the Tab press and steal focus back to
+    // panel-close mid-test, which is the ~1/3 flake this test used to hit.
+    await expect(page.getByTestId('panel-close')).toBeFocused({ timeout: 5_000 })
+
     const footer = page.getByTestId('compare-sources')
     await expect(footer).toBeVisible({ timeout: 10_000 })
 
@@ -59,5 +67,41 @@ test.describe('compare view source attribution footer', () => {
 
     // Verify the first link text is non-empty (sanity check)
     expect(firstLinkText?.trim()).toBeTruthy()
+  })
+})
+
+test.describe('compare header controls (A15)', () => {
+  test('copy-link copies the compare deep link and shows the toast', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 15_000 })
+
+    await page.getByRole('button', { name: 'Copy link to this comparison' }).click()
+
+    // Observe the toast, never navigator.clipboard.readText (readText hangs
+    // under automation — project memory). clipboard-write is granted
+    // project-wide in playwright.config.ts.
+    await expect(page.getByText('Link copied')).toBeVisible()
+  })
+
+  test('"Exit compare" returns to the single-country panel', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('exit-compare')).toBeVisible({ timeout: 15_000 })
+
+    await page.getByTestId('exit-compare').click()
+
+    await expect(page.getByTestId('exit-compare')).not.toBeAttached()
+    await expect(page.getByTestId('country-panel')).toBeVisible()
+    await expect(page.getByTestId('country-panel')).toContainText('France')
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('#FRA')
+  })
+
+  test('the top-right × closes the whole panel', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA,DEU')
+    await expect(page.getByTestId('panel-close')).toBeVisible({ timeout: 15_000 })
+
+    await page.getByTestId('panel-close').click()
+
+    await expect(page.getByTestId('country-panel')).not.toBeAttached()
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe('')
   })
 })

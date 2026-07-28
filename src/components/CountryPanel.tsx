@@ -11,6 +11,7 @@ interface Props {
   onSelect: (cca3: string) => void
   onClose: () => void
   onEnterCompare: () => void
+  onCancelCompare: () => void
   onExitCompare: () => void
   byCca3: Map<string, CountryData>
   inGameRound?: boolean
@@ -25,6 +26,7 @@ export default function CountryPanel({
   onSelect,
   onClose,
   onEnterCompare,
+  onCancelCompare,
   onExitCompare,
   byCca3,
   inGameRound,
@@ -53,6 +55,7 @@ export default function CountryPanel({
       onSelect={onSelect}
       onClose={onClose}
       onEnterCompare={onEnterCompare}
+      onCancelCompare={onCancelCompare}
       byCca3={byCca3}
       inGameRound={inGameRound}
     />

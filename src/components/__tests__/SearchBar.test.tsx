@@ -3,10 +3,12 @@
  * result is auto-activated when results appear ("Search First", approved
  * 2026-07-10, batch-1 spec item 3). Arrow keys still move the active option.
  */
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import SearchBar from '../SearchBar'
 import { makeCountryData } from '../../test/countryFixtures'
+import { stubMatchMedia } from '../../test/matchMediaStub'
+import { FINE_POINTER_MEDIA_QUERY } from '../../lib/layoutConstants'
 
 const FRANCE = makeCountryData()
 const GERMANY = makeCountryData({
@@ -17,6 +19,22 @@ const GERMANY = makeCountryData({
   capital: ['Berlin'],
 })
 const countries = [FRANCE, GERMANY]
+
+// SearchBar calls useMediaQuery (A11 chip) and jsdom has no matchMedia —
+// every render needs the stub. `finePointer` steers only the fine-pointer
+// query; it is read lazily at matchMedia call time, so tests set it before
+// calling setup().
+let finePointer = false
+let restoreMatchMedia: () => void
+
+beforeEach(() => {
+  restoreMatchMedia = stubMatchMedia((query) => query === FINE_POINTER_MEDIA_QUERY && finePointer)
+})
+
+afterEach(() => {
+  restoreMatchMedia()
+  finePointer = false
+})
 
 function setup() {
   const onSelect = vi.fn()
@@ -94,5 +112,76 @@ describe('SearchBar Enter behavior', () => {
     await waitFor(() => expect(germany.getAttribute('aria-selected')).toBe('true'))
     fireEvent.keyDown(input, { key: 'Enter' })
     expect(onSelect).toHaveBeenCalledWith('DEU')
+  })
+})
+
+describe('search input font-size floor (A2)', () => {
+  it('pins max-sm:text-base + text-sm on the input (iOS auto-zoom guard)', () => {
+    const { input } = setup()
+    // jsdom cannot evaluate media queries, so pin the class literals - the
+    // layoutConstants.test.ts drift-alarm style. max-sm:text-base keeps the
+    // focused input at >=16px below sm so mobile Safari does not force-zoom;
+    // text-sm keeps the compact 14px at sm+. (Note: "max-sm:text-base" does
+    // not substring-match "text-sm", so both assertions are independent.)
+    expect(input.className).toContain('max-sm:text-base')
+    expect(input.className).toContain('text-sm')
+  })
+})
+
+describe('"/" shortcut chip (A11)', () => {
+  it('renders on fine-pointer devices when the input is idle and empty', () => {
+    finePointer = true
+    setup()
+    expect(screen.getByTestId('search-shortcut-hint').textContent).toBe('/')
+  })
+
+  it('does not render on coarse pointers', () => {
+    // finePointer stays false (touch devices: no hardware "/" to advertise)
+    setup()
+    expect(screen.queryByTestId('search-shortcut-hint')).toBeNull()
+  })
+
+  it('hides while the input is focused and returns on blur', () => {
+    finePointer = true
+    const { input } = setup()
+    fireEvent.focus(input)
+    expect(screen.queryByTestId('search-shortcut-hint')).toBeNull()
+    fireEvent.blur(input)
+    expect(screen.getByTestId('search-shortcut-hint')).toBeTruthy()
+  })
+
+  it('never coexists with the clear button (render conditions disjoint on query)', () => {
+    finePointer = true
+    const { input } = setup()
+    // Non-empty query: clear button in, chip out — both target right-2.5,
+    // so this disjointness is what prevents overlap.
+    fireEvent.change(input, { target: { value: 'fran' } })
+    expect(screen.queryByTestId('search-shortcut-hint')).toBeNull()
+    expect(screen.getByTestId('search-clear')).toBeTruthy()
+    // Clearing refocuses the input, so the chip stays hidden until blur.
+    fireEvent.click(screen.getByTestId('search-clear'))
+    expect(screen.queryByTestId('search-clear')).toBeNull()
+    expect(screen.queryByTestId('search-shortcut-hint')).toBeNull()
+    fireEvent.blur(input)
+    expect(screen.getByTestId('search-shortcut-hint')).toBeTruthy()
+  })
+})
+
+describe('SearchBar keyboard-hint footer (A14)', () => {
+  it('renders the kbd footer on fine-pointer devices', async () => {
+    finePointer = true
+    const { input } = setup()
+    fireEvent.change(input, { target: { value: 'fran' } })
+    await screen.findByRole('option', { name: /France/ })
+    expect(screen.getByTestId('search-keyboard-hint')).toBeTruthy()
+  })
+
+  it('drops the kbd footer on coarse pointers', async () => {
+    restoreMatchMedia()
+    restoreMatchMedia = stubMatchMedia(() => false)
+    const { input } = setup()
+    fireEvent.change(input, { target: { value: 'fran' } })
+    await screen.findByRole('option', { name: /France/ })
+    expect(screen.queryByTestId('search-keyboard-hint')).toBeNull()
   })
 })

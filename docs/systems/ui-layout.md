@@ -44,9 +44,8 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ├──────────────────────────────────────────┤  Country Panel  │
 │                                          │  (380px width)  │
 │                                          │                │
-│                Map                       │  - Flag         │
-│                (full viewport behind)     │  - Name         │
-│                                          │  - Capital      │
+│                Map                       │  - Flag / Name  │
+│                (full viewport behind)     │    + Capital(s) │
 │                                          │  - Population   │
 │                                          │  - ...          │
 │                                          │                │
@@ -91,19 +90,15 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 
 - Flag (bundled SVG)
 - Country name (common + official if different)
-- Capital(s) — if a country has multiple capitals (e.g., South Africa: Pretoria, Cape Town, Bloemfontein), display them comma-separated
-- Region / Subregion
+- Header caption: capital(s), comma-separated if a country has multiple (e.g., South Africa: Pretoria, Cape Town, Bloemfontein), carrying its own source tooltip (the region badge shares the same source)
+- Region / Subregion badge
+- Exception badges — shown only for the two countries where they're non-default: "UN observer state" (Vatican, Palestine) and "Not independent" (Palestine). Each carries its own source tooltip. Absent for the 193 UN member states, so most panels show no badge at all.
+- Prime grid (2 columns, always visible regardless of peek/expanded state): Population (locale-formatted), Area (km²), Government type, Languages
 
 **Secondary** (visible in full/expanded state):
 
-- Population (locale-formatted)
-- Area (km²)
-- Government type
-- Languages
 - Currencies
 - Timezones
-- UN Member status
-- Independence status
 - Neighboring countries (clickable chips). Clicking a border chip selects that country — same as clicking it on the map. The map flies to the new country via `flyToCountry()`, the panel transitions to show its data, and the URL hash updates. Each chip click creates a new history entry, so browser Back returns to the previous country. If a border code has no match in `countries.json`, the chip is displayed but not clickable.
 
 **Source Attribution**: Every data field has a small 'i' icon. On desktop, hover or focus shows a tooltip with the source name and link (e.g., "Source: CIA World Factbook"). On touch devices, tapping the 'i' icon toggles the tooltip open/closed (since hover is not available). The tooltip is dismissed by tapping elsewhere. See [Data System — UI Attribution](data.md).

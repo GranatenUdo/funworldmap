@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { waitForMapLoaded } from './helpers'
+import { waitForAnimationIdle, waitForMapLoaded } from './helpers'
 
 async function getBorderOpacity(page: Page): Promise<number> {
   return page.evaluate(() => {
@@ -116,5 +116,29 @@ test.describe('compare view A/B highlight colours match panel badges', () => {
       const selColor = await getFillColor(page, 'country-selected')
       expect(selColor).toBe(CORAL)
     })
+  })
+})
+
+test.describe('compare picking mode cancel (A7)', () => {
+  test('inline Cancel exits picking mode without closing the panel', async ({ page }) => {
+    await page.goto('/#FRA')
+    await waitForMapLoaded(page)
+
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toContainText('France', { timeout: 15_000 })
+    await waitForAnimationIdle(panel)
+
+    // Enter picking mode via the panel's compare entry button.
+    await page.getByRole('button', { name: 'Compare with another country' }).click()
+    const banner = page.getByRole('status').filter({ hasText: 'Pick a country to compare with' })
+    await expect(banner).toBeVisible()
+
+    // The touch-reachable exit: the banner's inline Cancel.
+    await page.getByTestId('compare-picking-cancel').click()
+    await expect(banner).not.toBeAttached()
+    // Picking mode exited: the compare entry button re-renders (it is hidden
+    // while picking) and the panel itself survived the cancel.
+    await expect(page.getByRole('button', { name: 'Compare with another country' })).toBeVisible()
+    await expect(panel).toContainText('France')
   })
 })

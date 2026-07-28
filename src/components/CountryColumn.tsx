@@ -1,6 +1,5 @@
 import type { CountryData } from '../lib/types'
 import { BorderChip } from './BorderChip'
-import { CloseButton } from './CloseButton'
 
 function CompareField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -17,21 +16,11 @@ interface Props {
   country: CountryData
   byCca3: Map<string, CountryData>
   onSelect: (cca3: string) => void
-  onClose: () => void
   badgeLetter: 'A' | 'B'
   badgeColor: 'a' | 'b'
-  showColumnClose: boolean
 }
 
-export function CountryColumn({
-  country,
-  byCca3,
-  onSelect,
-  onClose,
-  badgeLetter,
-  badgeColor,
-  showColumnClose,
-}: Props) {
+export function CountryColumn({ country, byCca3, onSelect, badgeLetter, badgeColor }: Props) {
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
@@ -64,7 +53,6 @@ export function CountryColumn({
               </span>
             </div>
           </div>
-          {showColumnClose && <CloseButton onClick={onClose} ariaLabel="Exit compare" />}
         </div>
       </div>
 
@@ -97,7 +85,7 @@ export function CountryColumn({
               Borders
             </div>
             <div className="flex flex-wrap gap-1">
-              {country.borders.slice(0, 6).map((code) => (
+              {country.borders.map((code) => (
                 <BorderChip
                   key={code}
                   code={code}
@@ -106,11 +94,6 @@ export function CountryColumn({
                   size="compare"
                 />
               ))}
-              {country.borders.length > 6 && (
-                <span className="px-2 py-0.5 text-[11px] text-sand-400 dark:text-dark-100">
-                  +{country.borders.length - 6}
-                </span>
-              )}
             </div>
           </div>
         )}

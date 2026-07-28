@@ -58,6 +58,8 @@ test.describe('A11y + Contrast Pass', () => {
     // declaration. `toContain` is format-agnostic.
     const SAND_600_RGB = '107, 100, 89' // #6b6459
     const DARK_100_RGB = '148, 163, 184' // #94a3b8
+    const TEAL_ACCESSIBLE_RGB = '6, 95, 86' // #065f56 — --color-teal-accessible
+    const TEAL_LIGHT_RGB = '94, 234, 212' // #5eead4 — --color-teal-light
 
     async function computedColor(locator: Locator): Promise<string> {
       return locator.evaluate((el) => window.getComputedStyle(el).color)
@@ -85,6 +87,33 @@ test.describe('A11y + Contrast Pass', () => {
       const closeBtn = panel.getByTestId('panel-close')
       const color = await computedColor(closeBtn)
       expect(color).toContain(SAND_600_RGB)
+    })
+
+    test('header wordmark uses teal-accessible in light mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
+      await page.goto('/')
+      await ensureLauncherDismissed(page)
+      const wordmark = page.getByTestId('header-wordmark')
+      await expect(wordmark).toBeVisible()
+      expect(await computedColor(wordmark)).toContain(TEAL_ACCESSIBLE_RGB)
+    })
+
+    test('header Play button uses teal-accessible in light mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
+      await page.goto('/')
+      await ensureLauncherDismissed(page)
+      const play = page.getByTestId('header-play')
+      await expect(play).toBeVisible()
+      expect(await computedColor(play)).toContain(TEAL_ACCESSIBLE_RGB)
+    })
+
+    test('header wordmark keeps teal-light in dark mode', async ({ page }) => {
+      await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'dark'))
+      await page.goto('/')
+      await ensureLauncherDismissed(page)
+      const wordmark = page.getByTestId('header-wordmark')
+      await expect(wordmark).toBeVisible()
+      expect(await computedColor(wordmark)).toContain(TEAL_LIGHT_RGB)
     })
   })
 

@@ -11,7 +11,7 @@ import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
 import { useMapReady } from './hooks/useMapReady'
-import { useFirstVisitHint } from './hooks/useFirstVisitHint'
+import { hintCopy, useFirstVisitHint } from './hooks/useFirstVisitHint'
 import { useLiveAnnouncements } from './hooks/useLiveAnnouncements'
 import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
@@ -20,7 +20,9 @@ import { GameController } from './game/GameController'
 import type { CityLike, CountryLike } from './game/shared/types'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
+import { FINE_POINTER_MEDIA_QUERY } from './lib/layoutConstants'
 import { track } from './lib/analytics'
+import { compareMapClick } from './lib/compareMapClick'
 import { dispatchToast } from './lib/toast'
 
 export default function App() {
@@ -100,7 +102,8 @@ function AppInner({
     show: showLauncher,
   } = useLauncherVisibility()
   const mapReady = useMapReady()
-  const { showHint } = useFirstVisitHint({
+  const finePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
+  const { hint } = useFirstVisitHint({
     mapReady,
     hasSelection: !!selected,
     gameActive: session.status !== 'idle',
@@ -181,6 +184,38 @@ function AppInner({
       compareSelect,
     ],
   )
+
+  // A8 — map-click semantics while a compare pair is active. Scoped to MAP
+  // clicks only: search and border chips still route through onMapSelect and
+  // keep select() (per-column chip semantics land with workstream C).
+  const onMapCountryClick = useCallback(
+    (cca3: string) => {
+      if (!gameActive && !comparePickingMode && selected && compareWith) {
+        const action = compareMapClick(cca3, selected.cca3, compareWith.cca3)
+        if (action.kind === 'replace-b') compareSelect(action.cca3)
+        return
+      }
+      onMapSelect(cca3)
+    },
+    [gameActive, comparePickingMode, selected, compareWith, compareSelect, onMapSelect],
+  )
+
+  // A8 — an ocean click must not tear down an active comparison; Escape and
+  // the compare header's Exit compare / × are the only exits.
+  //
+  // comparePickingMode is only ever true while compareWith is null (picking
+  // starts from a single-country panel — see enterComparePicking), so the
+  // compareWith guard above never protects picking mode. Without clearing it
+  // here, an ocean click during picking deselects (closing the panel, per
+  // Task 13) but leaves comparePickingMode stuck true — the picking branch of
+  // onMapSelect then requires a `selected` country that no longer exists, so
+  // every later map click or search selection silently no-ops until Escape
+  // (keyboard-only) or a game start resets it. Touch users had no recovery.
+  const onMapDeselect = useCallback(() => {
+    if (compareWith) return
+    setComparePickingMode(false)
+    deselect()
+  }, [compareWith, deselect])
 
   useEffect(() => {
     if (session.status !== 'playing' || session.roundIndex !== 0) return
@@ -334,8 +369,8 @@ function AppInner({
           comparePickingMode={comparePickingMode}
           resolvedTheme={resolved}
           satellite={satellite}
-          onSelect={onMapSelect}
-          onDeselect={deselect}
+          onSelect={onMapCountryClick}
+          onDeselect={onMapDeselect}
         />
       </main>
       <Header
@@ -356,13 +391,13 @@ function AppInner({
 
       <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
-      {showHint && !selected && !gameActive && (
+      {hint && !selected && !gameActive && (
         <div
           role="status"
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-teal/20 dark:border-teal-light/20 text-teal-light text-sm shadow-lg pointer-events-none"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
-          Click a country to explore — or press / to search
+          {hintCopy(hint, finePointer)}
         </div>
       )}
 
@@ -376,6 +411,7 @@ function AppInner({
           onSelect={onMapSelect}
           onClose={deselect}
           onEnterCompare={enterComparePicking}
+          onCancelCompare={exitCompare}
           onExitCompare={exitCompare}
           byCca3={byCca3}
         />
@@ -394,6 +430,9 @@ function AppInner({
           onClose={advanceRoundEndPanel}
           onEnterCompare={() => {
             /* no-op — hidden by inGameRound */
+          }}
+          onCancelCompare={() => {
+            /* no-op — picking mode is never active during a round */
           }}
           onExitCompare={() => {
             /* no-op — hidden by inGameRound */
