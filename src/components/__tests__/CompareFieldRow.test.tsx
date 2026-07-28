@@ -66,6 +66,20 @@ describe('CompareFieldRow — numeric rows (C2)', () => {
     expect(screen.queryByTestId('compare-delta-area')).toBeNull()
     expect(screen.getByText('—')).toBeTruthy()
   })
+
+  it('missing population: no bar, no delta chip, em-dash readout', () => {
+    render(
+      <CompareFieldRow
+        field={field('population')}
+        a={makeCountryData({ population: 0 })}
+        b={DEU}
+      />,
+    )
+    expect(screen.queryByTestId('compare-bar-a-population')).toBeNull()
+    expect(screen.getByTestId('compare-bar-b-population')).toBeTruthy() // B is the max → full bar
+    expect(screen.queryByTestId('compare-delta-population')).toBeNull()
+    expect(screen.getByText('—')).toBeTruthy()
+  })
 })
 
 describe('CompareFieldRow — derived density row (C3)', () => {

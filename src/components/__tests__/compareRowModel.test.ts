@@ -78,6 +78,20 @@ describe('buildRowModel (C2)', () => {
     expect(m.aText).toBe('—')
   })
 
+  it('numeric: population=0 (missing) → null pct and null delta', () => {
+    const m = buildRowModel(
+      field('population'),
+      makeCountryData({ population: 0 }),
+      makeCountryData({ cca3: 'DEU', population: 63_000_000 }),
+    )
+    expect(m.kind).toBe('numeric')
+    if (m.kind !== 'numeric') throw new Error('unreachable')
+    expect(m.aPct).toBeNull()
+    expect(m.bPct).toBe(100)
+    expect(m.delta).toBeNull()
+    expect(m.aText).toBe('—')
+  })
+
   it('categorical: identical formatted values collapse to kind "both"', () => {
     const m = buildRowModel(
       field('currencies'),
