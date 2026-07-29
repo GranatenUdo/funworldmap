@@ -390,18 +390,30 @@ describe('SingleCountryPanel — hero stats row (D1)', () => {
     )
   }
 
-  it('renders compact Population/Area/Density numerals in .text-readout with exact values in title', () => {
+  it('renders compact Population/Area/Density numerals in .text-readout with exact values in title and sr-only span', () => {
     // Real France figures so the compact strings match the shipped data.
     const { getByTestId } = renderWith(makeCountry({ population: 66_351_959, area: 543_908 }))
     const pop = getByTestId('hero-stat-population')
-    expect(pop.textContent).toBe('66.4M')
+    // Compact text is aria-hidden; sr-only span carries exact for AT.
+    const popVisible = pop.querySelector('span[aria-hidden="true"]') as HTMLElement
+    expect(popVisible.textContent).toBe('66.4M')
+    const popSrOnly = pop.querySelector('span.sr-only') as HTMLElement
+    expect(popSrOnly.textContent).toBe('66,351,959')
     expect(pop.getAttribute('title')).toBe('66,351,959')
     expect(pop.className).toContain('text-readout')
+
     const area = getByTestId('hero-stat-area')
-    expect(area.textContent).toBe('544K km²')
+    const areaVisible = area.querySelector('span[aria-hidden="true"]') as HTMLElement
+    expect(areaVisible.textContent).toBe('544K km²')
+    const areaSrOnly = area.querySelector('span.sr-only') as HTMLElement
+    expect(areaSrOnly.textContent).toBe('543,908 km²')
     expect(area.getAttribute('title')).toBe('543,908 km²')
+
     const density = getByTestId('hero-stat-density')
-    expect(density.textContent).toBe('122/km²')
+    const densityVisible = density.querySelector('span[aria-hidden="true"]') as HTMLElement
+    expect(densityVisible.textContent).toBe('122/km²')
+    const densitySrOnly = density.querySelector('span.sr-only') as HTMLElement
+    expect(densitySrOnly.textContent).toBe('122 people/km²')
     expect(density.getAttribute('title')).toBe('122 people/km²')
   })
 
@@ -422,10 +434,13 @@ describe('SingleCountryPanel — hero stats row (D1)', () => {
     expect(getByTestId('hero-stat-population')).toBeTruthy() // values still render
   })
 
-  it('zero density renders the em-dash with no title', () => {
+  it('zero density renders the em-dash with no title and no sr-only span', () => {
     const { getByTestId } = renderWith(makeCountry({ population: 0 }))
     const density = getByTestId('hero-stat-density')
-    expect(density.textContent).toBe('—')
+    const densityVisible = density.querySelector('span[aria-hidden="true"]') as HTMLElement
+    expect(densityVisible.textContent).toBe('—')
+    const densitySrOnly = density.querySelector('span.sr-only')
+    expect(densitySrOnly).toBeNull() // no sr-only when exact is undefined
     expect(density.getAttribute('title')).toBeNull()
   })
 

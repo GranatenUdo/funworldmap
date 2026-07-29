@@ -67,7 +67,8 @@ function DataCell({
  *  the exact value in `title` and an optional "#N of 195" rank sub-line.
  *  FieldLabel keeps the per-field source affordance + data-field anchor
  *  (attribution constitution; D2 owns the consolidated-footer migration).
- *  No whitespace-nowrap: at 360px "17.1M km²" may wrap its unit — fine. */
+ *  No whitespace-nowrap: at 360px "17.1M km²" may wrap its unit — fine.
+ *  A11y: compact text is aria-hidden; sr-only span carries exact for AT. */
 function HeroStat({
   label,
   field,
@@ -93,7 +94,8 @@ function HeroStat({
         title={exact}
         className="text-readout text-xl font-semibold text-sand-900 dark:text-dark-50"
       >
-        {value}
+        <span aria-hidden="true">{value}</span>
+        {exact !== undefined && <span className="sr-only">{exact}</span>}
       </div>
       {rank !== undefined && (
         <div
