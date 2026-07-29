@@ -12,7 +12,7 @@
  */
 
 import { test, expect } from '@playwright/test'
-import { gotoAndWaitForMap, waitForAnimationIdle } from './helpers'
+import { gotoAndWaitForMap, waitForAnimationIdle, openLauncher } from './helpers'
 
 const WIDTHS = [360, 375, 414] as const
 
@@ -190,5 +190,50 @@ test.describe('D4 sheet header restructure at 390×844', () => {
       isTopmostAtOwnCenter,
       'compare tip is occluded by another element (likely the panel) at its own coordinates',
     ).toBe(true)
+  })
+
+  // Regression test (final-review finding): 8cf6ad2's z-[300] bump fixed the
+  // panel occlusion above but over-corrected — the hint pill then painted
+  // OVER the launcher dialog (z-[210]) too. A first-timer who closes their
+  // first panel gets the 'game' hint ("Try a game…"), and opening the
+  // launcher from there left the pill floating over the modal indefinitely.
+  // Same elementFromPoint technique as the panel-occlusion test above, but
+  // the expectation is inverted: with the launcher open, the pill must NOT
+  // be the topmost element at its own coordinates — it belongs behind the
+  // modal, not in front of it.
+  test('the hint pill is occluded by the launcher when opened over it', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA')
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toBeVisible({ timeout: 15_000 })
+    await waitForAnimationIdle(panel)
+
+    // Closing the only panel of the session fires the 'game' hint.
+    await page.getByTestId('panel-close').click()
+    await expect(panel).not.toBeAttached()
+
+    const pill = page.getByTestId('onboarding-hint')
+    await expect(pill).toBeVisible()
+    await expect(pill).toHaveText('Try a game — guess countries and cities')
+
+    await openLauncher(page)
+    const launcher = page.getByTestId('launcher')
+    await expect(launcher).toBeVisible()
+
+    // The pill still renders (hint state is untouched by opening the
+    // launcher) — only its stacking relative to the modal is under test.
+    await expect(pill).toBeAttached()
+
+    const isTopmostAtOwnCenter = await pill.evaluate((el) => {
+      const original = el.style.pointerEvents
+      el.style.pointerEvents = 'auto'
+      const r = el.getBoundingClientRect()
+      const topEl = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)
+      el.style.pointerEvents = original
+      return el === topEl || el.contains(topEl)
+    })
+    expect(
+      isTopmostAtOwnCenter,
+      'hint pill paints over the launcher dialog instead of staying behind it',
+    ).toBe(false)
   })
 })

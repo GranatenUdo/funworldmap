@@ -416,19 +416,24 @@ function AppInner({
           mobile-enabled by D4/Task 6) renders while a panel is open. Same
           pill, pointer-events-none, non-focusable — it can never intercept
           clicks or shift Tab order.
-          z-[300] (matches Toast.tsx, the same bottom-anchored-pill pattern):
-          the desktop panel is a right-side rail so z-20 never collided with
-          it, but the mobile panel is a full-width `bottom-0` sheet at z-40
-          that spatially overlaps this pill's position — at z-20 the compare
-          tip rendered fully behind (and invisible under) the sheet the
-          instant D4/Task 6 let it fire on mobile. Found via the Task 7
-          live-pass visual review (elementFromPoint at the pill's own
-          coordinates resolved to the panel, not the pill). */}
+          z-[100]: above the mobile panel's z-40 sheet (the desktop panel is
+          a right-side rail so z-20 never collided with it, but the mobile
+          panel is a full-width `bottom-0` sheet at z-40 that spatially
+          overlaps this pill's position — at z-20 the compare tip rendered
+          fully behind, and invisible under, the sheet the instant D4/Task 6
+          let it fire on mobile; found via the Task 7 live-pass visual
+          review, elementFromPoint at the pill's own coordinates resolved to
+          the panel, not the pill), but BELOW the z-[200] loading overlay and
+          the z-[210] launcher dialog — 8cf6ad2's fix over-corrected to
+          z-[300] (matching Toast.tsx, which never has to yield to a modal),
+          which left the pill floating over the launcher indefinitely for a
+          first-timer who closes their first panel (fires the 'game' hint)
+          and then opens the launcher. */}
       {hint && !gameActive && (hint === 'compare' ? !!selected : !selected) && (
         <div
           role="status"
           data-testid="onboarding-hint"
-          className="fixed bottom-[calc(env(safe-area-inset-bottom)+2rem)] left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-ice/20 text-ice text-sm shadow-lg pointer-events-none"
+          className="fixed bottom-[calc(env(safe-area-inset-bottom)+2rem)] left-1/2 -translate-x-1/2 z-[100] px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-ice/20 text-ice text-sm shadow-lg pointer-events-none"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
           {hintCopy(hint, finePointer)}
