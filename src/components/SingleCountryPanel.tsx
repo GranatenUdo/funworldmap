@@ -7,6 +7,8 @@ import { TimezoneList } from './TimezoneList'
 import SourceTooltip from './SourceTooltip'
 import { dispatchToast } from '../lib/toast'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_22 } from '../lib/layoutConstants'
+import { formatPopulation, formatArea } from '../lib/compareFields'
+import { EXCEPTION_BADGE, activeExceptionBadges } from './exceptionBadge'
 
 interface Props {
   country: CountryData
@@ -47,14 +49,6 @@ function DataCell({
   )
 }
 
-function formatPopulation(n: number): string {
-  return n.toLocaleString('en-US')
-}
-
-function formatArea(n: number): string {
-  return `${n.toLocaleString('en-US')} km\u00B2`
-}
-
 const REGION_BADGE: Record<string, string> = {
   Africa: 'bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
   Americas: 'bg-emerald-100/80 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
@@ -63,13 +57,6 @@ const REGION_BADGE: Record<string, string> = {
   Oceania: 'bg-teal-100/80 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300',
   Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
-
-// A5: near-constant booleans render as exceptions only. Muted amber is a data
-// encoding (like the region badge), not a chrome accent — kept through E4.
-// inline-flex + items-center (not inline-block): each badge carries a
-// SourceTooltip affordance and needs to align it with the label text.
-const EXCEPTION_BADGE =
-  'inline-flex items-center whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
 
 export function SingleCountryPanel({
   country,
@@ -194,7 +181,7 @@ export function SingleCountryPanel({
         <div
           className={
             isDesktop
-              ? 'flex items-start justify-between gap-3'
+              ? 'flex flex-wrap items-start justify-between gap-x-3 gap-y-2'
               : 'flex flex-col items-stretch gap-2'
           }
         >
@@ -241,7 +228,21 @@ export function SingleCountryPanel({
             {!comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}
-                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
+                data-testid="compare-entry"
+                // C5: desktop gets an icon + text pill (the 20px hover-title-only
+                // icon was the least discoverable control in the audit); mobile
+                // keeps the icon — D4 owns the sheet's labeled compare chip.
+                // Desktop pill box: py-2 (2·8px) + 20px icon/text-sm line = 36px,
+                // so TOUCH_TARGET_FROM_36 keeps the A13 44px coarse-pointer math
+                // honest on both branches. Text contrast (4.5:1 floor): ice-dim
+                // #0369a1 on sand-50 #fefdfb = 5.84:1; ice #7dd3fc on dark-400
+                // #161a22 = 10.4:1. aria-label preserved — it overrides content,
+                // so existing e2e locators and WCAG 2.5.3 both hold.
+                className={`${
+                  isDesktop
+                    ? 'flex items-center gap-1.5 px-3 py-2 rounded-full border border-ice-dim/30 dark:border-ice/30 text-sm font-medium'
+                    : 'p-2 rounded-xl'
+                } hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Compare with another country"
                 title="Compare"
               >
@@ -249,6 +250,7 @@ export function SingleCountryPanel({
                   <circle cx="9" cy="12" r="6" strokeWidth="1.75" />
                   <circle cx="15" cy="12" r="6" strokeWidth="1.75" />
                 </svg>
+                {isDesktop && <span>Compare</span>}
               </button>
             )}
 
@@ -317,28 +319,18 @@ export function SingleCountryPanel({
             {country.region}
             {country.subregion && ` / ${country.subregion}`}
           </span>
-          {country.unMember === false && (
-            <span data-testid="exception-badge-un-member" className={EXCEPTION_BADGE}>
-              UN observer state
+          {activeExceptionBadges(country).map((b) => (
+            <span key={b.field} data-testid={b.testId} className={EXCEPTION_BADGE}>
+              {b.label}
               {/* Field-level attribution is a constitution item (never silently
                   regress) — mirrors the capital caption's SourceTooltip (A4). */}
               <SourceTooltip
-                field="unMember"
+                field={b.field}
                 fieldSources={country._fieldSources}
                 sources={sources}
               />
             </span>
-          )}
-          {country.independent === false && (
-            <span data-testid="exception-badge-independent" className={EXCEPTION_BADGE}>
-              Not independent
-              <SourceTooltip
-                field="independent"
-                fieldSources={country._fieldSources}
-                sources={sources}
-              />
-            </span>
-          )}
+          ))}
         </div>
       </div>
 

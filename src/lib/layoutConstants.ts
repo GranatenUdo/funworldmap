@@ -20,7 +20,8 @@ export const COMPARE_PANEL_FOOTPRINT_PX = 672
 /** Mobile bottom sheet, collapsed single-country state: h-[40vh]. */
 export const SHEET_COLLAPSED_FRACTION = 0.4
 
-/** Mobile compare / expanded sheet: h-[80vh]. */
+/** Mobile compare sheet: h-[80dvh] (C6). The single panel's expanded sheet
+ *  stays h-[80vh] until G1's dvh switch (workstream D's plan). */
 export const COMPARE_SHEET_FRACTION = 0.8
 
 /** Screen-space camera offset so the SINGLE-country fly-to centers in the
@@ -37,19 +38,32 @@ export function panelScreenOffset(): [number, number] {
 export const COMPARE_FRAME_PADDING_PX = 80
 
 /** cameraForBounds padding that frames the compare pair in the area the
- *  compare panel does not cover (B6, 2026-07-28). Desktop reserves the panel
- *  footprint as extra `right` padding — cameraForBounds folds padding into
- *  BOTH zoom and center, which the replaced screen offset could not do.
- *  Mobile deliberately stays flat: the sheet-aware bottom padding
- *  (innerHeight × COMPARE_SHEET_FRACTION) ships with C6's compare-sheet
- *  redesign, which owns mobile compare framing (spec C6/G3). */
+ *  compare panel does not cover. Desktop (B6, 2026-07-28) reserves the panel
+ *  footprint as extra `right` padding; mobile (C6, 2026-07-28) reserves the
+ *  compare sheet as `bottom` padding (innerHeight × COMPARE_SHEET_FRACTION —
+ *  the sheet is h-[80dvh], and dvh tracks innerHeight, so the reserved band
+ *  and the rendered sheet agree even as mobile browser toolbars collapse).
+ *  cameraForBounds folds padding into BOTH zoom and center, which the
+ *  screen offset it replaced could not do. If total padding exceeds the
+ *  canvas (short landscape viewports: 80 + 0.8·H > H when H < 400), MapLibre
+ *  warns and cameraForBounds returns undefined — flyToComparePair already
+ *  no-ops on undefined (verified against maplibre-gl 5.23
+ *  src/geo/projection/camera_helper.ts: negative available size →
+ *  cameraBoundsWarning() + `return undefined`, never a throw). */
 export function comparePanelPadding(): PaddingOptions {
-  const panel = window.matchMedia(DESKTOP_MEDIA_QUERY).matches ? COMPARE_PANEL_FOOTPRINT_PX : 0
+  if (window.matchMedia(DESKTOP_MEDIA_QUERY).matches) {
+    return {
+      top: COMPARE_FRAME_PADDING_PX,
+      bottom: COMPARE_FRAME_PADDING_PX,
+      left: COMPARE_FRAME_PADDING_PX,
+      right: COMPARE_FRAME_PADDING_PX + COMPARE_PANEL_FOOTPRINT_PX,
+    }
+  }
   return {
     top: COMPARE_FRAME_PADDING_PX,
-    bottom: COMPARE_FRAME_PADDING_PX,
+    bottom: Math.round(window.innerHeight * COMPARE_SHEET_FRACTION),
     left: COMPARE_FRAME_PADDING_PX,
-    right: COMPARE_FRAME_PADDING_PX + panel,
+    right: COMPARE_FRAME_PADDING_PX,
   }
 }
 

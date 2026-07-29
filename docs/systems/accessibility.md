@@ -60,6 +60,8 @@ Two skip links at the top of the page, visible only on focus:
 
 Source 'i' buttons are intentionally outside the Tab order (`tabIndex=-1`) so blur-out closes them cleanly; they open on hover, click/tap, or programmatic focus — a deliberate trade-off (see the comment in `SourceTooltip.tsx`).
 
+The compare panel's exception source markers (C4, `SourceMarker.tsx`) are ordinary links in the Tab order, each labelled `Source: <name>` — unlike the single-panel 'i' buttons above, they are fully keyboard-reachable. D2 extends this scheme to the single panel.
+
 ### Bottom Sheet (Mobile)
 
 | Key                              | Action                                            |

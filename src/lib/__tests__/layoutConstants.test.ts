@@ -42,7 +42,9 @@ describe('layout constants ↔ panel classes drift alarm', () => {
 
   it('CompareCountryPanel width/sheet classes match the constants', () => {
     expect(compareCountryPanelSource).toContain(`w-[${COMPARE_PANEL_FOOTPRINT_PX - 16}px]`)
-    expect(compareCountryPanelSource).toContain(`h-[${COMPARE_SHEET_FRACTION * 100}vh]`)
+    // C6: the compare sheet is dvh so the sheet and the camera's
+    // innerHeight-based bottom padding agree under dynamic mobile toolbars.
+    expect(compareCountryPanelSource).toContain(`h-[${COMPARE_SHEET_FRACTION * 100}dvh]`)
   })
 
   it('useMediaQuery default equals DESKTOP_MEDIA_QUERY', () => {
@@ -63,7 +65,7 @@ describe('layout constants ↔ panel classes drift alarm', () => {
     expect(panelScreenOffset()).toEqual([0, -160]) // 800 * 0.4 / 2
   })
 
-  it('comparePanelPadding reserves the panel footprint on desktop, stays flat on mobile (B6)', () => {
+  it('comparePanelPadding reserves the panel footprint on desktop, the compare sheet on mobile (B6/C6)', () => {
     vi.stubGlobal(
       'matchMedia',
       vi.fn(() => ({ matches: true })),
@@ -78,10 +80,16 @@ describe('layout constants ↔ panel classes drift alarm', () => {
       'matchMedia',
       vi.fn(() => ({ matches: false })),
     )
-    // Mobile compare framing (sheet-fraction bottom padding) is C6's change —
-    // B6 deliberately ships flat 80s there (spec: "Mobile compare framing is
-    // C6's padding change").
-    expect(comparePanelPadding()).toEqual({ top: 80, bottom: 80, left: 80, right: 80 })
+    vi.stubGlobal('innerHeight', 800)
+    // C6: the compare sheet covers the bottom COMPARE_SHEET_FRACTION of the
+    // viewport — reserve it as bottom padding so cameraForBounds frames the
+    // pair in the visible strip (replaces B6's deliberate flat 80px).
+    expect(comparePanelPadding()).toEqual({
+      top: COMPARE_FRAME_PADDING_PX,
+      bottom: Math.round(800 * COMPARE_SHEET_FRACTION), // 640
+      left: COMPARE_FRAME_PADDING_PX,
+      right: COMPARE_FRAME_PADDING_PX,
+    })
   })
 })
 

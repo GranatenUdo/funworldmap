@@ -19,7 +19,7 @@ import {
   addCompareMarkerLayer,
   applyCompareMarkers,
 } from '../mapLayers'
-import { ICE_DEEP, ICE_DIM, SIGNAL, SPOTLIGHT_DIM } from '../mapPalette'
+import { ICE_DEEP, ICE_MID, SIGNAL, SPOTLIGHT_DIM } from '../mapPalette'
 import { createFakeMapRef } from '../../test/fakeMapRef'
 import { makeCountryData } from '../../test/countryFixtures'
 
@@ -384,7 +384,7 @@ describe("compare A/B centroid markers (B6 — rides on B1's glyph pattern)", ()
 describe('E4 two-accent highlight paint', () => {
   it.each([
     ['selection', addSelectionLayers, ICE_DEEP],
-    ['compare', addCompareLayers, ICE_DIM],
+    ['compare', addCompareLayers, ICE_MID],
   ] as const)('%s stack initializes every layer with its E4 accent', (_n, add, color) => {
     const fake = createFakeMapRef()
     add(fake.map)
@@ -398,13 +398,13 @@ describe('E4 two-accent highlight paint', () => {
     }
   })
 
-  it('compare markers colour A signal / B ice-dim over a dark halo (A matches the panel badge; see mapPalette ICE_DIM doc for the B mismatch note)', () => {
+  it('compare markers colour A signal / B ice-mid over a dark halo (A matches the panel badge; see mapPalette ICE_MID doc for the B mismatch note)', () => {
     const fake = createFakeMapRef()
     addCompareMarkerLayer(fake.map)
     const spec = fake.addedLayers.find((s) => s.id === 'country-compare-markers') as
       | maplibregl.SymbolLayerSpecification
       | undefined
-    expect(spec?.paint?.['text-color']).toEqual(['match', ['get', 'label'], 'A', SIGNAL, ICE_DIM])
+    expect(spec?.paint?.['text-color']).toEqual(['match', ['get', 'label'], 'A', SIGNAL, ICE_MID])
     // Dark halo: SIGNAL is ~2.3:1 against white but ~7.3:1 against #0f172a
     // (B1's label halo) — one halo treatment for labels and markers.
     expect(spec?.paint?.['text-halo-color']).toBe('#0f172a')

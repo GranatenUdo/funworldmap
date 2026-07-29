@@ -6,7 +6,7 @@ import {
   TERRAIN_TILES,
   TERRAIN_ATTRIBUTION,
 } from './mapStyles'
-import { ICE_DEEP, ICE_DIM, SIGNAL, SPOTLIGHT_DIM, REVEAL_WRONG } from './mapPalette'
+import { ICE_DEEP, ICE_MID, SIGNAL, SPOTLIGHT_DIM, REVEAL_WRONG } from './mapPalette'
 
 const EMPTY_FILTER: maplibregl.FilterSpecification = ['==', ['get', 'id'], '']
 
@@ -240,11 +240,11 @@ export function addSelectionLayers(map: maplibregl.Map): void {
   addHighlightStack(map, 'country-selected', ICE_DEEP)
 }
 
-/** Add the compare (ice-dim) highlight stack — a map-only mid-ice shade (E4;
- *  see mapPalette.ts's ICE_DIM doc for why this does not equal the panel's
+/** Add the compare (ice-mid) highlight stack — a map-only mid-ice shade (E4;
+ *  see mapPalette.ts's ICE_MID doc for why this does not equal the panel's
  *  .compare-badge-b, which renders plain ice). */
 export function addCompareLayers(map: maplibregl.Map): void {
-  addHighlightStack(map, 'country-compare', ICE_DIM)
+  addHighlightStack(map, 'country-compare', ICE_MID)
 }
 
 /** Lazily add the game reveal fill layer (`country-reveal-fill`) — a
@@ -514,10 +514,10 @@ export function applyBasemapLayerVisibility(
 }
 
 /** Compare A/B centroid markers — one symbol layer labelling the pair on the
- *  map in the compare badge colors (A signal / B ice-dim; index.css's
+ *  map in the compare badge colors (A signal / B ice-mid; index.css's
  *  .compare-badge-a consumes var(--color-signal), which equals the same
- *  mapPalette SIGNAL hex — see mapPalette.ts's ICE_DIM doc for why
- *  .compare-badge-b consumes plain --color-ice, not ICE_DIM). Rides on B1's
+ *  mapPalette SIGNAL hex — see mapPalette.ts's ICE_MID doc for why
+ *  .compare-badge-b consumes plain --color-ice, not ICE_MID). Rides on B1's
  *  label-layer pattern: `text-font` MUST be explicit because the positron
  *  glyphs endpoint 404s MapLibre's default font stack (B1 glyph decision,
  *  live-verified 2026-07-27). The `country-` prefix keeps
@@ -541,9 +541,9 @@ export function addCompareMarkerLayer(map: maplibregl.Map): void {
       'text-ignore-placement': true,
     },
     paint: {
-      'text-color': ['match', ['get', 'label'], 'A', SIGNAL, ICE_DIM],
+      'text-color': ['match', ['get', 'label'], 'A', SIGNAL, ICE_MID],
       // Dark halo (B1's label halo): SIGNAL #ff8a4c is ~2.3:1 against white
-      // but ~7.3:1 against #0f172a; ICE_DIM is ~4.1:1 either way (E4).
+      // but ~7.3:1 against #0f172a; ICE_MID is ~4.1:1 either way (E4).
       'text-halo-color': '#0f172a',
       'text-halo-width': 1.5,
     },

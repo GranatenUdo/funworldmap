@@ -22,7 +22,7 @@ import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
 import { FINE_POINTER_MEDIA_QUERY } from './lib/layoutConstants'
 import { track } from './lib/analytics'
-import { compareMapClick } from './lib/compareMapClick'
+import { compareMapClick, compareChipClick, type CompareColumn } from './lib/compareMapClick'
 import { dispatchToast } from './lib/toast'
 
 export default function App() {
@@ -90,6 +90,7 @@ function AppInner({
     selectionOriginRef,
     select,
     compareSelect,
+    compareReplaceA,
     clearCompare,
     deselect,
   } = useSelectedCountry(byCca3)
@@ -103,11 +104,6 @@ function AppInner({
   } = useLauncherVisibility()
   const mapReady = useMapReady()
   const finePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
-  const { hint } = useFirstVisitHint({
-    mapReady,
-    hasSelection: !!selected,
-    gameActive: session.status !== 'idle',
-  })
   const liveRegionRef = useLiveAnnouncements(selected?.name.common ?? null)
   const [satellite, setSatellite] = useState(true)
   const toggleSatellite = useCallback(() => setSatellite((s) => !s), [])
@@ -116,6 +112,17 @@ function AppInner({
     dismissLauncher()
   }, [dismissLauncher])
   const [comparePickingMode, setComparePickingMode] = useState(false)
+
+  // Below comparePickingMode's declaration because the hint machine consumes
+  // it (compareActive marks the compare tip moot — C5). Hook order is still
+  // stable across renders; only the source position moved.
+  const { hint } = useFirstVisitHint({
+    mapReady,
+    selectedCca3: selected?.cca3 ?? null,
+    gameActive: session.status !== 'idle',
+    compareActive: !!compareWith || comparePickingMode,
+    isDesktop,
+  })
 
   const enterComparePicking = useCallback(() => {
     if (selected) setComparePickingMode(true)
@@ -186,8 +193,9 @@ function AppInner({
   )
 
   // A8 — map-click semantics while a compare pair is active. Scoped to MAP
-  // clicks only: search and border chips still route through onMapSelect and
-  // keep select() (per-column chip semantics land with workstream C).
+  // clicks only: search still routes through onMapSelect and keeps select().
+  // Border chips inside the compare panel are column-scoped (C1) — see
+  // onCompareColumnSelect below.
   const onMapCountryClick = useCallback(
     (cca3: string) => {
       if (!gameActive && !comparePickingMode && selected && compareWith) {
@@ -198,6 +206,20 @@ function AppInner({
       onMapSelect(cca3)
     },
     [gameActive, comparePickingMode, selected, compareWith, compareSelect, onMapSelect],
+  )
+
+  // C1 (A8's descoped border-chip clause) — chips inside the compare panel
+  // replace their OWN column's country: column A via compareReplaceA (keeps
+  // B), column B via compareSelect (keeps A). compareChipClick guards the
+  // X-vs-X case (a chip naming the other column's country is a no-op).
+  const onCompareColumnSelect = useCallback(
+    (column: CompareColumn, cca3: string) => {
+      if (!selected || !compareWith) return
+      const action = compareChipClick(column, cca3, selected.cca3, compareWith.cca3)
+      if (action.kind === 'replace-a') compareReplaceA(action.cca3)
+      else if (action.kind === 'replace-b') compareSelect(action.cca3)
+    },
+    [selected, compareWith, compareReplaceA, compareSelect],
   )
 
   // A8 — an ocean click must not tear down an active comparison; Escape and
@@ -391,9 +413,13 @@ function AppInner({
 
       <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
 
-      {hint && !selected && !gameActive && (
+      {/* explore/game hints render on the empty map; the compare tip (C5)
+          renders while a panel is open. Same pill, pointer-events-none,
+          non-focusable — it can never intercept clicks or shift Tab order. */}
+      {hint && !gameActive && (hint === 'compare' ? !!selected : !selected) && (
         <div
           role="status"
+          data-testid="onboarding-hint"
           className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-ice/20 text-ice text-sm shadow-lg pointer-events-none"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
@@ -413,6 +439,7 @@ function AppInner({
           onEnterCompare={enterComparePicking}
           onCancelCompare={exitCompare}
           onExitCompare={exitCompare}
+          onCompareColumnSelect={onCompareColumnSelect}
           byCca3={byCca3}
         />
       )}
@@ -436,6 +463,9 @@ function AppInner({
           }}
           onExitCompare={() => {
             /* no-op — hidden by inGameRound */
+          }}
+          onCompareColumnSelect={() => {
+            /* no-op — compare never renders during a round */
           }}
           byCca3={byCca3}
           inGameRound={true}

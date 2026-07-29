@@ -90,11 +90,17 @@ describe('E4 retirement drift alarm — the teal/coral system must stay gone', (
 
   it('compare badges consume the E4 tokens — badge ↔ map-fill match is by token, not copied hex', () => {
     // .compare-badge-b consumes plain --color-ice, not --color-ice-dim —
-    // see mapPalette.ts's ICE_DIM doc for why that divergence is
+    // see mapPalette.ts's ICE_MID doc for why that divergence is
     // intentional and stays (T2's accessibility fix; adjudicated by this
     // task).
     expect(css).toContain('background: var(--color-signal)')
     expect(css).toContain('background: var(--color-ice)')
+  })
+
+  it('dark attribution hover consumes the ice-light token, not a raw hex', () => {
+    expect(css).toContain(`.dark .maplibregl-map .maplibregl-ctrl-attrib a:hover {
+  color: var(--color-ice-light);
+}`)
   })
 })
 
@@ -128,5 +134,19 @@ describe('backdrop hex-tile stroke (E4 interim recolor, replaced by E1)', () => 
   it('strokes the hex grid in ice, not retired teal-light', () => {
     expect(css).toContain("stroke='%237dd3fc'")
     expect(css).not.toContain("stroke='%235eead4'")
+  })
+})
+
+describe('C2 compare-bar tokens (index.css @theme)', () => {
+  it('defines the theme-invariant bar tiers (≥3:1 non-text on both panel surfaces)', () => {
+    // ice-mid #0284c7: 4.03:1 on sand-50, 4.26:1 on dark-400.
+    // signal-mid #ea580c: 3.50:1 on sand-50, 4.90:1 on dark-400.
+    // Full math in the tokens' own comment in index.css.
+    expect(css).toContain('--color-ice-mid: #0284c7;')
+    expect(css).toContain('--color-signal-mid: #ea580c;')
+  })
+
+  it('bar-B hex stays in sync with the compare-B map fill (mapPalette.ICE_MID)', () => {
+    expect(mapPaletteSource).toContain("export const ICE_MID = '#0284c7'")
   })
 })

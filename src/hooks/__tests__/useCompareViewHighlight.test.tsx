@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useCompareViewHighlight } from '../useCompareViewHighlight'
-import { ICE, ICE_DEEP, ICE_DIM, SIGNAL } from '../../lib/mapPalette'
+import { ICE, ICE_DEEP, ICE_MID, SIGNAL } from '../../lib/mapPalette'
 import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
 
 describe('useCompareViewHighlight', () => {
@@ -28,7 +28,7 @@ describe('useCompareViewHighlight', () => {
     const cmpFill = fake.calls.setPaintProperty.find(
       (c) => c[0] === 'country-compare-fill' && c[1] === 'fill-color',
     )
-    expect(cmpFill?.[2]).toBe(ICE_DIM)
+    expect(cmpFill?.[2]).toBe(ICE_MID)
   })
 
   it('pins A to SIGNAL (not the theme ice) in dark mode while comparing', () => {

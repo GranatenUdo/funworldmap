@@ -13,6 +13,7 @@ export function useSelectedCountry(byCca3: Map<string, CountryData>): {
   selectionOriginRef: MutableRefObject<SelectionOrigin>
   select: (cca3: string) => void
   compareSelect: (cca3: string) => void
+  compareReplaceA: (cca3: string) => void
   clearCompare: () => void
   deselect: () => void
 } {
@@ -66,6 +67,19 @@ export function useSelectedCountry(byCca3: Map<string, CountryData>): {
     })
   }, [])
 
+  /** C1 border-chip semantics: replace the SELECTED country (column A)
+   *  while keeping the compare partner — the counterpart of compareSelect,
+   *  which replaces B while keeping A. No-op unless a pair is active. */
+  const compareReplaceA = useCallback((cca3: string) => {
+    const current = parseHash(window.location.hash)
+    if (current.kind !== 'country' || !current.compareWith) return
+    window.location.hash = writeHash({
+      kind: 'country',
+      cca3: cca3.toUpperCase(),
+      compareWith: current.compareWith,
+    })
+  }, [])
+
   const clearCompare = useCallback(() => {
     const current = parseHash(window.location.hash)
     if (current.kind !== 'country') return
@@ -88,6 +102,7 @@ export function useSelectedCountry(byCca3: Map<string, CountryData>): {
     selectionOriginRef,
     select,
     compareSelect,
+    compareReplaceA,
     clearCompare,
     deselect,
   }
