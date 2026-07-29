@@ -77,6 +77,22 @@ describe('flyToComparePair', () => {
     })
   })
 
+  it('mobile: renders at pitch 0 — cameraForBounds fits as if pitch were 0, so a tilted render slides the pair under the sheet (2026-07-29 live-pass finding)', () => {
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn(() => ({ matches: false })),
+    )
+    vi.stubGlobal('innerHeight', 800)
+    const fake = createFakeMapRef()
+    flyToComparePair(fake.map, FRANCE, GERMANY)
+    // Verified live at 390×844: with DEFAULT_PITCH applied, France/Germany
+    // projected to y≈183-189 against a 168.8px sheet-top cutoff — hidden
+    // behind the sheet, not framed above it as C6 intends. Desktop keeps its
+    // pitch (its occlusion is horizontal, so the same mismatch is harmless
+    // there); only mobile's vertical occlusion is exposed to it.
+    expect(fake.calls.flyTo.mock.calls[0][0]).toMatchObject({ pitch: 0 })
+  })
+
   it('mobile: the globe-scale symmetric fallback never fires — it would re-center the pair under the sheet (C6)', () => {
     vi.stubGlobal(
       'matchMedia',
