@@ -1,17 +1,14 @@
 /**
- * Phase 3.5 — Mobile country-panel header reflow.
+ * Mobile country-panel header — D4 restructure.
  *
- * Verifies that the country name in the bottom-sheet header is NOT truncated
- * at narrow mobile widths (360, 375, 414 px). Before the fix, the action-button
- * row consumed too much horizontal space, leaving < 100 px for the title and
- * forcing an ellipsis.
+ * The sheet header is one inline row: flag + name left; share, expand
+ * chevron, close right. Compare is a labeled chip below the prime grid
+ * (same accessible name as the desktop pill). D1's hero stats must be
+ * answerable in the collapsed sheet without expanding.
  *
- * Truncation detection: compare scrollWidth vs clientWidth on the <h2>. If the
- * text is clipped, scrollWidth > clientWidth. We assert they're equal (or
- * scrollWidth ≤ clientWidth).
- *
- * The tests also assert that every action button (compare, share, expand,
- * close) is reachable (visible + enabled) at each width.
+ * The width loop verifies the country name is not truncated (scrollWidth
+ * vs clientWidth on the <h2> — geometry, not wrap points) and that every
+ * action is reachable at 360/375/414px.
  */
 
 import { test, expect } from '@playwright/test'
@@ -51,7 +48,8 @@ for (const width of WIDTHS) {
       await expect(panel).toBeVisible({ timeout: 15_000 })
       await waitForAnimationIdle(panel)
 
-      // Compare button (only when not in comparePickingMode / inGameRound).
+      // Compare entry (D4: labeled chip below the grid — same accessible
+      // name as the desktop pill; hidden while picking / in-round).
       const compareBtn = page.getByRole('button', { name: 'Compare with another country' })
       await expect(compareBtn).toBeVisible()
       await expect(compareBtn).toBeEnabled()
@@ -110,5 +108,41 @@ test.describe('Sheet grabber (G1) at 390×844', () => {
       .poll(async () => (await panel.boundingBox())?.height ?? 0)
       .toBeGreaterThan(844 * 0.7)
     await expect(page.getByLabel('Collapse panel')).toHaveAttribute('aria-expanded', 'true')
+  })
+})
+
+test.describe('D4 sheet header restructure at 390×844', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+
+  test('compare is a labeled chip that enters picking mode', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA')
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toBeVisible({ timeout: 15_000 })
+    await waitForAnimationIdle(panel)
+
+    const chip = page.getByTestId('compare-entry')
+    await expect(chip).toHaveText('Compare')
+    await chip.click()
+    // The A7 picking banner appears and the chip unmounts (its gating).
+    await expect(panel.getByRole('status')).toContainText('Pick a country to compare with')
+    await expect(page.getByTestId('compare-entry')).not.toBeAttached()
+  })
+
+  test('hero stats sit inside the collapsed sheet viewport', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA')
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toBeVisible({ timeout: 15_000 })
+    await waitForAnimationIdle(panel)
+
+    // D1's hero row (Task 2 seam: data-testid="hero-stats", first block of
+    // the panel body, ungated by showSecondary) answers population/area
+    // WITHOUT expanding: its bottom edge stays inside the 844px viewport
+    // while the sheet is collapsed (40dvh → sheet top ≈ 506px, ~140px of
+    // slack). Geometry-based on purpose — robust to Linux font metrics.
+    const hero = page.getByTestId('hero-stats')
+    await expect(hero).toBeVisible()
+    const box = await hero.boundingBox()
+    expect(box).not.toBeNull()
+    expect(box!.y + box!.height).toBeLessThanOrEqual(844)
   })
 })

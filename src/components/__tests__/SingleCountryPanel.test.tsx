@@ -349,12 +349,66 @@ describe('SingleCountryPanel — labeled compare entry (C5)', () => {
     expect(btn.getAttribute('data-testid')).toBe('compare-entry')
   })
 
-  it('mobile: the entry stays icon-only (D4 owns the mobile labeled chip)', () => {
+  it('mobile: labeled chip below the grid, not in the sticky header (D4)', () => {
     const { getByRole } = renderAt(false)
     const btn = getByRole('button', { name: 'Compare with another country' })
-    expect(btn.textContent).toBe('')
-    expect(btn.className).toContain('p-2 rounded-xl')
+    expect(btn.textContent).toBe('Compare')
+    expect(btn.getAttribute('data-testid')).toBe('compare-entry')
     expect(btn.className).toContain(TOUCH_TARGET_FROM_36)
+    // Below the grid: the chip lives in the scroll body — the sticky header
+    // carries only flag/name (left) and share/expand/close (right).
+    expect(btn.closest('.sticky')).toBeNull()
+  })
+
+  it('desktop: the pill still lives in the sticky header', () => {
+    const { getByRole } = renderAt(true)
+    expect(
+      getByRole('button', { name: 'Compare with another country' }).closest('.sticky'),
+    ).not.toBeNull()
+  })
+})
+
+describe('SingleCountryPanel — mobile inline header (D4)', () => {
+  function renderMobile(props: { comparePickingMode?: boolean; inGameRound?: boolean } = {}) {
+    return render(
+      <SingleCountryPanel
+        country={makeCountry()}
+        comparePickingMode={props.comparePickingMode ?? false}
+        sources={sources}
+        isDesktop={false}
+        onSelect={() => {}}
+        onClose={() => {}}
+        onEnterCompare={() => {}}
+        onCancelCompare={() => {}}
+        byCca3={new Map()}
+        inGameRound={props.inGameRound ?? false}
+      />,
+    )
+  }
+
+  it('flag/name and the action cluster share one row — no stacked flex-col header', () => {
+    const { getByTestId } = renderMobile()
+    // country-flag's parent is the flag+name block; ITS parent is the header row.
+    const row = getByTestId('country-flag').parentElement!.parentElement!
+    expect(row.className).toContain('justify-between')
+    expect(row.className).not.toContain('flex-col')
+  })
+
+  it('the header action cluster is share + expand + close — compare moved out', () => {
+    const { getByTestId } = renderMobile()
+    const cluster = getByTestId('panel-close').parentElement!
+    const labels = Array.from(cluster.children)
+      .filter((el) => el.tagName === 'BUTTON')
+      .map((el) => el.getAttribute('aria-label'))
+    expect(labels).toEqual(['Copy link to this country', 'Expand panel', 'Close panel'])
+  })
+
+  it('no compare chip while picking or during a game round', () => {
+    const picking = renderMobile({ comparePickingMode: true })
+    expect(picking.queryByTestId('compare-entry')).toBeNull()
+    picking.unmount()
+    const inRound = renderMobile({ inGameRound: true })
+    expect(inRound.queryByTestId('compare-entry')).toBeNull()
   })
 })
 

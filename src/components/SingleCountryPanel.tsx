@@ -323,13 +323,11 @@ export function SingleCountryPanel({
             </button>
           </div>
         )}
-        <div
-          className={
-            isDesktop
-              ? 'flex flex-wrap items-start justify-between gap-x-3 gap-y-2'
-              : 'flex flex-col items-stretch gap-2'
-          }
-        >
+        {/* D4: one inline header row on every viewport — flag + name left,
+            actions right. The old mobile branch stacked a full actions row
+            (flex-col), spending a row of the 40dvh peek sheet that D1's
+            hero stats now use. */}
+        <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
           <div className="flex items-start gap-3.5 min-w-0 panel-fade-up">
             <img
               data-testid="country-flag"
@@ -366,25 +364,21 @@ export function SingleCountryPanel({
             </div>
           </div>
 
-          <div className={`flex items-center gap-1 ${isDesktop ? 'shrink-0' : 'flex-wrap'}`}>
-            {!comparePickingMode && !inGameRound && (
+          <div className="flex items-center gap-1 shrink-0">
+            {isDesktop && !comparePickingMode && !inGameRound && (
               <button
                 onClick={onEnterCompare}
                 data-testid="compare-entry"
-                // C5: desktop gets an icon + text pill (the 20px hover-title-only
-                // icon was the least discoverable control in the audit); mobile
-                // keeps the icon — D4 owns the sheet's labeled compare chip.
-                // Desktop pill box: py-2 (2·8px) + 20px icon/text-sm line = 36px,
-                // so TOUCH_TARGET_FROM_36 keeps the A13 44px coarse-pointer math
-                // honest on both branches. Text contrast (4.5:1 floor): ice-dim
-                // #0369a1 on sand-50 #fefdfb = 5.84:1; ice #7dd3fc on dark-400
-                // #161a22 = 10.4:1. aria-label preserved — it overrides content,
-                // so existing e2e locators and WCAG 2.5.3 both hold.
-                className={`${
-                  isDesktop
-                    ? 'flex items-center gap-1.5 px-3 py-2 rounded-full border border-ice-dim/30 dark:border-ice/30 text-sm font-medium'
-                    : 'p-2 rounded-xl'
-                } hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
+                // C5 desktop pill (the 20px hover-title-only icon was the
+                // least discoverable control in the audit); D4 moved the
+                // mobile entry to a labeled chip below the prime grid.
+                // Pill box: py-2 (2·8px) + 20px icon/text-sm line = 36px →
+                // TOUCH_TARGET_FROM_36 keeps the A13 44px math honest.
+                // Text contrast (4.5:1 floor): ice-dim #0369a1 on sand-50
+                // #fefdfb = 5.84:1; ice #7dd3fc on dark-400 #161a22 = 10.4:1.
+                // aria-label preserved — it overrides content, so existing
+                // e2e locators and WCAG 2.5.3 both hold.
+                className={`flex items-center gap-1.5 px-3 py-2 rounded-full border border-ice-dim/30 dark:border-ice/30 text-sm font-medium hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label="Compare with another country"
                 title="Compare"
               >
@@ -392,7 +386,7 @@ export function SingleCountryPanel({
                   <circle cx="9" cy="12" r="6" strokeWidth="1.75" />
                   <circle cx="15" cy="12" r="6" strokeWidth="1.75" />
                 </svg>
-                {isDesktop && <span>Compare</span>}
+                <span>Compare</span>
               </button>
             )}
 
@@ -518,6 +512,24 @@ export function SingleCountryPanel({
               : '\u2014'}
           </DataCell>
         </div>
+
+        {!isDesktop && !comparePickingMode && !inGameRound && (
+          <button
+            onClick={onEnterCompare}
+            data-testid="compare-entry"
+            aria-label="Compare with another country"
+            // D4: the mobile labeled compare chip (C5's scope split). Same
+            // accessible name, testid, contrast math, and A13 constant as
+            // the desktop pill \u2014 exactly one of the two renders (isDesktop).
+            className={`mt-1 inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-ice-dim/30 dark:border-ice/30 text-sm font-medium hover:bg-sand-200 dark:hover:bg-dark-300 text-ice-dim dark:text-ice transition-colors ${TOUCH_TARGET_FROM_36}`}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <circle cx="9" cy="12" r="6" strokeWidth="1.75" />
+              <circle cx="15" cy="12" r="6" strokeWidth="1.75" />
+            </svg>
+            <span>Compare</span>
+          </button>
+        )}
 
         {showSecondary && (
           <>
