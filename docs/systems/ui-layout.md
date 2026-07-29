@@ -22,17 +22,21 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 │                         │
 │                         │
 ├─────────────────────────┤
-│  [▲ expand] Country name │  ← bottom sheet (when country selected)
-│  Country Panel           │
-│  (peek: 40vh / full: 80vh)
+│  ── grabber ──           │  ← bottom sheet (when country selected)
+│  Flag Name    share  ×   │
+│  Hero stats + panel body │
+│  (peek: 40dvh / full: 80dvh)
 └─────────────────────────┘
 ```
 
 **Bottom sheet** behavior:
 
 - Appears when a country is selected
-- Two interactive states: **peek** (40% viewport height) and **full** (80% viewport height). These are starting values — adjust during implementation based on content fit and device testing.
-- Expand/collapse button (chevron) at the top toggles between states — accessible via keyboard and pointer
+- Two interactive states: **peek** (`40dvh`) and **full** (`80dvh`) — `dvh` so the sheet tracks the visual viewport as mobile browser toolbars collapse (G1)
+- Expand/collapse: a visible grabber bar at the sheet top (pointer-only, `aria-hidden` + `tabIndex={-1}`, 44px coarse-pointer hit area via `TOUCH_TARGET_FROM_20`) and the labeled chevron button (`aria-expanded`) drive the same toggle (G1). Pointer-drag with snap points is deliberately not implemented (G2, deferred to its own spec)
+- Header actions are inline (flag + name left; share, expand chevron, close right); compare is a labeled chip below the stats grid (D4)
+- The header row reclaimed by D4 goes to D1's hero stats, so the collapsed sheet answers population / area / density without expanding
+- The sheet's scroll container reserves `env(safe-area-inset-bottom)` so content clears the iOS home indicator (`viewport-fit=cover` in `index.html`)
 - Overlays the map — map remains visible above the sheet. Tapping the visible map above the bottom sheet selects or deselects a country normally. The sheet transitions to show the new country's data, or collapses if the tap hit empty space.
 - Close button to dismiss entirely
 
@@ -91,22 +95,24 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 
 - Flag (bundled SVG)
 - Country name (common + official if different)
-- Header caption: capital(s), comma-separated if a country has multiple (e.g., South Africa: Pretoria, Cape Town, Bloemfontein), carrying its own source tooltip (the region badge shares the same source)
+- Header caption: capital(s), comma-separated if a country has multiple (e.g., South Africa: Pretoria, Cape Town, Bloemfontein); a superscript exception marker follows when capital's source differs from the panel's dominant source (D2)
 - Region / Subregion badge
-- Exception badges — shown only for the two countries where they're non-default: "UN observer state" (Vatican, Palestine) and "Not independent" (Palestine). Each carries its own source tooltip. Absent for the 193 UN member states, so most panels show no badge at all.
-- Prime grid (2 columns, always visible regardless of peek/expanded state): Population (locale-formatted), Area (km²), Government type, Languages
+- Exception badges — shown only for the two countries where they're non-default: "UN observer state" (Vatican, Palestine) and "Not independent" (Palestine). A badge whose field's source differs from the panel's dominant source carries a superscript exception marker (`SourceMarker`). Absent for the 193 UN member states, so most panels show no badge at all.
+- Hero stats row (D1, `data-testid="hero-stats"`): Population and Area as compact `.text-readout` numerals ("66.4M", "544K km²"; exact locale-formatted figures live in a `sr-only` span plus the `title` attribute), each with a "#N of 195" world-rank sub-line, plus derived density (population / area) as a third stat. Ranks and density are computed once from the in-memory 195-country dataset (`src/lib/countryStats.ts`) — zero data cost.
+- Prime grid (2 columns, always visible regardless of peek/expanded state): Government type, Languages (Population and Area moved into the hero stats row with D1)
 
 **Secondary** (visible in full/expanded state):
 
 - Currencies
 - Timezones
 - Neighboring countries (clickable chips). Clicking a border chip selects that country — same as clicking it on the map. The map flies to the new country via `flyToCountry()`, the panel transitions to show its data, and the URL hash updates. Each chip click creates a new history entry, so browser Back returns to the previous country. If a border code has no match in `countries.json`, the chip is displayed but not clickable.
+- "Explore next" suggestions (`src/lib/exploreNext.ts`, D3): an inert landlocked/coastal fact chip (same styling as non-clickable border chips), up to four same-subregion countries not already in Borders (population-descending, ties by cca3 ascending), and one closest-population country (excluding self, borders, and the subregion picks; ties by cca3 ascending) with a "· similar population · 66.4M"-style suffix. The country chips are `BorderChip`s wired to the same `onSelect` as border chips — identical fly-to/hash/history semantics. Renders for every country (unlike Borders, which needs `borders.length > 0`); computed client-side from the canonical 195 set; no telemetry.
 
-**Source Attribution**: Every data field has a small 'i' icon. On desktop, hover or focus shows a tooltip with the source name and link (e.g., "Source: CIA World Factbook"). On touch devices, tapping the 'i' icon toggles the tooltip open/closed (since hover is not available). The tooltip is dismissed by tapping elsewhere. See [Data System — UI Attribution](data.md).
+**Source Attribution** (D2): One consolidated footer (`data-testid="panel-sources"`) lists the panel's linked data sources — the same scheme as compare's footer (shared `SourceLinkList` markup). Field-level granularity is preserved two ways: a superscript exception marker (`SourceMarker`, a real link in the Tab order) on any rendered field whose source differs from the panel's dominant source (single owner of the math: `src/lib/fieldSourceMarkers.ts`), and a "Source by field" disclosure button (`aria-expanded`) that expands the footer into the complete field → source table — full granularity one interaction away for every country. The per-field 'i' tooltip rings are retired. Covered by `e2e/single-source-attribution.spec.ts` (desktop-`chromium`, runs on CI). See [Data System — UI Attribution](data.md).
 
 ### Compare
 
-From an open country panel, the labeled **Compare** pill (desktop panel header; the mobile sheet's labeled chip ships with D4) puts search into "pick a country to compare" mode (placeholder "Choose country to compare…"; entered via `enterComparePicking` in `App.tsx`, available only while a country is selected). A one-time "Tip: compare two countries side by side" hint shows after the session's second distinct country selection. Choosing a second country opens `CompareCountryPanel`.
+From an open country panel, the labeled **Compare** entry (desktop: header pill; mobile: chip below the stats grid — D4) puts search into "pick a country to compare" mode (placeholder "Choose country to compare…"; entered via `enterComparePicking` in `App.tsx`, available only while a country is selected). A one-time "Tip: compare two countries side by side" hint shows after the session's second distinct country selection, on every viewport (D4 dropped C5's desktop-only gate). Choosing a second country opens `CompareCountryPanel`.
 
 One shared field-definition array (`COMPARE_FIELDS`, `src/lib/compareFields.ts`) drives the whole view, so rows always align and no field is silently dropped. Each field renders once via `CompareFieldRow`: numeric fields (population, area, derived density) as paired horizontal bars scaled to max(A, B) — bar A in `--color-signal-mid`, bar B in `--color-ice-mid` (the exact compare-B map-fill hex, matching the map highlights) — with a delta chip ("Germany 1.24× population", larger country always the subject); categorical fields collapse identical values into one centered "Both: …" row and show an em dash where a country lacks a value (bars are static — no transition — so reduced-motion needs no gating). Capitals live in the header captions (all capitals, joined); UN-membership/independence render as exception badges in the column headers, never as rows.
 
@@ -115,7 +121,7 @@ One shared field-definition array (`COMPARE_FIELDS`, `src/lib/compareFields.ts`)
 
 Camera: `flyToComparePair` frames both countries in the un-occluded area via `cameraForBounds` + `comparePanelPadding()` — desktop reserves the panel footprint as extra `right` padding (B6); mobile reserves the sheet as `bottom` padding (`innerHeight × COMPARE_SHEET_FRACTION`, C6 — which is why the sheet is `dvh`, not `vh`). The globe-scale symmetric-padding fallback is desktop-only (mobile's occlusion is vertical, not horizontal, so the guard's failure mode doesn't apply the same way). Mobile renders its compare camera at pitch 0, not `DEFAULT_PITCH`: `cameraForBounds`' globe-projection fit doesn't account for pitch, and desktop's tilt is harmless only because its occlusion is horizontal — on mobile a tilted render of a pitch-0 fit shifted the pair far enough down-screen to hide under the sheet (fixed 2026-07-29; see `flyToComparePair.ts`). **Known gap (unfixed):** wider pairs under the 110° wide-pair threshold — e.g. Brazil+Nigeria — still render below the sheet at 390px even at pitch 0; `cameraForBounds` itself produces a degenerate fit (a wildly wrong center latitude) for wide spans under this aggressive bottom-padding ratio, and it does not respond linearly to padding adjustments. Needs a dedicated fix, not a numeric tweak.
 
-Fields are not individually source-tagged; a shared footer (`data-testid="compare-sources"`) lists the comparison's data sources, and any field whose source differs from the panel's dominant source carries a superscript exception marker (definition shipped with C4; the single panel adopts it in D2). On the map, both countries are highlighted (A = signal, B = ice-mid) while every non-compared country is dimmed by the `country-dim` spotlight layer; exiting compare (Escape or the exit control) clears the second country and restores the borders (`useCompareViewHighlight.ts` + `useCountryBaselinePaint.ts`). Covered by `e2e/compare-view-dimming.spec.ts`, `e2e/compare-map-clicks.spec.ts`, and `e2e/compare-source-attribution.spec.ts` — all desktop-`chromium` only; the mobile Playwright projects contain no compare flow.
+Fields are not individually source-tagged; a shared footer (`data-testid="compare-sources"`) lists the comparison's data sources, and any field whose source differs from the panel's dominant source carries a superscript exception marker (single owner `src/lib/fieldSourceMarkers.ts`; the single panel uses the same scheme plus a field → source disclosure table — D2). On the map, both countries are highlighted (A = signal, B = ice-mid) while every non-compared country is dimmed by the `country-dim` spotlight layer; exiting compare (Escape or the exit control) clears the second country and restores the borders (`useCompareViewHighlight.ts` + `useCountryBaselinePaint.ts`). Covered by `e2e/compare-view-dimming.spec.ts`, `e2e/compare-map-clicks.spec.ts`, and `e2e/compare-source-attribution.spec.ts` — all desktop-`chromium` only; the mobile Playwright projects contain no compare flow.
 
 ## Theme System
 

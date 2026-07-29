@@ -1,35 +1,9 @@
-import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import type { CountryData, CountriesFile } from '../../lib/types'
-import type { ComponentType } from 'react'
-import {
-  makeCountry,
-  sources,
-  stubMatchMedia,
-  stubGetAnimations,
-} from './singleCountryPanelTestUtils'
-
-// Dynamically loaded after matchMedia is stubbed.
-let SingleCountryPanel: ComponentType<{
-  country: CountryData
-  comparePickingMode: boolean
-  sources: CountriesFile['_sources']
-  isDesktop: boolean
-  onSelect: (cca3: string) => void
-  onClose: () => void
-  onEnterCompare: () => void
-  onCancelCompare: () => void
-  byCca3: Map<string, CountryData>
-  inGameRound?: boolean
-}>
+import { makeCountry, sources, stubGetAnimations } from './singleCountryPanelTestUtils'
+import { SingleCountryPanel } from '../SingleCountryPanel'
 
 describe('SingleCountryPanel — focus management on mount', () => {
-  beforeAll(async () => {
-    stubMatchMedia()
-    const mod = await import('../SingleCountryPanel')
-    SingleCountryPanel = mod.SingleCountryPanel as typeof SingleCountryPanel
-  })
-
   let restore: () => void
 
   beforeEach(() => {

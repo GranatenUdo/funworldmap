@@ -91,8 +91,7 @@ export default defineConfig({
         'label-contrast.spec.ts',
         'mobile-panel-header.spec.ts',
         'compare-source-attribution.spec.ts',
-        'source-tooltip-edge.spec.ts',
-        'source-tooltip-keyboard.spec.ts',
+        'single-source-attribution.spec.ts',
         'header-play-reopens-launcher.spec.ts',
       ],
       // Specs that consistently flake on free GitHub-hosted ubuntu-latest runners
@@ -113,7 +112,6 @@ export default defineConfig({
             'search.spec.ts',
             'game-country-pinning.spec.ts',
             'theme-and-responsive.spec.ts',
-            'source-tooltip-edge.spec.ts',
           ]
         : [],
     },

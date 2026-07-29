@@ -3,7 +3,7 @@ import type { CountryData } from '../lib/types'
 /** A5: near-constant booleans render as exceptions only. Muted amber is a
  *  data encoding (like the region badge), not a chrome accent — kept
  *  through E4. inline-flex + items-center (not inline-block): the single
- *  panel's badges carry a SourceTooltip affordance and need to align it
+ *  panel's badges can carry a SourceMarker exception affordance and need to align it
  *  with the label text; the compare column headers render the badge bare
  *  (C4 keeps compare attribution consolidated in the footer — no per-field
  *  "i" rings). Canonical owner: extracted from SingleCountryPanel for C1 so

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { BorderChip } from '../BorderChip'
+import { INERT_CHIP_CLASSES } from '../chipStyles'
 import { makeCountry } from './singleCountryPanelTestUtils'
 
 describe('BorderChip', () => {
@@ -53,5 +54,23 @@ describe('BorderChip', () => {
     render(<BorderChip code="ZZZ" neighbor={undefined} onSelect={vi.fn()} size="panel" />)
     expect(screen.queryByRole('button')).toBeNull()
     expect(screen.getByText('ZZZ')).toBeTruthy()
+  })
+
+  it('renders an optional detail suffix inside the accessible name (D3)', () => {
+    render(
+      <BorderChip
+        code="THA"
+        neighbor={makeCountry({ cca3: 'THA', name: { common: 'Thailand', official: 'Thailand' } })}
+        onSelect={() => {}}
+        size="panel"
+        detail="similar population · 66M"
+      />,
+    )
+    expect(screen.getByRole('button', { name: 'Thailand · similar population · 66M' })).toBeTruthy()
+  })
+
+  it('exports the inert chip classes and uses them for unmatched codes (D3 fact-chip reuse)', () => {
+    render(<BorderChip code="ESH" neighbor={undefined} onSelect={() => {}} size="panel" />)
+    expect(screen.getByText('Western Sahara').className).toBe(INERT_CHIP_CLASSES.panel)
   })
 })

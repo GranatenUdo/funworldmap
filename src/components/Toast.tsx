@@ -24,7 +24,7 @@ export default function Toast() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-full bg-dark-400/90 backdrop-blur-sm border border-ice/30 text-ice text-sm shadow-lg"
+      className="fixed bottom-[calc(env(safe-area-inset-bottom)+2rem)] left-1/2 -translate-x-1/2 z-[300] px-5 py-2.5 rounded-full bg-dark-400/90 backdrop-blur-sm border border-ice/30 text-ice text-sm shadow-lg"
       style={{ animation: 'fade-up 200ms ease-out' }}
     >
       {message}

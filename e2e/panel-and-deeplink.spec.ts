@@ -56,6 +56,23 @@ test.describe('Country Panel', () => {
     await expect(panel).toContainText('semi-presidential republic')
   })
 
+  test('explore-next suggests non-border countries and one chip click navigates', async ({
+    page,
+  }) => {
+    const panel = await openPanel(page, 'FRA', 'France')
+    const explore = panel.getByTestId('explore-next')
+    // France is coastal; the fact chip is inert (a span, not a button).
+    await expect(explore.getByTestId('explore-fact-chip')).toHaveText('Coastal')
+    // Netherlands is a Western-Europe peer that is NOT a France border —
+    // exactly what distinguishes Explore next from the Borders block above it.
+    // Deterministic from real data: NLD/LIE are the only such canonical peers.
+    await explore.getByRole('button', { name: 'Netherlands' }).click()
+    await expect
+      .poll(() => page.evaluate(() => window.location.hash), { timeout: 10_000 })
+      .toBe('#NLD')
+    await expect(panel).toContainText('Netherlands')
+  })
+
   // Dropped: "search → select → panel opens → close → panel gone"
   // End-to-end composition test that overlapped with atomic coverage in
   // search.spec.ts (search + select) and the close-button test above.
@@ -75,8 +92,9 @@ test.describe('Bottom sheet on mobile', () => {
   test('expand button shows secondary fields on mobile', async ({ page }) => {
     const panel = await openPanel(page, 'JPN', 'Japan')
     // Peek state: secondary fields (Currencies, Timezones) only render once
-    // showSecondary is true. Currencies is the sentinel — the prime grid
-    // (Population, Area, Government, Languages) is always visible after A4+A5.
+    // showSecondary is true. Currencies is the sentinel — the D1 hero row
+    // (Population, Area, Density) and prime grid (Government, Languages)
+    // are always visible.
     await expect(panel.getByText('Currencies')).toBeHidden()
     await page.getByLabel('Expand panel').click()
     await expect(panel.getByText('Currencies')).toBeVisible({ timeout: 10_000 })

@@ -44,12 +44,13 @@ export function hintCopy(hint: OnboardingHint, finePointer: boolean): string {
  *   game is active.
  * - 'game': immediately after the user closes their first country panel.
  *   Starting a game marks it moot without showing it.
- * - 'compare' (C5): on the user's second DISTINCT country selection of the
- *   session (in-memory count — a "session" is one page lifetime), only while
- *   a country panel is open, never during games, and only on desktop where
- *   the labeled Compare pill exists (D4 owns the mobile chip and revisits
- *   the gate — the localStorage gate is deliberately NOT burned on mobile).
- *   Entering compare before the tip ever showed marks it moot.
+ * - 'compare' (C5, mobile-enabled by D4): on the user's second DISTINCT
+ *   country selection of the session (in-memory count — a "session" is one
+ *   page lifetime), only while a country panel is open, never during games.
+ *   Fires on every viewport: D4 shipped the mobile labeled compare chip,
+ *   so the C5-era desktop-only gate is gone — its localStorage gate was
+ *   deliberately left unburned on mobile for exactly this. Entering
+ *   compare before the tip ever showed marks it moot.
  *
  * Visibility contract per kind: explore/game live only while nothing is
  * selected; compare lives only while a panel is open. Games and entering
@@ -70,13 +71,11 @@ export function useFirstVisitHint({
   selectedCca3,
   gameActive,
   compareActive,
-  isDesktop,
 }: {
   mapReady: boolean
   selectedCca3: string | null
   gameActive: boolean
   compareActive: boolean
-  isDesktop: boolean
 }): { hint: OnboardingHint | null } {
   const [hint, setHint] = useState<OnboardingHint | null>(null)
   const [dismissed, setDismissed] = useState(false)
@@ -107,12 +106,12 @@ export function useFirstVisitHint({
     }
   }, [hasSelection, gameActive, compareActive, hint])
 
-  // Compare tip (C5). hasSelection is true on the render that adds the
-  // second cca3, so the tip only ever fires while a panel is open.
+  // Compare tip (C5, mobile-enabled by D4). hasSelection is true on the
+  // render that adds the second cca3, so the tip only ever fires while a
+  // panel is open.
   useEffect(() => {
     if (gameActive || selectedCca3 === null) return
     distinctSelectionsRef.current.add(selectedCca3)
-    if (!isDesktop) return
     if (compareActive) {
       // The user already found compare on their own — never nag them.
       markShown(COMPARE_HINT_KEY)
@@ -122,7 +121,7 @@ export function useFirstVisitHint({
     if (wasShown(COMPARE_HINT_KEY)) return
     setHint('compare')
     markShown(COMPARE_HINT_KEY)
-  }, [selectedCca3, gameActive, compareActive, isDesktop])
+  }, [selectedCca3, gameActive, compareActive])
 
   // Game hint: fires on the selected → deselected transition (a panel close).
   // Any game session marks it moot instead — including App's automatic

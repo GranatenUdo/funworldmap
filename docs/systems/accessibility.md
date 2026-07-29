@@ -52,36 +52,34 @@ Two skip links at the top of the page, visible only on focus:
 
 ### Panel Keyboard Controls
 
-| Key    | Action                                                                           |
-| ------ | -------------------------------------------------------------------------------- |
-| Escape | Close panel                                                                      |
-| Tab    | Cycle through interactive elements (close button, expand/collapse, border chips) |
-| Enter  | Activate focused element (e.g., navigate to border country)                      |
+| Key    | Action                                                                                                            |
+| ------ | ----------------------------------------------------------------------------------------------------------------- |
+| Escape | Close panel                                                                                                       |
+| Tab    | Cycle through interactive elements (close button, expand/collapse, sources footer, border and explore-next chips) |
+| Enter  | Activate focused element (e.g., navigate to border country)                                                       |
 
-Source 'i' buttons are intentionally outside the Tab order (`tabIndex=-1`) so blur-out closes them cleanly; they open on hover, click/tap, or programmatic focus — a deliberate trade-off (see the comment in `SourceTooltip.tsx`).
-
-The compare panel's exception source markers (C4, `SourceMarker.tsx`) are ordinary links in the Tab order, each labelled `Source: <name>` — unlike the single-panel 'i' buttons above, they are fully keyboard-reachable. D2 extends this scheme to the single panel.
+All attribution affordances are in the Tab order (D2 retired the hover-only `tabIndex=-1` 'i' buttons and the documented trade-off they carried): the sources footers' links, the single panel's "Source by field" disclosure button (`aria-expanded`, `aria-controls` while expanded), and the superscript exception markers (`SourceMarker.tsx`) — ordinary links labelled `Source: <name>`.
 
 ### Bottom Sheet (Mobile)
 
-| Key                              | Action                                            |
-| -------------------------------- | ------------------------------------------------- |
-| Enter / Space (on expand button) | Toggle between peek (40vh) and full (80vh) states |
-| Escape                           | Close sheet entirely                              |
+| Key                              | Action                                                                                                                                                                               |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Enter / Space (on expand button) | Toggle between peek (40dvh) and full (80dvh) states — the chevron exposes `aria-expanded`; the visible grabber bar is a pointer-only duplicate (`aria-hidden`, out of the tab order) |
+| Escape                           | Close sheet entirely                                                                                                                                                                 |
 
 ## Screen Reader Support
 
 ### ARIA Roles and Labels
 
-| Element        | Role                   | Label                                                                                                                                              |
-| -------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Map container  | `role="application"`   | `aria-label`: "Interactive world map", `aria-description`: "Pan with arrow keys, zoom with plus/minus, reset view with Home, deselect with Escape" |
-| Search input   | `role="combobox"`      | "Search countries..." (accessible name from the placeholder)                                                                                       |
-| Search results | `role="listbox"`       | (controlled by combobox)                                                                                                                           |
-| Each result    | `role="option"`        | Country name                                                                                                                                       |
-| Country panel  | `role="complementary"` | "Country information"                                                                                                                              |
-| Theme toggle   | `<button>`             | "Switch to dark mode" / "Switch to system theme" / "Switch to light mode"                                                                          |
-| Source tooltip | `role="tooltip"`       | Source name and URL                                                                                                                                |
+| Element        | Role                     | Label                                                                                                                                              |
+| -------------- | ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Map container  | `role="application"`     | `aria-label`: "Interactive world map", `aria-description`: "Pan with arrow keys, zoom with plus/minus, reset view with Home, deselect with Escape" |
+| Search input   | `role="combobox"`        | "Search countries..." (accessible name from the placeholder)                                                                                       |
+| Search results | `role="listbox"`         | (controlled by combobox)                                                                                                                           |
+| Each result    | `role="option"`          | Country name                                                                                                                                       |
+| Country panel  | `role="complementary"`   | "Country information"                                                                                                                              |
+| Theme toggle   | `<button>`               | "Switch to dark mode" / "Switch to system theme" / "Switch to light mode"                                                                          |
+| Sources footer | `<button aria-expanded>` | "Source by field" — expands to the field → source table                                                                                            |
 
 **Note on `role="application"`**: This role tells screen readers to pass all keystrokes to the page instead of intercepting them for screen reader navigation (H for heading, L for list, etc.). This is intentional — arrow keys pan the map, +/- zoom. The label explicitly tells screen reader users to use search for country selection. When the user tabs out of the map container, normal screen reader navigation resumes.
 

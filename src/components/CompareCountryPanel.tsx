@@ -9,6 +9,7 @@ import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstan
 import type { CompareColumn } from '../lib/compareMapClick'
 import { computeFieldSourceMarkers } from '../lib/fieldSourceMarkers'
 import { SourceMarker } from './SourceMarker'
+import { SourceLinkList } from './SourceLinkList'
 
 interface Props {
   country: CountryData
@@ -60,7 +61,16 @@ export function CompareCountryPanel({
 
   const panelClasses = isDesktop
     ? 'fixed right-4 top-16 bottom-4 w-[656px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 rounded-2xl border border-sand-200/50 dark:border-dark-200/20 overflow-hidden'
-    : 'fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-2xl h-[80dvh] overflow-hidden'
+    : // The sources footer is a fixed flex item OUTSIDE the scrollable
+      // middle region (unlike SingleCountryPanel, where the panel root IS
+      // the scroll container and the sources block scrolls with everything
+      // else) — it always renders flush against this sheet's bottom edge.
+      // pb-[env(safe-area-inset-bottom)] on this fixed h-[80dvh] box (not
+      // on the inner `compare-mobile-scroll` div, whose own padding never
+      // reaches the footer) shrinks the flex column's content height so the
+      // footer clears the home indicator on notched iPhones, mirroring the
+      // G1 treatment at the element that actually owns the bottom edge here.
+      'fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-2xl h-[80dvh] overflow-hidden pb-[env(safe-area-inset-bottom)]'
 
   return (
     <div
@@ -240,27 +250,7 @@ export function CompareCountryPanel({
           className="px-4 py-3 border-t border-sand-200/50 dark:border-dark-200/30 text-xs text-sand-600 dark:text-dark-100"
           data-testid="compare-sources"
         >
-          <span className="uppercase tracking-wider text-ice-accessible dark:text-ice font-medium">
-            Sources:
-          </span>{' '}
-          {Object.entries(sources).map(([key, s], i) => (
-            <span key={key}>
-              {i > 0 && ' · '}
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-ice-accessible dark:text-ice hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60 rounded"
-              >
-                {/* C4 marker key: the glyph precedes the exception source's name
-                    so row superscripts resolve here. Dominant source: no glyph. */}
-                {fieldMarkers.markerBySource.has(key) && (
-                  <sup className="mr-0.5">{fieldMarkers.markerBySource.get(key)}</sup>
-                )}
-                {s.name}
-              </a>
-            </span>
-          ))}
+          <SourceLinkList sources={sources} markerBySource={fieldMarkers.markerBySource} />
         </footer>
       </div>
     </div>

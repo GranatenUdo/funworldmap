@@ -7,7 +7,6 @@ interface HintArgs {
   selectedCca3: string | null
   gameActive: boolean
   compareActive: boolean
-  isDesktop: boolean
 }
 
 const args = (o: Partial<HintArgs> = {}): HintArgs => ({
@@ -15,7 +14,6 @@ const args = (o: Partial<HintArgs> = {}): HintArgs => ({
   selectedCca3: null,
   gameActive: false,
   compareActive: false,
-  isDesktop: true,
   ...o,
 })
 
@@ -179,22 +177,16 @@ describe('useFirstVisitHint', () => {
       expect(result.current.hint).toBe('compare')
     })
 
-    it('desktop-only (C5 scope) — and the gate is NOT burned on mobile, so D4 can revisit', () => {
+    it('viewport-independent since D4 — the hook takes no isDesktop and the chip exists on mobile', () => {
+      // The C5-era desktop gate is gone: the same second-distinct-selection
+      // rule fires everywhere. (C5 deliberately left the localStorage gate
+      // unburned on mobile so this flip costs returning users nothing.)
       const { result, rerender } = renderHook((p) => useFirstVisitHint(p), {
-        initialProps: args({ isDesktop: false, selectedCca3: 'FRA' }),
+        initialProps: args({ selectedCca3: 'FRA' }),
       })
-      rerender(args({ isDesktop: false, selectedCca3: 'DEU' }))
-      expect(result.current.hint).toBe(null)
-      expect(localStorage.getItem('funworldmap-hint-compare-shown')).toBe(null)
-    })
-
-    it('entering compare on mobile does NOT burn the gate — D4 can revisit later', () => {
-      const { result, rerender } = renderHook((p) => useFirstVisitHint(p), {
-        initialProps: args({ isDesktop: false, selectedCca3: 'FRA' }),
-      })
-      rerender(args({ isDesktop: false, selectedCca3: 'FRA', compareActive: true }))
-      expect(result.current.hint).toBe(null)
-      expect(localStorage.getItem('funworldmap-hint-compare-shown')).toBe(null)
+      rerender(args({ selectedCca3: 'DEU' }))
+      expect(result.current.hint).toBe('compare')
+      expect(localStorage.getItem('funworldmap-hint-compare-shown')).toBe('1')
     })
 
     it('entering compare before the tip ever showed marks it moot', () => {

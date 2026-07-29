@@ -35,7 +35,7 @@ export default function Header({
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 pointer-events-none">
-      <div className="flex items-center justify-between px-4 py-3">
+      <div className="flex items-center justify-between px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)]">
         <div className="pointer-events-auto hidden lg:flex items-baseline mr-4 shrink-0">
           <span
             data-testid="header-wordmark"
