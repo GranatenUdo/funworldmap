@@ -1,5 +1,6 @@
 import countriesFile from '../data/countries.json'
 import { CANONICAL_CCA3 } from './canonicalCountries'
+import { byValueDescThenCca3 } from './countryStats'
 import type { CountriesFile, CountryData } from './types'
 
 /** Properties carried by each country-label point feature (workstream B1). */
@@ -36,9 +37,9 @@ export function buildCountryLabelFeatures(
   countries: readonly CountryLabelSource[],
 ): CountryLabelCollection {
   const canonical = countries.filter((c) => CANONICAL_CCA3.has(c.cca3))
-  // Descending area; cca3 tiebreak keeps ranks deterministic should a future
-  // data refresh introduce an exact-area tie (none exist today).
-  const byAreaDesc = [...canonical].sort((a, b) => b.area - a.area || a.cca3.localeCompare(b.cca3))
+  // Descending area, cca3 tiebreak — the shared dense-ranking rule, owned by
+  // countryStats.ts (D1 extracted it; this module adopted the single owner).
+  const byAreaDesc = [...canonical].sort(byValueDescThenCca3((c) => c.area))
   return {
     type: 'FeatureCollection',
     features: byAreaDesc.map((c, i) => ({
