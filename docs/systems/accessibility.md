@@ -52,11 +52,11 @@ Two skip links at the top of the page, visible only on focus:
 
 ### Panel Keyboard Controls
 
-| Key    | Action                                                                           |
-| ------ | -------------------------------------------------------------------------------- |
-| Escape | Close panel                                                                      |
-| Tab    | Cycle through interactive elements (close button, expand/collapse, border chips) |
-| Enter  | Activate focused element (e.g., navigate to border country)                      |
+| Key    | Action                                                                                                            |
+| ------ | ----------------------------------------------------------------------------------------------------------------- |
+| Escape | Close panel                                                                                                       |
+| Tab    | Cycle through interactive elements (close button, expand/collapse, sources footer, border and explore-next chips) |
+| Enter  | Activate focused element (e.g., navigate to border country)                                                       |
 
 All attribution affordances are in the Tab order (D2 retired the hover-only `tabIndex=-1` 'i' buttons and the documented trade-off they carried): the sources footers' links, the single panel's "Source by field" disclosure button (`aria-expanded`, `aria-controls` while expanded), and the superscript exception markers (`SourceMarker.tsx`) — ordinary links labelled `Source: <name>`.
 

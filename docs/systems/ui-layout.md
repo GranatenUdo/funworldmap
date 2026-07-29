@@ -22,8 +22,9 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 │                         │
 │                         │
 ├─────────────────────────┤
-│  [▲ expand] Country name │  ← bottom sheet (when country selected)
-│  Country Panel           │
+│  ── grabber ──           │  ← bottom sheet (when country selected)
+│  Flag Name    share  ×   │
+│  Hero stats + panel body │
 │  (peek: 40dvh / full: 80dvh)
 └─────────────────────────┘
 ```
@@ -32,8 +33,9 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 
 - Appears when a country is selected
 - Two interactive states: **peek** (`40dvh`) and **full** (`80dvh`) — `dvh` so the sheet tracks the visual viewport as mobile browser toolbars collapse (G1)
-- Expand/collapse: a visible grabber bar at the sheet top (pointer-only, `aria-hidden` + `tabIndex={-1}`, 44px coarse-pointer hit area via `TOUCH_TARGET_FROM_20`) and the labeled chevron button (`aria-expanded`) drive the same toggle (G1)
+- Expand/collapse: a visible grabber bar at the sheet top (pointer-only, `aria-hidden` + `tabIndex={-1}`, 44px coarse-pointer hit area via `TOUCH_TARGET_FROM_20`) and the labeled chevron button (`aria-expanded`) drive the same toggle (G1). Pointer-drag with snap points is deliberately not implemented (G2, deferred to its own spec)
 - Header actions are inline (flag + name left; share, expand chevron, close right); compare is a labeled chip below the stats grid (D4)
+- The header row reclaimed by D4 goes to D1's hero stats, so the collapsed sheet answers population / area / density without expanding
 - The sheet's scroll container reserves `env(safe-area-inset-bottom)` so content clears the iOS home indicator (`viewport-fit=cover` in `index.html`)
 - Overlays the map — map remains visible above the sheet. Tapping the visible map above the bottom sheet selects or deselects a country normally. The sheet transitions to show the new country's data, or collapses if the tap hit empty space.
 - Close button to dismiss entirely
@@ -96,7 +98,8 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 - Header caption: capital(s), comma-separated if a country has multiple (e.g., South Africa: Pretoria, Cape Town, Bloemfontein); a superscript exception marker follows when capital's source differs from the panel's dominant source (D2)
 - Region / Subregion badge
 - Exception badges — shown only for the two countries where they're non-default: "UN observer state" (Vatican, Palestine) and "Not independent" (Palestine). A badge whose field's source differs from the panel's dominant source carries a superscript exception marker (`SourceMarker`). Absent for the 193 UN member states, so most panels show no badge at all.
-- Prime grid (2 columns, always visible regardless of peek/expanded state): Population (locale-formatted), Area (km²), Government type, Languages
+- Hero stats row (D1, `data-testid="hero-stats"`): Population and Area as compact `.text-readout` numerals ("66.4M", "544K km²"; exact locale-formatted figures live in a `sr-only` span plus the `title` attribute), each with a "#N of 195" world-rank sub-line, plus derived density (population / area) as a third stat. Ranks and density are computed once from the in-memory 195-country dataset (`src/lib/countryStats.ts`) — zero data cost.
+- Prime grid (2 columns, always visible regardless of peek/expanded state): Government type, Languages (Population and Area moved into the hero stats row with D1)
 
 **Secondary** (visible in full/expanded state):
 

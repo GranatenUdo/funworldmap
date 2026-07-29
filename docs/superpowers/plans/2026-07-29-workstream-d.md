@@ -3524,3 +3524,104 @@ The collapsed 40dvh sheet currently spends a full stacked row (`flex flex-col it
 
 - [ ] **Step 16 — commit.**
   `git add docs/systems/ui-layout.md docs/systems/accessibility.md docs/systems/data.md docs/systems/testing.md docs/superpowers/plans/2026-07-29-workstream-d.md && git commit -m "docs(panel): ui-layout/accessibility/data to shipped D state + workstream D completion ledger" -m "Verification sweep: npm run check green (full vitest run); CI-covered e2e (panel-and-deeplink, mobile-panel-header, a11y-contrast, a11y-keyboard-smoke, compare-source-attribution, compare-view-dimming, compare-map-clicks) and local-only e2e (panel-focus, accessibility, axe-snapshot, theme-and-responsive, search) green at --workers=2; mobile-project runs green; scripted both-theme desktop+390px live pass with screenshots reviewed; no new telemetry (grep-verified); #136 quarantine unchanged." -m "Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"`
+
+---
+
+## Completion ledger (Task 7, post-verification)
+
+**Results (2026-07-29):** `npm run check` green — lint clean (1 pre-existing warning, unrelated:
+`BorderChip.tsx` react-refresh/only-export-components), `tsc -b` clean, `vitest run` **78 test
+files / 626 tests**, all green. CI-covered e2e (`panel-and-deeplink`, `mobile-panel-header`,
+`a11y-contrast`, `a11y-keyboard-smoke`, `compare-source-attribution`, `compare-view-dimming`,
+`compare-map-clicks`) — **66 tests green** at `--project=chromium --workers=2`, including the
+#136 quarantine test (CI-conditional, so it ran for real locally and passed). Local-only e2e
+(`panel-focus`, `accessibility`, `axe-snapshot`, `theme-and-responsive`, `search`) — **30 tests
+green** at `--workers=2`. Mobile-project runs (`mobile-smoke`, `mobile-tap` ×
+mobile-chromium/mobile-webkit/desktop-firefox-touch) — **9 tests green**. No new telemetry
+(`git diff main...HEAD -- src cloudflare-worker | grep -E 'track\(|KNOWN_EVENTS'` empty).
+Pre-flight hygiene: no orphaned `playwright.config.ts` entries; `grep -rn "SourceTooltip" src/
+e2e/` returns only 3 comment references documenting the D2 retirement (no live imports, no
+`SourceTooltip.tsx`/`FieldLabel.tsx` files, `@floating-ui/react` absent from `package.json`) —
+the retirement is real, not just renamed.
+
+Scripted live pass (`.superpowers/sdd/2026-07-29-workstream-d/live-pass/live-pass.ts`, run
+against `npm run dev`): **all 17 scripted checks green**, 13 screenshots produced and reviewed
+by eye across both themes × desktop (1440×900) + mobile (390×844): hero stats + "#N of 195"
+ranks (D1), the Government field's superscript exception marker and the "Source by field"
+disclosure expanding into the full table (D2), explore-next chip navigation to a different
+country's panel (D3), the inline mobile header with grabber + labeled Compare chip + hero stats
+above the fold (D4/G1), the `env(safe-area-inset-bottom)` padding, the single-scroll mobile
+compare sheet, and — the item this task specifically re-verified — the mobile compare tip
+(8cf6ad2's fix) rendering fully un-clipped at 390px, not occluded by the sheet.
+
+- **Mobile compare tip — ENABLED with D4:** confirmed via `grep -n "isDesktop"
+  src/hooks/useFirstVisitHint.ts` (zero hits — the `!isDesktop` gate was fully removed, not just
+  relaxed) and live-verified: the tip shows once on the session's second distinct mobile
+  selection, un-clipped, per 8cf6ad2.
+
+**One script-level issue was found during the live pass — not a product bug, recorded for
+honesty:** the D3 explore-next check waited only for `location.hash` to change before
+screenshotting; the panel-swap + camera `flyTo` commit slightly later, so the first run's
+`panel-explore-next-desktop-dark` screenshot captured France's panel a beat after the hash had
+already moved to Thailand's. The equivalent real e2e coverage
+(`panel-and-deeplink.spec.ts`'s "explore-next suggests non-border countries and one chip click
+navigates") was green throughout and never exhibited this — it asserts via auto-retrying
+`expect(...).toContainText`, not a single hash check. Fixed in the script itself: it now also
+waits for the panel `<h2>` to leave "France" before treating navigation as settled. Re-run
+confirmed both themes' screenshots show Thailand's panel. No source-code change was needed.
+
+**Overflow adjudication (requested measurement, desktop sidebar `data-testid="country-panel"`,
+`scrollHeight` vs `clientHeight`):**
+
+| Viewport  | clientHeight | FRA scrollHeight (overflow) | USA (overflow)     | VAT (overflow)      | CHN, 16 borders (overflow) |
+| --------- | ------------ | ---------------------------- | ------------------- | -------------------- | --------------------------- |
+| 1280×720  | 638px        | 809px (**+171px**)           | 729px (**+91px**)   | 818px (**+180px**)   | 945px (**+307px**)          |
+| 1440×900  | 818px        | 818px (**0px**)              | 818px (**0px**)     | 818px (**0px**)      | 945px (**+127px**)          |
+
+At 1280×720 (still a common laptop resolution) every tested country overflows the panel —
+scrolling is the norm, not the exception, at this size. At 1440×900 the three baseline countries
+(France, USA, Vatican — chosen to span "typical", "long field values", "minimal data") fit with
+**exactly zero slack** (`scrollHeight === clientHeight` to the pixel — the panel's bottom content
+and the box bottom coincide, not a comfortable margin), and a country with an above-average
+border count (China, 16 land borders — the dataset maximum) still overflows by 127px even at
+1440×900. Adjudication: the panel is **not comfortably non-scrolling** at either common desktop
+size for realistic content — 1280×720 requires scrolling universally, and 1440×900 only avoids
+it by having zero headroom, which already breaks for above-median-border countries. This is a
+pre-existing characteristic of the fixed `top-16 bottom-4` sidebar height (not something this
+tranche changed — D1's hero row and D3's explore-next block both render inside the existing
+scrollable container, and the container's `overflow-y-auto` handles it correctly), not a
+regression, but worth a dedicated design owner if "no-scroll on common desktop sizes" is ever a
+goal.
+
+Intentionally NOT shipped — each has a named owner:
+
+- **Log-scale position bars under panel stats** — stays deferred per the spec's Non-goals
+  ("rank text answers the scale question; revisit only if hero stats prove insufficient").
+- **G2 sheet pointer-drag / snap gestures** — deferred to a follow-up spec per Non-goals
+  (grabber + safe-area first; gestures are the riskiest e2e surface in this program).
+- **G3 (camera compensates for sheet state) and G4 (mobile header consolidation)** →
+  G-remainder tranche (spec sequencing item 9; G4 sequenced with E7).
+- **Brazil+Nigeria mobile compare framing gap** — pre-existing, recorded in workstream C's
+  ledger; unchanged by this tranche and still needs a dedicated owner.
+- **#136 quarantine** (`compare-view-dimming.spec.ts` CI-only `test.fixme`) — stays; this
+  tranche ran the test green locally and did not address the CI-only click stall.
+- **Telemetry** — this workstream ships no new `track()` events (verified:
+  `git diff main...HEAD -- src cloudflare-worker | grep -E 'track\(|KNOWN_EVENTS'` is empty).
+  No `KNOWN_EVENTS`, `docs/systems/analytics.md`, or wrangler-deploy changes.
+- **CLAUDE.md spec-count staleness** — CLAUDE.md says "13 of 38 specs are local-only";
+  `docs/systems/testing.md` carries the correct current numbers (12 of 39 — confirmed unchanged
+  by this tranche: Tasks 1–6's only spec-file churn was Task 3's D2 commit, already reflected).
+  Pre-existing; flagged for a separate CLAUDE.md maintenance pass, not edited in this tranche.
+- **Desktop panel overflow at common resolutions** — see the adjudication table above; not
+  filed against any D-series task, needs a dedicated owner if it becomes a goal.
+
+Docs brought to shipped state: `docs/systems/data.md` and `docs/systems/testing.md` needed **no
+edits** — both were already correct (data.md's § UI Attribution and testing.md's spec counts
+were updated in Task 3's D2 commit, verified against the current 39-spec/12-local-only reality).
+`docs/systems/ui-layout.md` and `docs/systems/accessibility.md` needed only the small remaining
+edits this task's uncommitted diff already contained (the mobile diagram, the
+grabber/G2/header-reclaim bullets, and the Tab-order row) — verified line-by-line against the
+shipped `SingleCountryPanel.tsx` and `useFirstVisitHint.ts` before committing; no wording needed
+correction. `docs/systems/map-rendering.md` stays untouched (`git diff main...HEAD --name-only |
+grep -iE 'map|camera|paint'` matches only `docs/roadmap.md`'s prose — a "map" substring inside
+`waitForMapLoaded`/`BASEMAP_LOAD_TIMEOUT_MS`, not a source-code change — no source file matched).
