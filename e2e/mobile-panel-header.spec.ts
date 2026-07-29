@@ -145,4 +145,50 @@ test.describe('D4 sheet header restructure at 390×844', () => {
     expect(box).not.toBeNull()
     expect(box!.y + box!.height).toBeLessThanOrEqual(844)
   })
+
+  // Regression test (Task 7 live-pass finding): the compare tip (C5,
+  // mobile-enabled by D4/Task 6) fires while a country panel is open — on
+  // mobile the panel is a full-width `bottom-0` sheet that spatially
+  // overlaps the tip's fixed bottom-center position. Before the App.tsx
+  // z-[300] fix (matching Toast.tsx's precedent for this exact bottom-pill
+  // pattern), the tip was fully occluded by the panel: attached, visible
+  // per Playwright's CSS-only definition, but not the topmost element at
+  // its own coordinates. elementFromPoint is the honest visibility check.
+  test('the mobile compare tip is not occluded by the panel it renders over', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA')
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toBeVisible({ timeout: 15_000 })
+    await waitForAnimationIdle(panel)
+
+    // Second distinct selection of the session — the compare tip's trigger.
+    await page.evaluate(() => {
+      window.location.hash = '#DEU'
+    })
+    await expect(panel).toContainText('Germany')
+
+    const tip = page.getByTestId('onboarding-hint')
+    await expect(tip).toBeVisible()
+    await expect(tip).toHaveText('Tip: compare two countries side by side')
+
+    // elementFromPoint is the honest visual-stacking check, but the tip is
+    // deliberately `pointer-events-none` (it "can never intercept clicks" —
+    // see the App.tsx comment), and elementFromPoint's hit-test skips
+    // pointer-events:none elements regardless of z-index/paint order. That's
+    // correct for interaction but would make this assertion pass or fail on
+    // the wrong signal. pointer-events doesn't affect painting, so
+    // temporarily neutralizing it just for the hit-test reveals the true
+    // paint order without altering production behavior (restored after).
+    const isTopmostAtOwnCenter = await tip.evaluate((el) => {
+      const original = el.style.pointerEvents
+      el.style.pointerEvents = 'auto'
+      const r = el.getBoundingClientRect()
+      const topEl = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)
+      el.style.pointerEvents = original
+      return el === topEl || el.contains(topEl)
+    })
+    expect(
+      isTopmostAtOwnCenter,
+      'compare tip is occluded by another element (likely the panel) at its own coordinates',
+    ).toBe(true)
+  })
 })
