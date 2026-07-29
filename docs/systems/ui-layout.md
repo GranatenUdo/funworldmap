@@ -33,6 +33,7 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 - Appears when a country is selected
 - Two interactive states: **peek** (`40dvh`) and **full** (`80dvh`) — `dvh` so the sheet tracks the visual viewport as mobile browser toolbars collapse (G1)
 - Expand/collapse: a visible grabber bar at the sheet top (pointer-only, `aria-hidden` + `tabIndex={-1}`, 44px coarse-pointer hit area via `TOUCH_TARGET_FROM_20`) and the labeled chevron button (`aria-expanded`) drive the same toggle (G1)
+- Header actions are inline (flag + name left; share, expand chevron, close right); compare is a labeled chip below the stats grid (D4)
 - The sheet's scroll container reserves `env(safe-area-inset-bottom)` so content clears the iOS home indicator (`viewport-fit=cover` in `index.html`)
 - Overlays the map — map remains visible above the sheet. Tapping the visible map above the bottom sheet selects or deselects a country normally. The sheet transitions to show the new country's data, or collapses if the tap hit empty space.
 - Close button to dismiss entirely
@@ -108,7 +109,7 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 
 ### Compare
 
-From an open country panel, the labeled **Compare** pill (desktop panel header; the mobile sheet's labeled chip ships with D4) puts search into "pick a country to compare" mode (placeholder "Choose country to compare…"; entered via `enterComparePicking` in `App.tsx`, available only while a country is selected). A one-time "Tip: compare two countries side by side" hint shows after the session's second distinct country selection. Choosing a second country opens `CompareCountryPanel`.
+From an open country panel, the labeled **Compare** entry (desktop: header pill; mobile: chip below the stats grid — D4) puts search into "pick a country to compare" mode (placeholder "Choose country to compare…"; entered via `enterComparePicking` in `App.tsx`, available only while a country is selected). A one-time "Tip: compare two countries side by side" hint shows after the session's second distinct country selection, on every viewport (D4 dropped C5's desktop-only gate). Choosing a second country opens `CompareCountryPanel`.
 
 One shared field-definition array (`COMPARE_FIELDS`, `src/lib/compareFields.ts`) drives the whole view, so rows always align and no field is silently dropped. Each field renders once via `CompareFieldRow`: numeric fields (population, area, derived density) as paired horizontal bars scaled to max(A, B) — bar A in `--color-signal-mid`, bar B in `--color-ice-mid` (the exact compare-B map-fill hex, matching the map highlights) — with a delta chip ("Germany 1.24× population", larger country always the subject); categorical fields collapse identical values into one centered "Both: …" row and show an em dash where a country lacks a value (bars are static — no transition — so reduced-motion needs no gating). Capitals live in the header captions (all capitals, joined); UN-membership/independence render as exception badges in the column headers, never as rows.
 

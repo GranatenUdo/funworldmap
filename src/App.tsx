@@ -121,7 +121,6 @@ function AppInner({
     selectedCca3: selected?.cca3 ?? null,
     gameActive: session.status !== 'idle',
     compareActive: !!compareWith || comparePickingMode,
-    isDesktop,
   })
 
   const enterComparePicking = useCallback(() => {
