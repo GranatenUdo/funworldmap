@@ -181,7 +181,7 @@ export function SingleCountryPanel({
         <div
           className={
             isDesktop
-              ? 'flex items-start justify-between gap-3'
+              ? 'flex flex-wrap items-start justify-between gap-x-3 gap-y-2'
               : 'flex flex-col items-stretch gap-2'
           }
         >
