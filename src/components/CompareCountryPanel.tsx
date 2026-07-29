@@ -61,7 +61,16 @@ export function CompareCountryPanel({
 
   const panelClasses = isDesktop
     ? 'fixed right-4 top-16 bottom-4 w-[656px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 rounded-2xl border border-sand-200/50 dark:border-dark-200/20 overflow-hidden'
-    : 'fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-2xl h-[80dvh] overflow-hidden'
+    : // The sources footer is a fixed flex item OUTSIDE the scrollable
+      // middle region (unlike SingleCountryPanel, where the panel root IS
+      // the scroll container and the sources block scrolls with everything
+      // else) — it always renders flush against this sheet's bottom edge.
+      // pb-[env(safe-area-inset-bottom)] on this fixed h-[80dvh] box (not
+      // on the inner `compare-mobile-scroll` div, whose own padding never
+      // reaches the footer) shrinks the flex column's content height so the
+      // footer clears the home indicator on notched iPhones, mirroring the
+      // G1 treatment at the element that actually owns the bottom edge here.
+      'fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 rounded-t-2xl h-[80dvh] overflow-hidden pb-[env(safe-area-inset-bottom)]'
 
   return (
     <div

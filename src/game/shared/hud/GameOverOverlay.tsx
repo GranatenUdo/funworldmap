@@ -51,7 +51,13 @@ export function GameOverOverlay({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm"
+      // items-end (mobile, no sm: match): the card anchors to the bottom
+      // edge, same as the compare sheet's footer — px-4/pt-4 keep the other
+      // three sides at the original p-4 (1rem), pb adds env(safe-area-
+      // inset-bottom) on top so the card clears the home indicator on
+      // notched iPhones instead of sitting flush under it (sm:items-center
+      // never touches the bottom edge, so the extra inset is a no-op there).
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] bg-black/30 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="game-over-title"

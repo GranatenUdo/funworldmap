@@ -11,6 +11,7 @@ import useMediaQuerySource from '../../hooks/useMediaQuery.ts?raw'
 import searchBarSource from '../../components/SearchBar.tsx?raw'
 import closeButtonSource from '../../components/CloseButton.tsx?raw'
 import hudShellSource from '../../game/shared/hud/HudShell.tsx?raw'
+import gameOverOverlaySource from '../../game/shared/hud/GameOverOverlay.tsx?raw'
 import cityGuessingHudSource from '../../game/modes/city-guessing/CityGuessingHud.tsx?raw'
 import indexCssSource from '../../index.css?raw'
 import indexHtmlSource from '../../../index.html?raw'
@@ -204,6 +205,25 @@ describe('G1 sheet fundamentals drift alarm', () => {
     // breaks the other.
     expect(singleCountryPanelSource).toContain('pb-[env(safe-area-inset-bottom)]')
     expect(indexHtmlSource).toContain('viewport-fit=cover')
+  })
+
+  it('the mobile compare sheet reserves the home-indicator inset on its fixed bottom edge', () => {
+    // Final-review finding: CompareCountryPanel's sources footer is a fixed
+    // flex item OUTSIDE the scrollable `compare-mobile-scroll` middle region
+    // (unlike SingleCountryPanel, where the panel root IS the scroll
+    // container), so it always renders flush against the sheet's bottom
+    // edge — the inset has to land on the outer fixed sheet, not the inner
+    // scroll div, or the footer stays exposed to the home indicator.
+    expect(compareCountryPanelSource).toContain('pb-[env(safe-area-inset-bottom)]')
+  })
+
+  it('the mobile game-over card reserves the home-indicator inset (lesser sibling of the compare sheet finding)', () => {
+    // The card anchors to the bottom edge via `items-end` below the sm:
+    // breakpoint. px-4/pt-4 keep the original p-4 on the other three sides;
+    // pb adds the safe-area inset on top of the original 1rem so the card
+    // clears the home indicator instead of sitting flush under it.
+    expect(gameOverOverlaySource).toContain('items-end')
+    expect(gameOverOverlaySource).toContain('pb-[calc(env(safe-area-inset-bottom)+1rem)]')
   })
 
   it('sheet grabber: TOUCH_TARGET_FROM_20 pins the A13 inset math and its consumer', () => {
