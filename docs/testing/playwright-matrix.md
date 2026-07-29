@@ -31,18 +31,18 @@ local opt-in via `--project=<name>`. See `docs/systems/testing.md`
 
 ## Spec assignment
 
-| Spec                                                                                                                                             | chromium | mobile-chromium | mobile-webkit | desktop-firefox-touch |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | :------: | :-------------: | :-----------: | :-------------------: |
-| scaffold, canonical-195, meta-and-static, cold-load-deep-link                                                                                    |    ✓     |                 |               |                       |
-| search\*, theme-and-responsive\*, accessibility\*, a11y-contrast, a11y-keyboard-smoke, axe-snapshot\*, label-contrast\*                          |    ✓     |                 |      ✓¹       |          ✓¹           |
-| panel-and-deeplink, panel-focus\*, satellite-default, country-labels, compare-source-attribution, source-tooltip-edge\*, source-tooltip-keyboard |    ✓     |                 |               |                       |
-| launcher, launcher-focus-order, launcher-card-loading-states, launcher-backdrop-dismiss, header-play-reopens-launcher\*                          |    ✓     |                 |      ✓²       |          ✓²           |
-| map-and-countries, map-reliability, keyboard-map-nav, webgl-context-loss, compare-map-clicks, compare-view-dimming, tutorial-first-click         |    ✓     |       ✓³        |               |                       |
-| game-country-pinning\*, game-city-guessing, game-over-mode-switch, animation-interrupt                                                           |    ✓     |                 |               |                       |
-| reveal-animation\*, reveal-animation-reduced-motion                                                                                              |    ✓     |                 |               |                       |
-| mobile-panel-header                                                                                                                              |    ✓     |                 |               |                       |
-| mobile-smoke, mobile-tap                                                                                                                         |          |        ✓        |       ✓       |           ✓           |
-| mobile-free-play                                                                                                                                 |          |        ✓        |               |                       |
+| Spec                                                                                                                                     | chromium | mobile-chromium | mobile-webkit | desktop-firefox-touch |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | :------: | :-------------: | :-----------: | :-------------------: |
+| scaffold, canonical-195, meta-and-static, cold-load-deep-link                                                                            |    ✓     |                 |               |                       |
+| search\*, theme-and-responsive\*, accessibility\*, a11y-contrast, a11y-keyboard-smoke, axe-snapshot\*, label-contrast\*                  |    ✓     |                 |      ✓¹       |          ✓¹           |
+| panel-and-deeplink, panel-focus\*, satellite-default, country-labels, compare-source-attribution, single-source-attribution              |    ✓     |                 |               |                       |
+| launcher, launcher-focus-order, launcher-card-loading-states, launcher-backdrop-dismiss, header-play-reopens-launcher\*                  |    ✓     |                 |      ✓²       |          ✓²           |
+| map-and-countries, map-reliability, keyboard-map-nav, webgl-context-loss, compare-map-clicks, compare-view-dimming, tutorial-first-click |    ✓     |       ✓³        |               |                       |
+| game-country-pinning\*, game-city-guessing, game-over-mode-switch, animation-interrupt                                                   |    ✓     |                 |               |                       |
+| reveal-animation\*, reveal-animation-reduced-motion                                                                                      |    ✓     |                 |               |                       |
+| mobile-panel-header                                                                                                                      |    ✓     |                 |               |                       |
+| mobile-smoke, mobile-tap                                                                                                                 |          |        ✓        |       ✓       |           ✓           |
+| mobile-free-play                                                                                                                         |          |        ✓        |               |                       |
 
 ¹ only `theme-and-responsive`. ² only `launcher-card-loading-states`.
 ³ only `tutorial-first-click`.
@@ -54,13 +54,13 @@ cross-engine DOM smoke runs, not full-suite coverage.
 
 ## CI testIgnore (chromium, CI-only)
 
-These 10 specs are excluded on CI pending a self-hosted GPU runner (tracking
+These 9 specs are excluded on CI pending a self-hosted GPU runner (tracking
 issue [#106](https://github.com/GranatenUdo/funworldmap/issues/106); `docs/roadmap.md` § "Flaky-on-free-CI specs (need GPU runner)").
 They run locally.
 
 label-contrast · header-play-reopens-launcher · panel-focus · accessibility ·
 axe-snapshot · reveal-animation · search · game-country-pinning ·
-theme-and-responsive · source-tooltip-edge
+theme-and-responsive
 
 Exit criterion: when the GPU runner lands, delete the `testIgnore` block and
 this section.
