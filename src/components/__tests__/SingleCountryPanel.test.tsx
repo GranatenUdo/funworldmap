@@ -17,7 +17,7 @@ import type { CountryData } from '../../lib/types'
 import { makeCountry, sources, stubGetAnimations } from './singleCountryPanelTestUtils'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_20 } from '../../lib/layoutConstants'
 import { SingleCountryPanel } from '../SingleCountryPanel'
-import { INERT_CHIP_CLASSES } from '../BorderChip'
+import { INERT_CHIP_CLASSES } from '../chipStyles'
 
 function renderPanel() {
   return render(

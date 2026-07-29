@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
-import { BorderChip, INERT_CHIP_CLASSES } from './BorderChip'
+import { BorderChip } from './BorderChip'
+import { INERT_CHIP_CLASSES } from './chipStyles'
 import { exploreNext } from '../lib/exploreNext'
 import { CloseButton } from './CloseButton'
 import { TimezoneList } from './TimezoneList'

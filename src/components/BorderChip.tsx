@@ -1,5 +1,6 @@
 import type { CountryData } from '../lib/types'
 import { nonSelectableNeighborName } from '../lib/neighborNames'
+import { INERT_CHIP_CLASSES } from './chipStyles'
 
 interface Props {
   code: string
@@ -18,17 +19,6 @@ const BUTTON_CLASSES = {
     'inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-full border border-ice-dim/20 dark:border-ice/15 bg-ice-dim/5 dark:bg-ice/5 text-ice-accessible dark:text-ice hover:bg-ice-dim/12 dark:hover:bg-ice/12 hover:scale-[1.03] active:scale-100 transition-all duration-150',
   compare:
     'inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-full border border-ice-dim/20 dark:border-ice/15 bg-ice-dim/5 dark:bg-ice/5 text-ice-accessible dark:text-ice hover:bg-ice-dim/12 dark:hover:bg-ice/12 transition-colors',
-} as const
-
-/** Inert (non-interactive) chip styling — unmatched border codes here, and
- *  reused by SingleCountryPanel's landlocked/coastal fact chip (D3).
- *  Contrast (both AA): light sand-600 #6b6459 on sand-200 #f0ebe3 = 4.93:1;
- *  dark dark-100 #94a3b8 on dark-300 #1e2430 = 6.07:1. */
-export const INERT_CHIP_CLASSES = {
-  panel:
-    'px-2.5 py-1.5 text-xs rounded-full bg-sand-200 dark:bg-dark-300 text-sand-600 dark:text-dark-100',
-  compare:
-    'px-2 py-0.5 text-[11px] rounded-full bg-sand-200 dark:bg-dark-300 text-sand-600 dark:text-dark-100',
 } as const
 
 /** A neighbouring-country chip. Codes with no canonical match (e.g. ESH, HKG,

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { BorderChip, INERT_CHIP_CLASSES } from '../BorderChip'
+import { BorderChip } from '../BorderChip'
+import { INERT_CHIP_CLASSES } from '../chipStyles'
 import { makeCountry } from './singleCountryPanelTestUtils'
 
 describe('BorderChip', () => {

@@ -3529,8 +3529,11 @@ The collapsed 40dvh sheet currently spends a full stacked row (`flex flex-col it
 
 ## Completion ledger (Task 7, post-verification)
 
-**Results (2026-07-29):** `npm run check` green — lint clean (1 pre-existing warning, unrelated:
-`BorderChip.tsx` react-refresh/only-export-components), `tsc -b` clean, `vitest run` **78 test
+**Results (2026-07-29):** `npm run check` green — lint clean (1 warning: `BorderChip.tsx`
+react-refresh/only-export-components — **correction:** this was introduced by this task's own
+`INERT_CHIP_CLASSES` export, not pre-existing as first recorded here; fixed in the final-review
+pass by moving the constant to `src/components/chipStyles.ts`, the `exceptionBadge.ts` precedent),
+`tsc -b` clean, `vitest run` **78 test
 files / 626 tests**, all green. CI-covered e2e (`panel-and-deeplink`, `mobile-panel-header`,
 `a11y-contrast`, `a11y-keyboard-smoke`, `compare-source-attribution`, `compare-view-dimming`,
 `compare-map-clicks`) — **66 tests green** at `--project=chromium --workers=2`, including the
