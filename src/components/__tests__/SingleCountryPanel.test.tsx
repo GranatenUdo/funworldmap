@@ -17,6 +17,7 @@ import type { CountryData } from '../../lib/types'
 import { makeCountry, sources, stubGetAnimations } from './singleCountryPanelTestUtils'
 import { TOUCH_TARGET_FROM_36 } from '../../lib/layoutConstants'
 import { SingleCountryPanel } from '../SingleCountryPanel'
+import { INERT_CHIP_CLASSES } from '../BorderChip'
 
 function renderPanel() {
   return render(
@@ -563,5 +564,108 @@ describe('SingleCountryPanel — consolidated sources footer (D2)', () => {
     const table = getByTestId('panel-sources-detail')
     within(table).getByRole('rowheader', { name: 'UN member' })
     within(table).getByRole('cell', { name: 'manual-override' })
+  })
+})
+
+describe('SingleCountryPanel — Explore next (D3)', () => {
+  // France-shaped fixture: DEU is a border (must appear ONLY in Borders),
+  // NLD/LIE are same-subregion non-borders (peers, population-descending),
+  // THA (66M vs France's fixture 67M) is the closest-population pick.
+  const france = makeCountry({ borders: ['DEU'] })
+  const neighbors = [
+    makeCountry({
+      cca3: 'DEU',
+      ccn3: '276',
+      cca2: 'DE',
+      name: { common: 'Germany', official: 'Federal Republic of Germany' },
+      population: 83_000_000,
+    }),
+    makeCountry({
+      cca3: 'NLD',
+      ccn3: '528',
+      cca2: 'NL',
+      name: { common: 'Netherlands', official: 'Kingdom of the Netherlands' },
+      population: 18_000_000,
+    }),
+    makeCountry({
+      cca3: 'LIE',
+      ccn3: '438',
+      cca2: 'LI',
+      name: { common: 'Liechtenstein', official: 'Principality of Liechtenstein' },
+      population: 40_000,
+      landlocked: true,
+    }),
+    makeCountry({
+      cca3: 'THA',
+      ccn3: '764',
+      cca2: 'TH',
+      name: { common: 'Thailand', official: 'Kingdom of Thailand' },
+      subregion: 'South-Eastern Asia',
+      population: 66_000_000,
+    }),
+  ]
+  const byCca3 = new Map([france, ...neighbors].map((c) => [c.cca3, c] as const))
+
+  function renderExplore({
+    country = france,
+    isDesktop = true,
+    onSelect = () => {},
+  }: {
+    country?: CountryData
+    isDesktop?: boolean
+    onSelect?: (cca3: string) => void
+  } = {}) {
+    return render(
+      <SingleCountryPanel
+        country={country}
+        comparePickingMode={false}
+        sources={sources}
+        isDesktop={isDesktop}
+        onSelect={onSelect}
+        onClose={() => {}}
+        onEnterCompare={() => {}}
+        onCancelCompare={() => {}}
+        byCca3={byCca3}
+      />,
+    )
+  }
+
+  it('renders inert fact chip + subregion peers (no self/borders) + similar-population chip, in order', () => {
+    const { getByTestId } = renderExplore()
+    const fact = getByTestId('explore-fact-chip')
+    expect(fact.textContent).toBe('Coastal')
+    // Inert — the unmatched-border-chip precedent: a span, not a button,
+    // in the exported inert styling (visually distinct from clickable chips).
+    expect(fact.tagName).toBe('SPAN')
+    expect(fact.className).toBe(INERT_CHIP_CLASSES.panel)
+    const buttons = within(getByTestId('explore-next')).getAllByRole('button')
+    expect(buttons.map((b) => b.textContent)).toEqual([
+      'Netherlands', // 18M — population-descending
+      'Liechtenstein', // 40K
+      'Thailand · similar population · 66M',
+    ])
+  })
+
+  it('clicking a suggestion routes through the existing onSelect (same semantics as border chips)', () => {
+    const onSelect = vi.fn()
+    const { getByTestId } = renderExplore({ onSelect })
+    fireEvent.click(
+      within(getByTestId('explore-next')).getByRole('button', { name: 'Netherlands' }),
+    )
+    expect(onSelect).toHaveBeenCalledWith('NLD')
+  })
+
+  it('landlocked countries get the Landlocked fact chip', () => {
+    const lie = byCca3.get('LIE')
+    if (!lie) throw new Error('fixture missing LIE')
+    const { getByTestId } = renderExplore({ country: lie })
+    expect(getByTestId('explore-fact-chip').textContent).toBe('Landlocked')
+  })
+
+  it('is secondary content: hidden in the collapsed mobile sheet, shown after Expand', () => {
+    const { queryByTestId, getByTestId, getByLabelText } = renderExplore({ isDesktop: false })
+    expect(queryByTestId('explore-next')).toBeNull()
+    fireEvent.click(getByLabelText('Expand panel'))
+    expect(getByTestId('explore-next')).toBeTruthy()
   })
 })

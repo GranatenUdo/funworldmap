@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
-import { BorderChip } from './BorderChip'
+import { BorderChip, INERT_CHIP_CLASSES } from './BorderChip'
+import { exploreNext } from '../lib/exploreNext'
 import { CloseButton } from './CloseButton'
 import { TimezoneList } from './TimezoneList'
 import { dispatchToast } from '../lib/toast'
@@ -170,6 +171,13 @@ export function SingleCountryPanel({
 }: Props) {
   const [expanded, setExpanded] = useState(false)
   const showSecondary = isDesktop || expanded
+
+  // D3: derived purely from the bundled canonical set (byCca3 is the
+  // canonical-195 lookup the panel already receives) — zero data cost.
+  const suggestions = useMemo(
+    () => exploreNext(country, Array.from(byCca3.values())),
+    [country, byCca3],
+  )
   const panelRootRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
@@ -525,6 +533,48 @@ export function SingleCountryPanel({
                 </div>
               </>
             )}
+
+            <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
+            {/* D3 — Explore next: landlocked/coastal fact + same-subregion
+                peers + closest-population pick. Suggestions are derived data
+                (no single source field), so no per-chip attribution; the
+                `landlocked` field's source stays reachable via the
+                consolidated footer's field → source table (D2). Unlike
+                Borders, this renders for every country (Japan has no borders
+                but still gets peers + similar-population). */}
+            <div className="panel-field-in-3" data-testid="explore-next">
+              {/* Mirrors the Borders label styling minus the source
+                  affordance (derived data); migrates to .text-label whenever
+                  the rest of the panel does. */}
+              <div className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-2">
+                Explore next
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                <span data-testid="explore-fact-chip" className={INERT_CHIP_CLASSES.panel}>
+                  {suggestions.fact}
+                </span>
+                {suggestions.subregionPeers.map((c) => (
+                  <BorderChip
+                    key={c.cca3}
+                    code={c.cca3}
+                    neighbor={c}
+                    onSelect={onSelect}
+                    size="panel"
+                  />
+                ))}
+                {suggestions.similarPopulation && (
+                  <BorderChip
+                    code={suggestions.similarPopulation.cca3}
+                    neighbor={suggestions.similarPopulation}
+                    onSelect={onSelect}
+                    size="panel"
+                    detail={`similar population · ${formatCompact(
+                      suggestions.similarPopulation.population,
+                    )}`}
+                  />
+                )}
+              </div>
+            </div>
           </>
         )}
 
