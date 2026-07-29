@@ -420,7 +420,7 @@ function AppInner({
         <div
           role="status"
           data-testid="onboarding-hint"
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-ice/20 text-ice text-sm shadow-lg pointer-events-none"
+          className="fixed bottom-[calc(env(safe-area-inset-bottom)+2rem)] left-1/2 -translate-x-1/2 z-20 px-5 py-2.5 rounded-full bg-dark-400/80 dark:bg-dark-300/80 backdrop-blur-sm border border-ice/20 text-ice text-sm shadow-lg pointer-events-none"
           style={{ animation: 'fade-up 300ms ease-out' }}
         >
           {hintCopy(hint, finePointer)}

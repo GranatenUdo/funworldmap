@@ -347,6 +347,13 @@ body {
   border-top-color: rgba(125, 211, 252, 0.15);
 }
 
+/* Safe-area compensation for notched devices — additive margin on top of
+   vendor positioning for bottom-left (attribution) and bottom-right (nav) controls. */
+.maplibregl-ctrl-bottom-left,
+.maplibregl-ctrl-bottom-right {
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
 /* B7 coarse-pointer touch targets: grow the vendor ctrl buttons from
    MapLibre's stock 29px to the app's 44px convention floor
    (TOUCH_TARGET_MIN_PX in src/lib/layoutConstants.ts — this literal CSS is
