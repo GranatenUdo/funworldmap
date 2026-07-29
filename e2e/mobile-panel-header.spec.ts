@@ -39,7 +39,9 @@ for (const width of WIDTHS) {
       // Measure scrollWidth vs clientWidth: if scrollWidth > clientWidth the
       // text is being clipped by the truncate class.
       const isTruncated = await h2.evaluate((el) => el.scrollWidth > el.clientWidth)
-      expect(isTruncated, `h2 scrollWidth > clientWidth at ${width}px — text is truncated`).toBe(false)
+      expect(isTruncated, `h2 scrollWidth > clientWidth at ${width}px — text is truncated`).toBe(
+        false,
+      )
     })
 
     test(`action buttons are visible and clickable at ${width}px`, async ({ page }) => {
@@ -85,3 +87,28 @@ for (const width of WIDTHS) {
     })
   })
 }
+
+test.describe('Sheet grabber (G1) at 390×844', () => {
+  test.use({ viewport: { width: 390, height: 844 } })
+
+  test('grabber expands the sheet and the chevron reflects the state', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/#FRA')
+    const panel = page.getByTestId('country-panel')
+    await expect(panel).toBeVisible({ timeout: 15_000 })
+    await waitForAnimationIdle(panel)
+
+    // Collapsed: 40dvh of 844 ≈ 338px (dvh === vh in an emulated viewport).
+    await expect.poll(async () => (await panel.boundingBox())?.height ?? 0).toBeLessThan(844 * 0.5)
+    await expect(page.getByLabel('Expand panel')).toHaveAttribute('aria-expanded', 'false')
+
+    await page.getByTestId('sheet-grabber').click()
+
+    // Expanded: 80dvh ≈ 675px. expect.poll rides out the height transition
+    // (collapsed to ~0ms by this project's reducedMotion baseline — but
+    // never assume wallclock).
+    await expect
+      .poll(async () => (await panel.boundingBox())?.height ?? 0)
+      .toBeGreaterThan(844 * 0.7)
+    await expect(page.getByLabel('Collapse panel')).toHaveAttribute('aria-expanded', 'true')
+  })
+})

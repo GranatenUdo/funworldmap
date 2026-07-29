@@ -13,6 +13,7 @@ import closeButtonSource from '../../components/CloseButton.tsx?raw'
 import hudShellSource from '../../game/shared/hud/HudShell.tsx?raw'
 import cityGuessingHudSource from '../../game/modes/city-guessing/CityGuessingHud.tsx?raw'
 import indexCssSource from '../../index.css?raw'
+import indexHtmlSource from '../../../index.html?raw'
 import {
   DESKTOP_MEDIA_QUERY,
   SINGLE_PANEL_FOOTPRINT_PX,
@@ -28,6 +29,7 @@ import {
   TOUCH_TARGET_TEXT_XS,
   TOUCH_TARGET_FROM_22,
   TOUCH_TARGET_FROM_32,
+  TOUCH_TARGET_FROM_20,
   TOUCH_TARGET_MIN_PX,
 } from '../layoutConstants'
 
@@ -37,7 +39,11 @@ describe('layout constants ↔ panel classes drift alarm', () => {
   it('SingleCountryPanel width/inset/sheet classes match the constants', () => {
     expect(singleCountryPanelSource).toContain(`w-[${SINGLE_PANEL_FOOTPRINT_PX - 16}px]`) // 376 - right-4 inset
     expect(singleCountryPanelSource).toContain('right-4')
-    expect(singleCountryPanelSource).toContain(`h-[${SHEET_COLLAPSED_FRACTION * 100}vh]`) // collapsed sheet
+    // G1: dvh, not vh — the sheet and panelScreenOffset's innerHeight-based
+    // camera math must agree as mobile browser toolbars collapse (the same
+    // rule the compare sheet adopted in C6).
+    expect(singleCountryPanelSource).toContain(`h-[${SHEET_COLLAPSED_FRACTION * 100}dvh]`) // collapsed sheet
+    expect(singleCountryPanelSource).toContain('h-[80dvh]') // expanded sheet
   })
 
   it('CompareCountryPanel width/sheet classes match the constants', () => {
@@ -188,5 +194,24 @@ describe('B7 map-control touch-target drift alarm', () => {
   }
 }`,
     )
+  })
+})
+
+describe('G1 sheet fundamentals drift alarm', () => {
+  it('the sheet scroll container reserves the home-indicator inset and index.html opts into it', () => {
+    // env(safe-area-inset-bottom) resolves to 0 unless the viewport meta
+    // declares viewport-fit=cover — pin both halves so neither silently
+    // breaks the other.
+    expect(singleCountryPanelSource).toContain('pb-[env(safe-area-inset-bottom)]')
+    expect(indexHtmlSource).toContain('viewport-fit=cover')
+  })
+
+  it('sheet grabber: TOUCH_TARGET_FROM_20 pins the A13 inset math and its consumer', () => {
+    // 20px grabber visual box (py-2 = 2·8px + h-1 bar = 4px): 20 + 2·12 = 44.
+    expect(TOUCH_TARGET_FROM_20).toBe(`relative ${TOUCH_TARGET_BASE} pointer-coarse:after:-inset-3`)
+    expect(singleCountryPanelSource).toContain('TOUCH_TARGET_FROM_20')
+    expect(singleCountryPanelSource).toContain('sheet-grabber')
+    // Base sizes the inset math assumes.
+    expect(singleCountryPanelSource).toContain('h-1 w-9')
   })
 })

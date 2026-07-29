@@ -17,11 +17,11 @@ export const SINGLE_PANEL_FOOTPRINT_PX = 376
 /** CompareCountryPanel: right-4 (16px) + w-[656px]. */
 export const COMPARE_PANEL_FOOTPRINT_PX = 672
 
-/** Mobile bottom sheet, collapsed single-country state: h-[40vh]. */
+/** Mobile bottom sheet, collapsed single-country state: h-[40dvh] (G1). */
 export const SHEET_COLLAPSED_FRACTION = 0.4
 
 /** Mobile compare sheet: h-[80dvh] (C6). The single panel's expanded sheet
- *  stays h-[80vh] until G1's dvh switch (workstream D's plan). */
+ *  is h-[80dvh] too since G1's dvh switch. */
 export const COMPARE_SHEET_FRACTION = 0.8
 
 /** Screen-space camera offset so the SINGLE-country fly-to centers in the
@@ -106,6 +106,12 @@ export const TOUCH_TARGET_FROM_22 = `relative ${TOUCH_TARGET_BASE} pointer-coars
  *  Continue CTA precedent of applying the constrained dimension's math to
  *  all four sides even though the other dimension is already oversized. */
 export const TOUCH_TARGET_FROM_32 = `relative ${TOUCH_TARGET_BASE} pointer-coarse:after:-inset-1.5`
+
+/** 20px mobile sheet grabber (SingleCountryPanel: py-2 (2·8px) + h-1 bar
+ *  (4px) = 20px): 20 + 2·12 = 44. G1's pointer-first expand affordance —
+ *  the chevron stays the labeled control, but the grabber is what fingers
+ *  actually aim for, so it gets the full A13 coarse-pointer floor. */
+export const TOUCH_TARGET_FROM_20 = `relative ${TOUCH_TARGET_BASE} pointer-coarse:after:-inset-3`
 
 /** ── B7 map-control touch targets ───────────────────────────────────────
  * The convention floor (px) that all the TOUCH_TARGET_* insets above are

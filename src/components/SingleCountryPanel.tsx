@@ -8,6 +8,7 @@ import { dispatchToast } from '../lib/toast'
 import {
   TOUCH_TARGET_FROM_36,
   TOUCH_TARGET_FROM_22,
+  TOUCH_TARGET_FROM_20,
   TOUCH_TARGET_TEXT_XS,
 } from '../lib/layoutConstants'
 import {
@@ -256,8 +257,14 @@ export function SingleCountryPanel({
 
   const panelClasses = isDesktop
     ? 'fixed right-4 top-16 bottom-4 w-[360px] bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-xl shadow-[0_25px_50px_rgba(0,0,0,0.3)] dark:shadow-[0_25px_50px_rgba(0,0,0,0.6)] z-40 overflow-y-auto rounded-2xl border border-sand-200/50 dark:border-dark-200/20 panel-card-in'
-    : `fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 overflow-y-auto rounded-t-2xl transition-[height] duration-200 ${
-        expanded ? 'h-[80vh]' : 'h-[40vh]'
+    : // G1: dvh (not vh) so the sheet tracks the visual viewport as mobile
+      // browser toolbars collapse — same rule as the compare sheet (C6) and
+      // the innerHeight-based camera math in layoutConstants. The panel root
+      // IS the scroll container, so the safe-area padding lands here:
+      // content scrolls clear of the iOS home indicator (requires
+      // viewport-fit=cover in index.html).
+      `fixed bottom-0 left-0 right-0 bg-sand-50 dark:bg-dark-400 shadow-[0_-10px_40px_rgba(0,0,0,0.2)] z-40 overflow-y-auto rounded-t-2xl pb-[env(safe-area-inset-bottom)] transition-[height] duration-200 ${
+        expanded ? 'h-[80dvh]' : 'h-[40dvh]'
       }`
 
   return (
@@ -270,6 +277,26 @@ export function SingleCountryPanel({
       data-animation-state={animationState}
     >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
+        {!isDesktop && (
+          <button
+            type="button"
+            onClick={() => setExpanded(!expanded)}
+            data-testid="sheet-grabber"
+            // G1: pointer-only expand affordance — the chevron stays the
+            // labeled control (aria-label + aria-expanded). aria-hidden on a
+            // focusable element violates axe's aria-hidden-focus rule, hence
+            // tabIndex={-1}. Visual box: py-2 (2·8px) + h-1 bar (4px) = 20px;
+            // TOUCH_TARGET_FROM_20 grows the coarse-pointer hit area to 44px.
+            // Bar contrast (3:1 non-text floor, both themes): sand-500
+            // #8c8578 on sand-50 #fefdfb = 3.6:1; dark-100 #94a3b8 on
+            // dark-400 #161a22 = 6.8:1.
+            aria-hidden="true"
+            tabIndex={-1}
+            className={`w-full flex justify-center py-2 -mt-2 mb-1 ${TOUCH_TARGET_FROM_20}`}
+          >
+            <span className="h-1 w-9 rounded-full bg-sand-500 dark:bg-dark-100" />
+          </button>
+        )}
         {comparePickingMode && (
           <div
             role="status"
@@ -392,6 +419,7 @@ export function SingleCountryPanel({
                 onClick={() => setExpanded(!expanded)}
                 className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
                 aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
+                aria-expanded={expanded}
               >
                 <svg
                   className={`w-5 h-5 transition-transform ${expanded ? 'rotate-180' : ''}`}

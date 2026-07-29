@@ -24,15 +24,16 @@ Mobile-first. Layouts are built for small screens and progressively enhanced for
 ├─────────────────────────┤
 │  [▲ expand] Country name │  ← bottom sheet (when country selected)
 │  Country Panel           │
-│  (peek: 40vh / full: 80vh)
+│  (peek: 40dvh / full: 80dvh)
 └─────────────────────────┘
 ```
 
 **Bottom sheet** behavior:
 
 - Appears when a country is selected
-- Two interactive states: **peek** (40% viewport height) and **full** (80% viewport height). These are starting values — adjust during implementation based on content fit and device testing.
-- Expand/collapse button (chevron) at the top toggles between states — accessible via keyboard and pointer
+- Two interactive states: **peek** (`40dvh`) and **full** (`80dvh`) — `dvh` so the sheet tracks the visual viewport as mobile browser toolbars collapse (G1)
+- Expand/collapse: a visible grabber bar at the sheet top (pointer-only, `aria-hidden` + `tabIndex={-1}`, 44px coarse-pointer hit area via `TOUCH_TARGET_FROM_20`) and the labeled chevron button (`aria-expanded`) drive the same toggle (G1)
+- The sheet's scroll container reserves `env(safe-area-inset-bottom)` so content clears the iOS home indicator (`viewport-fit=cover` in `index.html`)
 - Overlays the map — map remains visible above the sheet. Tapping the visible map above the bottom sheet selects or deselects a country normally. The sheet transitions to show the new country's data, or collapses if the tap hit empty space.
 - Close button to dismiss entirely
 

@@ -15,7 +15,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, within } from '@testing-library/react'
 import type { CountryData } from '../../lib/types'
 import { makeCountry, sources, stubGetAnimations } from './singleCountryPanelTestUtils'
-import { TOUCH_TARGET_FROM_36 } from '../../lib/layoutConstants'
+import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_20 } from '../../lib/layoutConstants'
 import { SingleCountryPanel } from '../SingleCountryPanel'
 import { INERT_CHIP_CLASSES } from '../BorderChip'
 
@@ -667,5 +667,54 @@ describe('SingleCountryPanel — Explore next (D3)', () => {
     expect(queryByTestId('explore-next')).toBeNull()
     fireEvent.click(getByLabelText('Expand panel'))
     expect(getByTestId('explore-next')).toBeTruthy()
+  })
+})
+
+describe('SingleCountryPanel — mobile sheet grabber (G1)', () => {
+  function renderAt(isDesktop: boolean) {
+    return render(
+      <SingleCountryPanel
+        country={makeCountry()}
+        comparePickingMode={false}
+        sources={sources}
+        isDesktop={isDesktop}
+        onSelect={() => {}}
+        onClose={() => {}}
+        onEnterCompare={() => {}}
+        onCancelCompare={() => {}}
+        byCca3={new Map()}
+      />,
+    )
+  }
+
+  it('mobile: grabber is a pointer-only affordance wired to the same expand toggle as the chevron', () => {
+    const { getByTestId, getByLabelText, getByText, queryByText } = renderAt(false)
+    const grabber = getByTestId('sheet-grabber')
+    // Pointer-only: the chevron is the labeled control. aria-hidden on a
+    // focusable element is an axe violation (aria-hidden-focus), hence
+    // tabIndex=-1 removing it from the tab order.
+    expect(grabber.getAttribute('aria-hidden')).toBe('true')
+    expect(grabber.getAttribute('tabindex')).toBe('-1')
+    expect(grabber.className).toContain(TOUCH_TARGET_FROM_20)
+    // Collapsed peek state: secondary fields hidden (Timezones renders
+    // unconditionally once showSecondary is true — stable sentinel).
+    expect(queryByText('Timezones')).toBeNull()
+    fireEvent.click(grabber)
+    expect(getByText('Timezones')).toBeTruthy()
+    // The chevron reflects the state the grabber set — one shared toggle.
+    expect(getByLabelText('Collapse panel').getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('mobile: chevron exposes aria-expanded and still toggles', () => {
+    const { getByLabelText } = renderAt(false)
+    const chevron = getByLabelText('Expand panel')
+    expect(chevron.getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(chevron)
+    expect(getByLabelText('Collapse panel').getAttribute('aria-expanded')).toBe('true')
+  })
+
+  it('desktop: no grabber renders', () => {
+    const { queryByTestId } = renderAt(true)
+    expect(queryByTestId('sheet-grabber')).toBeNull()
   })
 })

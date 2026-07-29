@@ -62,10 +62,10 @@ All attribution affordances are in the Tab order (D2 retired the hover-only `tab
 
 ### Bottom Sheet (Mobile)
 
-| Key                              | Action                                            |
-| -------------------------------- | ------------------------------------------------- |
-| Enter / Space (on expand button) | Toggle between peek (40vh) and full (80vh) states |
-| Escape                           | Close sheet entirely                              |
+| Key                              | Action                                                                                                                                                                               |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Enter / Space (on expand button) | Toggle between peek (40dvh) and full (80dvh) states — the chevron exposes `aria-expanded`; the visible grabber bar is a pointer-only duplicate (`aria-hidden`, out of the tab order) |
+| Escape                           | Close sheet entirely                                                                                                                                                                 |
 
 ## Screen Reader Support
 
