@@ -7,7 +7,21 @@ import { TimezoneList } from './TimezoneList'
 import SourceTooltip from './SourceTooltip'
 import { dispatchToast } from '../lib/toast'
 import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_22 } from '../lib/layoutConstants'
-import { formatPopulation, formatArea } from '../lib/compareFields'
+import {
+  EM_DASH,
+  densityOf,
+  formatArea,
+  formatDensity,
+  formatPopulation,
+} from '../lib/compareFields'
+import {
+  AREA_RANKS,
+  POPULATION_RANKS,
+  formatCompact,
+  formatCompactArea,
+  formatCompactDensity,
+  formatRank,
+} from '../lib/countryStats'
 import { EXCEPTION_BADGE, activeExceptionBadges } from './exceptionBadge'
 
 interface Props {
@@ -45,6 +59,50 @@ function DataCell({
       >
         {children}
       </div>
+    </div>
+  )
+}
+
+/** D1 hero stat: compact primary numeral (.text-readout, E2 type role) with
+ *  the exact value in `title` and an optional "#N of 195" rank sub-line.
+ *  FieldLabel keeps the per-field source affordance + data-field anchor
+ *  (attribution constitution; D2 owns the consolidated-footer migration).
+ *  No whitespace-nowrap: at 360px "17.1M km²" may wrap its unit — fine. */
+function HeroStat({
+  label,
+  field,
+  country,
+  sources,
+  value,
+  exact,
+  rank,
+}: {
+  label: string
+  field: string
+  country: CountryData
+  sources: CountriesFile['_sources']
+  value: string
+  exact?: string
+  rank?: number
+}) {
+  return (
+    <div className="py-1.5">
+      <FieldLabel label={label} field={field} country={country} sources={sources} />
+      <div
+        data-testid={`hero-stat-${field}`}
+        title={exact}
+        className="text-readout text-xl font-semibold text-sand-900 dark:text-dark-50"
+      >
+        {value}
+      </div>
+      {rank !== undefined && (
+        <div
+          data-testid={`hero-rank-${field}`}
+          className="text-readout text-[11px] text-sand-600 dark:text-dark-100 mt-0.5"
+        >
+          {formatRank(rank)}
+        </div>
+      )}
     </div>
   )
 }
@@ -337,13 +395,40 @@ export function SingleCountryPanel({
       <div className="mx-5 h-px bg-ice-dim/10 dark:bg-ice/10" />
 
       <div className="px-5 py-3">
+        {/* D1 hero row \u2014 sits at the top of the scroll content, so the
+            collapsed 40vh mobile sheet answers population/area/density
+            without expanding. D4 repositions this row when it restructures
+            the sheet header; this task deliberately keeps the layout seam. */}
+        <div data-testid="hero-stats" className="grid grid-cols-3 gap-x-3 panel-field-in-1">
+          <HeroStat
+            label="Population"
+            field="population"
+            country={country}
+            sources={sources}
+            value={formatCompact(country.population)}
+            exact={formatPopulation(country.population)}
+            rank={POPULATION_RANKS.get(country.cca3)}
+          />
+          <HeroStat
+            label="Area"
+            field="area"
+            country={country}
+            sources={sources}
+            value={formatCompactArea(country.area)}
+            exact={formatArea(country.area)}
+            rank={AREA_RANKS.get(country.cca3)}
+          />
+          <HeroStat
+            label="Density"
+            field="density"
+            country={country}
+            sources={sources}
+            value={formatCompactDensity(country) ?? EM_DASH}
+            exact={densityOf(country) !== null ? formatDensity(country) : undefined}
+          />
+        </div>
+
         <div className="grid grid-cols-2 gap-x-4 panel-field-in-1">
-          <DataCell label="Population" field="population" country={country} sources={sources}>
-            {formatPopulation(country.population)}
-          </DataCell>
-          <DataCell label="Area" field="area" country={country} sources={sources}>
-            {formatArea(country.area)}
-          </DataCell>
           <DataCell label="Government" field="governmentType" country={country} sources={sources}>
             {country.governmentType || '\u2014'}
           </DataCell>

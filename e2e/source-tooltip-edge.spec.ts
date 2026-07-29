@@ -13,8 +13,8 @@ import { gotoAndWaitForMap } from './helpers'
  * Visible symptom: "ORLD FACTBOOK" and "://GITHUB.COM/..." (W and HTTPS cut).
  *
  * This test targets the "Population" field source button on France (/#FRA) —
- * the first DataCell (left column) after the A4/A5 panel restructure — which
- * triggers the same left-edge geometry as the original "Capital" cell.
+ * the first D1 hero stat (leftmost column of the hero row) — which triggers
+ * the same left-edge geometry as the original "Capital" cell.
  */
 test.describe('Source tooltip edge collision', () => {
   test('tooltip for left-column field stays within viewport bounds', async ({ page }) => {
@@ -24,9 +24,10 @@ test.describe('Source tooltip edge collision', () => {
     await expect(panel).toBeVisible({ timeout: 15_000 })
     await expect(panel).toContainText('France', { timeout: 10_000 })
 
-    // Population is the first DataCell (left column) after A4/A5. Anchor via
-    // FieldLabel's data-field so the header caption's capital tooltip (now the
-    // first Source button in DOM order) can't shift this test's target.
+    // Population is the leftmost D1 hero stat (it left the DataCell grid but
+    // kept its FieldLabel). Anchor via data-field so the header caption's
+    // capital tooltip (the first Source button in DOM order) can't shift
+    // this test's target.
     const populationSourceBtn = panel
       .locator('[data-field="population"]')
       .getByRole('button', { name: /^Source:/i })

@@ -197,7 +197,7 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
     )
   }
 
-  it('prime grid shows Population, Area, Government, Languages; Capital/Region/UN Member/Independent cells are gone', () => {
+  it('field labels survive D1: Population/Area (hero row) + Government/Languages (prime grid); Capital/Region/UN Member/Independent cells stay gone', () => {
     const { getByText, queryByText } = renderWith(makeCountry())
     expect(getByText('Population')).toBeTruthy()
     expect(getByText('Area')).toBeTruthy()
@@ -370,5 +370,86 @@ describe('SingleCountryPanel — labeled compare entry (C5)', () => {
     expect(btn.textContent).toBe('')
     expect(btn.className).toContain('p-2 rounded-xl')
     expect(btn.className).toContain(TOUCH_TARGET_FROM_36)
+  })
+})
+
+describe('SingleCountryPanel — hero stats row (D1)', () => {
+  function renderWith(country = makeCountry()) {
+    return render(
+      <SingleCountryPanel
+        country={country}
+        comparePickingMode={false}
+        sources={sources}
+        isDesktop={true}
+        onSelect={() => {}}
+        onClose={() => {}}
+        onEnterCompare={() => {}}
+        onCancelCompare={() => {}}
+        byCca3={new Map()}
+      />,
+    )
+  }
+
+  it('renders compact Population/Area/Density numerals in .text-readout with exact values in title', () => {
+    // Real France figures so the compact strings match the shipped data.
+    const { getByTestId } = renderWith(makeCountry({ population: 66_351_959, area: 543_908 }))
+    const pop = getByTestId('hero-stat-population')
+    expect(pop.textContent).toBe('66.4M')
+    expect(pop.getAttribute('title')).toBe('66,351,959')
+    expect(pop.className).toContain('text-readout')
+    const area = getByTestId('hero-stat-area')
+    expect(area.textContent).toBe('544K km²')
+    expect(area.getAttribute('title')).toBe('543,908 km²')
+    const density = getByTestId('hero-stat-density')
+    expect(density.textContent).toBe('122/km²')
+    expect(density.getAttribute('title')).toBe('122 people/km²')
+  })
+
+  it('rank sub-lines show "#N of 195" for population and area; density has none', () => {
+    // Ranks key off cca3 against the bundled dataset (world facts), NOT the
+    // fixture's population/area values — the default FRA fixture resolves to
+    // France's real ranks (#22 / #48 today, format-asserted not pinned).
+    const { getByTestId, queryByTestId } = renderWith()
+    expect(getByTestId('hero-rank-population').textContent).toMatch(/^#\d+ of 195$/)
+    expect(getByTestId('hero-rank-area').textContent).toMatch(/^#\d+ of 195$/)
+    expect(queryByTestId('hero-rank-density')).toBeNull()
+  })
+
+  it('non-canonical cca3 renders no rank sub-lines (rank maps cover only the 195)', () => {
+    const { queryByTestId, getByTestId } = renderWith(makeCountry({ cca3: 'XXX' }))
+    expect(queryByTestId('hero-rank-population')).toBeNull()
+    expect(queryByTestId('hero-rank-area')).toBeNull()
+    expect(getByTestId('hero-stat-population')).toBeTruthy() // values still render
+  })
+
+  it('zero density renders the em-dash with no title', () => {
+    const { getByTestId } = renderWith(makeCountry({ population: 0 }))
+    const density = getByTestId('hero-stat-density')
+    expect(density.textContent).toBe('—')
+    expect(density.getAttribute('title')).toBeNull()
+  })
+
+  it('Population/Area keep field-level source attribution; Population/Area DataCells are gone', () => {
+    const { container, getByTestId, getAllByTestId } = renderWith(
+      makeCountry({ _fieldSources: { population: 'restcountries', area: 'restcountries' } }),
+    )
+    // data-field anchors preserved — e2e/source-tooltip-edge.spec.ts targets
+    // [data-field="population"]'s Source button (constitution: attribution
+    // never silently regresses; D2 owns the eventual ring retirement).
+    const hero = getByTestId('hero-stats')
+    within(hero.querySelector('[data-field="population"]') as HTMLElement).getByRole('button', {
+      name: 'Source: REST Countries',
+    })
+    within(hero.querySelector('[data-field="area"]') as HTMLElement).getByRole('button', {
+      name: 'Source: REST Countries',
+    })
+    expect(container.querySelector('[data-field="density"]')).toBeTruthy()
+    // Prime grid DataCells are now Government + Languages (+ Currencies,
+    // Timezones in the desktop secondary section) — Population/Area moved out.
+    const cellLabels = getAllByTestId('data-cell-value').map(
+      (el) => el.previousElementSibling?.textContent,
+    )
+    expect(cellLabels).not.toContain('Population')
+    expect(cellLabels).not.toContain('Area')
   })
 })

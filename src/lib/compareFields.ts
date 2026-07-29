@@ -4,9 +4,10 @@ import type { CountryData } from './types'
  *  it, so every row exists in both columns and rows always align. */
 export const EM_DASH = '—'
 
-/** Canonical numeric formatters — shared by the single panel's DataCells
- *  and the compare columns (single owner; SingleCountryPanel's private
- *  copies were absorbed here by C1). */
+/** Canonical exact-value formatters — shared by the compare columns and the
+ *  single panel's hero-stat `title` attributes (single owner; C1 absorbed
+ *  SingleCountryPanel's private copies, D1 moved its display values to the
+ *  compact rules in countryStats.ts — exact strings here, compact there). */
 export function formatPopulation(n: number): string {
   return n.toLocaleString('en-US')
 }
