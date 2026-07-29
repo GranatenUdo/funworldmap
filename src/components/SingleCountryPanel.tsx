@@ -2,11 +2,13 @@ import { useEffect, useRef, useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
 import { BorderChip } from './BorderChip'
 import { CloseButton } from './CloseButton'
-import { FieldLabel } from './FieldLabel'
 import { TimezoneList } from './TimezoneList'
-import SourceTooltip from './SourceTooltip'
 import { dispatchToast } from '../lib/toast'
-import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_22 } from '../lib/layoutConstants'
+import {
+  TOUCH_TARGET_FROM_36,
+  TOUCH_TARGET_FROM_22,
+  TOUCH_TARGET_TEXT_XS,
+} from '../lib/layoutConstants'
 import {
   EM_DASH,
   densityOf,
@@ -23,6 +25,9 @@ import {
   formatRank,
 } from '../lib/countryStats'
 import { EXCEPTION_BADGE, activeExceptionBadges } from './exceptionBadge'
+import { computeFieldSourceMarkers } from '../lib/fieldSourceMarkers'
+import { SourceMarker } from './SourceMarker'
+import { SourceLinkList } from './SourceLinkList'
 
 interface Props {
   country: CountryData
@@ -39,20 +44,25 @@ interface Props {
 
 function DataCell({
   label,
-  children,
   field,
-  country,
-  sources,
+  marker,
+  children,
 }: {
   label: string
-  children: React.ReactNode
   field: string
-  country: CountryData
-  sources: CountriesFile['_sources']
+  /** rowMarker(field) — the C4/D2 exception marker, or null. */
+  marker: React.ReactNode
+  children: React.ReactNode
 }) {
   return (
     <div className="py-1.5">
-      <FieldLabel label={label} field={field} country={country} sources={sources} />
+      <div
+        data-field={field}
+        className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-0.5 flex items-center gap-1"
+      >
+        {label}
+        {marker}
+      </div>
       <div
         data-testid="data-cell-value"
         className="text-[15px] text-sand-800 dark:text-dark-50 tabular-nums"
@@ -65,30 +75,36 @@ function DataCell({
 
 /** D1 hero stat: compact primary numeral (.text-readout, E2 type role) with
  *  the exact value in `title` and an optional "#N of 195" rank sub-line.
- *  FieldLabel keeps the per-field source affordance + data-field anchor
- *  (attribution constitution; D2 owns the consolidated-footer migration).
+ *  The label carries the data-field anchor + the C4/D2 exception marker
+ *  (attribution constitution) — D2 retired the per-field FieldLabel/
+ *  SourceTooltip rings in favor of the consolidated footer + marker scheme.
  *  No whitespace-nowrap: at 360px "17.1M km²" may wrap its unit — fine.
  *  A11y: compact text is aria-hidden; sr-only span carries exact for AT. */
 function HeroStat({
   label,
   field,
-  country,
-  sources,
+  marker,
   value,
   exact,
   rank,
 }: {
   label: string
   field: string
-  country: CountryData
-  sources: CountriesFile['_sources']
+  /** rowMarker(field) — the C4/D2 exception marker, or null. */
+  marker: React.ReactNode
   value: string
   exact?: string
   rank?: number
 }) {
   return (
     <div className="py-1.5">
-      <FieldLabel label={label} field={field} country={country} sources={sources} />
+      <div
+        data-field={field}
+        className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-0.5 flex items-center gap-1"
+      >
+        {label}
+        {marker}
+      </div>
       <div
         data-testid={`hero-stat-${field}`}
         title={exact}
@@ -118,6 +134,28 @@ const REGION_BADGE: Record<string, string> = {
   Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
 }
 
+/** Display names for `_fieldSources` keys in the footer's field → source
+ *  table (D2). Unknown keys render as-is — an honest fallback for fields
+ *  the data pipeline adds before this map learns them. */
+const FIELD_TABLE_LABELS: Record<string, string> = {
+  name: 'Name',
+  capital: 'Capital',
+  region: 'Region',
+  subregion: 'Subregion',
+  population: 'Population',
+  area: 'Area',
+  languages: 'Languages',
+  currencies: 'Currencies',
+  latlng: 'Coordinates',
+  borders: 'Borders',
+  independent: 'Independent',
+  unMember: 'UN member',
+  landlocked: 'Landlocked',
+  timezones: 'Timezones',
+  continents: 'Continents',
+  governmentType: 'Government',
+}
+
 export function SingleCountryPanel({
   country,
   comparePickingMode,
@@ -135,6 +173,18 @@ export function SingleCountryPanel({
   const panelRootRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
+  const [sourcesExpanded, setSourcesExpanded] = useState(false)
+
+  // D2: consolidated attribution — one footer, exceptions inline. Single
+  // owner of the dominance/marker math: src/lib/fieldSourceMarkers.ts
+  // (shipped with C4; compare computes the same markers across BOTH
+  // countries' _fieldSources, this panel across one).
+  const fieldMarkers = computeFieldSourceMarkers(country._fieldSources)
+  const rowMarker = (field: string): React.ReactNode => {
+    const marker = fieldMarkers.markerByField.get(field)
+    if (!marker) return null
+    return <SourceMarker glyph={marker.glyph} sourceKey={marker.source} sources={sources} />
+  }
 
   useEffect(() => {
     const root = panelRootRef.current
@@ -271,14 +321,11 @@ export function SingleCountryPanel({
                   className="text-xs text-ice-accessible dark:text-ice mt-0.5 flex items-center min-w-0"
                 >
                   <span className="truncate">{country.capital.join(', ')}</span>
-                  {/* Interim attribution (A4): the caption absorbed the deleted
-                      Capital DataCell; the region badge shares this source.
-                      Superseded by D2's consolidated footer. */}
-                  <SourceTooltip
-                    field="capital"
-                    fieldSources={country._fieldSources}
-                    sources={sources}
-                  />
+                  {/* D2: the A4 interim SourceTooltip is retired — capital
+                      carries an exception marker only when its source differs
+                      from the panel's dominant source; the footer's field
+                      table has the full answer either way. */}
+                  {rowMarker('capital')}
                 </p>
               )}
             </div>
@@ -378,17 +425,15 @@ export function SingleCountryPanel({
           >
             {country.region}
             {country.subregion && ` / ${country.subregion}`}
+            {rowMarker('region')}
           </span>
           {activeExceptionBadges(country).map((b) => (
             <span key={b.field} data-testid={b.testId} className={EXCEPTION_BADGE}>
               {b.label}
               {/* Field-level attribution is a constitution item (never silently
-                  regress) — mirrors the capital caption's SourceTooltip (A4). */}
-              <SourceTooltip
-                field={b.field}
-                fieldSources={country._fieldSources}
-                sources={sources}
-              />
+                  regress) — non-dominant badge fields carry the C4/D2 marker
+                  link; dominant ones resolve in the footer's field table. */}
+              {rowMarker(b.field)}
             </span>
           ))}
         </div>
@@ -405,8 +450,7 @@ export function SingleCountryPanel({
           <HeroStat
             label="Population"
             field="population"
-            country={country}
-            sources={sources}
+            marker={rowMarker('population')}
             value={formatCompact(country.population)}
             exact={formatPopulation(country.population)}
             rank={POPULATION_RANKS.get(country.cca3)}
@@ -414,8 +458,7 @@ export function SingleCountryPanel({
           <HeroStat
             label="Area"
             field="area"
-            country={country}
-            sources={sources}
+            marker={rowMarker('area')}
             value={formatCompactArea(country.area)}
             exact={formatArea(country.area)}
             rank={AREA_RANKS.get(country.cca3)}
@@ -423,18 +466,17 @@ export function SingleCountryPanel({
           <HeroStat
             label="Density"
             field="density"
-            country={country}
-            sources={sources}
+            marker={rowMarker('density')}
             value={formatCompactDensity(country) ?? EM_DASH}
             exact={densityOf(country) !== null ? formatDensity(country) : undefined}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-x-4 panel-field-in-1">
-          <DataCell label="Government" field="governmentType" country={country} sources={sources}>
+          <DataCell label="Government" field="governmentType" marker={rowMarker('governmentType')}>
             {country.governmentType || '\u2014'}
           </DataCell>
-          <DataCell label="Languages" field="languages" country={country} sources={sources}>
+          <DataCell label="Languages" field="languages" marker={rowMarker('languages')}>
             {Object.keys(country.languages).length > 0
               ? Object.values(country.languages).join(', ')
               : '\u2014'}
@@ -447,13 +489,13 @@ export function SingleCountryPanel({
 
             <div className="panel-field-in-2">
               {Object.keys(country.currencies).length > 0 && (
-                <DataCell label="Currencies" field="currencies" country={country} sources={sources}>
+                <DataCell label="Currencies" field="currencies" marker={rowMarker('currencies')}>
                   {Object.values(country.currencies)
                     .map((c) => `${c.name} (${c.symbol})`)
                     .join(', ')}
                 </DataCell>
               )}
-              <DataCell label="Timezones" field="timezones" country={country} sources={sources}>
+              <DataCell label="Timezones" field="timezones" marker={rowMarker('timezones')}>
                 <TimezoneList timezones={country.timezones} />
               </DataCell>
             </div>
@@ -462,13 +504,13 @@ export function SingleCountryPanel({
               <>
                 <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
                 <div className="panel-field-in-3">
-                  <FieldLabel
-                    label="Borders"
-                    field="borders"
-                    country={country}
-                    sources={sources}
+                  <div
+                    data-field="borders"
                     className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-2 flex items-center gap-1"
-                  />
+                  >
+                    Borders
+                    {rowMarker('borders')}
+                  </div>
                   <div className="flex flex-wrap gap-1.5">
                     {country.borders.map((code) => (
                       <BorderChip
@@ -485,6 +527,77 @@ export function SingleCountryPanel({
             )}
           </>
         )}
+
+        {/* D2: consolidated linked sources footer (compare's pattern via the
+            shared SourceLinkList), always rendered — attribution must not
+            hide behind the mobile expand toggle. The disclosure exposes the
+            complete field → source table so full granularity stays one
+            interaction away for every country. aria-controls is set only
+            while the table exists — axe's aria-valid-attr-value flags
+            references to absent ids. NO analytics events here.
+            A plain div, not <footer>: a <footer> here maps to an implicit
+            contentinfo landmark nested inside this panel's own
+            role="complementary" landmark — axe's
+            landmark-contentinfo-is-top-level flags that nesting (verified
+            via e2e/axe-snapshot.spec.ts "country panel open"). */}
+        <div
+          data-testid="panel-sources"
+          className="mt-4 pt-3 border-t border-sand-200/50 dark:border-dark-200/30 text-xs text-sand-600 dark:text-dark-100"
+        >
+          <SourceLinkList sources={sources} markerBySource={fieldMarkers.markerBySource} />
+          <button
+            type="button"
+            data-testid="panel-sources-toggle"
+            aria-expanded={sourcesExpanded}
+            {...(sourcesExpanded ? { 'aria-controls': 'panel-sources-detail' } : {})}
+            onClick={() => setSourcesExpanded((v) => !v)}
+            className={`mt-1.5 flex items-center gap-1 font-medium text-ice-accessible dark:text-ice hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60 rounded ${TOUCH_TARGET_TEXT_XS}`}
+          >
+            <svg
+              className={`w-3.5 h-3.5 transition-transform ${sourcesExpanded ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+            Source by field
+          </button>
+          {sourcesExpanded && (
+            <table
+              id="panel-sources-detail"
+              data-testid="panel-sources-detail"
+              className="mt-2 w-full border-collapse"
+            >
+              <caption className="sr-only">Data source for each field</caption>
+              <tbody>
+                {Object.entries(country._fieldSources).map(([field, key]) => (
+                  <tr
+                    key={field}
+                    className="border-t border-sand-200/50 dark:border-dark-200/30 first:border-t-0"
+                  >
+                    <th
+                      scope="row"
+                      className="py-1 pr-3 text-left font-normal text-sand-800 dark:text-dark-50"
+                    >
+                      {FIELD_TABLE_LABELS[field] ?? field}
+                    </th>
+                    {/* _sources can lack a key ('manual-override' on GNB's
+                        unMember) — show the raw key rather than inventing a
+                        registry entry; SourceMarker skips such keys too. */}
+                    <td className="py-1">{sources[key]?.name ?? key}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   )

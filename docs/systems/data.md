@@ -93,7 +93,7 @@ The data collection tool (see [Data Collection](data-collection.md)) merges all 
 
 Data access is flat — `country.population`, not `country.population.value`. Source info lives separately in `country._fieldSources.population`. Identifier fields (`ccn3`, `cca2`, `cca3`) and flag paths are plain strings without source tracking.
 
-The 'i' tooltip component looks up the source key from `_fieldSources` and resolves it via the `_sources` registry to get the display name and URL.
+The attribution UI (the consolidated sources footer, its field → source table, and the exception markers) looks up the source key from `_fieldSources` and resolves it via the `_sources` registry; keys absent from `_sources` (e.g. `manual-override`) render as the raw key with no link.
 
 ### Source Registry
 
@@ -123,7 +123,7 @@ The `lastUpdated` field is set automatically by the data collection tool. For li
 
 ### UI Attribution
 
-Every data field in the country panel has a small 'i' icon. On hover/focus, a tooltip shows the source name and URL. This provides full transparency about data provenance.
+Both panels consolidate attribution into one linked sources footer; any field whose source differs from the panel's dominant source carries a superscript exception marker keyed to the footer (`src/lib/fieldSourceMarkers.ts`). The single panel's footer additionally expands ("Source by field") into the complete field → source table. Full transparency about data provenance, complete granularity one interaction away.
 
 ## Data Join
 

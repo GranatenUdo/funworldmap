@@ -18,7 +18,8 @@ interface Props {
  * tabIndex={-1} or a title-only hint.
  *
  * Renders nothing for source keys absent from _sources (e.g. GNB's
- * 'manual-override'), matching SourceTooltip's guard.
+ * 'manual-override'); the single panel's field → source table shows such
+ * keys raw instead.
  *
  * Contrast (reuses the shipped footer-link pairing, no new pair):
  * #075985 on #fefdfb = 7.44:1 (light); #7dd3fc on #161a22 = 10.45:1 (dark).

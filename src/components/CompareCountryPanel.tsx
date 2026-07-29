@@ -9,6 +9,7 @@ import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstan
 import type { CompareColumn } from '../lib/compareMapClick'
 import { computeFieldSourceMarkers } from '../lib/fieldSourceMarkers'
 import { SourceMarker } from './SourceMarker'
+import { SourceLinkList } from './SourceLinkList'
 
 interface Props {
   country: CountryData
@@ -240,27 +241,7 @@ export function CompareCountryPanel({
           className="px-4 py-3 border-t border-sand-200/50 dark:border-dark-200/30 text-xs text-sand-600 dark:text-dark-100"
           data-testid="compare-sources"
         >
-          <span className="uppercase tracking-wider text-ice-accessible dark:text-ice font-medium">
-            Sources:
-          </span>{' '}
-          {Object.entries(sources).map(([key, s], i) => (
-            <span key={key}>
-              {i > 0 && ' · '}
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-ice-accessible dark:text-ice hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60 rounded"
-              >
-                {/* C4 marker key: the glyph precedes the exception source's name
-                    so row superscripts resolve here. Dominant source: no glyph. */}
-                {fieldMarkers.markerBySource.has(key) && (
-                  <sup className="mr-0.5">{fieldMarkers.markerBySource.get(key)}</sup>
-                )}
-                {s.name}
-              </a>
-            </span>
-          ))}
+          <SourceLinkList sources={sources} markerBySource={fieldMarkers.markerBySource} />
         </footer>
       </div>
     </div>

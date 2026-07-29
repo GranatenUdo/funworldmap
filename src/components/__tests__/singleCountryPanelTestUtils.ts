@@ -2,13 +2,12 @@
  * Shared test fixtures and helpers for SingleCountryPanel tests.
  *
  * Extracted from SingleCountryPanel.test.tsx and SingleCountryPanel.focus.test.tsx
- * to avoid duplicating the country factory, sources constant, matchMedia stub,
- * and getAnimations patch across sibling files.
+ * to avoid duplicating the country factory, sources constant, and
+ * getAnimations patch across sibling files.
  */
 import { vi } from 'vitest'
 import type { CountriesFile } from '../../lib/types'
 import { makeCountryData } from '../../test/countryFixtures'
-import { stubMatchMedia as _stubMatchMedia } from '../../test/matchMediaStub'
 
 // ---------------------------------------------------------------------------
 // Country fixture factory
@@ -27,21 +26,12 @@ export const sources: CountriesFile['_sources'] = {
     description: 'Country reference data',
     lastUpdated: '2026-01-01',
   },
-}
-
-// ---------------------------------------------------------------------------
-// matchMedia stub
-// ---------------------------------------------------------------------------
-
-/**
- * jsdom does not implement matchMedia; SourceTooltip touches it at module
- * evaluation time. Stub it before SingleCountryPanel is dynamically imported.
- */
-export function stubMatchMedia(): void {
-  // Only install if not already present — this is called in beforeAll, which
-  // runs once per describe block; subsequent calls are no-ops.
-  if ((window as unknown as { matchMedia?: unknown }).matchMedia) return
-  _stubMatchMedia()
+  'cia-factbook': {
+    name: 'CIA World Factbook (archived)',
+    url: 'https://github.com/factbook/factbook.json',
+    description: 'CC0 JSON archive of the CIA World Factbook',
+    lastUpdated: '2026-01-22',
+  },
 }
 
 // ---------------------------------------------------------------------------

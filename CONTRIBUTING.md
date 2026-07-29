@@ -54,7 +54,7 @@ To propose a new source:
 2. Add a fetch module under `scripts/sources/` that returns normalized `CountryData`.
 3. Register the source key and merge priority. Update `_sources` metadata in the output.
 4. Run `npm run update-data` and commit the resulting diff alongside the code change.
-5. Every new field must have a `_fieldSources` entry and a `SourceTooltip`-visible source.
+5. Every new field must have a `_fieldSources` entry that resolves in the panel's sources footer (the field → source table, plus an exception marker where the source is non-dominant).
 
 Open an issue first if the source brings a new field shape — this helps align on the merge priority before you write the integration.
 

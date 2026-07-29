@@ -1,7 +1,7 @@
 /**
- * C4/D2 exception-marker scheme — single owner (spec 2026-07-26, item C4;
- * D2 adopts these exports for the single-country panel later — never
- * re-derive dominance elsewhere).
+ * C4/D2 exception-marker scheme — single owner (spec 2026-07-26, items
+ * C4/D2; both panels consume these exports — never re-derive dominance
+ * elsewhere).
  *
  * A panel shows ONE consolidated sources footer. Field-level attribution
  * granularity is preserved by marking only the exceptions: any field whose

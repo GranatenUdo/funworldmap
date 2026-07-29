@@ -38,7 +38,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@floating-ui/react": "^0.27.19",
     "@sentry/react": "^10.53.1",
     "@vis.gl/react-maplibre": "^8.1.1",
     "fuse.js": "^7.3.0",

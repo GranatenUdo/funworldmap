@@ -11,31 +11,12 @@
  * the test cannot depend on wallclock pacing — required by the standing
  * "no flaky tests" rule.
  */
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, fireEvent, render, within } from '@testing-library/react'
-import type { CountryData, CountriesFile } from '../../lib/types'
-import type { ComponentType } from 'react'
-import {
-  makeCountry,
-  sources,
-  stubMatchMedia,
-  stubGetAnimations,
-} from './singleCountryPanelTestUtils'
+import type { CountryData } from '../../lib/types'
+import { makeCountry, sources, stubGetAnimations } from './singleCountryPanelTestUtils'
 import { TOUCH_TARGET_FROM_36 } from '../../lib/layoutConstants'
-
-// Dynamically loaded after matchMedia is stubbed.
-let SingleCountryPanel: ComponentType<{
-  country: CountryData
-  comparePickingMode: boolean
-  sources: CountriesFile['_sources']
-  isDesktop: boolean
-  onSelect: (cca3: string) => void
-  onClose: () => void
-  onEnterCompare: () => void
-  onCancelCompare: () => void
-  byCca3: Map<string, CountryData>
-  inGameRound?: boolean
-}>
+import { SingleCountryPanel } from '../SingleCountryPanel'
 
 function renderPanel() {
   return render(
@@ -54,12 +35,6 @@ function renderPanel() {
 }
 
 describe('SingleCountryPanel — data-animation-state lifecycle', () => {
-  beforeAll(async () => {
-    stubMatchMedia()
-    const mod = await import('../SingleCountryPanel')
-    SingleCountryPanel = mod.SingleCountryPanel as typeof SingleCountryPanel
-  })
-
   // Note: not faking microtasks (queueMicrotask, Promise) — Promise.then() is
   // not a timer and is driven by act() naturally.
   beforeEach(() => {
@@ -209,8 +184,8 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
     expect(queryByText('Independent')).toBeNull()
   })
 
-  it('header caption joins all capitals and carries the interim capital SourceTooltip', () => {
-    const { getByTestId, getByRole } = renderWith(
+  it('header caption joins all capitals; the A4 interim tooltip is retired (D2)', () => {
+    const { getByTestId, queryByRole } = renderWith(
       makeCountry({
         cca3: 'ZAF',
         cca2: 'ZA',
@@ -225,12 +200,12 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
     expect(getByTestId('capital-caption').textContent).toContain(
       'Pretoria, Bloemfontein, Cape Town',
     )
-    // Interim attribution: the caption keeps a Source affordance for capital
-    // (region shares the same source) until D2's consolidated footer.
-    expect(getByRole('button', { name: 'Source: REST Countries' })).toBeTruthy()
+    // capital sits on the dominant source, so no inline marker renders —
+    // its attribution lives in the footer's field → source table.
+    expect(queryByRole('button', { name: /^Source:/ })).toBeNull()
   })
 
-  it('Vatican (unMember false, independent true) renders only the UN observer badge, with source attribution', () => {
+  it('Vatican renders only the UN observer badge; a non-dominant badge field carries a marker link', () => {
     const { getByText, queryByText, getByTestId } = renderWith(
       makeCountry({
         cca3: 'VAT',
@@ -245,19 +220,27 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
         governmentType: 'ecclesiastical elective monarchy',
         unMember: false,
         independent: true,
-        _fieldSources: { unMember: 'restcountries' },
+        _fieldSources: {
+          population: 'restcountries',
+          area: 'restcountries',
+          capital: 'restcountries',
+          unMember: 'cia-factbook',
+        },
       }),
     )
     expect(getByText('UN observer state')).toBeTruthy()
     expect(queryByText('Not independent')).toBeNull()
-    // Field-level attribution is a constitution item — the badge must carry
-    // the same SourceTooltip affordance as every other data field (A5/A4).
-    within(getByTestId('exception-badge-un-member')).getByRole('button', {
-      name: 'Source: REST Countries',
+    // Field-level attribution is a constitution item (never silently
+    // regress) — a badge whose source differs from the panel's dominant
+    // source carries the C4/D2 marker, a real LINK in the Tab order
+    // (the hover-only rings are retired).
+    const marker = within(getByTestId('exception-badge-un-member')).getByRole('link', {
+      name: 'Source: CIA World Factbook (archived)',
     })
+    expect(marker.getAttribute('data-testid')).toBe('source-marker-cia-factbook')
   })
 
-  it('Palestine (unMember false, independent false) renders both exception badges, each with source attribution', () => {
+  it('Palestine renders both exception badges bare when their fields sit on the dominant source', () => {
     const { getByText, getByTestId } = renderWith(
       makeCountry({
         cca3: 'PSE',
@@ -276,28 +259,29 @@ describe('SingleCountryPanel — prime grid dedupe + exception badges (A4+A5)', 
     )
     expect(getByText('UN observer state')).toBeTruthy()
     expect(getByText('Not independent')).toBeTruthy()
-    within(getByTestId('exception-badge-un-member')).getByRole('button', {
-      name: 'Source: REST Countries',
-    })
-    within(getByTestId('exception-badge-independent')).getByRole('button', {
-      name: 'Source: REST Countries',
-    })
+    // Dominant-source badge fields carry no inline marker — the footer's
+    // field table answers them one interaction away.
+    expect(within(getByTestId('exception-badge-un-member')).queryByRole('link')).toBeNull()
+    expect(within(getByTestId('exception-badge-independent')).queryByRole('link')).toBeNull()
   })
 
-  it('exception badges render no source affordance when _fieldSources omits the field', () => {
+  it('a badge marker for a source key absent from _sources renders nothing (GNB manual-override)', () => {
     const { getByTestId } = renderWith(
       makeCountry({
-        cca3: 'PSE',
-        cca2: 'PS',
-        ccn3: '275',
-        name: { common: 'Palestine', official: 'State of Palestine' },
+        cca3: 'GNB',
+        cca2: 'GW',
+        ccn3: '624',
+        name: { common: 'Guinea-Bissau', official: 'Republic of Guinea-Bissau' },
         unMember: false,
-        independent: false,
-        _fieldSources: {},
+        _fieldSources: {
+          population: 'restcountries',
+          area: 'restcountries',
+          capital: 'restcountries',
+          unMember: 'manual-override',
+        },
       }),
     )
-    expect(within(getByTestId('exception-badge-un-member')).queryByRole('button')).toBeNull()
-    expect(within(getByTestId('exception-badge-independent')).queryByRole('button')).toBeNull()
+    expect(within(getByTestId('exception-badge-un-member')).queryByRole('link')).toBeNull()
   })
 
   it('a UN member (France) renders no exception badges', () => {
@@ -444,20 +428,24 @@ describe('SingleCountryPanel — hero stats row (D1)', () => {
     expect(density.getAttribute('title')).toBeNull()
   })
 
-  it('Population/Area keep field-level source attribution; Population/Area DataCells are gone', () => {
+  it('Population/Area hero fields keep the data-field anchor; dominant-source fields carry no marker (D2)', () => {
     const { container, getByTestId, getAllByTestId } = renderWith(
       makeCountry({ _fieldSources: { population: 'restcountries', area: 'restcountries' } }),
     )
-    // data-field anchors preserved — e2e/source-tooltip-edge.spec.ts targets
-    // [data-field="population"]'s Source button (constitution: attribution
-    // never silently regresses; D2 owns the eventual ring retirement).
+    // data-field anchors preserved — e2e/single-source-attribution.spec.ts and
+    // the disclosure table both key off these (constitution: attribution
+    // never silently regresses; D2 retired the per-field rings in favor of
+    // the C4/D2 marker scheme).
     const hero = getByTestId('hero-stats')
-    within(hero.querySelector('[data-field="population"]') as HTMLElement).getByRole('button', {
-      name: 'Source: REST Countries',
-    })
-    within(hero.querySelector('[data-field="area"]') as HTMLElement).getByRole('button', {
-      name: 'Source: REST Countries',
-    })
+    // Both fields sit on the panel's sole (dominant) source, so neither
+    // carries an inline exception marker — the footer's field table has
+    // the answer either way.
+    expect(
+      within(hero.querySelector('[data-field="population"]') as HTMLElement).queryByRole('link'),
+    ).toBeNull()
+    expect(
+      within(hero.querySelector('[data-field="area"]') as HTMLElement).queryByRole('link'),
+    ).toBeNull()
     expect(container.querySelector('[data-field="density"]')).toBeTruthy()
     // Prime grid DataCells are now Government + Languages (+ Currencies,
     // Timezones in the desktop secondary section) — Population/Area moved out.
@@ -466,5 +454,114 @@ describe('SingleCountryPanel — hero stats row (D1)', () => {
     )
     expect(cellLabels).not.toContain('Population')
     expect(cellLabels).not.toContain('Area')
+  })
+
+  it('a hero field on a non-dominant source carries the C4/D2 marker link', () => {
+    const { getByTestId } = renderWith(
+      makeCountry({
+        _fieldSources: {
+          population: 'cia-factbook',
+          area: 'restcountries',
+          governmentType: 'restcountries',
+        },
+      }),
+    )
+    const hero = getByTestId('hero-stats')
+    const marker = within(hero.querySelector('[data-field="population"]') as HTMLElement).getByRole(
+      'link',
+      { name: 'Source: CIA World Factbook (archived)' },
+    )
+    expect(marker.getAttribute('data-testid')).toBe('source-marker-cia-factbook')
+  })
+})
+
+describe('SingleCountryPanel — consolidated sources footer (D2)', () => {
+  function renderWith(country: CountryData) {
+    return render(
+      <SingleCountryPanel
+        country={country}
+        comparePickingMode={false}
+        sources={sources}
+        isDesktop={true}
+        onSelect={() => {}}
+        onClose={() => {}}
+        onEnterCompare={() => {}}
+        onCancelCompare={() => {}}
+        byCca3={new Map()}
+      />,
+    )
+  }
+
+  // Mirrors the bundled data's shape: every field restcountries except
+  // governmentType (cia-factbook) — the one exception, glyph †.
+  const franceLike = () =>
+    makeCountry({
+      _fieldSources: {
+        capital: 'restcountries',
+        population: 'restcountries',
+        area: 'restcountries',
+        languages: 'restcountries',
+        currencies: 'restcountries',
+        timezones: 'restcountries',
+        governmentType: 'cia-factbook',
+      },
+    })
+
+  it('renders one linked footer; the exception source carries the † glyph key', () => {
+    const { getByTestId } = renderWith(franceLike())
+    const footer = getByTestId('panel-sources')
+    expect(footer.textContent).toContain('Sources:')
+    const rest = within(footer).getByRole('link', { name: /REST Countries/ })
+    expect(rest.getAttribute('href')).toBe('https://restcountries.com')
+    expect(rest.getAttribute('target')).toBe('_blank')
+    expect(rest.getAttribute('rel')).toBe('noopener noreferrer')
+    expect(rest.textContent).not.toContain('†')
+    const cia = within(footer).getByRole('link', { name: /CIA World Factbook/ })
+    expect(cia.textContent).toContain('†')
+  })
+
+  it('the Government field carries the † marker; dominant-source fields carry none', () => {
+    const { getByTestId, queryByTestId } = renderWith(franceLike())
+    const marker = getByTestId('source-marker-cia-factbook')
+    expect(marker.textContent).toBe('†')
+    expect(marker.closest('[data-field="governmentType"]')).not.toBeNull()
+    expect(queryByTestId('source-marker-restcountries')).toBeNull()
+  })
+
+  it('the per-field "i" rings are gone', () => {
+    const { queryAllByRole } = renderWith(franceLike())
+    expect(queryAllByRole('button', { name: /^Source:/ })).toHaveLength(0)
+  })
+
+  it('disclosure expands into the full field → source table and collapses back', () => {
+    const { getByTestId, queryByTestId } = renderWith(franceLike())
+    const toggle = getByTestId('panel-sources-toggle')
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(queryByTestId('panel-sources-detail')).toBeNull()
+
+    fireEvent.click(toggle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('true')
+    expect(toggle.getAttribute('aria-controls')).toBe('panel-sources-detail')
+    const table = getByTestId('panel-sources-detail')
+    expect(within(table).getAllByRole('row')).toHaveLength(7)
+    within(table).getByRole('rowheader', { name: 'Government' })
+    within(table).getByRole('cell', { name: 'CIA World Factbook (archived)' })
+    within(table).getByRole('rowheader', { name: 'Capital' })
+
+    fireEvent.click(toggle)
+    expect(toggle.getAttribute('aria-expanded')).toBe('false')
+    expect(queryByTestId('panel-sources-detail')).toBeNull()
+  })
+
+  it('the table falls back to the raw source key when _sources lacks it (manual-override)', () => {
+    const { getByTestId } = renderWith(
+      makeCountry({
+        _fieldSources: { population: 'restcountries', unMember: 'manual-override' },
+      }),
+    )
+    fireEvent.click(getByTestId('panel-sources-toggle'))
+    const table = getByTestId('panel-sources-detail')
+    within(table).getByRole('rowheader', { name: 'UN member' })
+    within(table).getByRole('cell', { name: 'manual-override' })
   })
 })
