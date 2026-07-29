@@ -3652,3 +3652,74 @@ The compact sticky header omits the A5 exception badges ("UN observer state" / "
 
 - [ ] **Step 10 — commit.**
   `git add docs/systems/ui-layout.md docs/superpowers/plans/2026-07-28-workstream-c-compare.md && git commit -m "docs(compare): ui-layout compare section + workstream C completion ledger" -m "Verification sweep: npm run check green; CI-covered e2e (compare-map-clicks, compare-view-dimming, compare-source-attribution, a11y-contrast, panel-and-deeplink) and local-only e2e (search, accessibility, axe-snapshot, theme-and-responsive, game-country-pinning) green at --workers=2; mobile-project smoke green; both-theme desktop+390px live pass done; no new telemetry (grep-verified)." -m "Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"`
+
+## Completion ledger (Task 7, post-verification)
+
+Verification sweep results (2026-07-29): `npm run check` green (76 test files, 585 unit
+tests); CI-covered e2e (`compare-map-clicks`, `compare-view-dimming`, `compare-source-attribution`,
+`a11y-contrast`, `panel-and-deeplink`, plus `panel-focus` and `mobile-panel-header` added after the
+fixes below) green at `--workers=2`; local-only e2e (`search`, `accessibility`, `axe-snapshot`,
+`theme-and-responsive`, `game-country-pinning`) green at `--workers=2`; mobile-project smoke
+(`mobile-smoke`, `mobile-tap` × mobile-chromium/mobile-webkit/desktop-firefox-touch) green; no new
+telemetry (`git diff main...HEAD -- src cloudflare-worker | grep -E 'track\(|KNOWN_EVENTS'` empty).
+
+**Two bugs were found and fixed during the live pass** (both are regressions from Tasks 1–6, not
+pre-existing — see commits on this branch for full detail):
+
+- **Desktop single-country-panel header truncation** (`SingleCountryPanel.tsx`). C5's wider
+  icon+text Compare pill made the header's button group ~155px wider than the pre-C5 icon-only
+  button; sharing one flex row with the name column's `min-w-0` meant the extra width came
+  entirely out of the name — on a 360px desktop panel the name column was squeezed to ~29px, so
+  `line-clamp-2` truncated "France" to "Fr"/"a…" on *every* desktop single-country panel. Invisible
+  to automated tests (`toContainText` assertions don't see CSS truncation, and
+  `mobile-panel-header.spec.ts`'s truncation guard only covers <414px). Fixed: the header row now
+  wraps (`flex-wrap`) so the button group drops to its own line instead of crushing the name.
+  Verified against short (France) and long (Saint Vincent and the Grenadines, DR Congo) names at
+  1280px — no truncation, no overflow. `SingleCountryPanel.test.tsx` (16 tests) still green.
+- **Mobile compare camera renders below the sheet, not above it** (`flyToComparePair.ts`).
+  Measured live at 390×844: France/Germany projected to y≈183–189px against a 168.8px sheet-top
+  cutoff — hidden behind the sheet, not framed in the strip above it as C6 intends. Root cause:
+  `cameraForBounds`' globe-projection fit ignores pitch entirely (passing it explicitly, even
+  matching the map's current pitch, produced byte-identical center/zoom to omitting it — confirmed
+  by direct measurement). Desktop's `DEFAULT_PITCH` tilt is harmless there because its occlusion is
+  horizontal; mobile's is vertical, and the pitch-0-fit-then-pitch-20-render mismatch shifted these
+  near-top-of-viewport points ~80–95px down-screen. Fixed: mobile's compare camera now renders at
+  pitch 0. Verified live for France+Germany (now clearly framed above the sheet) and confirmed via
+  a new regression test (`flyToComparePair.test.ts`, 8 tests, all green) that no existing assertion
+  broke.
+
+**One bug was found and is NOT fixed — flagged, not papered over:**
+
+- **Wider compare pairs still render below the mobile sheet** (e.g. Brazil+Nigeria, span ~59°,
+  under the 110° wide-pair-fallback threshold so it does go through the padded `cameraForBounds`
+  path). Even at pitch 0, the fit itself is degenerate for wider spans under this ~80%-of-viewport
+  bottom-padding ratio: for Brazil+Nigeria (true centroid latitudes near ±10°) `cameraForBounds`
+  computed a center at **-78.7° latitude** — nowhere near either country. A follow-up experiment
+  swept the bottom-padding fraction from 0 to 0.8 and found the center latitude degrades
+  *monotonically* toward the equator as the fraction grows, and beyond ~90px of extra buffer
+  `cameraForBounds` returns `undefined` outright — i.e. the response to padding is not linear or
+  even well-behaved, so a numeric tweak is not a safe same-session fix. France+Germany (a closer
+  pair) is fully fixed by the pitch correction above; Brazil+Nigeria is not. This needs a dedicated
+  fix — candidates: cap/reduce the effective bottom-padding fraction used for the camera fit
+  (decoupled from the sheet's own `h-[80dvh]` CSS height), fall back to mercator projection for
+  mobile compare framing, or compute the fit iteratively (fit → measure via `map.project` → correct)
+  instead of trusting a single `cameraForBounds` call. Not filed against any existing D-series task;
+  needs a new owner.
+
+Intentionally NOT shipped in this workstream — each has a named owner:
+
+- **Mobile labeled Compare chip** → D4 (owns the sheet-header restructure). C5 shipped the desktop pill + one-time tip only.
+- **Single-panel adoption of the exception marker** → D2. C4 shipped the marker *definition* (spec's "whichever lands first" clause); D2 adopts it when the per-field "i" rings are retired.
+- **Exception badges in the mobile compare header** — omitted from the compact sticky header (affects Vatican/Palestine pairs only; desktop column headers carry them). Revisit inside D4's sheet-header restructure.
+- **Mobile-compare e2e** — none exists and none was added: the mobile Playwright projects (all local-only; CI runs only `chromium`) have no compare flow. Coverage is component tests, camera unit tests, and this task's 390px live pass.
+- **GLOBE_SCALE_ZOOM guard on mobile** — deliberately disabled (it would re-center the pair under the sheet). If a device live case ever shows a vertical past-the-horizon swing, fix with a mobile-specific clamp, not the symmetric fallback (`flyToComparePair.ts` comment).
+- **Telemetry** — this workstream ships no new `track()` events (verified: `git diff main...HEAD -- src cloudflare-worker | grep -E 'track\(|KNOWN_EVENTS'` is empty). No `KNOWN_EVENTS`, `docs/systems/analytics.md`, or wrangler-deploy changes.
+
+Also worth noting: the checklist's "compare France vs Vatican to see em-dash placeholders" step
+does not actually produce an em dash — the bundled data has every `COMPARE_FIELDS` field populated
+for both France and Vatican (verified against `src/data/countries.json`). Vatican's header exception
+badge ("UN observer state") does render correctly. The em-dash mechanism itself works correctly —
+verified instead against France vs Palestine (PSE), the other canonical observer state, which has a
+genuinely empty `governmentType` in the bundled data and correctly renders the em dash plus both
+header exception badges ("UN observer state" and "Not independent"). Not a bug; a stale example in
+the checklist.
