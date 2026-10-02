@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-03T00:00:00Z",
+  "title": "Design System: funworldmap",
+  "extensions": {
+    "colorMeta": {
+      "ice": {
+        "role": "primary",
+        "displayName": "Ice",
+        "canonical": "#7dd3fc",
+        "tonalRamp": [
+          "#082f49",
+          "#075985",
+          "#0369a1",
+          "#0284c7",
+          "#0ea5e9",
+          "#38bdf8",
+          "#7dd3fc",
+          "#bae6fd"
+        ]
+      },
+      "signal": {
+        "role": "secondary",
+        "displayName": "Signal",
+        "canonical": "#ff8a4c",
+        "tonalRamp": [
+          "#431407",
+          "#7c2d12",
+          "#9a3412",
+          "#c2410c",
+          "#ea580c",
+          "#f97316",
+          "#fb923c",
+          "#ff8a4c"
+        ]
+      },
+      "sand-100": {
+        "role": "neutral",
+        "displayName": "Sand (light housing)",
+        "canonical": "#faf7f2",
+        "tonalRamp": [
+          "#1e1b18",
+          "#2c2924",
+          "#4a453d",
+          "#6b6459",
+          "#8c8578",
+          "#b8b0a4",
+          "#e0d8cc",
+          "#faf7f2"
+        ]
+      },
+      "dark-400": {
+        "role": "neutral",
+        "displayName": "Charcoal (dark housing)",
+        "canonical": "#161a22",
+        "tonalRamp": [
+          "#121518",
+          "#161a22",
+          "#1e2430",
+          "#334155",
+          "#64748b",
+          "#94a3b8",
+          "#cbd5e1",
+          "#f1f5f9"
+        ]
+      },
+      "space-core": {
+        "role": "neutral",
+        "displayName": "Space Backdrop (Space-Dark Rule gradient)",
+        "canonical": "#16213b",
+        "tonalRamp": ["#04060d", "#0a0f1f", "#16213b"]
+      },
+      "spotlight-dim": {
+        "role": "neutral",
+        "displayName": "Spotlight Scrim",
+        "canonical": "#020617",
+        "tonalRamp": [
+          "#020617",
+          "#0f172a",
+          "#1e293b",
+          "#334155",
+          "#475569",
+          "#64748b",
+          "#94a3b8",
+          "#cbd5e1"
+        ]
+      },
+      "reveal-correct": {
+        "role": "tertiary",
+        "displayName": "Reveal Correct (data encoding)",
+        "canonical": "#22c55e",
+        "tonalRamp": [
+          "#052e16",
+          "#14532d",
+          "#166534",
+          "#15803d",
+          "#16a34a",
+          "#22c55e",
+          "#4ade80",
+          "#86efac"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Country names and overlay titles — Outfit 700, tight -0.025em tracking."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Prose, values, controls — Outfit 400, 14-15px typical."
+      },
+      "readout": {
+        "displayName": "Readout",
+        "purpose": "Every number a player watches: scores, compare values, stats. System mono + tabular-nums, zero bundle cost."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "11px/500 uppercase 0.12em micro-captions, always ice-colored — the instrument dial label."
+      }
+    },
+    "shadows": [
+      {
+        "name": "floating-panel",
+        "value": "0 25px 50px rgba(0,0,0,0.3)",
+        "purpose": "Desktop panel/compare cards (dark theme deepens to /0.6). One soft plume, never stacked."
+      },
+      {
+        "name": "sheet-up",
+        "value": "0 -10px 40px rgba(0,0,0,0.2)",
+        "purpose": "Mobile bottom sheets, cast upward."
+      },
+      {
+        "name": "overlay-card",
+        "value": "0 25px 50px -12px rgba(0,0,0,0.25)",
+        "purpose": "HUD, search dropdown, game-over card (Tailwind shadow-2xl)."
+      },
+      {
+        "name": "chrome",
+        "value": "0 4px 12px rgba(0,0,0,0.2)",
+        "purpose": "Map controls, hover tooltip."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "ease-out",
+        "purpose": "Default for all entrances: fade + 6-12px rise, 100-300ms."
+      },
+      {
+        "name": "ease-spring-compare",
+        "value": "cubic-bezier(0.34, 1.3, 0.64, 1)",
+        "purpose": "The one overshoot curve — compare panel desktop entrance, 250ms."
+      },
+      {
+        "name": "panel-card-in",
+        "value": "250ms ease-out (opacity 0, translateY(12px), scale(0.97) → identity)",
+        "purpose": "Floating card entrance."
+      },
+      {
+        "name": "stagger-step",
+        "value": "50-60ms",
+        "purpose": "Field/card stagger increments (panel fields 50/100/150ms; launcher cards 120+i*60ms)."
+      },
+      {
+        "name": "dropdown-in",
+        "value": "120ms ease-out (scaleY 0.96, translateY(-4px))",
+        "purpose": "Search dropdown, transform-origin top."
+      },
+      {
+        "name": "fade-up",
+        "value": "200-300ms ease-out (translateY(6px))",
+        "purpose": "Pills, toasts, hints, tooltips."
+      },
+      {
+        "name": "camera-flyto",
+        "value": "1400ms, curve 1.5, pitch 20",
+        "purpose": "Map camera — the only long animation; reduced motion gets jumpTo/pitch 0."
+      }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "desktop-panel-switch", "value": "1024px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one CTA recipe — Play, Continue, Play again. Identical in both themes.",
+      "html": "<button class=\"ds-btn-primary\">Play again</button>",
+      "css": ".ds-btn-primary { background: var(--color-ice-accessible, #075985); color: #ffffff; font-family: 'Outfit', system-ui, sans-serif; font-size: 14px; font-weight: 600; padding: 8px 16px; border: none; border-radius: 12px; cursor: pointer; transition: background-color 150ms; } .ds-btn-primary:hover { background: var(--color-ice-dim, #0369a1); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(7,89,133,0.5); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Quiet sibling — Back to map.",
+      "html": "<button class=\"ds-btn-secondary\">Back to map</button>",
+      "css": ".ds-btn-secondary { background: var(--color-sand-200, #f0ebe3); color: var(--color-sand-900, #1e1b18); font-family: 'Outfit', system-ui, sans-serif; font-size: 14px; font-weight: 500; padding: 8px 16px; border: none; border-radius: 12px; cursor: pointer; transition: background-color 150ms; } .ds-btn-secondary:hover { background: var(--color-sand-300, #e0d8cc); } .ds-btn-secondary:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(125,211,252,0.5); }"
+    },
+    {
+      "name": "Frosted Header Chip",
+      "kind": "button",
+      "refersTo": "chip-header",
+      "description": "40px frosted icon/action chip — Play, basemap, theme toggles. Active state flips to the ice-selected tint.",
+      "html": "<button class=\"ds-chip-header\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M8 5v14l11-7z\"/></svg><span>Play</span></button>",
+      "css": ".ds-chip-header { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px; background: rgba(250,247,242,0.9); color: var(--color-ice-accessible, #075985); border: 1px solid rgba(224,216,204,0.5); border-radius: 12px; backdrop-filter: blur(8px); font-family: 'Outfit', system-ui, sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 150ms; } .ds-chip-header:hover { background: rgba(240,235,227,0.9); } .ds-chip-header:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(3,105,161,0.5); }"
+    },
+    {
+      "name": "Fitted Ice Chip (BorderChip)",
+      "kind": "chip",
+      "refersTo": "chip-fitted-ice",
+      "description": "The signature interactive chip — a calibrated fitting: hairline border, transparent rest, ice tint on hover.",
+      "html": "<button class=\"ds-chip-ice\"><span class=\"ds-chip-ice-flag\"></span>France</button>",
+      "css": ".ds-chip-ice { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; font-family: 'Outfit', system-ui, sans-serif; font-size: 12px; color: var(--color-ice-accessible, #075985); background: transparent; border: 1px solid rgba(224,216,204,0.65); border-radius: 8px; cursor: pointer; transition: background-color 150ms; } .ds-chip-ice:hover { background: rgba(3,105,161,0.08); } .ds-chip-ice:focus-visible { outline: none; box-shadow: 0 0 0 2px rgba(3,105,161,0.5); } .ds-chip-ice-flag { width: 16px; height: 12px; border-radius: 2px; background: linear-gradient(90deg, #075985 33%, #fefdfb 33% 66%, #ea580c 66%); box-shadow: 0 1px 2px rgba(0,0,0,0.15); }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "description": "Opaque sand combobox with ice search glyph and fine-pointer '/' kbd chip.",
+      "html": "<div class=\"ds-search\"><svg class=\"ds-search-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><path d=\"m21 21-4.35-4.35\"/></svg><input type=\"text\" placeholder=\"Search countries...\" /><kbd>/</kbd></div>",
+      "css": ".ds-search { position: relative; display: block; width: 280px; } .ds-search input { width: 100%; box-sizing: border-box; padding: 12px 36px 12px 40px; font-family: 'Outfit', system-ui, sans-serif; font-size: 14px; color: var(--color-sand-900, #1e1b18); background: var(--color-sand-100, #faf7f2); border: 1px solid var(--color-sand-300, #e0d8cc); border-radius: 12px; backdrop-filter: blur(12px); transition: all 150ms; } .ds-search input::placeholder { color: var(--color-sand-400, #b8b0a4); } .ds-search input:focus { outline: none; border-color: rgba(3,105,161,0.4); box-shadow: 0 0 0 2px rgba(3,105,161,0.4); } .ds-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--color-ice-dim, #0369a1); pointer-events: none; } .ds-search kbd { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); padding: 2px 6px; font-family: 'Outfit', system-ui, sans-serif; font-size: 11px; font-weight: 500; color: var(--color-sand-500, #8c8578); background: rgba(240,235,227,0.6); border: 1px solid rgba(224,216,204,0.6); border-radius: 6px; }"
+    },
+    {
+      "name": "Ambient Dark Pill (Toast)",
+      "kind": "custom",
+      "refersTo": "pill-ambient-dark",
+      "description": "Dark-in-both-themes status pill — toast and onboarding hint share the silhouette.",
+      "html": "<div class=\"ds-toast\" role=\"status\">Link copied</div>",
+      "css": ".ds-toast { display: inline-block; padding: 10px 20px; font-family: 'Outfit', system-ui, sans-serif; font-size: 14px; color: var(--color-ice, #7dd3fc); background: rgba(22,26,34,0.9); border: 1px solid rgba(125,211,252,0.3); border-radius: 9999px; backdrop-filter: blur(8px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); }"
+    },
+    {
+      "name": "Compare Pair Row",
+      "kind": "custom",
+      "description": "The A/B encoding: signal-A and ice-B badges over theme-invariant paired bars with a mono delta chip.",
+      "html": "<div class=\"ds-compare\"><div class=\"ds-compare-label\">Population</div><div class=\"ds-compare-row\"><span class=\"ds-badge ds-badge-a\">A</span><div class=\"ds-bar-track\"><div class=\"ds-bar ds-bar-a\" style=\"width:78%\"></div></div><span class=\"ds-val\">68.2M</span></div><div class=\"ds-compare-row\"><span class=\"ds-badge ds-badge-b\">B</span><div class=\"ds-bar-track\"><div class=\"ds-bar ds-bar-b\" style=\"width:100%\"></div></div><span class=\"ds-val\">83.3M</span></div><span class=\"ds-delta\">1.2× B</span></div>",
+      "css": ".ds-compare { font-family: 'Outfit', system-ui, sans-serif; width: 300px; } .ds-compare-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-ice-accessible, #075985); margin-bottom: 6px; } .ds-compare-row { display: grid; grid-template-columns: 18px 1fr max-content; align-items: center; gap: 8px; margin-bottom: 4px; } .ds-badge { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--color-dark-500, #121518); } .ds-badge-a { background: var(--color-signal, #ff8a4c); } .ds-badge-b { background: var(--color-ice, #7dd3fc); } .ds-bar-track { height: 8px; } .ds-bar { height: 8px; border-radius: 9999px; } .ds-bar-a { background: var(--color-signal-mid, #ea580c); } .ds-bar-b { background: var(--color-ice-mid, #0284c7); } .ds-val { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 14px; color: var(--color-sand-800, #2c2924); } .ds-delta { display: inline-block; margin-top: 2px; padding: 2px 6px; font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: 11px; background: var(--color-sand-200, #f0ebe3); color: var(--color-sand-800, #2c2924); border-radius: 6px; }"
+    },
+    {
+      "name": "Data Cell",
+      "kind": "custom",
+      "description": "The instrument-dial unit: 11px uppercase ice micro-label over a tabular value.",
+      "html": "<div class=\"ds-datacell\"><div class=\"ds-datacell-label\">Population</div><div class=\"ds-datacell-value\">68,170,228</div></div>",
+      "css": ".ds-datacell { font-family: 'Outfit', system-ui, sans-serif; padding: 6px 0; } .ds-datacell-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-ice-accessible, #075985); margin-bottom: 2px; } .ds-datacell-value { font-size: 15px; color: var(--color-sand-800, #2c2924); font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Frosted Card",
+      "kind": "card",
+      "refersTo": "card-floating",
+      "description": "The one floating-surface recipe — panels, HUD, dropdown, launcher cards.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Country Pinning</div><div class=\"ds-card-sub\">Click the right country — three lives, unlimited rounds.</div></div>",
+      "css": ".ds-card { width: 280px; padding: 20px; font-family: 'Outfit', system-ui, sans-serif; background: rgba(254,253,251,0.95); border: 1px solid rgba(240,235,227,0.5); border-radius: 16px; backdrop-filter: blur(24px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); } .ds-card-title { font-size: 18px; font-weight: 700; color: var(--color-sand-900, #1e1b18); margin-bottom: 4px; } .ds-card-sub { font-size: 12px; color: var(--color-sand-600, #6b6459); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Observatory",
+    "overview": "The globe is the observed object; every piece of chrome is a calibrated instrument pointed at it. The map fills the viewport edge to edge, floating in a space-dark surround that never changes with the theme — what changes is the instrument housing around it: warm sand fittings in light mode, charcoal-and-starlight in dark. Panels, HUDs, and cards are frosted glass lenses hovering over the world, never walls beside it; when a panel opens, the camera shifts the planet, not the layout. The mood is precise, quiet, luminous. Exactly two accents exist and each has one meaning: ice is how you find your way, signal is the live pulse of play. The chrome never raises its voice — the fun lives in the copy and the game feedback, not in the hue system.",
+    "keyCharacteristics": [
+      "Map-first, full-bleed globe; all UI floats above it at fixed positions",
+      "Two semantic accents (ice / signal) with hard-assigned meanings; everything else colored is a data encoding, not an accent",
+      "Frosted-glass surface language: translucent cards + backdrop blur over the living map",
+      "Instrument typography: Outfit for display/body, system mono + tabular-nums for every number that matters",
+      "Space-dark backdrop in both themes; light/dark only re-skins the instrument housing",
+      "WCAG AA enforced by construction: every accent has a documented accessible variant per surface"
+    ],
+    "rules": [
+      {
+        "name": "The Two-Accent Rule",
+        "body": "Ice means interactive/wayfinding; signal means live game state/loss. No third accent exists, and neither accent ever borrows the other's meaning. Anything else with hue is a data encoding and must be justifiable as one.",
+        "section": "colors"
+      },
+      {
+        "name": "The Accessible-Pair Rule",
+        "body": "Light surfaces carry the deep variants for text (text-ice-accessible dark:text-ice, text-signal-accessible dark:text-signal); dark surfaces carry the bare accents. Never place bare ice or signal text on a sand surface.",
+        "section": "colors"
+      },
+      {
+        "name": "The Retirement Rule",
+        "body": "Teal (#14b8a6 family) and coral (#f43f5e family) are retired and pinned absent by designTokens.test.ts. Do not reintroduce them under any name.",
+        "section": "colors"
+      },
+      {
+        "name": "The Colorless-Role Rule",
+        "body": "The three type-role utilities (.text-readout, .text-display, .text-label) carry no color; color is always applied per-usage via the accessible-pair pattern.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Any number a player might watch change renders in tabular numerals — .text-readout where the mono voice fits, tabular-nums at minimum.",
+        "section": "typography"
+      },
+      {
+        "name": "The Frosted Card Rule",
+        "body": "There is exactly one floating-surface recipe: bg-sand-50/95 dark:bg-dark-400/95 + backdrop-blur-xl + rounded-2xl + hairline border. Do not invent a second card material.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Space-Dark Rule",
+        "body": "The page backdrop stays space-dark in both themes. Themes re-skin the instruments, never the sky.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do write every interactive text color as the pair text-ice-accessible dark:text-ice (and signal text as text-signal-accessible dark:text-signal).",
+      "Do reuse the Frosted Card Rule recipe for any new floating surface, and the ice-family focus-visible:ring-2 for any new control.",
+      "Do keep entrances in the house motion grammar: 100-300ms ease-out fade + 6-12px rise, 50-60ms staggers; expose data-animation-state on any component that animates, and respect prefers-reduced-motion.",
+      "Do grow sub-44px controls to the 44px floor with the TOUCH_TARGET_* invisible-inset pattern — never by inflating glyphs.",
+      "Do update src/lib/layoutConstants.ts (and its pin test) when changing panel geometry, and expect designTokens.test.ts to fail if a pinned token hex or type-role declaration drifts."
+    ],
+    "donts": [
+      "Don't introduce a third accent, use signal for anything interactive, or use ice for game-state feedback.",
+      "Don't reintroduce retired hexes: teal #14b8a6/#5eead4/#0d9488, coral #f43f5e/#fb7185/#e11d48, or the old amber reveal #f59e0b.",
+      "Don't place bare ice (#7dd3fc) or signal (#ff8a4c) text on sand surfaces — both fail AA there; the accessible variants exist for exactly this.",
+      "Don't create a second card material, a second focus treatment, or a second primary-button recipe.",
+      "Don't theme the page backdrop — space-dark in both themes is a settled owner decision."
+    ]
+  }
+}

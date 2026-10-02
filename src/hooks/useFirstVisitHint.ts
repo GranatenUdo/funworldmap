@@ -26,15 +26,16 @@ function markShown(key: string): void {
   }
 }
 
-/** Hint pill copy. Coarse pointers get tap wording without the `/` clause (A14).
- *  The game and compare copy name no input modality, so they are deliberately
- *  pointer-independent — no capability gating needed (C5). */
+/** Hint pill copy. The explore hint leads with play (C-12) — the games are the
+ *  headline act, exploring is the fallback clause. Coarse pointers get tap
+ *  wording (A14). The game and compare copy name no input modality, so they are
+ *  deliberately pointer-independent — no capability gating needed (C5). */
 export function hintCopy(hint: OnboardingHint, finePointer: boolean): string {
   if (hint === 'game') return 'Try a game — guess countries and cities'
   if (hint === 'compare') return 'Tip: compare two countries side by side'
   return finePointer
-    ? 'Click a country to explore — or press / to search'
-    : 'Tap a country to explore'
+    ? 'Hit Play for two quick geography games — or click any country to explore'
+    : 'Tap Play for two quick geography games — or tap any country to explore'
 }
 
 /**

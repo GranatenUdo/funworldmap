@@ -1,0 +1,151 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_repo_cleanup_and_fixes_plan",
+      "label": "Repo Cleanup and Fixes Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "line 1",
+      "rationale": "Seven PR-sized phases ordered code -> tests -> config -> docs -> corpus so each ships alone and stopping after any phase leaves the repo strictly better. No behavior changes beyond three verified bugs; everything else is deletion, documentation, or file moves. Shipped 2026-06-12 as PRs #103-#110 under tracking issue #106.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_satellite_aware_fill_opacity_restore",
+      "label": "Satellite-aware fill-opacity restore on compare exit",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 1",
+      "rationale": "Exiting compare view restored a hardcoded fill-opacity that ignored whether satellite mode was active, so the map came back with the wrong tint \u2014 a symptom of multiple owners writing the same paint property.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_dead_code_sweep",
+      "label": "Dead-code sweep",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Phase 2",
+      "rationale": "Removes relativeTime (news-feed leftover), REVEAL_FAR, five dead CSS keyframes, GameMode.title/description/hashSegment with the triplicated mode copy, the unused Fuse match plumbing (user decided against highlighting), and the stale daily .gitignore block \u2014 all residue of features that were deleted without their supporting code.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_ci_honesty",
+      "label": "CI & config honesty",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Phase 4",
+      "rationale": "The config claimed coverage CI did not actually provide. Correcting CLAUDE.md, adding a 'What runs in CI' section to testing.md, and filing a tracking issue makes the gap explicit instead of implied \u2014 a green CI badge should not imply specs that never ran.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_playwright_matrix_rewrite",
+      "label": "playwright-matrix.md rewrite",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 19",
+      "rationale": "Full rewrite with Projects, Spec assignment, CI testIgnore, Quarantined tests, and Manual QA sections so the matrix is derived from playwright.config.ts rather than drifting behind it.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_archive_shipped_plans",
+      "label": "Archive the 36 shipped plans",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 23",
+      "rationale": "Shipped plans left at the plans/ root are indistinguishable from active ones; moving them under archive/ keeps the corpus navigable and makes 'what is in flight' answerable by listing a directory.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_tombstones_on_deleted_feature_plans",
+      "label": "Tombstones on deleted-feature plans and specs",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 24",
+      "rationale": "Plans for the removed daily feature are kept unmodified for history but get a header tombstone naming PR #97 and saying 'do not implement from it', so a future reader (human or agent) cannot mistake a detailed shipped plan for pending work.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_tombstones_on_deleted_feature_plans",
+      "target": "docs_superpowers_plans_archive_2026_05_19_daily_city_feedback_daily_city_feedback_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 24",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_tombstones_on_deleted_feature_plans",
+      "target": "docs_superpowers_plans_archive_2026_05_18_daily_already_played_ux_daily_already_played_ux_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 24",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_archive_shipped_plans",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_working_tree_hygiene",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 23",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_playwright_matrix_rewrite",
+      "target": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_playwright_matrix_refresh",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 19",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_repo_cleanup_and_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_dead_code_sweep",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Phase 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_dead_code_sweep",
+      "target": "docs_superpowers_plans_archive_2026_05_30_remove_daily_remove_daily_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-repo-cleanup-and-fixes.md",
+      "source_location": "Task 10 \u2014 drop the stale daily block from .gitignore",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

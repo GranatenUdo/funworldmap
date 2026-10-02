@@ -26,6 +26,7 @@ interface BuildRouterArgsOverrides {
 
 function buildRouterArgs(overrides: BuildRouterArgsOverrides = {}): RouterArgs {
   return {
+    ready: true,
     session: overrides.session ?? makeSession(),
     pools: overrides.pools ?? { countries: countriesFixture, cities: citiesFixture },
     start: overrides.start ?? vi.fn(),
@@ -97,12 +98,14 @@ describe('useHashGameRouter', () => {
   })
 
   it('dispatches restart (not start+endGame) when arriving in game-over with a playable route', () => {
-    window.location.hash = '#game/country-pinning'
+    window.history.replaceState(null, '', '/#game/city-guessing')
     const start = vi.fn()
     const restart = vi.fn()
     const endGame = vi.fn()
     const session = makeSession({ status: 'game-over' })
-    renderRouterHook(buildRouterArgs({ session, start, restart, endGame }))
+    renderRouterHook(buildRouterArgs({ session: {...session,modeId:'city-guessing'}, start, restart, endGame }))
+    window.history.replaceState(null, '', '/#game/country-pinning')
+    window.dispatchEvent(new HashChangeEvent('hashchange'))
     expect(restart).toHaveBeenCalledTimes(1)
     expect(restart).toHaveBeenCalledWith(
       'country-pinning',
@@ -141,4 +144,37 @@ describe('useHashGameRouter', () => {
       null,
     )
   })
+})
+
+
+it('waits for map readiness and cancels a stale deep link', () => {
+  window.history.replaceState(null, '', '/#game/country-pinning')
+  const start = vi.fn()
+  const initial = { ...buildRouterArgs({ start }), ready: false }
+  const { rerender, unmount } = renderRouterHook(initial)
+  expect(start).not.toHaveBeenCalled()
+  window.history.replaceState(null, '', '/#FRA')
+  rerender({ ...initial, ready: true })
+  expect(start).not.toHaveBeenCalled()
+  unmount()
+})
+it('starts a pending deep link exactly once when the map becomes ready', () => {
+  window.history.replaceState(null, '', '/#game/country-pinning')
+  const start = vi.fn()
+  const initial = { ...buildRouterArgs({ start }), ready: false }
+  const { rerender, unmount } = renderRouterHook(initial)
+  expect(start).not.toHaveBeenCalled()
+  rerender({ ...initial, ready: true })
+  expect(start).toHaveBeenCalledTimes(1)
+  unmount()
+})
+
+it('does not restart a completed run when readiness recovers without navigation', () => {
+  window.history.replaceState(null, '', '/#game/country-pinning')
+  const restart = vi.fn()
+  const initial = { ...buildRouterArgs({ restart }), session: makeSession({status:'game-over'}), ready: false }
+  const { rerender, unmount } = renderRouterHook(initial)
+  rerender({...initial,ready:true})
+  expect(restart).not.toHaveBeenCalled()
+  unmount()
 })

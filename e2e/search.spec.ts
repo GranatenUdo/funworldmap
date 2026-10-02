@@ -45,11 +45,11 @@ test.describe('Search', () => {
   })
 
   test('fuzzy matching works for typos', async ({ page }) => {
-    await page.getByTestId('search-input').fill('Untied')
+    await page.getByTestId('search-input').fill('Germani')
 
     const results = page.getByTestId('search-results')
     await expect(results).toBeVisible()
-    await expect(results).toContainText('United')
+    await expect(results).toContainText('Germany')
   })
 
   test('keyboard navigation: top result auto-active, arrows move, enter selects', async ({

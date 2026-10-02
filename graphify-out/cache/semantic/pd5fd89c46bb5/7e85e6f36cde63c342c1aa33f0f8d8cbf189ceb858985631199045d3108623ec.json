@@ -1,0 +1,190 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "label": "UX smoothening phase 2: composition polish + discoverability",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_three_zone_launcher",
+      "label": "Launcher composition reduction to three zones",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "B1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Principle 'two zones if real; three zones if honest' \u2014 phase 1 proposed two zones but shipped five, so phase 2 owes a more honest collapse. Phase 1's retention nudge copy must be preserved as a caption line; it was a deliberate retention choice, not throwaway copy."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_stats_panel",
+      "label": "StatsPanel \u2014 a home for unlimited personal bests",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "B2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Principle 'every promise has a home': phase 1 removed the Best (free) footer promising a future stats view that never existed. Priority is medium-low and explicitly conditional \u2014 build only if a user asks or to close the integrity loop, otherwise defer and drop the Stats link from B1. Modal, not a route, to avoid hash-routing surface growth."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_history_panel_polish",
+      "label": "History panel as a memory log",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "B3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Multi-color region tinting was rejected: 5+ saturated colors on tiny cells would read as noise. A native title-attribute tooltip is the memory affordance instead \u2014 cheap, accessible, no new component."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_slash_hint",
+      "label": "Persistent '/' keyboard hint in the search bar",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Principle 'discoverability without overlays': the transient hint toast is missed by visitors who don't linger. A kbd badge inside the search input's right edge, visible only when empty and unfocused, aria-hidden because screen readers don't need it."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_satellite_toggle_clarity",
+      "label": "Satellite toggle two-state icon + action tooltip",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The striped-globe SVG technically communicates state via color + aria-pressed but not legibly. The title tooltip shows what clicking will DO ('Switch to map view'), not the current state."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_conditional_first_visit_intro",
+      "label": "Conditional first-visit intro toast",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Principle 'conditional first-visit intro': don't build onboarding speculatively. Gated on 14+ days of phase 1 funnel data showing new visitors aren't finding the daily. If built: a one-time localStorage-gated toast, NOT a modal and NOT a tour."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "Depends on",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_three_zone_launcher",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "B1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_stats_panel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "B2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_history_panel_polish",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "B3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_slash_hint",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_satellite_toggle_clarity",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_conditional_first_visit_intro",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_conditional_first_visit_intro",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_header_cta_clicked_event",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C3 decision rule",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_stats_panel",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_high_score_hub",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_phase_2_design_slash_hint",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_workstream_a",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-phase-2-design.md",
+      "source_location": "C1 vs A11",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

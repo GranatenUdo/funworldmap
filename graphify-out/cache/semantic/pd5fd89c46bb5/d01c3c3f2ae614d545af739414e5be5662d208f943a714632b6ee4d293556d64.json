@@ -1,0 +1,366 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_data_collection",
+      "label": "Data Collection System",
+      "file_type": "document",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_systems_data_collection_on_demand_principle",
+      "label": "On-demand, not build-time collection",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The tool runs only when a developer calls npm run update-data and is never called by npm run build, so a failing or down upstream source can never break a build \u2014 the previously committed countries.json simply stays in place. Output is idempotent: the same source data produces identical output."
+    },
+    {
+      "id": "docs_systems_data_collection_pipeline",
+      "label": "Collection pipeline (fetch \u2192 merge \u2192 flags \u2192 write)",
+      "file_type": "concept",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Five stages: fetch REST Countries, fetch the CIA Factbook archive and map GEC\u2192ISO via codesxref.csv, merge/enrich with per-field attribution and join-integrity validation against world-atlas, download ~195 SVG flags to public/flags/, then write src/data/countries.json with a change summary. Entry point scripts/fetch-countries.ts run via tsx, with per-source modules under scripts/sources/ and merge.ts."
+    },
+    {
+      "id": "docs_systems_data_collection_merge_strategy",
+      "label": "Merge priority strategy",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "CIA World Factbook wins for government type (the primary reason that source exists); REST Countries wins for everything else as the most comprehensive general source. If any source is unavailable the whole run fails and writes nothing \u2014 there is deliberately no per-source fallback, so partial data can never be committed."
+    },
+    {
+      "id": "docs_systems_data_collection_field_sources",
+      "label": "_fieldSources per-country attribution map",
+      "file_type": "concept",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Every field's origin is tracked per country so the UI can render 'i' tooltips. Identifier fields (ccn3, cca2, cca3) are plain join-key strings with no source tracking, and data fields stay flat rather than wrapped in value/source objects."
+    },
+    {
+      "id": "docs_systems_data_collection_rest_countries",
+      "label": "REST Countries v3.1 source module",
+      "file_type": "concept",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "HTTPS GET /v3.1/all?fields=\u2026 under MPL 2.0; supplies names, codes, capitals, regions, population, area, languages, currencies, coordinates, borders, UN status, timezones."
+    },
+    {
+      "id": "docs_systems_data_collection_cia_factbook_archive",
+      "label": "CIA World Factbook archived source",
+      "file_type": "concept",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The Factbook shut down in February 2026, so the CC0 factbook/factbook.json GitHub archive (last updated 2026-01-22) is used instead, read per country as raw JSON with government type at data.Government[\"Government type\"].text. Acceptable because government types change slowly."
+    },
+    {
+      "id": "docs_systems_data_collection_gec_iso_mapping",
+      "label": "GEC/FIPS \u2192 ISO code mapping challenge",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Factbook files key on GEC/FIPS two-letter codes (gm = Germany, au = Austria), not ISO, so codesxref.csv from factbook/factbook maps GEC \u2192 ISO alpha-2/alpha-3/numeric. Roughly 28 GEC entries have no ISO code (mostly uninhabited territories like Baker Island and Kingman Reef) and are skipped."
+    },
+    {
+      "id": "docs_systems_data_collection_flag_bundling",
+      "label": "SVG flag bundling",
+      "file_type": "concept",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Every flag is downloaded to public/flags/{cca2}.svg and committed (~2-3MB, gzips well) so nothing is fetched from a flag CDN at runtime; Vite serves them individually and only the selected country's flag loads."
+    },
+    {
+      "id": "docs_systems_data_collection_adding_sources",
+      "label": "Adding a new data source",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Five steps: add a normalizing module under scripts/sources/, register it with a unique key, define merge priority for its fields, add metadata to _sources, then run update-data and review the diff. The architecture is meant to absorb Wikidata, World Bank, or UN data later."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_on_demand_principle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_pipeline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_merge_strategy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_field_sources",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_rest_countries",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_cia_factbook_archive",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_flag_bundling",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_collection_adding_sources",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_pipeline",
+      "target": "docs_systems_data_collection_rest_countries",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_pipeline",
+      "target": "docs_systems_data_collection_cia_factbook_archive",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_pipeline",
+      "target": "docs_systems_data_collection_gec_iso_mapping",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_pipeline",
+      "target": "docs_systems_data_collection_flag_bundling",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_cia_factbook_archive",
+      "target": "docs_systems_data_collection_gec_iso_mapping",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_merge_strategy",
+      "target": "docs_systems_data_collection_field_sources",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_merge_strategy",
+      "target": "docs_systems_data_collection_cia_factbook_archive",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_pipeline",
+      "target": "docs_systems_data_world_atlas",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection",
+      "target": "docs_systems_data_enriched_data_model",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_field_sources",
+      "target": "docs_systems_data_source_registry",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_field_sources",
+      "target": "docs_systems_ui_layout_source_attribution",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_rest_countries",
+      "target": "docs_systems_data_rest_countries",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_cia_factbook_archive",
+      "target": "docs_systems_data_cia_factbook",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_flag_bundling",
+      "target": "docs_systems_data_svg_flags",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_on_demand_principle",
+      "target": "docs_systems_build_npm_scripts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_collection_adding_sources",
+      "target": "docs_systems_data_source_registry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data-collection.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

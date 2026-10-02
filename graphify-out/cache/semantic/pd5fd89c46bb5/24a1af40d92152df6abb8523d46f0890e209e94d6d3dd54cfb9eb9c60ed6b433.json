@@ -1,0 +1,235 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "label": "Review fixes batch 1 design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Bug-tier slice of the 2026-07-10 critical review: five fixes with confirmed root causes, each verified twice (live browser plus code path). Settled in-session: satellite-by-default stays, space-dark backdrop stays, game-round camera carry-over stays (later amended by F4)."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_tooltip_scrollbar",
+      "label": "Tooltip initial position causes page scrollbars",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Measured root cause: .country-tooltip is position:absolute with no initial top/left, so before the first hover it sits at its static position at the end of body and extends the document 12px past the viewport, producing permanent scrollbars on every viewport. Adding top:0;left:0 is invisible because JS positions it on every show."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_movestart_clear",
+      "label": "Clear hover state on movestart",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Tooltip and hover feature-state were cleared only on layer mouseleave, so a camera move without mouse movement (search selection, deep link, reveal fly-to) stranded a 'Tanzania' tooltip over Rome. Reusing the mouseleave clearing on movestart is safe during drags because the next mousemove re-applies hover."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_search_enter_top_result",
+      "label": "Search Enter commits the top result",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "activeIndex reset to -1 on every keystroke meant 'japan' + Enter did nothing, against the product's Search First principle; mouse hover primed Enter, so keyboard-only users got the worst path. Auto-activating index 0 makes the highlighted row telegraph what Enter will do \u2014 a deliberate, visible change to the dropdown's resting look."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_extrusion_maxzoom",
+      "label": "Extrusion maxzoom cutoff",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "A-B-A confirmed: fixed-height fill-extrusion highlights (hover 60km, selection 80km) read as a subtle lift at world zoom, but an 80km column over a ~1km polygon at z11.5 with pitch projects as a ribbon crossing the viewport. maxzoom:6 keeps the lift where it works; fill/border/glow carry the highlight past it."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_origin_aware_camera",
+      "label": "Origin-aware selection camera",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 5a",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Implements the migration path the 2026-05-17 spec documented. Selection flows through the URL hash so origin cannot ride on it; a transient module-scoped mark (markClickOrigin/takeOrigin) is consumed in resolveHash, which runs on EVERY hashchange, so the mark can never go stale \u2014 even a click re-selecting the current country consumes it. Default 'auto' for search, chips, deep links and back/forward."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_zoomfromarea_retune",
+      "label": "Retuned zoomFromArea formula",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 5b",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "The old 11 - 1.7*log10(area) clamped to z2 for every country above ~196,000 km2, so Japan, Germany, Italy and the UK all 'flew' to the world view. 10.8 - 1.35*log10(area) makes mid-size countries the subject of the frame while continental giants still resolve to the globe. The 2026-05-17 spec declared the formula out of its scope; this item deliberately brings it in."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_panel_aware_framing",
+      "label": "Panel-aware framing offset",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 5c",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "flyTo centers in the full viewport but the panel covers the right 392px (desktop) or bottom ~45% (mobile sheet). Spike first: prefer flyTo padding if it behaves under the globe projection, else offset, which is projection-agnostic. Read the real panel width from the component rather than hardcoding."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_explicit_no_action",
+      "label": "Explicitly-no-action findings",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Explicitly no action",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "READ-usage buffer console warnings were root-caused to MapLibre's globe-projection ProjectionErrorMeasurement readback loop \u2014 not app code, no user impact \u2014 and the Vatican polygon offset is 1:50m source resolution. Both documented so the next reviewer does not re-chase them."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Amends",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_camera_coherence_design_coherence_rule",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Does not touch",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_origin_aware_camera",
+      "target": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_search_autofit_tradeoff",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 5 implements exactly that migration path",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_origin_aware_camera",
+      "target": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_zoom_clamp",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 5a \u2014 origin-gated clamp",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_tooltip_scrollbar",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_movestart_clear",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_search_enter_top_result",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_extrusion_maxzoom",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 4",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_zoomfromarea_retune",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 5b",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_panel_aware_framing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Item 5c",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_explicit_no_action",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": "Explicitly no action",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_movestart_clear",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_deselect_gate",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-1-design.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

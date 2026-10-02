@@ -1,150 +1,64 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import { GameOverOverlay } from '../GameOverOverlay'
-import type { PersonalBest } from '../../types'
-import { makeSession } from '../../__tests__/factories'
-
-const baseSession = makeSession({
-  status: 'game-over',
-  lives: 0,
-  score: 100,
-  maxRounds: 1,
+import { makeSession, makeCountryRound, makeOutcome, makeCountryReveal } from '../../__tests__/factories'
+import type { ResultReceipt } from '../../personalBestsStore'
+afterEach(cleanup)
+const best = { bestScore: 100, bestStreak: 1, gamesPlayed: 2 }
+const receipt: ResultReceipt = {previous:{...best,bestScore:50},current:best,firstResult:false,newBest:true,saved:true}
+const record = {round:makeCountryRound(),input:{kind:'country' as const,cca3:'FRA',name:'France',centroid:[0,0] as [number,number]},outcome:makeOutcome(makeCountryReveal({correct:true,distanceKm:0}),true)}
+const session = makeSession({status:'game-over',score:100,bestStreak:1,completedRounds:[record]})
+const props = {session, personalBest:best,beatPersonalBest:false,receipt,onPlayAgain:vi.fn(),onBackToMap:vi.fn()}
+describe('results and review', () => {
+ it('shows meaningful country statistics and a stable result receipt', () => {
+  const {rerender} = render(<GameOverOverlay {...props} />)
+  expect(screen.getByText('100%')).toBeTruthy()
+  expect(screen.getByText('1 · 1 correct')).toBeTruthy()
+  expect(screen.getByTestId('game-over-pb').textContent).toContain('New personal best!')
+  rerender(<GameOverOverlay {...props} personalBest={{...best,bestScore:200}} />)
+  expect(screen.getByTestId('game-over-pb').textContent).toContain('New personal best!')
+ })
+ it('contains keyboard focus and initially focuses replay', () => {
+  render(<GameOverOverlay {...props} />)
+  const replay = screen.getByRole('button',{name:'Play again'})
+  const back = screen.getByRole('button',{name:'Explore the map'})
+  expect(document.activeElement).toBe(replay)
+  back.focus(); fireEvent.keyDown(back,{key:'Tab'})
+  expect(document.activeElement).toBe(replay)
+  fireEvent.keyDown(replay,{key:'Tab',shiftKey:true})
+  expect(document.activeElement).toBe(back)
+ })
+ it('uses a nonmodal map-accessible review and does not record or alter the session', () => {
+  const onReview = vi.fn()
+  render(<GameOverOverlay {...props} reviewIndex={0} onReview={onReview} />)
+  expect(screen.queryByRole('dialog')).toBeNull()
+  expect(screen.getByRole('region',{name:'Review your answers'})).toBeTruthy()
+  fireEvent.click(screen.getByRole('button',{name:'Back to results'}))
+  expect(onReview).toHaveBeenCalledWith(null)
+  expect(session.status).toBe('game-over')
+  expect(session.score).toBe(100)
+ })
+ it('shows first-result and storage-failure copy without claiming a saved best', () => {
+  render(<GameOverOverlay {...props} receipt={{...receipt,firstResult:true,newBest:false,saved:false}} />)
+  expect(screen.getByTestId('game-over-pb').textContent).toContain('Your first result!')
+  expect(screen.getByTestId('game-over-pb').textContent).toContain('Could not save')
+ })
+ it('handles empty runs without NaN or a review affordance', () => {
+  render(<GameOverOverlay {...props} session={makeSession({status:'game-over',endedEarly:true})} onReview={vi.fn()} />)
+  expect(screen.getByText('No guesses made')).toBeTruthy()
+  expect(screen.queryByRole('button',{name:'Review answers on the map'})).toBeNull()
+  expect(screen.getByText('Game ended early.')).toBeTruthy()
+ })
+ it('activates replay and exploration separately', () => {
+  render(<GameOverOverlay {...props} />)
+  fireEvent.click(screen.getByRole('button',{name:'Play again'}))
+  expect(props.onPlayAgain).toHaveBeenCalledTimes(1)
+  fireEvent.click(screen.getByRole('button',{name:'Explore the map'}))
+  expect(props.onBackToMap).toHaveBeenCalledTimes(1)
+ })
 })
 
-const zeroBest: PersonalBest = { bestScore: 0, bestStreak: 0, gamesPlayed: 0 }
-
-describe('GameOverOverlay', () => {
-  beforeEach(() => {
-    localStorage.clear()
-    window.location.hash = ''
-  })
-
-  it("says 'Three wrong guesses.' on unlimited (lives) mode", () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: null }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('game-over-title').textContent).toBe('Game over')
-    expect(screen.getByText('Three wrong guesses.')).toBeTruthy()
-  })
-
-  it('says "10 rounds complete." when maxRounds is 10', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: 10 }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByText('10 rounds complete.')).toBeTruthy()
-  })
-
-  it('shows the personal-best block on free plays', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: null }}
-        personalBest={zeroBest}
-        beatPersonalBest={true}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('game-over-pb')).toBeTruthy()
-    expect(screen.getByText(/new personal best/i)).toBeTruthy()
-  })
-
-  it('keeps "New personal best!" when beatPersonalBest later flips to false (post-record re-render)', () => {
-    const session = { ...baseSession, maxRounds: null }
-    const { rerender } = render(
-      <GameOverOverlay
-        session={session}
-        personalBest={zeroBest}
-        beatPersonalBest={true}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByText(/new personal best/i)).toBeTruthy()
-
-    // Simulate the post-record re-render: PB now equals the score, beatPB flipped to false.
-    rerender(
-      <GameOverOverlay
-        session={session}
-        personalBest={{ bestScore: 100, bestStreak: 0, gamesPlayed: 1 }}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByText(/new personal best/i)).toBeTruthy()
-    expect(screen.queryByText(/best: 100 pts/i)).toBeNull()
-  })
-
-  it('shows "Best: N pts" stably when beatPersonalBest started false', () => {
-    const session = { ...baseSession, maxRounds: null, score: 14 }
-    render(
-      <GameOverOverlay
-        session={session}
-        personalBest={{ bestScore: 50, bestStreak: 2, gamesPlayed: 3 }}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByText(/best: 50 pts/i)).toBeTruthy()
-  })
-
-  it('renders "Game ended early." when session.endedEarly is true', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: null, endedEarly: true }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByText('Game ended early.')).toBeTruthy()
-  })
-
-  it('applies the E2 type roles: display title, readout stats', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: null }}
-        personalBest={zeroBest}
-        beatPersonalBest={false}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByTestId('game-over-title').className).toContain('text-display')
-    expect(screen.getByTestId('game-over-score').className).toContain('text-readout')
-    expect(screen.getByTestId('game-over-best-streak').className).toContain('text-readout')
-  })
-
-  it('uses the ice accent for PB text and action buttons (E4)', () => {
-    render(
-      <GameOverOverlay
-        session={{ ...baseSession, maxRounds: null }}
-        personalBest={zeroBest}
-        beatPersonalBest={true}
-        onPlayAgain={() => {}}
-        onBackToMap={() => {}}
-      />,
-    )
-    expect(screen.getByText(/new personal best/i).className).toContain(
-      'text-ice-accessible dark:text-ice',
-    )
-    const playAgain = screen.getByTestId('game-over-play-again')
-    expect(playAgain.className).toContain('bg-ice-accessible')
-    expect(playAgain.className).toContain('hover:bg-ice-dim')
-    expect(screen.getByTestId('game-over-back').className).toContain('focus-visible:ring-ice/50')
-  })
+it('prefers the replay action even when Review appears earlier in DOM order', () => {
+  render(<GameOverOverlay {...props} onReview={vi.fn()} />)
+  expect(document.activeElement).toBe(screen.getByRole('button',{name:'Play again'}))
 })

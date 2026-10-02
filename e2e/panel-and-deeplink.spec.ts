@@ -82,21 +82,23 @@ test.describe('Country Panel', () => {
 test.describe('Bottom sheet on mobile', () => {
   test.use({ viewport: { width: 390, height: 844 } })
 
-  test('panel renders as bottom sheet on mobile', async ({ page }) => {
+  test('details fill the mobile viewport below navigation', async ({ page }) => {
     const panel = await openPanel(page, 'JPN', 'Japan')
     const box = await panel.boundingBox()
     expect(box).not.toBeNull()
-    expect(box!.y).toBeGreaterThan(200)
+    expect(box!.y).toBeGreaterThanOrEqual(120)
+    expect(box!.y).toBeLessThan(160)
   })
 
-  test('expand button shows secondary fields on mobile', async ({ page }) => {
+  test('View map and View details preserve the complete reference', async ({ page }) => {
     const panel = await openPanel(page, 'JPN', 'Japan')
     // Peek state: secondary fields (Currencies, Timezones) only render once
     // showSecondary is true. Currencies is the sentinel — the D1 hero row
     // (Population, Area, Density) and prime grid (Government, Languages)
     // are always visible.
-    await expect(panel.getByText('Currencies')).toBeHidden()
-    await page.getByLabel('Expand panel').click()
+    await page.getByRole('button', {name:'View map',exact:true}).click()
+    await expect(panel).toBeHidden()
+    await page.getByRole('button', {name:'View details',exact:true}).click()
     await expect(panel.getByText('Currencies')).toBeVisible({ timeout: 10_000 })
   })
 })

@@ -1,0 +1,346 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_accessibility",
+      "label": "Accessibility System",
+      "file_type": "document",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_systems_accessibility_wcag_aa",
+      "label": "WCAG 2.1 Level AA baseline",
+      "file_type": "rationale",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Treated as a per-component requirement from the start rather than a final-phase add-on. Normal text 4.5:1, large text 3:1, non-text controls and focus indicators 3:1; no information conveyed by color alone (selection changes color AND border, hover changes opacity AND cursor)."
+    },
+    {
+      "id": "docs_systems_accessibility_canvas_limitation",
+      "label": "Honest limitation: canvas polygons cannot take keyboard focus",
+      "file_type": "rationale",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A WebGL2 canvas is opaque to screen readers and cannot expose individual polygons to the accessibility tree, so direct polygon selection needs a pointer. Rather than fake it, the docs state the limitation and route keyboard users through search as equivalent functionality via a different interaction path."
+    },
+    {
+      "id": "docs_systems_accessibility_tab_order",
+      "label": "Tab order and skip links",
+      "file_type": "concept",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Skip links \u2192 Search input \u2192 Play button \u2192 Satellite toggle \u2192 Theme toggle \u2192 Map container \u2192 Country panel. Source 'i' buttons are deliberately outside the Tab order (tabIndex=-1) so blur-out closes them cleanly; the compare panel's SourceMarker links are ordinary Tab stops labelled 'Source: <name>'."
+    },
+    {
+      "id": "docs_systems_accessibility_aria_live_region",
+      "label": "ARIA live region announcements",
+      "file_type": "concept",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "aria-live=\"polite\" announces 'France selected', '5 results for Fra', and panel open/close \u2014 changes that are visually obvious but otherwise invisible to assistive technology."
+    },
+    {
+      "id": "docs_systems_accessibility_role_application",
+      "label": "role=\"application\" on the map container",
+      "file_type": "rationale",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Deliberately tells screen readers to pass all keystrokes to the page instead of intercepting them for quick-nav, because arrow keys pan and +/- zoom. The aria-description explicitly directs screen reader users to search for country selection, and normal navigation resumes on tab-out."
+    },
+    {
+      "id": "docs_systems_accessibility_prefers_reduced_motion",
+      "label": "prefers-reduced-motion handling",
+      "file_type": "rationale",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "flyTo uses duration: 0, CSS transitions are disabled, panel slide is instant, hover scale removed. The application checks the preference directly \u2014 MapLibre's built-in `essential` flag is deliberately not used."
+    },
+    {
+      "id": "docs_systems_accessibility_focus_management",
+      "label": "Panel focus management",
+      "file_type": "rationale",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "On open, focus moves first to the panel heading so screen readers announce the country name, then settles on the close button once the ~300ms slide completes. On close, focus returns to search if the country came from search, or the map container if it was clicked."
+    },
+    {
+      "id": "docs_systems_accessibility_touch_targets",
+      "label": "44x44px touch-target floor",
+      "file_type": "rationale",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Exceeds WCAG 2.1 AA, aligning with WCAG 2.5.5 AAA and Material Design; 48x48 preferred, with spacing between adjacent targets to prevent mis-taps."
+    },
+    {
+      "id": "docs_systems_accessibility_axe_auditing",
+      "label": "Automated axe-core auditing",
+      "file_type": "concept",
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Runs inside the Playwright suite catching missing labels, insufficient contrast, invalid ARIA, missing alt text, and keyboard traps. Target is zero violations on every run."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_wcag_aa",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_canvas_limitation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_tab_order",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_aria_live_region",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_role_application",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_prefers_reduced_motion",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_focus_management",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_touch_targets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_accessibility_axe_auditing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_canvas_limitation",
+      "target": "docs_systems_search_combobox_pattern",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_canvas_limitation",
+      "target": "docs_systems_testing_canvas_challenge",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_role_application",
+      "target": "docs_systems_map_rendering_interaction_model",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_prefers_reduced_motion",
+      "target": "docs_systems_map_rendering_camera_animations",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_axe_auditing",
+      "target": "docs_systems_testing_axe_testing",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_tab_order",
+      "target": "docs_systems_ui_layout_header",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_tab_order",
+      "target": "docs_systems_ui_layout_source_attribution",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_tab_order",
+      "target": "docs_systems_ui_layout_compare_source_footer",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_touch_targets",
+      "target": "docs_systems_ui_layout_map_controls",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_focus_management",
+      "target": "docs_systems_ui_layout_country_panel",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_aria_live_region",
+      "target": "docs_systems_search_no_results",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility_wcag_aa",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_accessibility",
+      "target": "docs_systems_data_enriched_data_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/accessibility.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

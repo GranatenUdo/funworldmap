@@ -29,7 +29,7 @@ interface UseMapInstanceResult {
   loaded: boolean
   mapError: MapErrorReason | null
   basemapDegraded: boolean
-  retryWebGL: () => void
+  retryWebGL: (reloadOnFailure?: boolean) => void
 }
 
 export function useMapInstance({
@@ -240,7 +240,7 @@ export function useMapInstance({
   // retryWebGL: attempt programmatic context restore. If the canvas hasn't
   // restored within 1 s (e.g. the GPU process crashed), fall back to a full
   // page reload which re-initialises everything cleanly.
-  const retryWebGL = useCallback(() => {
+  const retryWebGL = useCallback((reloadOnFailure = true) => {
     try {
       // Must use the extension captured at init: getExtension() on the now-lost
       // context returns null, so fetching it here can never work.
@@ -252,6 +252,8 @@ export function useMapInstance({
     // Clear any existing timer first — rapid re-clicks would otherwise arm
     // multiple reloads.
     if (retryTimerRef.current !== null) window.clearTimeout(retryTimerRef.current)
+    retryTimerRef.current = null
+    if (!reloadOnFailure) return
     retryTimerRef.current = window.setTimeout(() => {
       retryTimerRef.current = null
       setMapErrorState((prev) => {

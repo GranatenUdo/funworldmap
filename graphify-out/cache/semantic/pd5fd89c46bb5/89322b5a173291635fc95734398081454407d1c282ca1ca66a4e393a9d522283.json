@@ -1,0 +1,168 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_plan",
+      "label": "Retention Program v1 Phase 2: Daily Play End-to-End Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_attempts_extension",
+      "label": "GameSession attemptsPerRound / attemptsRemaining / currentAttempts extension",
+      "file_type": "rationale",
+      "rationale": "Approach A (extend the existing session) was chosen over a parallel DailyController so there is one source of truth for reveal geometry; free mode passes attemptsPerRound: 1 for identical runtime behaviour. Daily sessions are detected by the tuple maxRounds===1 && attemptsPerRound===3 rather than a new sessionKind enum.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_intermediate_reveal",
+      "label": "Intermediate attempt feedback that does not reveal the target",
+      "file_type": "rationale",
+      "rationale": "Intermediate attempts stay at status 'playing' with a transient currentAttempts[] array rather than firing round-ended; country mode highlights the guess in a warm accent and city mode shows a muted marker plus dashed line, withholding the answer until attempt 3 or revealEarly.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_daily_history",
+      "label": "useDailyHistory + pure storage module with streak state machine",
+      "file_type": "concept",
+      "rationale": "Written once per completed daily on the transition into round-ended; the streak is evaluated at the same moment and stored but not displayed until Phase 3.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_daily_puzzles_provider",
+      "label": "DailyPuzzlesProvider context replacing a window-global hack",
+      "file_type": "rationale",
+      "rationale": "Hoisting useDailyPuzzles once at the app root lets Launcher and GameController share one fetch; it explicitly replaces the earlier plan's __funworldmap_daily window global.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_mode_card_states",
+      "label": "LauncherModeCard three-state rewrite (unplayed / played / unavailable)",
+      "file_type": "concept",
+      "rationale": "Obsolete blocks \u2014 the 2xl bestScore rendering, the hasPlayed em-dash branch, TAGLINES, the onStart single handler, and the launcher-best test id \u2014 are deleted in the same commits as their replacements per the remove-obsolete-code convention.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_tombstone",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_plan",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_attempts_extension",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_reducer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_attempts_extension",
+      "target": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_discriminated_round_spec",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_intermediate_reveal",
+      "target": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_attempts_extension",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_daily_history",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_personal_bests",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_daily_puzzles_provider",
+      "target": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_daily_content_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_mode_card_states",
+      "target": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_launcher",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_mode_card_states",
+      "target": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_use_launcher_visibility",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-2-daily-play.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

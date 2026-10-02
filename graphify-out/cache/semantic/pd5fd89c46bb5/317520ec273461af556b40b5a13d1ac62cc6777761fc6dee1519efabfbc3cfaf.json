@@ -1,0 +1,238 @@
+{
+  "nodes": [
+    {
+      "id": "docs_ops_runbook",
+      "label": "Operations Runbook",
+      "file_type": "document",
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_ops_runbook_bandwidth_watch",
+      "label": "Bandwidth watch (GitHub Pages ~100 GB/month cap)",
+      "file_type": "rationale",
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Flag when monthly cumulative approaches 70 GB (daily uniques \u00d7 ~680 KB gzipped page weight + tiles). Response ladder: rate-limit advisory banner (extend the BasemapBanner pattern), then migrate to Cloudflare Pages for free unlimited bandwidth \u2014 custom-domain DNS can be re-pointed without rebuilding the bundle."
+    },
+    {
+      "id": "docs_ops_runbook_data_freshness",
+      "label": "Data freshness cadence table",
+      "file_type": "rationale",
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "REST Countries quarterly review (currently unowned \u2014 file a data-freshness issue when due), CIA World Factbook archive frozen Jan 2026 (read-only), world-atlas on npm upstream release, flags refreshed per update-data run. If a refresh diff exceeds ~10% of lines, bisect by source before committing."
+    },
+    {
+      "id": "docs_ops_runbook_basemap_degradation",
+      "label": "Basemap degradation response",
+      "file_type": "rationale",
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "probeBasemap runs on map init with a 3s timeout; BasemapBanner surfaces the notice while country polygons stay interactive. Confirm by hitting tiles.openfreemap.org/styles/positron directly. Recovery is a user-initiated reload via the banner Retry action \u2014 there is deliberately no automated failover to a secondary provider yet."
+    },
+    {
+      "id": "docs_ops_runbook_incident_response",
+      "label": "Incident response for a broken deploy",
+      "file_type": "rationale",
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Revert-first: git revert the bad SHA on main and let the deploy workflow republish the prior good state, then post-mortem in an issue. A forward fix is tracked separately from the revert so recovery is never blocked on diagnosis."
+    },
+    {
+      "id": "docs_ops_runbook_deploy_workflow",
+      "label": "Deploy workflow (.github/workflows/deploy.yml)",
+      "file_type": "concept",
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Builds on every push to main and publishes via actions/deploy-pages; no manual deploy step. Secrets VITE_SENTRY_DSN, VITE_CF_WA_TOKEN, VITE_ANALYTICS_ENDPOINT are all optional \u2014 each feature is env-gated and no-ops when unset. The orphan 'data' branch that held the daily content index is obsolete and may be deleted."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_ops_runbook",
+      "target": "docs_ops_runbook_bandwidth_watch",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook",
+      "target": "docs_ops_runbook_data_freshness",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook",
+      "target": "docs_ops_runbook_basemap_degradation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook",
+      "target": "docs_ops_runbook_incident_response",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook",
+      "target": "docs_ops_runbook_deploy_workflow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_data_freshness",
+      "target": "docs_systems_data_collection_pipeline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_data_freshness",
+      "target": "docs_systems_data",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_data_freshness",
+      "target": "docs_systems_data_cia_factbook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_basemap_degradation",
+      "target": "docs_systems_map_rendering_positron_basemap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_basemap_degradation",
+      "target": "docs_systems_overview_error_handling",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_bandwidth_watch",
+      "target": "docs_systems_overview_bundle_size_budget",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_bandwidth_watch",
+      "target": "docs_systems_build_deployment_targets",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_deploy_workflow",
+      "target": "docs_systems_build_deployment_targets",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_deploy_workflow",
+      "target": "docs_systems_analytics_cloudflare_web_analytics",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_deploy_workflow",
+      "target": "docs_systems_analytics_worker_analytics_engine",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_ops_runbook_incident_response",
+      "target": "docs_ops_runbook_deploy_workflow",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/ops/runbook.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

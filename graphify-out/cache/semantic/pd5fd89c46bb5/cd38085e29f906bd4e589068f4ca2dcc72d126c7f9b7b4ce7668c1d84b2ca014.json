@@ -1,0 +1,146 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_hardening_and_reveal_fixes",
+      "label": "Security Hardening + Reveal Camera + Tutorial Click Fix",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_gdelt_url_protocol_allowlist",
+      "label": "GDELT URL Protocol Allowlist",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Filtering at ingest time means the committed static JSON can never carry a javascript:/data:/file: URL to the client; a bad article URL drops the article, a bad thumbnail merely nulls the image so the article stays useful."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_vite_test_hooks_gating",
+      "label": "VITE_TEST_HOOKS Seam Gating",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Vite inlines the env flag so rollup dead-code-eliminates the seams from production while Playwright keeps them via --mode e2e. Two gating shapes are used deliberately: wrap-line where the effect does other work, early-return where the effect exists only to manage seams. A grep-based CI gate was rejected as fragile in favour of a manual PR-checklist grep of dist/."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_tutorial_dismiss_on_first_guess",
+      "label": "Tutorial Dismisses on First Guess",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The tutorial's pointer-events-none let clicks fall through and silently consume attempts while its z-index hid the wrong-guess pulse, so three accidental wrongs ended the game. Keying dismissal on currentAttempts.length > 0 works for both modes because country-pinning stays playing while city-guessing flips to round-ended."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_reveal_camera_follows_line_head",
+      "label": "Reveal Camera Follows the Line Head",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "fitBounds over-zoomed on transcontinental misses. jumpTo is used rather than easeTo because easeTo queues an internal MapLibre animation that fights the rAF loop, which must remain the single source of animation timing; the t=0 snap is acceptable since the user just clicked a country already in view. Deletes the now-dead fitPadding helper."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_gdelt_url_protocol_allowlist",
+      "target": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_doc_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_gdelt_url_protocol_allowlist",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_build_time_sanitiser",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_vite_test_hooks_gating",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_funworldmap_game_test_hook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_vite_test_hooks_gating",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_e2e_against_production_bundle",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_reveal_camera_follows_line_head",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_animated_reveal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_reveal_camera_follows_line_head",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_tessellatearc",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_tutorial_dismiss_on_first_guess",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_best_of_3_attempts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_hardening_and_reveal_fixes",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_playwright_mobile_projects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-hardening-and-reveal-fixes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

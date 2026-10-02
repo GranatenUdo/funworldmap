@@ -1,0 +1,119 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_workstream_c2_plan",
+      "label": "Workstream C2 \u2014 Extract App effects into named hooks Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "line 1",
+      "rationale": "Shrink the ~550-LOC AppInner with no observable behavior change. Behavior preservation is argued from dependency shape: the effects only depend on truthiness (!!selected, gameActive) and the selected country's name, not object identity, so passing booleans/strings is equivalent to the original object deps. The existing e2e suite is the regression net.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_usemapready",
+      "label": "useMapReady hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "Task 1",
+      "rationale": "Collapses the map-load/error DOM observation (data-map-loaded / data-map-error) into a single boolean, tested with jsdom MutationObserver rather than a real map.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_usefirstvisithint",
+      "label": "useFirstVisitHint hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "Task 2",
+      "rationale": "Owns the first-visit 'click a country' hint state machine including its timers, so the timing logic can be exercised with fake timers in isolation instead of through a full App render.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_useliveannouncements",
+      "label": "useLiveAnnouncements hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "Task 3",
+      "rationale": "Owns the aria-live region for both selection announcements and ad-hoc announcements and returns the ref, keeping one owner for the live region instead of two competing writers inside AppInner.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_workstream_c2_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_workstream_c2_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_usemapready",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "Task 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_workstream_c2_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_usefirstvisithint",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "Task 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_workstream_c2_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_useliveannouncements",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "Task 3",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_useliveannouncements",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegameannouncements",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md",
+      "source_location": "Task 3 \u2014 both drive the same aria-live announcement channel",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "app_effect_hook_extraction_trio",
+      "label": "The three AppInner effect clusters extracted into named hooks",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_usemapready",
+        "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_usefirstvisithint",
+        "docs_superpowers_plans_archive_2026_05_30_workstream_c2_app_effect_hooks_useliveannouncements"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-c2-app-effect-hooks.md"
+    }
+  ]
+}

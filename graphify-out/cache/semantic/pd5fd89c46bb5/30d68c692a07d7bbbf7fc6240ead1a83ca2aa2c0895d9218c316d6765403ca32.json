@@ -1,0 +1,180 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_plan",
+      "label": "Fix Daily Pipelines + Verified Code Bugs Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_workflow_run_trigger",
+      "label": "workflow_run deploy trigger for content pipelines",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": ".github/workflows/deploy.yml",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The content-generation workflow committed fresh data but nothing redeployed the site, so production served stale content from 2026-05-07 onward. Adding a workflow_run trigger closes the loop; the diagnosis is confirmed by manually dispatching the content workflow and watching whether deploy fires."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_news_pipeline_dropped",
+      "label": "News pipeline dropped (decided 2026-05-12)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Rather than repair a persistently failing ingestion pipeline, the feature it fed was removed \u2014 deciding the fate of the pipeline was explicitly framed as a decision the plan had to make, not a repair it had to perform."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_reduced_motion_bypass",
+      "label": "Reduced-motion bypass on game start",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The start path animated the camera regardless of the user's prefers-reduced-motion setting, so the preference was honoured everywhere except the first thing a player saw."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_sentry_breadcrumbs",
+      "label": "Sentry breadcrumbs in daily-storage swallow-catches",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "localStorage failures were caught and silently discarded, so quota or private-mode errors were invisible in production. Breadcrumbs keep the catch non-fatal while making the failure observable."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_cold_load_deep_link",
+      "label": "Cold-load #game/<mode> deep-link regression test",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Deep links were only exercised after an in-app navigation, leaving the cold-load bootstrap path untested."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_prod_health_smoke",
+      "label": "Production health smoke check",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Validating the live site after the pipeline fix is what turns 'the workflow is green' into 'production is actually current' \u2014 the stale-content incident went unnoticed precisely because CI was green."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_workflow_run_trigger",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_news_pipeline_dropped",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_news_pipeline_dropped",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_news_pipeline_dropped",
+      "target": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_gdelt_doc_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_workflow_run_trigger",
+      "target": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_prod_health_smoke",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_workflow_run_trigger",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_rollback_procedure",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_reduced_motion_bypass",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_reduced_motion_subscription",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_sentry_breadcrumbs",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_12_fix_pipelines_and_verified_bugs_cold_load_deep_link",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_deep_link_telemetry_redesign",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-12-fix-pipelines-and-verified-bugs.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

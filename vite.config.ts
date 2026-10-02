@@ -29,7 +29,9 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    exclude: ['e2e/**', '**/node_modules/**', 'dist/**', '.worktrees/**'],
+    // .claude/** covers agent worktrees (.claude/worktrees/<name>/e2e/*.spec.ts
+    // would otherwise be swept in as vitest files and fail on Playwright APIs).
+    exclude: ['.superpowers/**', 'e2e/**', '**/node_modules/**', 'dist/**', '.worktrees/**', '.claude/**'],
     css: { include: [/index\.css/] },
   },
 })

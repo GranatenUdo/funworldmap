@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    {
+      "id": "_github_dependabot_grouped_npm_updates",
+      "label": "Dependabot grouped npm ecosystem updates",
+      "file_type": "code",
+      "source_file": ".github/dependabot.yml",
+      "source_location": "updates[0]",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [],
+  "hyperedges": []
+}

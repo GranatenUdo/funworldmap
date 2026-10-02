@@ -1,0 +1,148 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_plan",
+      "label": "Game-flow Cascade & Polish Fixes Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field",
+      "label": "dailyDate field on GameSession",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": "src/game/hooks/useGameSession.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "window.location.hash was being used as the oracle for 'is this a daily?', so a single ocean or off-globe click that cleared the hash produced a six-symptom cascade. dailyDate is threaded through the start and resume actions and read at the three call sites (resume write, game-over recording, GameOverOverlay) that previously re-parsed the hash."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_clickmap_deselect_gate",
+      "label": "clickMap deselect gating during gameplay",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": "src/hooks/useMapInteractions.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Defense-in-depth alongside the dailyDate fix: off-target clicks during gameplay no longer clear the URL hash at all, so even a future hash-reading regression cannot be triggered by an ocean tap."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_finishfree",
+      "label": "finishFree reducer action",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Free-play End-game needed a distinct transition from the daily path; onEndGame branches on session.dailyDate to pick between them."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_aria_live_clear",
+      "label": "Clear stale aria-live region after each announcement",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A live region left populated re-announces stale text on the next screen-reader traversal; clearing it after each announcement (and dropping a redundant duplicate round-end block) keeps announcements one-to-one with events."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_reduced_motion_subscription",
+      "label": "subscribeReducedMotion mid-session toggle support",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "prefers-reduced-motion was read once at mount, so a user toggling it mid-session kept the old behaviour; a subscription API plus useMapInstance re-applying pitch on change makes the preference live."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_reduced_motion_subscription",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_reduced_motion_reveal",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_clickmap_deselect_gate",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_resume_persistence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_finishfree",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_aria_live_clear",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_clickmap_deselect_gate",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_tooltip_gating",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-game-flow-cascade-and-polish-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

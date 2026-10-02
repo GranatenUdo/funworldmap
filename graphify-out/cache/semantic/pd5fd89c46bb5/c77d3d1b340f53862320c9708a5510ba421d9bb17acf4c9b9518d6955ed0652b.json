@@ -1,0 +1,115 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_plan",
+      "label": "Phase 0: Repository Foundation Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_stack",
+      "label": "Vite 6 + React 19 + TypeScript strict + Tailwind 4 stack",
+      "file_type": "concept",
+      "rationale": "All production and dev dependencies installed upfront so subsequent phases focus on features rather than tooling; Tailwind 4 uses CSS-first config via @tailwindcss/vite.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_ci_workflow",
+      "label": "GitHub Actions CI workflow (lint, type-check, build, unit, e2e)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_deploy_workflow",
+      "label": "GitHub Pages deployment workflow",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_vite_base_path",
+      "label": "Vite base path keyed off GITHUB_ACTIONS env var",
+      "file_type": "rationale",
+      "rationale": "GitHub Pages project sites serve from /<repo>/, so the build needs a base prefix; keying it on process.env.GITHUB_ACTIONS keeps local dev at '/' \u2014 a shortcut that later became the robots.txt 404 trap in CI e2e.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_swiftshader_config",
+      "label": "Playwright configured with SwiftShader for headless WebGL2",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_stack",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_ci_workflow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_deploy_workflow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_deploy_workflow",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_vite_base_path",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-phase-0-repository-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

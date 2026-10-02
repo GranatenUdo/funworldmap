@@ -1,0 +1,158 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_plan",
+      "label": "Cross-Component State & Game-Over Fixes Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_module_store",
+      "label": "Module-level store via useSyncExternalStore",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Three critical bugs (missing share block, stale share data, cross-mode PB contamination) had one root cause: useDailyHistory and usePersonalBests each ran a local useState initializer reading localStorage once per hook instance, so two consumers held independent state and writes never propagated. The fix is one pattern \u2014 module-level snapshot plus listener set exposed as subscribe/getSnapshot/mutators \u2014 with the hook public APIs kept identical so no caller changes."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_pb_flash_freeze",
+      "label": "Freeze beatPersonalBest at first paint",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": "src/game/shared/hud/GameOverOverlay.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The store refactor makes the post-record() re-render MORE reliable, which makes the 'New PB!' flash worse rather than better \u2014 the overlay must additionally freeze the value in useState(initial) so it does not flip once the new best lands."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_pb_hidden_on_daily",
+      "label": "Personal bests hidden on daily game-over",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A daily result is a fixed one-shot puzzle, so comparing it to a free-play personal best is meaningless and was also the vector for PB contamination."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_hud_running_score",
+      "label": "Running best-of-N score in the HUD",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": "src/game/shared/hud/ScoreBadge.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Players could not see what they were currently scoring mid-run; surfacing the running best makes the Done button a decision rather than a guess."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_mode_switch_gameover",
+      "label": "Mode switch from game-over via direct URL",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": "src/game/GameController.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The bootstrap refused to start a new session while in game-over, so navigating to the other mode's URL dead-ended on the finished overlay."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_module_store",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_module_store",
+      "target": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_pb_flash_freeze",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_module_store",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_pendingmilestone",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_module_store",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_pb_hidden_on_daily",
+      "target": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_module_store",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_hud_running_score",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_done_button",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_mode_switch_gameover",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_attempt_reducer_collapse",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_module_store",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-27-cross-component-state-and-game-over-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

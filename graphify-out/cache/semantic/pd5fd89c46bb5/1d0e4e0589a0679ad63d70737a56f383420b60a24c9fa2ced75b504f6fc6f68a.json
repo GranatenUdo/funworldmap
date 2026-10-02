@@ -1,0 +1,157 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+      "label": "Daily flow polish design (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: designed a daily-puzzle feature removed in PR #97. Kept for history."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_pre_finalize_write",
+      "label": "Pre-finalize daily history write",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Item 4, useGameAnnouncements",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Recording in a post-paint useEffect caused a one-frame 'Not played.' flash and left the resume blob alive ~16ms after history was supposed to be written, so a reload in that window lost the run (the reducer's resume guard returns state unchanged for a full attempt list). Moving record+clear+track into advanceNow before the finalize dispatch makes the localStorage state consistent before any render."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_dual_call_fallback",
+      "label": "Dual-call helper + post-paint fallback",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Why the dual-call",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "advanceNow is the only production path, but the __funworldmap_game.finalize() test seam and any future direct finalize dispatch bypass it. Keeping the useEffect branch as a fallback covers both, with recordedRef dedup preventing a double write; a separate announcedGameOverRef keeps the announcement firing once. The helper is module-scope so exhaustive-deps doesn't demand it as a dependency."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_stale_marker_cleanup",
+      "label": "Stale triage-marker and docstring cleanup",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Items 1 and 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Triage markers are a signal pointing at suspected bugs; carrying stale ones degrades the signal (this session's planning was misled by them). Only 3 of 5 were verified stale \u2014 the two documenting deliberate silent degradation on localStorage failure stay. Likewise the hook docstring implied a uniform anchor pattern that no longer exists."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_writelastmode",
+      "label": "writeLastMode on both onPlayUnlimited call sites",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Item 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Both reveal-route and game-over Play-unlimited handlers navigated to #game/<mode> without persisting the preference, diverging from Launcher.startFree's canonical pattern, so the next launcher visit defaulted to the wrong mode."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Follows",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+      "target": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_pre_finalize_write",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Item 4",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_pre_finalize_write",
+      "target": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_dual_call_fallback",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Why the dual-call",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_pre_finalize_write",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_overlay_swap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "'Not played.' flash on the new DailyRevealOverlay",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+      "target": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_writelastmode",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Item 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_writelastmode",
+      "target": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_reveal_overlay_cta",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "both onPlayUnlimited call sites",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+      "target": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_stale_marker_cleanup",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Items 1 and 3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_stale_marker_cleanup",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_persistent_marker",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "docstring under-describes the post-#91 hook structure",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md",
+      "source_location": "Tombstone 2026-06-12",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

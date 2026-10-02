@@ -1,0 +1,126 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_spec",
+      "label": "Repo cleanup and fixes design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_ci_honesty_pass",
+      "label": "CI coverage honesty pass",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Decision 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "13 of 38 spec files never run on CI (chromium-only matrix plus 10 testIgnore exclusions), including game-country-pinning and both axe audits. Decision: document the local-only specs, reference a tracking issue from testIgnore, and delete a dangling testMatch entry \u2014 no CI behavior changes; re-enabling specs stays a roadmap item needing a GPU runner."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_corpus_archive_sweep",
+      "label": "Corpus archive sweep and tombstones",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Decision 2 / Phase 6",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "36 shipped plans sat un-archived with ~11 describing deleted features and no supersession markers, so the corpus had no lifecycle. Fix is archive + one-line tombstone headers + README policy alignment \u2014 explicitly no content rewrites, preserving the historical record."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_living_docs_reconciliation",
+      "label": "Living-docs reconciliation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Phase 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Living docs contradicted the code in ~15 places (reset-view behavior, search highlighting, zoom table, focus management, data-collection fallback, bundle numbers, flag sourcing) and playwright-matrix.md still presented ten deleted daily specs as live."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_droppable_phase",
+      "label": "Explicitly droppable optional phase",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Phase 7 / Risks",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Extending lint/typecheck gates to e2e/ and scripts/ may surface latent errors; the phase carries an explicit abort criterion (stop and file an issue if >20 errors surface) so unknown fallout cannot hold the rest of the cleanup hostage. Similarly, a flaky strengthened webgl-restore assertion is to be quarantined per CLAUDE.md rules rather than weakened."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_ci_honesty_pass",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Decision 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_corpus_archive_sweep",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Decision 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_living_docs_reconciliation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Phase 5",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_droppable_phase",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "Phase 7",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_corpus_archive_sweep",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "~11 plans describing deleted features; tombstones",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_ci_honesty_pass",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_seam_based_test_contracts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md",
+      "source_location": "13 of 38 specs local-only",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

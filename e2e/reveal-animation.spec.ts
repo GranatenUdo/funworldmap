@@ -77,10 +77,10 @@ test.describe('reveal animation', () => {
 
     // Advance to the next round and confirm reveal artifacts cleared.
     // The round-end panel opens with a "Continue" button
-    // (data-testid="game-continue"). Clicking it calls
+    // (data-testid="round-next"). Clicking it calls
     // advanceRoundEndPanel → advance → next round.
-    await expect(page.getByTestId('game-continue')).toBeVisible({ timeout: 5_000 })
-    await page.getByTestId('game-continue').click()
+    await expect(page.getByTestId('round-next')).toBeVisible({ timeout: 5_000 })
+    await page.getByTestId('round-next').click()
     await expect
       .poll(
         async () =>

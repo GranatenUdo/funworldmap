@@ -1,0 +1,213 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_note",
+      "label": "Chromium e2e flake \u2014 regression analysis (2026-04-28)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_waitfortimeout_antipattern",
+      "label": "waitForTimeout(N) anti-pattern",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## What the 2026-04-22 deflake plan did NOT fix",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_force_true_antipattern",
+      "label": "click({ force: true }) actionability band-aid anti-pattern",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## What the 2026-04-22 deflake plan did NOT fix",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_data_animation_state_signal",
+      "label": "data-animation-state component-side animation signal",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Recommendations B.3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_cumulative_flake_rate",
+      "label": "Cumulative flake-rate model (per-spec flake \u00d7 spec count)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Why the regression manifests now",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_claude_md_recommendation",
+      "label": "Recommendation A \u2014 add a CLAUDE.md with non-flaky e2e guidance",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Recommendations A",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_waitforappready_helper",
+      "label": "waitForAppReady(page) load-time readiness helper",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## What the 2026-04-22 deflake plan actually fixed",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_deflake_plan_2026_04_22",
+      "label": "2026-04-22 deflake-chromium-e2e plan (predecessor work)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "**Predecessor work:**",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_angle_ci_consolidation",
+      "label": "Recommendation D \u2014 stop running Software ANGLE chromium in CI",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Recommendations D",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_note",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_note",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "**Predecessor work:**",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_note",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_deflake_plan_2026_04_22",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "**Predecessor work:**",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_deflake_plan_2026_04_22",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_waitforappready_helper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## What the 2026-04-22 deflake plan actually fixed",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_waitforappready_helper",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_map_readiness_signal",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## What the 2026-04-22 deflake plan actually fixed",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_cumulative_flake_rate",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_waitfortimeout_antipattern",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Why the regression manifests now",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_cumulative_flake_rate",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_force_true_antipattern",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Why the regression manifests now",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_claude_md_recommendation",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_waitfortimeout_antipattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Recommendations",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_data_animation_state_signal",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_waitfortimeout_antipattern",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Recommendations B.3",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_note",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_launcher_focus_order_bug",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_location": "## Recommendations C",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "chromium_e2e_flake_investigation_lineage",
+      "label": "Chromium e2e flake investigation lineage (diagnosis \u2192 regression \u2192 watch \u2192 quarantine)",
+      "nodes": [
+        "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_note",
+        "docs_superpowers_notes_2026_04_28_flake_regression_analysis_note",
+        "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_note",
+        "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_note",
+        "docs_superpowers_notes_2026_05_05_flake_watch_note",
+        "docs_superpowers_notes_2026_05_15_quarantine_triage_note"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md"
+    }
+  ]
+}

@@ -2,12 +2,21 @@ import { useEffect, useRef } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { parseHash } from '../lib/hashState'
+import { FINE_POINTER_MEDIA_QUERY } from '../lib/layoutConstants'
 import { EMPTY_FILTER, LAYER } from '../lib/mapLayers'
 import { markClickOrigin } from '../lib/selectionOrigin'
 import { clampTooltipPosition } from '../lib/tooltipPosition'
 import { useMap } from './useMap'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
+import { isCountryPinning } from '../game/shared/modePredicates'
 import type { GameStatus } from '../game/shared/types'
+
+/** B-2 tap-assist search radii (px). MapLibre's delegated layer listener
+ *  hit-tests the exact pixel; on coarse pointers a near-miss on a small
+ *  country would silently submit nothing. Growing bboxes approximate
+ *  "nearest" — a bbox query is NOT distance-ordered, so the smallest box that
+ *  hits wins. */
+const TAP_ASSIST_RADII_PX = [2, 4, 8] as const
 
 /**
  * Whether the country name/capital hover tooltip should be shown.
@@ -27,6 +36,9 @@ interface Options {
   byNumeric: Map<string, CountryData>
   onSelect: (cca3: string) => void
   onDeselect: () => void
+  /** C-5: fired when a click during a playing country-pinning round hits no
+   *  country — even after the coarse-pointer tap assist widened the search. */
+  onGameOceanMiss: () => void
   comparePickingMode: boolean
 }
 
@@ -39,6 +51,7 @@ export function useMapInteractions({
   byNumeric,
   onSelect,
   onDeselect,
+  onGameOceanMiss,
   comparePickingMode,
 }: Options): void {
   const { mapRef, tooltipRef } = useMap()
@@ -48,6 +61,8 @@ export function useMapInteractions({
   onSelectRef.current = onSelect
   const onDeselectRef = useRef(onDeselect)
   onDeselectRef.current = onDeselect
+  const onGameOceanMissRef = useRef(onGameOceanMiss)
+  onGameOceanMissRef.current = onGameOceanMiss
   const byNumericRef = useRef(byNumeric)
   byNumericRef.current = byNumeric
   const comparePickingRef = useRef(comparePickingMode)
@@ -182,35 +197,41 @@ export function useMapInteractions({
       if (canvas.style.cursor !== 'crosshair') canvas.style.cursor = 'grab'
     }
 
+    // Shared feature→country→onSelect resolution for the delegated
+    // clickCountry listener and the B-2 tap assist below — both must route a
+    // hit through the identical path (byNumeric lookup, click-origin marking,
+    // App's onSelect).
+    const selectFromFeatureId = (featureId: string) => {
+      const country = byNumericRef.current.get(featureId)
+      if (!country) return
+      // This is the ONLY click-origin site — onSelect in App is shared
+      // with search and border chips, so the mark must live here. Mark
+      // only when this click will produce a selection hashchange: takeOrigin()
+      // runs solely in resolveHash, so a mark set by a game guess click, a
+      // compare-picking click, or a re-click of the already-selected
+      // country (identical hash → no hashchange) would never be consumed
+      // and would leak preserveZoom into the NEXT auto selection
+      // (2026-07-10 review finding).
+      // While a compare pair is active (A8), a click either replaces B (a
+      // compare hashchange — selected is unchanged so flyToCountry never
+      // runs, and flyToComparePair always reframes the pair, ignoring
+      // origin: the batch-2 §3 framing contract wins over preserveZoom)
+      // or is an App-level no-op on A/B (no hashchange at all) — never a
+      // single-selection hashchange, so it must not mark.
+      const hashState = parseHash(window.location.hash)
+      const compareActive = hashState.kind === 'country' && hashState.compareWith !== null
+      const willChangeSelectionHash =
+        sessionRef.current.status === 'idle' &&
+        !comparePickingRef.current &&
+        !compareActive &&
+        window.location.hash !== `#${country.cca3}`
+      if (willChangeSelectionHash) markClickOrigin()
+      onSelectRef.current(country.cca3)
+    }
+
     const clickCountry = (e: maplibregl.MapLayerMouseEvent) => {
       if (e.features && e.features.length > 0) {
-        const featureId = String(e.features[0].id)
-        const country = byNumericRef.current.get(featureId)
-        if (country) {
-          // This is the ONLY click-origin site — onSelect in App is shared
-          // with search and border chips, so the mark must live here. Mark
-          // only when this click will produce a selection hashchange: takeOrigin()
-          // runs solely in resolveHash, so a mark set by a game guess click, a
-          // compare-picking click, or a re-click of the already-selected
-          // country (identical hash → no hashchange) would never be consumed
-          // and would leak preserveZoom into the NEXT auto selection
-          // (2026-07-10 review finding).
-          // While a compare pair is active (A8), a click either replaces B (a
-          // compare hashchange — selected is unchanged so flyToCountry never
-          // runs, and flyToComparePair always reframes the pair, ignoring
-          // origin: the batch-2 §3 framing contract wins over preserveZoom)
-          // or is an App-level no-op on A/B (no hashchange at all) — never a
-          // single-selection hashchange, so it must not mark.
-          const hashState = parseHash(window.location.hash)
-          const compareActive = hashState.kind === 'country' && hashState.compareWith !== null
-          const willChangeSelectionHash =
-            sessionRef.current.status === 'idle' &&
-            !comparePickingRef.current &&
-            !compareActive &&
-            window.location.hash !== `#${country.cca3}`
-          if (willChangeSelectionHash) markClickOrigin()
-          onSelectRef.current(country.cca3)
-        }
+        selectFromFeatureId(String(e.features[0].id))
       }
     }
 
@@ -220,6 +241,46 @@ export function useMapInteractions({
       if (sessionRef.current.status !== 'idle') return
       const features = map.queryRenderedFeatures(e.point, { layers: [LAYER.fill] })
       if (features.length === 0) onDeselectRef.current()
+    }
+
+    // B-2 tap assist + C-5 ocean feedback. A plain handler (the clickMap
+    // precedent) because MapLibre's delegated layer listener hit-tests the
+    // exact pixel and never fires on a miss — it cannot widen its hit test.
+    // Runs only while a country-pinning round is playing:
+    //   1. Re-query the exact point: a hit means the delegated clickCountry
+    //      already submitted this click (sessionRef only updates on re-render,
+    //      so the re-query — not session status — is the double-submit guard).
+    //   2. On coarse pointers (matchMedia, never e.originalEvent — synthetic
+    //      seam clicks carry none), retry at growing bboxes and submit the
+    //      first hit through the same path clickCountry uses.
+    //   3. A genuinely empty ±8 px box — or any fine-pointer exact miss — is
+    //      an ocean miss.
+    // Idle-mode ocean clicks stay clickMap's job (deselect contract, and the
+    // e2e exact-point ocean preconditions run in idle mode).
+    const clickGameAssist = (e: maplibregl.MapMouseEvent) => {
+      const session = sessionRef.current
+      if (session.status !== 'playing' || !isCountryPinning(session.modeId)) return
+      const exact = map.queryRenderedFeatures(e.point, { layers: [LAYER.fill] })
+      if (exact.length > 0) return
+      if (!window.matchMedia(FINE_POINTER_MEDIA_QUERY).matches) {
+        const { x, y } = e.point
+        for (const r of TAP_ASSIST_RADII_PX) {
+          // Corners MUST be Point/array geometries — a plain {x, y} object
+          // silently queries the whole viewport.
+          const features = map.queryRenderedFeatures(
+            [
+              [x - r, y - r],
+              [x + r, y + r],
+            ],
+            { layers: [LAYER.fill] },
+          )
+          if (features.length > 0) {
+            selectFromFeatureId(String(features[0].id))
+            return
+          }
+        }
+      }
+      onGameOceanMissRef.current()
     }
 
     const dragStart = () => {
@@ -238,6 +299,7 @@ export function useMapInteractions({
     map.on('movestart', movestartClear)
     map.on('click', LAYER.fill, clickCountry)
     map.on('click', clickMap)
+    map.on('click', clickGameAssist)
     map.on('dragstart', dragStart)
     map.on('dragend', dragEnd)
 
@@ -252,6 +314,7 @@ export function useMapInteractions({
       map.off('movestart', movestartClear)
       map.off('click', LAYER.fill, clickCountry)
       map.off('click', clickMap)
+      map.off('click', clickGameAssist)
       map.off('dragstart', dragStart)
       map.off('dragend', dragEnd)
     }

@@ -1,0 +1,122 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_05_05_post_audit_verification_note",
+      "label": "Post-audit verification (2026-05-05)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_post_audit_verification_axe_core_sweep",
+      "label": "axe-core collect-not-fail baseline sweep (5 app states)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "## 2.1 \u2014 axe-core sweep",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_post_audit_verification_aria_prohibited_attr",
+      "label": "aria-prohibited-attr on HUD attempt-indicator div",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "### In-game HUD",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_post_audit_verification_label_contrast_measurement",
+      "label": "Label-contrast measurement (2.44:1 dark fails AA; text-vs-halo is decisive)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "## 2.5 \u2014 Label-contrast measurement",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_post_audit_verification_cross_browser_parity",
+      "label": "Cross-browser parity run (mobile-webkit / firefox-touch / mobile-chromium)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "## 2.2 \u2014 Cross-browser parity",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_05_05_post_audit_verification_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "Phase 2 of the vision-audit remediation plan",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_post_audit_verification_note",
+      "target": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_note",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "> **Correction (2026-06-12)**",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_post_audit_verification_label_contrast_measurement",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_label_contrast_claim",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "**Audit claim assessment**",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_post_audit_verification_axe_core_sweep",
+      "target": "docs_superpowers_notes_2026_05_05_post_audit_verification_aria_prohibited_attr",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "### In-game HUD",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_post_audit_verification_axe_core_sweep",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_vision_audit_methodology",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_post_audit_verification_cross_browser_parity",
+      "target": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_mobile_webkit_project",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-post-audit-verification.md",
+      "source_location": "## 2.2 \u2014 Cross-browser parity",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

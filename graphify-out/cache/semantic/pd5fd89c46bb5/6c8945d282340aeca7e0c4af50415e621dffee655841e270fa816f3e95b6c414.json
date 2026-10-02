@@ -1,0 +1,224 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plan",
+      "label": "Findings Implementation & Voting Removal Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_voting_removal",
+      "label": "Voting / government-type-sentiment feature removal",
+      "file_type": "rationale",
+      "rationale": "Silent scrub with no replacement marker: the feature was documented but never designed or implemented, and it implied a backend that contradicts the no-backend product. Historical plans keep their references.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_worldmap_refactor",
+      "label": "WorldMap.tsx split into lib modules and six hooks",
+      "file_type": "concept",
+      "rationale": "786 LOC component decomposed behaviour-preservingly into mapPalette / mapLayers / loadCountryGeojson / resetViewControl plus useMapInstance, useMapInteractions, useSelectionHighlight, useMapTheme and useSatelliteMode, leaving a ~150 LOC composition shell.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_usemap_context",
+      "label": "useMap() context threading shared map refs",
+      "file_type": "concept",
+      "rationale": "Chosen so the extracted hooks share the map instance, hovered ref and tooltip ref without prop-drilling through the shell.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_jsdom_hook_tests",
+      "label": "Vitest jsdom environment for renderHook-based hook tests",
+      "file_type": "concept",
+      "rationale": "The suite ran under environment: 'node', which renderHook cannot use; switching to jsdom unlocked ~30 unit tests across useSelectedCountry, useCountryData, useCountrySearch and useTheme.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_preview_bundle_e2e",
+      "label": "e2e webServer switched to a preview of the built bundle",
+      "file_type": "rationale",
+      "rationale": "The custom domain funworldmap.com serves from root, so the base-path concern that forced an earlier revert of vite preview no longer applies; e2e now exercises the production artifact. A scope-out gate caps this at one working day.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_fix_antimeridian",
+      "label": "fixAntimeridian longitude normalisation in loadCountryGeojson",
+      "file_type": "concept",
+      "rationale": "Polygons straddling 180 degrees are shifted into a continuous 0..360 range so MapLibre does not draw horizontal slivers; polar polygons touching +/-85 are deliberately exempt.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_governance_docs",
+      "label": "CONTRIBUTING, SECURITY, ops runbook and ADR convention",
+      "file_type": "concept",
+      "rationale": "Fills contributor/security/ops/decision-record gaps without writing speculative content ADRs \u2014 an ADR is only for load-bearing or contested decisions, otherwise a paragraph in docs/systems/ is preferred.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plans_forward_convention",
+      "label": "Plans-are-forward-looking convention (docs/superpowers/README.md)",
+      "file_type": "rationale",
+      "rationale": "A document that starts with 'We shipped X' does not belong in plans/; retrospectives go into system docs, ADRs, or commit/PR descriptions.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_voting_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_worldmap_refactor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_worldmap_refactor",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_usemap_context",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_worldmap_refactor",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_reset_view_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_worldmap_refactor",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_fix_antimeridian",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_fix_antimeridian",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_feature_id_property_copy",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_preview_bundle_e2e",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_vite_preview_webserver",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_jsdom_hook_tests",
+      "target": "docs_superpowers_plans_archive_2026_04_16_polish_keyboard_compare_hash_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_governance_docs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plans_forward_convention",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_basemap_banner",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_governance_docs",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-findings-implementation-and-voting-removal.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "id": "docs_index",
+      "label": "funworldmap Documentation Index",
+      "file_type": "document",
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Prescribes a reading order for developers: purpose first, then system overview for architecture context, then individual systems as needed."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_index",
+      "target": "docs_purpose",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_overview",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_data",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_data_collection",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_map_rendering",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_search",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_ui_layout",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_accessibility",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_testing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_build",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_systems_analytics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_ops_runbook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_adr_readme",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_index",
+      "target": "docs_roadmap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/index.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

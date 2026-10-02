@@ -1,0 +1,209 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode_design",
+      "label": "City Guessing Game Mode Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode",
+      "label": "City Guessing Mode",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Fixed 10 rounds, no lives, any map click including ocean is a guess \u2014 deliberately unlike Country Pinning where ocean is a no-op. Streak is hidden because a 100-point round needs distance 0, which is effectively impossible."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+      "label": "Game Framework Generalisation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "GuessInput / RoundSpec / reveal become discriminated unions and the controller \u2014 not the mode \u2014 computes endsGame, so modes stay pure. Ships atomically with the mode because splitting would briefly break Country Pinning."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_scoring_decay",
+      "label": "City Distance Decay Scoring (DECAY_KM 500)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "round(100 * exp(-distanceKm / 500)) per round, max 1000 over ten rounds; a skip yields zero points and MAX_DISTANCE_KM, and a defensively-received country input scores zero."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_natural_earth_cities_pipeline",
+      "label": "Natural Earth Cities Build Pipeline",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Top 500 populated places sorted by (scalerank ASC, pop_max DESC) for determinism; country name and flag are joined at build time so there is no runtime cross-dataset dependency, costing ~25 KB of inlining. Id uniqueness is verified and fails the build on collision."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_reveal_geometry_sources",
+      "label": "Reveal Marker + Line GeoJSON Sources",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "game-reveal-marker and game-reveal-line are added at game start and torn down on any transition to idle so a stale line never survives into the next game; fitBounds padding is viewport-relative and clamped."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_mode_picker_playmenu",
+      "label": "PlayMenu Mode Picker",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Header popover listing modes most-recently-played first; all transitions go through the URL hash rather than component state so deep links stay consistent."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_deep_link_pool_race",
+      "label": "Deep-Link vs Pool-Load Race Guard",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Landing on a play deep link before cities.json resolves would crash getMode with an empty pool, so GameController treats the hash as pending until the pool is non-empty."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode_design",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_satellite_default_and_game_modes",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_game_mode_framework",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_session_state_machine",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_scoring_decay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_natural_earth_cities_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_mode_picker_playmenu",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hash_state_discriminated_union",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_deep_link_pool_race",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_natural_earth_cities_pipeline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_scoring_decay",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hybrid_distance_scoring",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "game_mode_framework_participants",
+      "label": "Game-Mode Framework Participants",
+      "nodes": [
+        "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_game_mode_framework",
+        "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_country_pinning_mode",
+        "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_session_state_machine",
+        "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode",
+        "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+        "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_reducer_collapse"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-19-city-guessing-mode-design.md"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "nodes": [
+    {
+      "id": "_impeccable_critique_ignore_keyboard_games_exception",
+      "label": "Critique ignore: keyboard-inoperable game guess action",
+      "file_type": "rationale",
+      "source_file": ".impeccable/critique/ignore.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "_impeccable_critique_ignore_keyboard_games_exception",
+      "target": "product_pointer_only_games",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".impeccable/critique/ignore.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "_impeccable_critique_ignore_keyboard_games_exception",
+      "target": "product_wcag_aa_commitment",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".impeccable/critique/ignore.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "_impeccable_critique_ignore_keyboard_games_exception",
+      "target": "docs_testing_game_unhappy_paths_g2_keyboard_player",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": ".impeccable/critique/ignore.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

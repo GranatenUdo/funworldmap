@@ -1,0 +1,53 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_phase_2_pr1a_ux_smoothening_pr1a_plan",
+      "label": "UX Smoothening Phase 2 \u2014 PR1a Plan (narrowed)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening-phase-2-pr1a.md",
+      "source_location": "line 1",
+      "rationale": "Narrowed by critical review: B1 dropped because a composition refactor would relitigate a closed Phase 1 decision, C1 dropped as low-value polish, and the C2 icon swap dropped because the proposed glyphs were admitted mediocre. What remains is two small additive changes.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_phase_2_pr1a_history_panel_memory_tooltip",
+      "label": "History-panel per-cell memory tooltip",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening-phase-2-pr1a.md",
+      "source_location": "Phase 1 (B3)",
+      "rationale": "Threads country/city name + score into each calendar cell as a title=\"\" tooltip. Accepted as a desktop-only affordance because title tooltips only render on hover; the cell's primary affordance stays navigate-to-reveal on tap, so mobile loses nothing.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_phase_2_pr1a_satellite_toggle_title",
+      "label": "Satellite-toggle title attribute",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening-phase-2-pr1a.md",
+      "source_location": "Phase 2 (C2 partial)",
+      "rationale": "The title mirrors the action of clicking ('Switch to map view' when satellite is on) rather than the current state, so the hint answers what will happen. A data-satellite-active attribute is added purely so e2e can assert state without reading pixels.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_phase_2_pr1a_ux_smoothening_pr1a_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_ux_smoothening_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening-phase-2-pr1a.md",
+      "source_location": "Goal \u2014 B1 dropped because it relitigates a closed Phase 1 decision",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

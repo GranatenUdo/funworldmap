@@ -1,0 +1,267 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_game_flow_bugfix",
+      "label": "Game-Flow Bugfix Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Most user-visible problems in the 2026-04-25 assessment trace to one structural seam, so the spec collapses it rather than patching symptoms; daily mode is preserved and improved, not removed."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_reducer_collapse",
+      "label": "recordAttempt/submitGuess Reducer Collapse",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Splitting one logical guess into two actions with different semantics is the gap daily best-of-3 fell into. The collapsed reducer derives lastOutcome from the BEST attempt, so the round-end animation always matches the score; streak also keys off best points. The combination attemptsPerRound>1 with maxRounds null is structurally unsupported and rejected at start."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_completenow_action",
+      "label": "completeNow Action + Done Button",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Wires the previously-orphaned revealEarly action to a visible commit action so the player chooses when to stop. Rendered as a primary teal button distinct from the End-game underline link because Done is the expected path and End-game is the escape hatch."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_daily_resume_persistence",
+      "label": "Daily Resume Persistence",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A new funworldmap-daily-resume key plus a resume reducer action so a refresh no longer forfeits in-progress attempts; Escape still forfeits deliberately and clears the blob. The clear happens only after writeHistory succeeds so a quota failure cannot orphan a completed day."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_attemptsindicator",
+      "label": "AttemptsIndicator + Per-Attempt Feedback",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Pip dots plus a colour flash per attempt; the +X pts toast is the deliberate secondary channel for colour-blind users, and under reduced motion the colours still apply because they are informational, not decorative."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_focus_trap_util",
+      "label": "Shared focusTrap Utility",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "installFocusTrap replaces the Launcher's first/last-only handler and gives DailyRevealOverlay the focus management its aria-modal claimed but never had."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_deep_link_opened_telemetry",
+      "label": "deep_link_opened Telemetry Redesign",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Single fire-point in the GameController hash bootstrap kills the double-fire; the outcome enum becomes start|resume|reveal|redirect, 'invalid' is dropped as unreachable, and the country-deep-link fires are deleted outright. Backward compatibility with the existing dataset is explicitly abandoned since no live dashboards pivot on it."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_bests_version_bump",
+      "label": "Personal-Bests v1 \u2192 v2 Key Bump",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Daily scores had been leaking into the per-mode free-play bests store. v1 is wiped rather than migrated because it is polluted, and the daily game-over branch stops calling record at all \u2014 fixing the leak at both ends."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_no_adr_decision",
+      "label": "No-ADR Decision for the Reducer Collapse",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Per the ADR README, a decision that can live as a paragraph in a system doc should; the collapse is internal to one file and will not recur as a contested choice, so it gets a file-header comment and an overview.md subsection instead."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_soak_window_rollback_gates",
+      "label": "14-Day Soak Window with Rollback Gates",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Explicit prioritised gates rather than vibes: a zero count of outcome:'resume' across 48h of continuing daily play is the primary signal that the persistence layer never executes, and a >50% drop in daily_completed means the new flow blocks completion."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_reducer_collapse",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_best_of_3_attempts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_reducer_collapse",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_completenow_action",
+      "target": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_reducer_collapse",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_daily_resume_persistence",
+      "target": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_reducer_collapse",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_attemptsindicator",
+      "target": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_completenow_action",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_bests_version_bump",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_personal_bests_persistence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_focus_trap_util",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_focus_trap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_deep_link_opened_telemetry",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_analytics_worker",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_deep_link_opened_telemetry",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_hash_routes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_no_adr_decision",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_adr_convention",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_game_flow_bugfix",
+      "target": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_vite_test_hooks_gating",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_soak_window_rollback_gates",
+      "target": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_daily_resume_persistence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_daily_resume_persistence",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_personal_bests_persistence",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_26_game_flow_bugfix_design_attemptsindicator",
+      "target": "docs_superpowers_specs_2026_04_25_hardening_and_reveal_fixes_design_tutorial_dismiss_on_first_guess",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-26-game-flow-bugfix-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

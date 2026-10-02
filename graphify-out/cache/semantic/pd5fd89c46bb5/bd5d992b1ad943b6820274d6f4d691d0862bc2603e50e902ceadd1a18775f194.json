@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_spec",
+      "label": "Daily-already-played UX design (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-18-daily-already-played-ux-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: the daily-puzzle/retention feature this spec designed was removed in PR #97. Kept unmodified for history \u2014 do not implement from it."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_played_card_primary_secondary",
+      "label": "Played-card primary + secondary affordances",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-18-daily-already-played-ux-design.md",
+      "source_location": "Item 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "One emerald button did both 'I'm done' and 'tap to see reveal', so a played card read as a play entry point and the game felt like it instantly ended. Split into a teal primary Play button and a small secondary reveal row; the emerald border and check stay as the done signal."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_reveal_overlay_cta",
+      "label": "Play-unlimited CTA in the daily reveal overlay",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-18-daily-already-played-ux-design.md",
+      "source_location": "Item 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Adding a bottom close link would violate 'one obvious way to close', so only the Play button is added and the header X stays the sole close affordance. No new analytics event: the hash router's free_started on boot is the durable signal, and firing launcher_dismissed from the reveal overlay would be a category error."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_spec",
+      "target": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_played_card_primary_secondary",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-18-daily-already-played-ux-design.md",
+      "source_location": "Item 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_spec",
+      "target": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_reveal_overlay_cta",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-18-daily-already-played-ux-design.md",
+      "source_location": "Item 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_spec",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-18-daily-already-played-ux-design.md",
+      "source_location": "Tombstone 2026-06-12",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

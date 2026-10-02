@@ -1,0 +1,156 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_plan",
+      "label": "Guardian to GDELT News Source Migration Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_gdelt_doc_api",
+      "label": "GDELT 2.0 Doc API news source",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": "scripts/news/gdelt-client.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Chosen to make the news feature commercial-use compatible (the Guardian free key is non-commercial only) and to delete three sources of ongoing work at once: no API key, no hand-curated per-country tag list, no region fallback. Query operators were verified against live GDELT (locationcc: not location:, sourcelang:english not :eng)."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_fips_codes",
+      "label": "cca3 to FIPS-10-4 code mapping",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": "scripts/news/fips-codes.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "GDELT keys locations by FIPS-10-4 rather than ISO. Roughly 210 of 249 FIPS codes equal the cca2, so the module is an override table of the ~40 divergent codes with cca2 as the fallback \u2014 far smaller to maintain than a full table, and validated by a one-off dry run."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_guardian_module_deletion",
+      "label": "Deletion of Guardian-specific modules",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "guardian-client, guardian-tags and regions are removed in the same change as the GDELT rewrite so no dead ingestion path survives the migration."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_output_json_shape",
+      "label": "Per-country news JSON output shape",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": "public/news/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The static contract between the build pipeline and CountryNewsSection: title, source domain, publish time and thumbnail \u2014 the client renders only what the file carries, so a pipeline swap needs no client protocol change beyond field names."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_gdelt_doc_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_gdelt_doc_api",
+      "target": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_fips_codes",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_gdelt_doc_api",
+      "target": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_output_json_shape",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_guardian_module_deletion",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_tags",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_guardian_module_deletion",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_region_fallback",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_gdelt_doc_api",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_output_json_shape",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_countrynewssection",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_fips_codes",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_tags",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-gdelt-migration.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

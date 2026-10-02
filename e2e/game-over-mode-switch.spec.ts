@@ -49,6 +49,7 @@ test.describe('game-over → new mode', () => {
     // on #3 the session is already game-over and the *other* Escape handler
     // (exit) would clear it, so skip Escape on the final iteration.
     for (let i = 0; i < 2; i++) {
+      await page.evaluate(() => window.__funworldmap_game?.setRound?.('FRA'))
       await submitAndWait(page, 'USA')
       // Wait for the round-ended effect to register the advance Escape
       // handler — otherwise Escape can race against the previous-state
@@ -67,7 +68,7 @@ test.describe('game-over → new mode', () => {
           { timeout: 15_000 },
         )
         .toBe('round-ended')
-      await page.keyboard.press('Escape')
+      await page.getByTestId('round-next').click()
       // Wait for advance to the next round (status flips back to 'playing').
       await expect
         .poll(
@@ -84,6 +85,7 @@ test.describe('game-over → new mode', () => {
         )
         .toBe('playing')
     }
+    await page.evaluate(() => window.__funworldmap_game?.setRound?.('FRA'))
     await submitAndWait(page, 'USA')
 
     await finalizeGame(page)

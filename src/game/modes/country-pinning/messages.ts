@@ -9,4 +9,7 @@ export const MESSAGES = {
     if (distanceKm === null) return `That was ${clicked}. ${tail}`
     return `That was ${clicked} — ${Math.round(distanceKm).toLocaleString()} km from ${target}. ${tail}`
   },
+  // C-5: a guess click that hit no country, even after the coarse-pointer
+  // tap assist (B-2) widened the search.
+  oceanMiss: 'Ocean — pick a country',
 }

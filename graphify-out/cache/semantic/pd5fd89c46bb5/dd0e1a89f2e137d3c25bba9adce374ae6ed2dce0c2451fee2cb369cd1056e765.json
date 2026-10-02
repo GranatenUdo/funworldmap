@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_plan",
+      "label": "Bugfix + Proper Tests Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_promoteid_bug",
+      "label": "promoteId reads properties.id but world-atlas puts id at top level",
+      "file_type": "rationale",
+      "rationale": "world-atlas TopoJSON features carry `feature.id` at the top level; MapLibre's `promoteId: 'id'` and `['get','id']` filter expressions both read from `properties`, so properties.id was undefined and every click/hover/highlight path silently broke.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_feature_id_property_copy",
+      "label": "Copy feature.id into feature.properties.id after TopoJSON conversion",
+      "file_type": "rationale",
+      "rationale": "Chosen over rewriting every filter expression because a single post-conversion loop makes both promoteId and ['get','id'] work from the same source of truth; hoveredRef was retyped from number to string in the same fix since feature IDs are strings.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_geojson_join_integrity_test",
+      "label": "GeoJSON feature ID to countries.json ccn3 join integrity test",
+      "file_type": "concept",
+      "rationale": "Runs in Vitest (no browser) and would have caught the promoteId data mismatch at the source; asserts >90% of feature IDs match a ccn3 and documents that properties.id does NOT exist upstream.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_no_graceful_skip",
+      "label": "Map tests must require the map to load (no graceful skip)",
+      "file_type": "rationale",
+      "rationale": "The old tests silently skipped when SwiftShader lost the WebGL context, so three root-cause bugs shipped undetected. Failing loudly on a timeout is the correct behaviour for a bug-catching suite.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_two_project_split",
+      "label": "Two-project Playwright split: SwiftShader DOM vs real-GPU map tests",
+      "file_type": "concept",
+      "rationale": "DOM/search/theme/a11y specs run fine under SwiftShader; map-interaction specs need real WebGL2, so they got their own chromium-gpu project (--use-gl=angle) and were initially skipped in CI.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_promoteid_bug",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_feature_id_property_copy",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_promoteid_bug",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_geojson_join_integrity_test",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_promoteid_bug",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_no_graceful_skip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_no_graceful_skip",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_two_project_split",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_two_project_split",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_swiftshader_config",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-15-bugfix-and-proper-tests.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

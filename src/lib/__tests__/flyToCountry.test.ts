@@ -111,3 +111,28 @@ describe('flyToCountry', () => {
     expect(lastFlyArg(calls.flyTo).offset).toEqual([0, -160])
   })
 })
+
+describe('flyToCountry recenter (B-1 breakpoint re-center)', () => {
+  it('jumps to the fresh desktop offset keeping current zoom and pitch, without flying', () => {
+    const { map, calls } = createFakeMapRef({ zoom: 4, pitch: 30 })
+    const france = makeCountry({ area: 643_801, latlng: [46, 2] })
+    flyToCountry(map, france, { recenter: true })
+    expect(calls.flyTo).not.toHaveBeenCalled()
+    expect(calls.easeTo).toHaveBeenCalledTimes(1)
+    expect(calls.easeTo.mock.calls[0][0]).toEqual({
+      center: [2, 46],
+      zoom: 4, // the user's current zoom, NOT the area-computed zoom
+      offset: [-188, 0], // panelScreenOffset() re-evaluated for the new layout
+      pitch: 30, // current pitch preserved
+      duration: 0, // an instant jump — reduced motion trivially satisfied
+    })
+  })
+
+  it('recomputes the mobile sheet offset live at recenter time', () => {
+    stubViewport({ desktop: false, height: 800 })
+    const { map, calls } = createFakeMapRef({ zoom: 4 })
+    flyToCountry(map, makeCountry({ area: 643_801, latlng: [46, 2] }), { recenter: true })
+    expect(calls.flyTo).not.toHaveBeenCalled()
+    expect(calls.easeTo.mock.calls[0][0]).toMatchObject({ offset: [0, -160], zoom: 4 })
+  })
+})

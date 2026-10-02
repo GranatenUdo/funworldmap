@@ -1,0 +1,128 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_spec",
+      "label": "UX smoothening: launcher, first-load posture, copy pass",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_map_first_posture",
+      "label": "Map-first first-load posture",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section C",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A free product felt like it had a gate: useLauncherVisibility keyed dismissal on component state, so the modal returned on every reload. New rule \u2014 bare hash returns visible:false (the map is the homepage), #daily/YYYY-MM-DD still opens the launcher so share deep-links keep working."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_header_play_cta",
+      "label": "Stateful header Play CTA pill",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section C \u2014 Header",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Replaces the icon-only triangle with a labeled pill carrying three states (unplayed solid dot / partial outline dot / done muted). On <sm the streak chip and pill merge into one target \u2014 two tap targets on a 320px viewport would crowd; one wider target is honest."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_unlimited_vocabulary",
+      "label": "'free' to 'unlimited' UI vocabulary pass",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section A",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "'free' conflated 'no paywall' with 'non-daily mode'. Display strings change only; internal mode IDs stay. The free_started analytics event deliberately keeps its old name \u2014 renaming would be a backwards-incompatible schema change against saved Cloudflare dashboards, so UI and analytics intentionally diverge."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_header_cta_clicked_event",
+      "label": "header_cta_clicked analytics event",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section C \u2014 Analytics",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Ships so the new funnel (header_cta_clicked -> launcher_opened -> daily_started) can be compared to the historical launcher_auto_opened funnel, making the map-first posture change independently revertible on evidence."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_ensurelauncherdismissed",
+      "label": "ensureLauncherDismissed / openLauncher e2e helpers",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section F",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The launcher-on-bare-hash assumption was baked into helpers. The rename makes the helper a conditional no-op that works in both the old and new posture without silently skipping work tests intended; openLauncher covers tests that need it open. No test.fixme quarantines are acceptable for this slice."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_map_first_posture",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_map_first_posture",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_header_play_cta",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_map_first_posture",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_header_cta_clicked_event",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Analytics",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_map_first_posture",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_ensurelauncherdismissed",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section F",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_unlimited_vocabulary",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-ux-smoothening-design.md",
+      "source_location": "Section A",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

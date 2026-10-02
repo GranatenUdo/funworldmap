@@ -4,7 +4,7 @@ import type maplibregl from 'maplibre-gl'
 
 type Handler = (...args: unknown[]) => void
 
-export function createFakeMapRef(opts: { zoom?: number } = {}) {
+export function createFakeMapRef(opts: { zoom?: number; pitch?: number } = {}) {
   const setData = vi.fn()
   const setFilter = vi.fn()
   const setPaintProperty = vi.fn()
@@ -17,20 +17,26 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
   const addLayer = vi.fn((spec: maplibregl.LayerSpecification) => {
     addedLayers.push(spec)
   })
-  const handlers = new Map<string, Handler>()
+  // Arrays per key: real MapLibre fires every listener registered for an
+  // event in registration order (e.g. useMapInteractions registers BOTH
+  // clickMap and clickGameAssist on plain 'click').
+  const handlers = new Map<string, Handler[]>()
   const keyFor = (event: string, layerOrHandler: unknown) =>
     typeof layerOrHandler === 'string' ? `${event}:${layerOrHandler}` : event
   const on = vi.fn((event: string, layerOrHandler: unknown, maybeHandler?: unknown) => {
     const handler = (
       typeof layerOrHandler === 'function' ? layerOrHandler : maybeHandler
     ) as Handler
-    handlers.set(keyFor(event, layerOrHandler), handler)
+    const key = keyFor(event, layerOrHandler)
+    handlers.set(key, [...(handlers.get(key) ?? []), handler])
   })
   const off = vi.fn()
   const easeTo = vi.fn()
   const flyTo = vi.fn()
   const jumpTo = vi.fn()
+  const stop = vi.fn()
   const getZoom = vi.fn(() => opts.zoom ?? 1.8)
+  const getPitch = vi.fn(() => opts.pitch ?? 0)
   const canvas = { style: { cursor: '' } }
   const getCanvas = vi.fn(() => canvas as unknown as HTMLCanvasElement)
   const cameraForBounds = vi.fn<
@@ -39,7 +45,10 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
       options?: maplibregl.CameraForBoundsOptions,
     ) => maplibregl.CenterZoomBearing | undefined
   >(() => ({ center: [0, 0], zoom: 3 }))
-  const queryRenderedFeatures = vi.fn(() => [])
+  // Loose feature shape so tests can stub hits per geometry (B-2 tap assist).
+  const queryRenderedFeatures = vi.fn<
+    (geometry?: unknown, options?: unknown) => { id?: string | number }[]
+  >(() => [])
   const getStyle = vi.fn(() => ({ layers: [] as maplibregl.LayerSpecification[] }))
   const doubleClickZoom = { disable: vi.fn() }
 
@@ -57,7 +66,9 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
     easeTo,
     flyTo,
     jumpTo,
+    stop,
     getZoom,
+    getPitch,
     getCanvas,
     cameraForBounds,
     queryRenderedFeatures,
@@ -65,11 +76,13 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
     doubleClickZoom,
   } as unknown as maplibregl.Map
 
-  /** Invoke a captured `map.on` handler. Throws when nothing registered. */
+  /** Invoke the captured `map.on` handlers for an event, in registration
+   *  order. Throws when nothing registered. */
   const fire = (event: string, layer: string | null, payload?: unknown) => {
-    const handler = handlers.get(layer ? `${event}:${layer}` : event)
-    if (!handler) throw new Error(`no handler registered for ${event}${layer ? `:${layer}` : ''}`)
-    handler(payload)
+    const registered = handlers.get(layer ? `${event}:${layer}` : event)
+    if (!registered || registered.length === 0)
+      throw new Error(`no handler registered for ${event}${layer ? `:${layer}` : ''}`)
+    for (const handler of registered) handler(payload)
   }
 
   const ref: MutableRefObject<maplibregl.Map | null> = { current: map }
@@ -93,9 +106,12 @@ export function createFakeMapRef(opts: { zoom?: number } = {}) {
       easeTo,
       flyTo,
       jumpTo,
+    stop,
       setData,
       getZoom,
+      getPitch,
       cameraForBounds,
+      queryRenderedFeatures,
       getStyle,
     },
   }

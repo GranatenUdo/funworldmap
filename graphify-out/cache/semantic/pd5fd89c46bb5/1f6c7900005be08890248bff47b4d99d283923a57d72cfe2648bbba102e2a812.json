@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    {
+      "id": "_github_workflows_codeql_analyze",
+      "label": "CodeQL javascript-typescript analysis (weekly + PR)",
+      "file_type": "code",
+      "source_file": ".github/workflows/codeql.yml",
+      "source_location": "jobs.analyze",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [],
+  "hyperedges": []
+}

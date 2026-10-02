@@ -1,3 +1,4 @@
+import { REGION_TINTS, REGION_TINT_FALLBACK } from '../lib/regionTints'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
 import { BorderChip } from './BorderChip'
@@ -8,6 +9,7 @@ import { TimezoneList } from './TimezoneList'
 import { dispatchToast } from '../lib/toast'
 import {
   TOUCH_TARGET_FROM_36,
+  TOUCH_TARGET_FROM_32,
   TOUCH_TARGET_FROM_22,
   TOUCH_TARGET_FROM_20,
   TOUCH_TARGET_TEXT_XS,
@@ -42,6 +44,7 @@ interface Props {
   onEnterCompare: () => void
   onCancelCompare: () => void
   byCca3: Map<string, CountryData>
+  fullDetails?: boolean
   inGameRound?: boolean
 }
 
@@ -128,15 +131,6 @@ function HeroStat({
   )
 }
 
-const REGION_BADGE: Record<string, string> = {
-  Africa: 'bg-amber-100/80 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
-  Americas: 'bg-emerald-100/80 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
-  Asia: 'bg-rose-100/80 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300',
-  Europe: 'bg-blue-100/80 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-  Oceania: 'bg-teal-100/80 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300',
-  Antarctic: 'bg-slate-100/80 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
-}
-
 /** Display names for `_fieldSources` keys in the footer's field → source
  *  table (D2). Unknown keys render as-is — an honest fallback for fields
  *  the data pipeline adds before this map learns them. */
@@ -170,9 +164,10 @@ export function SingleCountryPanel({
   onCancelCompare,
   byCca3,
   inGameRound = false,
+  fullDetails = false,
 }: Props) {
   const [expanded, setExpanded] = useState(false)
-  const showSecondary = isDesktop || expanded
+  const showSecondary = isDesktop || fullDetails || expanded
 
   // D3: derived purely from the bundled canonical set (byCca3 is the
   // canonical-195 lookup the panel already receives) — zero data cost.
@@ -278,7 +273,7 @@ export function SingleCountryPanel({
       data-animation-state={animationState}
     >
       <div className="sticky top-0 bg-sand-50/95 dark:bg-dark-400/95 backdrop-blur-md px-5 py-4 z-10">
-        {!isDesktop && (
+        {!isDesktop && !fullDetails && (
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
@@ -340,12 +335,12 @@ export function SingleCountryPanel({
               <h2
                 ref={headingRef}
                 tabIndex={-1}
-                className="text-2xl font-bold text-sand-900 dark:text-dark-50 line-clamp-2 break-words tracking-tight leading-tight focus:outline-none rounded"
+                className="text-xl font-bold text-sand-900 dark:text-dark-50 line-clamp-2 break-words tracking-tight leading-tight focus:outline-none rounded"
               >
                 {country.name.common}
               </h2>
               {country.name.official !== country.name.common && (
-                <p className="text-xs text-sand-600 dark:text-dark-100 line-clamp-2 break-words mt-0.5">
+                <p className="text-[11px] text-sand-600 dark:text-dark-100 line-clamp-2 break-words mt-0.5">
                   {country.name.official}
                 </p>
               )}
@@ -383,7 +378,7 @@ export function SingleCountryPanel({
                 aria-label="Compare with another country"
                 title="Compare"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <circle cx="9" cy="12" r="6" strokeWidth="1.75" />
                   <circle cx="15" cy="12" r="6" strokeWidth="1.75" />
                 </svg>
@@ -394,11 +389,11 @@ export function SingleCountryPanel({
             {!inGameRound && (
               <button
                 onClick={onShareLink}
-                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
+                className={`p-2 rounded-lg border border-sand-300/65 dark:border-dark-200/70 text-sand-600 dark:text-dark-100 hover:bg-sand-200/60 dark:hover:bg-dark-300/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 ${TOUCH_TARGET_FROM_32}`}
                 aria-label="Copy link to this country"
                 title="Copy link"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -409,15 +404,15 @@ export function SingleCountryPanel({
               </button>
             )}
 
-            {!isDesktop && (
+            {!isDesktop && !fullDetails && (
               <button
                 onClick={() => setExpanded(!expanded)}
-                className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
+                className={`p-2 rounded-lg border border-sand-300/65 dark:border-dark-200/70 text-sand-600 dark:text-dark-100 hover:bg-sand-200/60 dark:hover:bg-dark-300/60 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 ${TOUCH_TARGET_FROM_32}`}
                 aria-label={expanded ? 'Collapse panel' : 'Expand panel'}
                 aria-expanded={expanded}
               >
                 <svg
-                  className={`w-5 h-5 transition-transform ${expanded ? 'rotate-180' : ''}`}
+                  className={`w-4 h-4 transition-transform ${expanded ? 'rotate-180' : ''}`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -432,11 +427,13 @@ export function SingleCountryPanel({
               </button>
             )}
             {inGameRound ? (
+              // py-2 + text-sm (20px line) = 36px box — honest FROM_36 math
+              // (the accepted variant's py-1.5 text-[13px] box was ~31px).
               <button
                 type="button"
                 onClick={onClose}
                 data-testid="game-continue"
-                className={`px-4 py-2 rounded-xl bg-ice-accessible text-white font-semibold text-sm hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-accessible/60 ${TOUCH_TARGET_FROM_36}`}
+                className={`px-3.5 py-2 rounded-lg bg-ice-accessible text-white font-semibold text-sm hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-accessible/60 ${TOUCH_TARGET_FROM_36}`}
               >
                 Continue
               </button>
@@ -446,12 +443,11 @@ export function SingleCountryPanel({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5 mt-2">
+        <div className="flex flex-wrap items-center gap-1.5 mt-1.5">
           <span
             data-testid="region-badge"
             className={`inline-block whitespace-nowrap text-[11px] font-medium px-2 py-0.5 rounded-full ${
-              REGION_BADGE[country.region] ||
-              'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
+              REGION_TINTS[country.region]?.soft ?? REGION_TINT_FALLBACK
             }`}
           >
             {country.region}
@@ -534,7 +530,7 @@ export function SingleCountryPanel({
 
         {showSecondary && (
           <>
-            <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
+            <div className="my-2 border-t border-sand-300/50 dark:border-dark-200/30" />
 
             <div className="panel-field-in-2">
               {Object.keys(country.currencies).length > 0 && (
@@ -551,7 +547,7 @@ export function SingleCountryPanel({
 
             {country.borders.length > 0 && (
               <>
-                <div className="my-2 border-t border-dotted border-sand-300/50 dark:border-dark-200/30" />
+                <div className="my-2 border-t border-sand-300/50 dark:border-dark-200/30" />
                 <div className="panel-field-in-3">
                   <div
                     data-field="borders"

@@ -17,7 +17,8 @@ function field(key: string) {
 
 /** E4 two-accent migration drift alarm: chrome accents are the ice family;
  *  teal is retired from chrome (it survives ONLY in the Oceania region-badge
- *  data encodings, which render via REGION_BADGE/REGION_COLORS maps, not
+ *  data encoding, which renders via the shared REGION_TINTS map in
+ *  src/lib/regionTints.ts, not
  *  these components' accent classes). E2: CompareFieldRow values render in
  *  the .text-readout face. (Migrated off the now-deleted composed
  *  CountryColumn onto CompareFieldRow, its architectural successor — see

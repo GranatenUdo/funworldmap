@@ -1,0 +1,409 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_testing",
+      "label": "Testing System",
+      "file_type": "document",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Playwright against the Vite preview server (build:e2e + preview) across four projects: chromium (real-GPU ANGLE), mobile-chromium, mobile-webkit, desktop-firefox-touch."
+    },
+    {
+      "id": "docs_systems_testing_canvas_challenge",
+      "label": "The canvas challenge",
+      "file_type": "rationale",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Because MapLibre renders everything into a WebGL2 canvas, you cannot query elements inside it with CSS selectors, assert CSS states on rendered features, or use standard Playwright locators for map features. This single constraint shapes the entire two-tier strategy."
+    },
+    {
+      "id": "docs_systems_testing_two_tier_strategy",
+      "label": "Two-tier test strategy",
+      "file_type": "rationale",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Tier 1 keeps everything outside the canvas fast and reliable via DOM locators; Tier 2 reaches into the MapLibre API through page.evaluate for anything the DOM cannot express. Splitting them keeps the slow, GPU-dependent assertions confined to a minority of tests."
+    },
+    {
+      "id": "docs_systems_testing_dom_tier",
+      "label": "Tier 1 \u2014 DOM tests",
+      "file_type": "concept",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "data-testid attributes, standard role/text/testid locators, URL hash assertions, and map state mirrored onto the app root as data attributes (data-map-loaded after onLoad, data-selected-country when a country is selected) so canvas state becomes DOM-assertable."
+    },
+    {
+      "id": "docs_systems_testing_map_integration_tier",
+      "label": "Tier 2 \u2014 map integration tests via page.evaluate",
+      "file_type": "concept",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Reads getZoom/getCenter, runs queryRenderedFeatures at a pixel, drives page.mouse.click at known country coordinates, and captures screenshots \u2014 the only way to assert camera and feature state that lives inside the canvas."
+    },
+    {
+      "id": "docs_systems_testing_test_seams",
+      "label": "Test seams (__funworldmap_map / __funworldmap_game)",
+      "file_type": "concept",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "useMapInstance is the single producer of __funworldmap_map; GameController and GameSessionProvider both contribute methods to a shared __funworldmap_game bag. Gated behind build-time VITE_TEST_HOOKS, set only by build:e2e via .env.e2e \u2014 so production and the standard dev server never expose them. Acceptable because the site has no accounts, auth, or sensitive runtime state."
+    },
+    {
+      "id": "docs_systems_testing_webgl2_angle",
+      "label": "WebGL2 in headless browsers (ANGLE)",
+      "file_type": "rationale",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Chromium launches with --use-gl=angle --use-angle=default to use ANGLE over the real GPU when available, with software fallback last. The previous SwiftShader/Software-ANGLE backend was dropped 2026-05-02: it ran 5\u201310\u00d7 slower and was the documented largest contributor to the chromium e2e flake regression."
+    },
+    {
+      "id": "docs_systems_testing_shared_helpers",
+      "label": "Shared readiness helpers (e2e/helpers.ts)",
+      "file_type": "concept",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "There is deliberately no e2e/fixtures/ directory \u2014 all reusable readiness and interaction helpers live in one module (waitForAppReady, gotoAndWaitForMap, waitForCountryTilesRendered, waitForGameTestHook, waitForAnimationIdle, openLauncher/ensureLauncherDismissed, submitAndWait/finalizeGame/getSession, routeMapTiles, waitForMapLoaded, forceWebGLContextLoss) because waitForTimeout is banned and every wait must have a named explicit-state helper."
+    },
+    {
+      "id": "docs_systems_testing_ci_scope",
+      "label": "What runs in CI",
+      "file_type": "rationale",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "CI runs the chromium project only, sharded 4-way; mobile/WebKit/Firefox projects are local opt-in pending a green cross-browser baseline. Ten more specs are testIgnore'd pending a self-hosted GPU runner (issue #106). Net: 13 of 40 spec files are local-only, so those areas must be run manually before merging."
+    },
+    {
+      "id": "docs_systems_testing_visual_regression",
+      "label": "Visual regression screenshots",
+      "file_type": "concept",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Captures initial world view, zoomed-to-Europe, country-selected-with-panel, and light vs dark. Sensitive to rendering differences, so maxDiffPixels / maxDiffPixelRatio absorb antialiasing variance."
+    },
+    {
+      "id": "docs_systems_testing_axe_testing",
+      "label": "Accessibility testing with @axe-core/playwright",
+      "file_type": "concept",
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "AxeBuilder({ page }).analyze() with expect(results.violations).toEqual([]) catches missing alt text, insufficient contrast, missing ARIA, and broken label associations as WCAG AA violations."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_canvas_challenge",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_two_tier_strategy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_dom_tier",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_map_integration_tier",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_test_seams",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_webgl2_angle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_shared_helpers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_ci_scope",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_visual_regression",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_testing_axe_testing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_canvas_challenge",
+      "target": "docs_systems_testing_two_tier_strategy",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_two_tier_strategy",
+      "target": "docs_systems_testing_dom_tier",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_two_tier_strategy",
+      "target": "docs_systems_testing_map_integration_tier",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_map_integration_tier",
+      "target": "docs_systems_testing_test_seams",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_test_seams",
+      "target": "docs_systems_build_npm_scripts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_test_seams",
+      "target": "docs_systems_overview_game_system",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_ci_scope",
+      "target": "docs_roadmap_flaky_on_free_ci_specs",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_ci_scope",
+      "target": "docs_roadmap",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_webgl2_angle",
+      "target": "docs_systems_map_rendering_webgl_requirement",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_webgl2_angle",
+      "target": "docs_roadmap_self_hosted_gpu_runner",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_shared_helpers",
+      "target": "docs_systems_testing_dom_tier",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_map_integration_tier",
+      "target": "docs_systems_map_rendering_interaction_model",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_axe_testing",
+      "target": "docs_systems_accessibility_wcag_aa",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing_visual_regression",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_map_rendering_satellite_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_map_rendering_country_labels",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_testing",
+      "target": "docs_systems_ui_layout_compare",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/testing.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

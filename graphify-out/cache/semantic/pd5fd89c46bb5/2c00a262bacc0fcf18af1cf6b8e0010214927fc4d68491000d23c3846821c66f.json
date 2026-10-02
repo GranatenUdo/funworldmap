@@ -1,0 +1,342 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "label": "Retention v1 Phase 3 \u2014 Streak + Calendar + Reveal Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_calendargrid",
+      "label": "calendarGrid pure 5x7 grid helper",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/game/daily/calendarGrid.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Returns a fixed 35-cell Monday-aligned array ending on the current ISO-week Sunday so the component does zero date math of its own. Cell count stays constant at 35 even if the retention window shrinks \u2014 older cells simply render rolled-off. Future cells inside the current week are also marked rolled-off so they do not look playable."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_pendingmilestone",
+      "label": "pendingMilestone derived-not-persisted milestone detection",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/game/daily/storage.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Milestone eligibility is computed from streak.current vs streak.lastMilestoneShown instead of being written at streak-update time, which keeps updateStreak pure. markMilestoneShown is the only writer, giving once-per-threshold dedupe."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_launcherstreakpill",
+      "label": "LauncherStreakPill (active / broken / first states)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/components/LauncherStreakPill.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Takes a streakMode prop rather than deriving from current===0, because updateStreak never sets current to 0 (its else branch resets to 1). A stale streak therefore has current>=1 with an old lastActiveDate, so 'broken' must be derived at render time from lastActiveDate vs yesterday. A data-streak-mode attribute makes the state e2e-assertable without matching copy."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_milestoneoverlay",
+      "label": "LauncherMilestoneOverlay",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/components/LauncherMilestoneOverlay.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Celebrates thresholds 3/7/14/30/100, fires streak_reached_milestone on mount, auto-dismisses at 2500ms and is click/Escape dismissible; the whole overlay is a button so the accessible name computation works and aria-live announces it."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "label": "LauncherHistoryPanel calendar panel",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/components/LauncherHistoryPanel.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Arrow-key navigation is handled once at the panel level by reading the focused cell's data-testid and moving +/-1 or +/-7, rather than each cell tracking its own neighbours."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_calendarcell",
+      "label": "LauncherCalendarCell with per-mode dots",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/components/LauncherCalendarCell.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Rolled-off cells are disabled with tabIndex -1 so only interactive cells enter the tab order; the colour dots are aria-hidden and the mode coverage is carried in the cell's aria-label instead."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "label": "DailyRevealOverlay (text-only reveal)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/components/DailyRevealOverlay.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Deliberately does no map manipulation: MapLibre camera state is tied to GameController's session, so decoupling the reveal from the session keeps the PR scoped. Renders target name plus stored attempts as an emoji dot strip; a map-based reveal is left to a future PR."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_scoredot",
+      "label": "scoreDot score-to-emoji bucketing",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/components/DailyRevealOverlay.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Maps a 0-100 attempt score to one of five coloured squares with the numeric score kept as the aria-label, so emoji is never the sole carrier of meaning."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_nested_escape",
+      "label": "Nested Escape cascade (panel before launcher)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Escape closes the history panel first and stops propagation so it does not also dismiss the launcher; the focus-trap effect re-binds on historyOpen so the handler sees fresh state through its closure."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_reveal_redirect_gate",
+      "label": "GameController already-played / past-date reveal redirect",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/game/GameController.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Symmetric gate: future dates go to root, past dates or an already-played mode redirect to the matching /reveal URL instead of restarting the session, so a shared or bookmarked link never silently replays a finished daily."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_see_reveal_deep_link",
+      "label": "'See reveal' CTA via deep-link navigation",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": "src/components/LauncherModeCard.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sets window.location.hash rather than opening a modal from the launcher, so the played-card CTA goes through the identical hashchange flow as typing the URL directly \u2014 one code path, not two."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_targetname_rename",
+      "label": "PlayedResult.countryName renamed to targetName",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The field holds a country name in country mode and a city name in city mode, so the Phase 2 name was misleading."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_calendargrid",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_pendingmilestone",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_launcherstreakpill",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_milestoneoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_reveal_redirect_gate",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_calendargrid",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_calendarcell",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_milestoneoverlay",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_pendingmilestone",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_launcherstreakpill",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_launcherstreakpill",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_pendingmilestone",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_nested_escape",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_scoredot",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_see_reveal_deep_link",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_see_reveal_deep_link",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_targetname_rename",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_reveal_redirect_gate",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_scoredot",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_quintile_emoji_strip",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-retention-program-v1-phase-3-streak-calendar.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

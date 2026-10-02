@@ -1,0 +1,11 @@
+# graphify corpus exclusion, pinned so the corpus is reproducible — the
+# 2026-08-08 run achieved this by hand-editing the detect JSON.
+#
+# 249 flag SVGs. Vision extraction would spawn one subagent per flag and emit
+# 249 isolated "flag of X" nodes with no edges. detect sees 252 files under
+# public/ in total: the 249 flags, favicon.svg, and 2 font binaries.
+#
+# graphify-out/ deliberately absent: graphify already excludes its own output
+# directory unconditionally (detect.py's configured_out_dir), so an entry here
+# would be a no-op.
+public/

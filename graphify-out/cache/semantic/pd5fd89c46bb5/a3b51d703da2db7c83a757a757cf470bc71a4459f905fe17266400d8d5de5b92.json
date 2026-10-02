@@ -1,0 +1,103 @@
+{
+  "nodes": [
+    {
+      "id": "docs_adr_0003_usegamesession_reducer_model",
+      "label": "ADR 0003: Single useGameSession reducer with a discriminated-union action set",
+      "file_type": "document",
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Game state (lives, score, streak, round index, outcomes) must stay consistent across modes \u2014 e.g. score and reveal animation must always agree. Rejected multiple useState values (state scatters, invariants drift) and a state-machine library like XState (dependency and conceptual overhead disproportionate to this state size). Recorded 2026-05-30 during the retention-v1 build."
+    },
+    {
+      "id": "docs_adr_0003_usegamesession_reducer_model_action_set",
+      "label": "Discriminated-union action set (start/attempt/advance/overrideRound/endGame/finishFree/finalize/restart)",
+      "file_type": "concept",
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Atomic multi-effect transitions become expressible \u2014 restart collapses endGame+start into one dispatch to avoid an intermediate idle render (the fix for bug #32, the game-over \u2192 hash-mode-switch race)."
+    },
+    {
+      "id": "docs_adr_0003_usegamesession_reducer_model_gamemode_contract",
+      "label": "GameMode contract",
+      "file_type": "concept",
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Modes plug into the pure reducer through a contract; orchestration (timers, reveal effects, persistence) lives outside the reducer in GameController and hooks, which keeps the reducer pure but spreads timing logic across the controller/hook layer."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_adr_0003_usegamesession_reducer_model",
+      "target": "docs_adr_0003_usegamesession_reducer_model_action_set",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0003_usegamesession_reducer_model",
+      "target": "docs_adr_0003_usegamesession_reducer_model_gamemode_contract",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0003_usegamesession_reducer_model",
+      "target": "docs_systems_overview_game_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0003_usegamesession_reducer_model_action_set",
+      "target": "docs_systems_overview_game_system",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0003_usegamesession_reducer_model_gamemode_contract",
+      "target": "docs_purpose_country_pinning",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0003_usegamesession_reducer_model_gamemode_contract",
+      "target": "docs_purpose_city_guessing",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/adr/0003-usegamesession-reducer-model.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

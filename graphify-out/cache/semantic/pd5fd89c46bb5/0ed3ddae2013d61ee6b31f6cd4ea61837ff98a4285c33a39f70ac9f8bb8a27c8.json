@@ -1,0 +1,451 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_overview",
+      "label": "System Overview",
+      "file_type": "document",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Client-side SPA: all code, data, and assets ship as static files from a CDN and the browser does all the work. No application backend is required; the only server-side component is an optional analytics Worker."
+    },
+    {
+      "id": "docs_systems_overview_architecture",
+      "label": "Browser-side architecture (components \u2192 hooks \u2192 bundled data)",
+      "file_type": "concept",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Three tiers inside one React app: view components (WorldMap/MapLibre, CountryPanel as sidebar or bottom sheet, Header with SearchBar + ThemeToggle), a hooks state layer (useMapInteractions, useCountryData, useCountrySearch, useTheme, useMediaQuery, URL-hash sync), and bundled data (countries.json, SVG flags, world-atlas TopoJSON async chunk, Fuse.js index built on load)."
+    },
+    {
+      "id": "docs_systems_overview_external_dependencies",
+      "label": "Runtime external dependencies table",
+      "file_type": "concept",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "EOX Sentinel-2, AWS Terrain Tiles, and OpenFreeMap are non-optional for their view but degrade gracefully; the analytics Worker and Sentry are true no-ops without their env vars. The Cloudflare Web Analytics beacon is the exception \u2014 it ships in every production build (stripped only in vite dev), so a prod build fetches it from cloudflareinsights.com regardless of VITE_CF_WA_TOKEN, which only controls whether CF attributes the hit."
+    },
+    {
+      "id": "docs_systems_overview_page_load_flow",
+      "label": "Data flow: on page load",
+      "file_type": "concept",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Eight steps ending in hash resolution. No loading indicator is shown while the TopoJSON chunk streams because the basemap already provides immediate visual content. Hash resolution is deliberately deferred until the GeoJSON source is loaded \u2014 a country cannot be selected and highlighted before then. Default view: satellite, lon 0 / lat 20 / zoom 1.8 / pitch 20\u00b0."
+    },
+    {
+      "id": "docs_systems_overview_country_click_flow",
+      "label": "Data flow: on country click",
+      "file_type": "concept",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "queryRenderedFeatures \u2192 numeric feature id \u2192 ccn3 metadata lookup \u2192 convert to cca3 \u2192 flyTo (reduced-motion aware) \u2192 panel slides in with per-field source tooltips \u2192 hash updates to #FRA."
+    },
+    {
+      "id": "docs_systems_overview_search_flow",
+      "label": "Data flow: on search",
+      "file_type": "concept",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Typed query \u2192 Fuse.js against the prebuilt index \u2192 top 8 in a dropdown \u2192 selection flies the camera, opens the panel, updates the hash. No additional lookup is needed because metadata already rides along on the search result."
+    },
+    {
+      "id": "docs_systems_overview_state_management",
+      "label": "State management: hash as single source of truth",
+      "file_type": "rationale",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Every selection action \u2014 map click, search, border chip, initial load \u2014 updates the hash, and all consuming components react to the change rather than holding their own copy."
+    },
+    {
+      "id": "docs_systems_overview_hook_responsibilities",
+      "label": "Hook responsibilities table",
+      "file_type": "concept",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Each hook is pinned to exactly one source of truth: useSelectedCountry to window.location.hash via byCca3, useCountryData to bundled countries.json parsed once, useCountrySearch to the startup Fuse index, useTheme to localStorage + prefers-color-scheme, useMediaQuery to matchMedia('(min-width: 1024px)')."
+    },
+    {
+      "id": "docs_systems_overview_selection_flow",
+      "label": "Selection flow convergence",
+      "file_type": "rationale",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "All four entry paths converge on setting the hash, and useSelectedCountry resolves cca3 \u2192 CountryData \u2192 flyToCountry. When the hash clears (ocean click, panel close, reset view) the hook returns null and the highlight clears \u2014 one path in, one path out."
+    },
+    {
+      "id": "docs_systems_overview_error_handling",
+      "label": "Error handling matrix",
+      "file_type": "rationale",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Six named failures each degrade rather than crash: no WebGL \u2192 upgrade message; invalid hash \u2192 silently cleared, default view; basemap tiles fail \u2192 polygons still render; TopoJSON fails \u2192 'Country data unavailable'; no metadata match \u2192 defensive 'Limited data available'; webglcontextlost \u2192 overlay plus restore attempt on webglcontextrestored."
+    },
+    {
+      "id": "docs_systems_overview_bundle_size_budget",
+      "label": "Bundle size budget breakdown",
+      "file_type": "rationale",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "maplibre-gl (~275 KB gzip) dominates and is not tree-shakeable; @sentry/react is statically imported regardless of DSN. Measured ~477 KB initial JS+CSS and ~710 KB with the async world-atlas chunk; per-component figures are estimates summing to the measured totals. CI enforces an 820 KB ceiling set 2026-05-14 at measured + 10%."
+    },
+    {
+      "id": "docs_systems_overview_game_system",
+      "label": "Game system (reducer + modes + controller)",
+      "file_type": "concept",
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One useGameSession reducer with the start/attempt/advance/overrideRound/endGame/finishFree/finalize/restart action set; modes plug in via the GameMode contract under src/game/modes/. GameSessionProvider supplies the context API and computed mode, GameController owns hash bootstrap, reveal effects, and telemetry."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_architecture",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_external_dependencies",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_page_load_flow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_country_click_flow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_search_flow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_state_management",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_hook_responsibilities",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_selection_flow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_error_handling",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_bundle_size_budget",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_overview_game_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview",
+      "target": "docs_systems_analytics",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_state_management",
+      "target": "docs_systems_overview_selection_flow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_state_management",
+      "target": "docs_systems_overview_hook_responsibilities",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_selection_flow",
+      "target": "docs_systems_data_coordinate_system",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_country_click_flow",
+      "target": "docs_systems_data_data_join",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_search_flow",
+      "target": "docs_systems_search",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_page_load_flow",
+      "target": "docs_systems_map_rendering_country_labels",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_page_load_flow",
+      "target": "docs_systems_map_rendering_topojson_pipeline",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_error_handling",
+      "target": "docs_systems_data_unmatched_territories",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_error_handling",
+      "target": "docs_systems_map_rendering_webgl_requirement",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_hook_responsibilities",
+      "target": "docs_systems_data_bidirectional_lookup",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_hook_responsibilities",
+      "target": "docs_systems_ui_layout_country_panel",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_hook_responsibilities",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_hook_responsibilities",
+      "target": "docs_systems_search_index_construction",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_architecture",
+      "target": "docs_systems_ui_layout",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_architecture",
+      "target": "docs_systems_data_enriched_data_model",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_external_dependencies",
+      "target": "docs_ops_runbook_basemap_degradation",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_bundle_size_budget",
+      "target": "docs_roadmap_lazy_sentry",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_overview_game_system",
+      "target": "docs_systems_testing_test_seams",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/overview.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

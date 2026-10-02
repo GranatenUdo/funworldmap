@@ -1,0 +1,237 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_repository_cleanup_presentability_plan",
+      "label": "Repository Cleanup & Presentability Plan (v5)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "line 1",
+      "rationale": "The repo is internally rigorous and externally underdeveloped: a visitor sees no demo, screenshot, or CI badges, so the project's real maturity is obscured. Seven phases sequenced by visible-impact-per-cost; keeping diagnosis adjacent to prescription is why it is one plan rather than seven.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_working_tree_hygiene",
+      "label": "Working-tree hygiene sweep",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.2 / Phase 0",
+      "rationale": "16 untracked files persisted across a multi-day session \u2014 a 9.5 MB corrupt lightningcss .bak, 9 abandoned dev screenshots, and three completed plan files that should have been archived. .gitignore grows /share-*.png and /.tmp-*/ so the same classes cannot re-accumulate.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_presentation_polish",
+      "label": "Presentation polish (README, metadata, governance)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "Phase 1",
+      "rationale": "package.json keeps private:true and version 0.0.0 (correct for an unpublished GitHub-Pages app \u2014 prevents accidental npm publish) but gains license/description/homepage/repository/keywords. Adds CODE_OF_CONDUCT, issue/PR templates, CodeQL workflow, and a freshly generated hero screenshot; OSSF Scorecard was declined by the user.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_test_fixture_consolidation",
+      "label": "Test-fixture consolidation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.3 / Phase 2",
+      "rationale": "Surfaced by the five /simplify passes during the GameController extraction: Window.__funworldmap_game re-cast inline at 3 production sites with no shared declare global, __testAnalytics redeclared at 5 sites, makeCountryReveal/makePointReveal/makeOutcome byte-identical across two hook test files, and three separate implementations of makeFakeMap.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_mode_predicates",
+      "label": "modePredicates \u2014 stringly-typed mode-ID comparisons",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.4 / Phase 3a",
+      "rationale": "36 stringly-typed mode-ID comparisons (re-verified firsthand; previous estimate 23), worst offender useHashGameRouter.ts with 5+ sites. ModeId is a string union so TypeScript catches typos, but the literal-string sites pile up \u2014 at this count the user promoted predicate helpers from optional to REQUIRED.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_reveal_palette_constants",
+      "label": "Reveal-color semantic constants",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.4 / Phase 3b",
+      "rationale": "10 inline hex codes in useRevealMapEffects plus 3 more in its test encode three semantic colors (#22c55e correct, #f59e0b warn, #ef4444 far) with no named constants; mapPalette.ts exists but carries only the TEAL/CORAL brand family, so reveal feedback has no home.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_nine_ref_mirrors",
+      "label": "Nine ref-mirrors across the five extracted hooks",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.4",
+      "rationale": "statusRef, pendingStartRef, lastRevealEmitHashRef, lastAttemptCountRef, prevStatusForTelemetryRef, recordedRef, lastAnnouncedRoundKeyRef, lastIntermediateAttemptCountRef, prevStatusForIntermediateRef \u2014 documented out-of-scope in the GameController extraction plan; replacement via useSyncExternalStore is a separate architectural refactor. eslint-plugin-react-hooks 7.1's stricter ref validation may surface new findings against them.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_tooling_tier_up",
+      "label": "Tooling tier-up (typecheck script, husky, editorconfig, type-checked ESLint)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "Phase 4",
+      "rationale": "Type-checking only happened implicitly via tsc -b inside build; no pre-commit hooks meant avoidable CI noise from formatting/lint failures; no .editorconfig left indent/EOL to IDE plugins. The ESLint recommended-type-checked ruleset was deferred earlier because it surfaces many findings that must be fixed first.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_dependency_hygiene",
+      "label": "Dependency hygiene phase",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.8 / Phase 5",
+      "rationale": "Substantial major-version lag (jsdom 4 majors, eslint-plugin-react-hooks 2, typescript/eslint 1 each) reframed as a maintainability cost rather than a CVE risk. Sequenced after Phase 4 so the ESLint 10 bump and the type-checked ruleset land together. @vitejs/plugin-react and Vite bumps explicitly deferred: plugin-react v5+ requires Vite 8+ and the repo is on Vite 6.4.2, so 4.7.0 is the newest compatible. Dependabot config added so the lag cannot silently re-accumulate.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_quarantined_tests_triage",
+      "label": "Quarantined e2e tests triage",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.5 / Phase 6",
+      "rationale": "5 tests across 3 issues: animation-interrupt x3 (#47, animation state unobservable under CI reduced-motion baseline), game-over-mode-switch (#32, timeout-dependent mode switch), launcher (#31, compositor frame production / ANGLE renderer flake). All honest test.fixme quarantines with issue links; the underlying causes remain unresolved and the phase may be blocked on GPU-runner availability.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_test_fixture_consolidation",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.3 \u2014 cited from the four /simplify passes during the GameController extraction",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_nine_ref_mirrors",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_ref_mirror_smell",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.4 \u2014 documented out-of-scope in the GameController extraction plan",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_reveal_palette_constants",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.4 \u2014 10 reveal-color hex codes in useRevealMapEffects",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_mode_predicates",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usehashgamerouter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.4 \u2014 worst offender useHashGameRouter.ts",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_quarantined_tests_triage",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_ci_testignore_interaction",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.5 \u2014 same issues #31/#32/#47",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_dependency_hygiene",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_tooling_tier_up",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a72 \u2014 Phase 5 sequenced after Phase 4.2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_dependency_hygiene",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_nine_ref_mirrors",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.8 \u2014 react-hooks 7.1 ref validation may surface findings against the 9 ref-mirrors",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_working_tree_hygiene",
+      "target": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_tier_1_continuation_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.2 table \u2014 ARCHIVE 2026-05-14-tier-1-continuation.md (completed)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_repository_cleanup_presentability_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_presentation_polish",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "Phase 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_repository_cleanup_presentability_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_mode_predicates",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "Phase 3a",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_bundle_budget_ci_gate",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_tooling_tier_up",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-15-repository-cleanup-presentability.md",
+      "source_location": "\u00a71.6 \u2014 bundle budgets pegged at measured+10% with no re-baseline cadence",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,0 +1,104 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_plan",
+      "label": "A11y + Contrast Pass Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_region_badge_floor",
+      "label": "Region-badge size floor raised from 10px to 11px",
+      "file_type": "concept",
+      "rationale": "Shipped together with a data-testid=region-badge anchor because text=Europe otherwise matched subregion labels and neighbour names, and .first() silently grabbed the wrong node.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_wcag_bump",
+      "label": "Light-mode meta copy bumped sand-500 to sand-600 for WCAG AA",
+      "file_type": "concept",
+      "rationale": "Deliberately product-direction-neutral: no CSS variable, font or surface-color changes, and dark mode is untouched.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_tabular_nums",
+      "label": "tabular-nums on the shared DataCell",
+      "file_type": "concept",
+      "rationale": "Makes numeric fields align vertically across the two compare columns.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_region_badge_floor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_wcag_bump",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_tabular_nums",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_region_badge_floor",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_country_flag_testid",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_a11y_contrast_pass_tabular_nums",
+      "target": "docs_superpowers_plans_archive_2026_04_16_polish_keyboard_compare_compare_mode",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-a11y-contrast-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

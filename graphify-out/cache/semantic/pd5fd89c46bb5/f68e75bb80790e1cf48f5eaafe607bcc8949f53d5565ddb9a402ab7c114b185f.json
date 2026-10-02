@@ -1,0 +1,305 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_analytics",
+      "label": "Analytics System",
+      "file_type": "document",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Two complementary layers, both on Cloudflare free tiers at $0/month for realistic v1 traffic."
+    },
+    {
+      "id": "docs_systems_analytics_cloudflare_web_analytics",
+      "label": "Layer 1 \u2014 Cloudflare Web Analytics (passive)",
+      "file_type": "concept",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Page views, IP-hashed uniques (24h TTL), referrers, country stats, Core Web Vitals. No cookies, no PII. Requires Cloudflare fronting the origin; the site token lands in the VITE_CF_WA_TOKEN GitHub secret used by deploy.yml. Custom events are impossible here \u2014 the CF WA free tier does not support them, which is why Layer 2 exists."
+    },
+    {
+      "id": "docs_systems_analytics_worker_analytics_engine",
+      "label": "Layer 2 \u2014 Cloudflare Worker + Analytics Engine (custom events)",
+      "file_type": "concept",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Client POSTs to a Worker at funworldmap.com/api/event; the Worker validates and writes typed columns to Analytics Engine, queried via CF GraphQL or the dashboard. Free-tier ceilings: Workers 100,000 req/day, Analytics Engine 10,000,000 writes/month."
+    },
+    {
+      "id": "docs_systems_analytics_track_client_wrapper",
+      "label": "track(name, props) client wrapper",
+      "file_type": "concept",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Prefers navigator.sendBeacon (fire-and-forget, reliable on unload) with fetch keepalive fallback. No-ops on navigator.doNotTrack === '1', when window.__PLAYWRIGHT__ is set (a unit-test seam capturing to window.__testAnalytics), and when VITE_ANALYTICS_ENDPOINT is empty \u2014 so dev and CI e2e builds send nothing."
+    },
+    {
+      "id": "docs_systems_analytics_column_schema",
+      "label": "Analytics Engine column schema (indexes/blobs/doubles)",
+      "file_type": "concept",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Analytics Engine stores positional arrays, so position IS the schema in SQL (blob1, blob2, \u2026). The Worker pins a canonical ordering: index1/blob1 event name, blob2 props.mode, blob3 props.path; blob4\u2013blob7 and double1\u2013double6 are legacy daily-puzzle slots kept permanently reserved. Reordering orphans existing data."
+    },
+    {
+      "id": "docs_systems_analytics_migration_policy",
+      "label": "Analytics schema migration policy",
+      "file_type": "rationale",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Append-only: new props go to the next unused blob/double slot, never inserted in the middle; removed props leave their slot empty forever and it is never reused for different semantics. New events only need a name added to KNOWN_EVENTS and EventName when their props map to existing positions."
+    },
+    {
+      "id": "docs_systems_analytics_free_started",
+      "label": "Event: free_started",
+      "file_type": "concept",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Props { mode: ModeId }; emitted when the hash router boots a #game/<mode> round (useHashGameRouter.ts)."
+    },
+    {
+      "id": "docs_systems_analytics_launcher_dismissed",
+      "label": "Event: launcher_dismissed",
+      "file_type": "concept",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Props { path: 'search'|'escape'|'card'|'backdrop'|'close' }; emitted when the launcher closes (Launcher.tsx / App.tsx). The path prop distinguishes intentional starts from bounces."
+    },
+    {
+      "id": "docs_systems_analytics_header_cta_clicked",
+      "label": "Event: header_cta_clicked",
+      "file_type": "concept",
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "No props; emitted when the header Play button opens the launcher (Header.tsx)."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_cloudflare_web_analytics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_worker_analytics_engine",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_track_client_wrapper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_column_schema",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_migration_policy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_free_started",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_launcher_dismissed",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_analytics_header_cta_clicked",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_track_client_wrapper",
+      "target": "docs_systems_analytics_worker_analytics_engine",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_worker_analytics_engine",
+      "target": "docs_systems_analytics_column_schema",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_column_schema",
+      "target": "docs_systems_analytics_migration_policy",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_free_started",
+      "target": "docs_systems_analytics_column_schema",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_launcher_dismissed",
+      "target": "docs_systems_analytics_column_schema",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_free_started",
+      "target": "docs_systems_ui_layout_game_routes",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_header_cta_clicked",
+      "target": "docs_systems_ui_layout_header",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_launcher_dismissed",
+      "target": "docs_systems_ui_layout_header",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_track_client_wrapper",
+      "target": "docs_systems_testing_test_seams",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics",
+      "target": "docs_systems_overview_external_dependencies",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_analytics_migration_policy",
+      "target": "docs_adr_readme_superseding",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/systems/analytics.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,0 +1,102 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_note",
+      "label": "Chromium e2e flake \u2014 diagnosis notes (2026-04-22)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_map_readiness_signal",
+      "label": "Missing map-readiness signal (data-map-loaded / data-app-ready)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": "## Findings / ## Conclusion",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_launcher_focus_order_bug",
+      "label": "launcher.spec.ts:210 Tab-cycle focus-order bug",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": "## Findings",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_compare_column_race",
+      "label": "a11y-contrast compare-column readiness race",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": "## Findings",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_satellite_default_timeout",
+      "label": "satellite-default.spec.ts hard timeout on [data-map-loaded]",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": "## Findings",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_note",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_map_readiness_signal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_note",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_launcher_focus_order_bug",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_map_readiness_signal",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_satellite_default_timeout",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": "## Conclusion",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_map_readiness_signal",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_compare_column_race",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-04-22-chromium-flake-diagnosis.md",
+      "source_location": "## Conclusion",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

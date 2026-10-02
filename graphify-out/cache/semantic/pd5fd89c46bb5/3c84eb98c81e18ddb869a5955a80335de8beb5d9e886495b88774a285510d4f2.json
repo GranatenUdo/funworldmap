@@ -1,0 +1,303 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_search",
+      "label": "Search System",
+      "file_type": "document",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One of the two primary navigation methods alongside direct map interaction, matching country names, capitals, regions, and codes."
+    },
+    {
+      "id": "docs_systems_search_fuse_js",
+      "label": "Fuse.js client-side fuzzy search",
+      "file_type": "concept",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "~8KB gzipped and runs entirely in the browser with no server or index service \u2014 consistent with the no-backend principle. Index built once at startup from ~195 records (negligible cost); each query is sub-millisecond against memory."
+    },
+    {
+      "id": "docs_systems_search_index_construction",
+      "label": "Weighted search index fields",
+      "file_type": "concept",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Weights encode expected user intent: name.common 2.0, name.official 1.5, capital 1.0 ('Paris' \u2192 France), region and subregion 0.5 for regional browsing, cca2/cca3 0.3 for code lookups."
+    },
+    {
+      "id": "docs_systems_search_fuzzy_matching",
+      "label": "Fuzzy matching threshold 0.4",
+      "file_type": "rationale",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Approximate string matching tolerates typos and misspellings ('Untied Stats' \u2192 United States, 'Brasil' \u2192 Brazil), fuzzy substrings ('Fra' \u2192 France), and code hits ('UK' via cca2)."
+    },
+    {
+      "id": "docs_systems_search_query_flow",
+      "label": "Query flow with 150ms debounce",
+      "file_type": "concept",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Input is debounced 150ms to avoid excessive recomputation while typing; scored results are capped at 8 to keep the dropdown scannable, each showing flag, name, capital, region."
+    },
+    {
+      "id": "docs_systems_search_selection_flow",
+      "label": "Search selection flow",
+      "file_type": "concept",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Select (click or Enter) \u2192 country selected \u2192 flyTo \u2192 panel opens \u2192 hash updates \u2192 input clears \u2192 dropdown closes."
+    },
+    {
+      "id": "docs_systems_search_combobox_pattern",
+      "label": "WAI-ARIA combobox pattern",
+      "file_type": "concept",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "role=combobox with aria-expanded, aria-controls, and aria-activedescendant on the input; role=listbox on the dropdown; role=option plus aria-selected per result. A live region announces result counts so screen reader users learn results exist without visually scanning."
+    },
+    {
+      "id": "docs_systems_search_no_results",
+      "label": "No-results handling",
+      "file_type": "rationale",
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dropdown shows \"No countries found for '{query}'\" and the live region announces it; the user simply adjusts the query \u2014 deliberately no further recovery affordance."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_search_fuse_js",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_search_index_construction",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_search_fuzzy_matching",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_search_query_flow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_search_selection_flow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_search_combobox_pattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_search_no_results",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_fuse_js",
+      "target": "docs_systems_search_index_construction",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_fuse_js",
+      "target": "docs_systems_search_fuzzy_matching",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_query_flow",
+      "target": "docs_systems_search_selection_flow",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_index_construction",
+      "target": "docs_systems_data_enriched_data_model",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_selection_flow",
+      "target": "docs_systems_overview_search_flow",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_selection_flow",
+      "target": "docs_systems_ui_layout_deep_linking",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_selection_flow",
+      "target": "docs_systems_map_rendering_flytocountry",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_combobox_pattern",
+      "target": "docs_systems_accessibility_aria_live_region",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_combobox_pattern",
+      "target": "docs_systems_accessibility_tab_order",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_ui_layout_header",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search",
+      "target": "docs_systems_ui_layout_compare",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_fuse_js",
+      "target": "docs_systems_overview_bundle_size_budget",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_search_fuse_js",
+      "target": "docs_purpose_no_barriers",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/search.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

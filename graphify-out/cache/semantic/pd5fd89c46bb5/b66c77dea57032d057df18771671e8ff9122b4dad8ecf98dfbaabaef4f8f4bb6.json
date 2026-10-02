@@ -1,0 +1,301 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_retention_program_v1",
+      "label": "Retention Program v1 Design (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: the daily-puzzle/retention feature was removed in PR #97 (2026-05-30). Kept unmodified for history \u2014 not to be implemented from."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_puzzle",
+      "label": "Daily Puzzle",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One shared country + city per calendar day for all players, turning the existing modes into a daily habit without a runtime backend; leaderboards and push notifications are excluded because they would require operating one."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_best_of_3_attempts",
+      "label": "Three Attempts, Best-of-3 Scoring",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Distance feedback between attempts intentionally narrows the search space \u2014 the game becomes about narrowing in, not cold-guessing \u2014 and there is no penalty for using all three, so recovery is rewarded. Mode scorers stay unchanged; the session aggregates."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_streak",
+      "label": "Cross-Session Daily Streak",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Derived on completion rather than on page load, so a user returning after a gap sees 1 rather than 0; lastMilestoneShown prevents a milestone celebration double-firing across tabs."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_share_text_artifact",
+      "label": "Plain-Text Share Artifact",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Wordle-style emoji attempt strip encoding each attempt's score quintile; country and city names are deliberately omitted so the puzzle is preserved for recipients who have not played."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_content_pipeline",
+      "label": "Daily Content Pipeline",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A GitHub Action running 4x daily appends to a rolling 30-day public/daily/index.json; only past-and-today entries are emitted to protect against view-source spoilers, and regeneration is idempotent because the picker is deterministic (sha256 seed with rejection sampling)."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_curated_pools",
+      "label": "Curated Daily Country/City Pools",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Curated for political neutrality (excluding contested sovereignty cases), unambiguous recognition, global balance, and stable ids; a CI validator fails the build if a pool id is missing from the data files. Superseded 2026-05-03 by the canonical-195 dataset filter."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_launcher_calendar_history",
+      "label": "Launcher Calendar History Panel",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "5x7 grid of the past five weeks with per-mode dots and streak connectors; cells are reveal-only because retroactive free-play of past dailies is deferred. Nested Escape closes the panel before dismissing the launcher."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_local_date_timezone_policy",
+      "label": "Local-Date Timezone Policy",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Puzzle and streak both key off the user's local date to avoid the 'my streak broke while I slept' footgun; toLocaleDateString is deliberately avoided because it returns locale-varying formats, so YYYY-MM-DD is assembled manually. Cost is a bounded ~6h sync lag east of UTC."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_hash_routes",
+      "label": "#daily Hash Route Family",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Adds a daily variant to the discriminated-union hash state; the no-mode form anchors the launcher to a date and is what the share button emits so recipients see both puzzles. Future and rolled-off dates toast and redirect."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_cloudflare_web_analytics",
+      "label": "Cloudflare Web Analytics (passive layer)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Free, cookieless, no PII, captures page views and web vitals with no per-event code; chosen despite requiring a one-time DNS move to front GH Pages with Cloudflare. Its free tier cannot do custom events, which is why a second layer exists."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_analytics_worker",
+      "label": "Analytics Worker + Analytics Engine (custom-event layer)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A ~60-line Worker validates known event names and writes typed columns to Analytics Engine, both inside free tiers. The client wrapper no-ops under doNotTrack and under Playwright, capturing to __testAnalytics for assertions instead."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_bucketed_event_props",
+      "label": "Bucketed Analytics Event Props",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Score quintiles and integer date-ages rather than raw values, deliberately chosen to avoid cardinality explosion and user fingerprinting."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_retention_program_v1",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_landing_state",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_puzzle",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_content_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_content_pipeline",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_curated_pools",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_best_of_3_attempts",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_session_state_machine",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_best_of_3_attempts",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_puzzle",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_streak",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_local_date_timezone_policy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_share_text_artifact",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_hash_routes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_hash_routes",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hash_state_discriminated_union",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_hash_routes",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_uselaunchervisibility",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_launcher_calendar_history",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_analytics_worker",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_cloudflare_web_analytics",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_bucketed_event_props",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_analytics_worker",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "daily_retention_program",
+      "label": "Daily Retention Program Surfaces",
+      "nodes": [
+        "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_puzzle",
+        "docs_superpowers_specs_2026_04_21_retention_program_v1_design_best_of_3_attempts",
+        "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_streak",
+        "docs_superpowers_specs_2026_04_21_retention_program_v1_design_share_text_artifact",
+        "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_content_pipeline",
+        "docs_superpowers_specs_2026_04_21_retention_program_v1_design_launcher_calendar_history",
+        "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_hash_routes"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-21-retention-program-v1-design.md"
+    }
+  ]
+}

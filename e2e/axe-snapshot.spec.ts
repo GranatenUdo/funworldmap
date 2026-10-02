@@ -11,6 +11,7 @@
  *   2. Country panel open    — `/#FRA`
  *   3. Game-over modal       — driven via the "End game" button
  *   4. In-game HUD           — free country-pinning, mid-round
+ *   5. End-game confirm      — the C-4 run-safety dialog (non-trivial run)
  *
  * See: docs/superpowers/notes/2026-05-05-post-audit-verification.md
  */
@@ -83,12 +84,16 @@ test('axe-snapshot: country panel open', async ({ page }) => {
 // ── 3. Game-over modal (driven via the End-game button) ──────────────────────
 test('axe-snapshot: game-over modal', async ({ page }) => {
   // Start a free country-pinning game via deep-link
-  await page.goto('/#game/country-pinning/play')
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+  // Tile-stubbed navigation (routeMapTiles) — without it, slow real satellite
+  // tiles surface the basemap-degraded banner over the HUD and intercept the
+  // End-game click (observed 2026-08-04). Axe scans the DOM; no imagery needed.
+  await gotoAndWaitForMap(page, '/#game/country-pinning/play')
   await waitForAppReady(page)
   await waitForGameTestHook(page)
 
-  // End game → game-over via "End game" button
+  // End game → game-over via "End game" button. No guess was submitted, so
+  // this is a trivial run (round 1, score 0) and the C-4 confirm dialog is
+  // deliberately skipped — game-over shows directly.
   await expect(page.getByTestId('game-end')).toBeVisible({ timeout: 5_000 })
   await page.getByTestId('game-end').click()
   await page.getByTestId('game-over').waitFor({ state: 'visible', timeout: 10_000 })
@@ -105,8 +110,10 @@ test('axe-snapshot: game-over modal', async ({ page }) => {
 
 // ── 4. In-game HUD (free country-pinning) ─────────────────────────────────────
 test('axe-snapshot: in-game HUD', async ({ page }) => {
-  await page.goto('/#game/country-pinning/play')
-  await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
+  // Tile-stubbed navigation (routeMapTiles) — without it, slow real satellite
+  // tiles surface the basemap-degraded banner over the HUD and intercept the
+  // End-game click (observed 2026-08-04). Axe scans the DOM; no imagery needed.
+  await gotoAndWaitForMap(page, '/#game/country-pinning/play')
   await waitForAppReady(page)
   await waitForGameTestHook(page)
 
@@ -118,5 +125,45 @@ test('axe-snapshot: in-game HUD', async ({ page }) => {
     .analyze()
 
   reportViolations('In-game HUD', results.violations)
+  expect(results.violations).toEqual([])
+})
+
+// ── 5. End-game confirm dialog (C-4 run-safety) ───────────────────────────────
+test('axe-snapshot: end-game confirm dialog', async ({ page }) => {
+  // Tile-stubbed navigation (routeMapTiles) — without it, slow real satellite
+  // tiles surface the basemap-degraded banner over the HUD and intercept the
+  // End-game click (observed 2026-08-04). Axe scans the DOM; no imagery needed.
+  await gotoAndWaitForMap(page, '/#game/country-pinning/play')
+  await waitForAppReady(page)
+  await waitForGameTestHook(page)
+
+  // Make the run non-trivial (score > 0) via the test seams — the C-4 dialog
+  // only appears when there is something worth confirming. setRound first so
+  // the correct-guess evaluation targets a known round.
+  await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
+  await page.evaluate(() => {
+    type Hook = { setRound?: (c: string) => boolean }
+    const g = (window as unknown as { __funworldmap_game?: Hook }).__funworldmap_game
+    g?.setRound?.('FRA')
+  })
+  await expect(page.getByTestId('game-prompt-name')).toHaveText('France', { timeout: 10_000 })
+  await page.evaluate(() => {
+    type Hook = { submitCountryGuess?: (c: string) => boolean }
+    const g = (window as unknown as { __funworldmap_game?: Hook }).__funworldmap_game
+    g?.submitCountryGuess?.('FRA')
+  })
+  await expect(page.getByTestId('hud-score')).toHaveText('100', { timeout: 10_000 })
+
+  await expect(page.getByTestId('game-end')).toBeVisible({ timeout: 5_000 })
+  await page.getByTestId('game-end').click()
+  await page.getByTestId('end-game-confirm').waitFor({ state: 'visible', timeout: 10_000 })
+
+  const results = await new AxeBuilder({ page })
+    .include('[data-testid="end-game-confirm"]')
+    .exclude(AXE_EXCLUDES[0])
+    .exclude(AXE_EXCLUDES[1])
+    .analyze()
+
+  reportViolations('End-game confirm dialog', results.violations)
   expect(results.violations).toEqual([])
 })

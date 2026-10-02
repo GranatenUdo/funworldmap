@@ -1,0 +1,192 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_assessment_remediation",
+      "label": "Assessment Remediation Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_funworldmap_guess_removal",
+      "label": "__funworldmap_guess Removal",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A window global that doubled as production code and test seam; submitGuessInput moves into GameSessionProvider so App and GameController read one source of truth with no window indirection."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_hud_registration_unification",
+      "label": "HUD Registration Unification",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Deletes the module-level attachedHud singleton and side-effect import in favour of the city-guessing pattern of importing the HUD directly in the mode factory."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_applyborderpaintformode",
+      "label": "applyBorderPaintForMode Helper",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Single shared helper fixing the regression where exiting compare view with satellite on left borders stuck near-invisible; three hooks that wrote border paint independently now funnel through it. Landed test-first \u2014 the new e2e fails red on main."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_dark_mode_fouc_script",
+      "label": "Dark-Mode FOUC Blocking Script",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Inline head script sets the dark class before first paint; no automated assertion because SwiftShader rendering variance makes screenshot tests for it flaky."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_gameoveroverlay_focus_management",
+      "label": "GameOverOverlay Focus Management",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The overlay claimed aria-modal without managing focus; on mount it captures activeElement and focuses Play again, falling back to the map container so keyboard users never land on body. No Tab trap."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_plans_archive",
+      "label": "Completed-Plans Archive",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "13 completed plans move to plans/archive/ so the directory matches its own forward-looking convention."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_reveal_names_not_codes",
+      "label": "Reveal Text Uses Country Names",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Names propagate via GuessInput rather than being looked up in the HUD, keeping scoring pure; mirrors the city-mode PointReveal pattern of reading the target name from the round."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_funworldmap_guess_removal",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_hud_registration_unification",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_city_guessing_mode",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_applyborderpaintformode",
+      "target": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_usecompareviewdimming",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_applyborderpaintformode",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_satellite_as_default",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_applyborderpaintformode",
+      "target": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_layer_id_constants",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_funworldmap_guess_removal",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_funworldmap_game_test_hook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_reveal_names_not_codes",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_framework_generalisation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_plans_archive",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_planning_convention",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_gameoveroverlay_focus_management",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_panel_focus_management",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-19-assessment-remediation-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

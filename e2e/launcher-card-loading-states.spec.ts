@@ -20,7 +20,7 @@ test.describe('Launcher cards (free-play smoke)', () => {
     const cpCard = page.getByTestId('launcher-card-country-pinning')
     await expect(cpCard).toBeVisible()
     // Title text is present inside the card
-    await expect(cpCard).toContainText('Country')
+    await expect(cpCard).toContainText('Find countries')
     // Play button is present and visible
     await expect(page.getByTestId('launcher-card-country-pinning-play')).toBeVisible()
     // Best-score line is present (shows "No games yet" for fresh state)
@@ -29,7 +29,7 @@ test.describe('Launcher cards (free-play smoke)', () => {
     // City-guessing card
     const cgCard = page.getByTestId('launcher-card-city-guessing')
     await expect(cgCard).toBeVisible()
-    await expect(cgCard).toContainText('City')
+    await expect(cgCard).toContainText('Locate cities')
     await expect(page.getByTestId('launcher-card-city-guessing-play')).toBeVisible()
     await expect(page.getByTestId('launcher-card-city-guessing-best')).toBeVisible()
   })

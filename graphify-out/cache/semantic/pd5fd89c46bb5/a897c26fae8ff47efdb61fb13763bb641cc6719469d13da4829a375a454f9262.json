@@ -1,0 +1,157 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_spec",
+      "label": "Calibrated fittings rollout design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "The owner ran a three-direction live exploration on the country panel header (calibrated & unobtrusive vs. tactile & confident vs. glass & starlight) and accepted calibrated & unobtrusive; this spec rolls the accepted recipe through the remaining named chrome."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_fitting_recipe",
+      "label": "The fitting recipe (normative)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "The fitting recipe",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "In-panel controls read as instrument fittings: 1px hairline border, 8px radius, 16px glyphs, quiet tint hovers, ice-family focus rings. Rules are solid hairlines, never dotted. Country-identifying flags >=56px sit on corner-ticked plates; tiny flags do not."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_radius_stratification",
+      "label": "Radius stratification",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "The fitting recipe",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "In-card fittings are 8px; free-floating chrome (header chips, search, primary CTAs) stays 12px; pills survive only where the shape is itself a data encoding (badges) or an ambient message (toast/hint). This is why header chips, search and CTA recipes are named non-goals \u2014 they are floating chrome, not in-card fittings."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_touch_target_pins",
+      "label": "Touch-target constant pins move with the code",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "Changes 1-2, Test impact",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "The accepted header variant's Continue button box measured ~31px \u2014 a 44px-floor miss \u2014 so it grows to honestly match its constant, and CloseButton's fitted 32px box switches constants. layoutConstants.test.ts pins move in the same change. A pre-existing gap is named but not fixed: no touch-target constant fits the absolutely-positioned 36px launcher dismiss button."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_vitest_worktree_exclude",
+      "label": "vitest exclude for .claude worktrees",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "Change 7",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "npm run check was sweeping Playwright specs inside .claude/worktrees/**; the existing .worktrees/** exclude predates the new worktree location."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_spec",
+      "target": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_fitting_recipe",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "The fitting recipe",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_fitting_recipe",
+      "target": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_radius_stratification",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "The fitting recipe",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_fitting_recipe",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_semantic_color_tokens",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "ice-family focus rings; ice-text controls",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_fitting_recipe",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_instrument_chrome_grammar",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "E8 owns any future tick-frame/radius change; corner-ticked panel-flag-plate",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_spec",
+      "target": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_touch_target_pins",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "Test impact",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_touch_target_pins",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_touch_target_convention",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "TOUCH_TARGET_FROM_36 / FROM_32 constants and the 44px floor",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_touch_target_pins",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_layout_constants_drift_alarm",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "layoutConstants.test.ts pins move with the code",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_spec",
+      "target": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_vitest_worktree_exclude",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "Change 7",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_spec",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_workstream_e_observatory",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-03-calibrated-fittings-rollout-design.md",
+      "source_location": "Non-goals \u2014 E6 owns launcher card identity, D1/D2 own the panel data redesign",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

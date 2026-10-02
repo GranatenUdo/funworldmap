@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
 import { Buffer } from 'node:buffer'
-import { finalizeGame, openLauncher, routeMapTiles, waitForMapLoaded } from './helpers'
+import { finalizeGame, openLauncher, ensureLauncherDismissed, routeMapTiles, waitForMapLoaded } from './helpers'
 
 // routeMapTiles's default embedded style stub has a single `background` layer
 // and no symbol layers — using it for the label-hiding assertion below would
@@ -14,8 +14,8 @@ function buildLabelStub(): Buffer {
       version: 8,
       sources: {
         openmaptiles: {
-          type: 'vector',
-          url: 'https://tiles.openfreemap.org/planet',
+          type: 'geojson',
+          data: {type:'FeatureCollection',features:[]},
         },
       },
       sprite: 'https://tiles.openfreemap.org/sprites/ofm_f384/ofm',
@@ -30,7 +30,6 @@ function buildLabelStub(): Buffer {
           id: 'place-labels',
           type: 'symbol',
           source: 'openmaptiles',
-          'source-layer': 'place',
           layout: {
             'text-field': '{name}',
             'text-font': ['Open Sans Regular'],
@@ -152,9 +151,22 @@ test.describe('Country Pinning game', () => {
   test('End game opens game-over; Back to map exits cleanly and clears hash', async ({ page }) => {
     await page.goto('/#game/country-pinning/play')
     await waitForMapLoaded(page)
+
+    // Make the run non-trivial (score > 0) so End game routes through the
+    // C-4 confirm dialog — trivial runs (round 1, score 0) end without one.
+    // The second setRound forces status back to 'playing', dismissing the
+    // round-end target panel so the End click isn't racing its reveal hold.
+    await setRoundAndWait(page, 'FRA', 'France')
+    await clickCountryPolygon(page, 'FRA')
+    await expect(page.getByTestId('hud-score')).toHaveText('100', { timeout: 10_000 })
+    await setRoundAndWait(page, 'DEU', 'Germany')
+
     await page.getByTestId('game-end').click()
-    // End game in free mode now routes through finishFree → game-over UI shows
+    // C-4 run-safety confirm, then finishFree → game-over UI shows
     // (Bug 3 fix); user must click Back to map to fully exit.
+    await expect(page.getByTestId('end-game-confirm')).toBeVisible()
+    await page.getByTestId('end-confirm').click()
+    await expect(page.getByTestId('end-game-confirm')).not.toBeAttached()
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-over-back').click()
     await expect(page.getByTestId('game-hud')).toHaveCount(0)
@@ -168,10 +180,21 @@ test.describe('Country Pinning game', () => {
     await waitForMapLoaded(page)
     await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
 
-    // A1: mid-run Escape routes through finishFree() → game-over overlay
-    // (score shown, personal best recorded), matching the HUD End-game button —
-    // instead of the old endGame() + hash reset that discarded the run.
+    // Make the run non-trivial (score > 0) so Escape routes through the C-4
+    // confirm dialog — a trivial run (round 1, score 0) would end immediately.
+    await setRoundAndWait(page, 'FRA', 'France')
+    await clickCountryPolygon(page, 'FRA')
+    await expect(page.getByTestId('hud-score')).toHaveText('100', { timeout: 10_000 })
+    await setRoundAndWait(page, 'DEU', 'Germany')
+
+    // A1 + C-4: mid-run Escape opens the run-safety confirm; confirming ends
+    // via finishFree() → game-over overlay (score shown, personal best
+    // recorded), matching the HUD End-game button — instead of the old
+    // endGame() + hash reset that discarded the run.
     await page.keyboard.press('Escape')
+    await expect(page.getByTestId('end-game-confirm')).toBeVisible()
+    await page.getByTestId('end-confirm').click()
+    await expect(page.getByTestId('end-game-confirm')).not.toBeAttached()
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
 
     // A second Escape on game-over keeps the old full exit: HUD gone, hash cleared.
@@ -224,7 +247,7 @@ test.describe('Country Pinning game', () => {
       .toBe(false)
   })
 
-  test('round-end on wrong guess opens target panel; Continue advances', async ({ page }) => {
+  test('round-end shows compact answer; Next advances', async ({ page }) => {
     await page.goto('/')
     await waitForMapLoaded(page)
     await openCountryPinning(page)
@@ -239,13 +262,13 @@ test.describe('Country Pinning game', () => {
       game?.submitCountryGuess('USA')
     })
 
-    await expect(page.getByTestId('country-panel')).toBeVisible({ timeout: 5_000 })
+    await expect(page.getByTestId('round-result')).toBeVisible({ timeout: 5_000 })
     await expect(
       page.locator('button[aria-label="Compare with another country"]'),
     ).not.toBeAttached()
     await expect(page.locator('button[aria-label="Copy link to this country"]')).not.toBeAttached()
 
-    const continueBtn = page.getByTestId('game-continue')
+    const continueBtn = page.getByTestId('round-next')
     await expect(continueBtn).toBeVisible()
     // DOM-direct click — Playwright's locator.click waits for post-click
     // stability/navigation that never settles on slow chromium-gpu CI
@@ -253,7 +276,7 @@ test.describe('Country Pinning game', () => {
     // itself is already enabled and visible per the assertion above.
     await continueBtn.evaluate((el: HTMLButtonElement) => el.click())
 
-    await expect(page.getByTestId('country-panel')).not.toBeAttached({ timeout: 5_000 })
+    await expect(page.getByTestId('round-result')).not.toBeAttached({ timeout: 5_000 })
   })
 
   test('basemap labels hidden during play in map view, restored after', async ({ page }) => {
@@ -262,6 +285,8 @@ test.describe('Country Pinning game', () => {
     await routeMapTiles(page, { styleStub: buildLabelStub() })
     await page.goto('/')
     await waitForMapLoaded(page)
+
+    await ensureLauncherDismissed(page)
 
     // The game only hides labels in MAP view (satellite hides the whole
     // vector basemap, labels included, regardless of play state) — switch
@@ -293,6 +318,8 @@ test.describe('Country Pinning game', () => {
     await expect(page.getByTestId('game-hud')).toBeVisible()
     await expect.poll(symbolVisibility).not.toContain('visible')
 
+    // Trivial run (round 1, score 0): the C-4 confirm dialog is skipped and
+    // End game finishes immediately.
     await page.getByTestId('game-end').click()
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-over-back').click()

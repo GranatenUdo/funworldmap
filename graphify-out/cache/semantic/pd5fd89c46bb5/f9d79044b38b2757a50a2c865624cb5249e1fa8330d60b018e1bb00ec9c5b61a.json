@@ -1,0 +1,83 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_daily_flow_polish_plan",
+      "label": "Daily flow polish Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-20-daily-flow-polish.md",
+      "source_location": "line 3",
+      "rationale": "Post-#91 polish: three mechanical hygiene items plus eliminating the 'Not played.' flash and closing the refresh-during-race window. Tombstoned 2026-06-12 (daily removed in PR #97).",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_recorddailycompletion",
+      "label": "recordDailyCompletion dual-call pattern",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-20-daily-flow-polish.md",
+      "source_location": "Tasks 5-6",
+      "rationale": "Called from two sites in useGameAnnouncements: advanceNow's endsGame branch (the production path, which is where the pre-finalize write closes the refresh-during-race window) and the game-over useEffect's daily branch (a fallback for the __funworldmap_game.finalize() test seam and any future direct finalize dispatch). Writing history before finalize is what removes the 'Not played.' flash.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_announcedgameoverref",
+      "label": "announcedGameOverRef dedup",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-20-daily-flow-polish.md",
+      "source_location": "Task 6",
+      "rationale": "Needed because recordedRef is now set pre-finalize, so it can no longer double as the screen-reader-announcement dedup flag; a dedicated ref keeps the 'Game over' announcement firing exactly once.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_daily_flow_polish_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_remove_daily_remove_daily_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-20-daily-flow-polish.md",
+      "source_location": "line 1 \u2014 Tombstone: removed in PR #97",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_recorddailycompletion",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegameannouncements",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-20-daily-flow-polish.md",
+      "source_location": "Task 6",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_announcedgameoverref",
+      "target": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_recorddailycompletion",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-20-daily-flow-polish.md",
+      "source_location": "Architecture \u2014 recordedRef set pre-finalize",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_20_daily_flow_polish_daily_flow_polish_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-20-daily-flow-polish.md",
+      "source_location": "Task 1 \u2014 update useRevealMapEffects docstring",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

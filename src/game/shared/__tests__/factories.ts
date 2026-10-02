@@ -20,6 +20,7 @@ export function makeSession(overrides: Partial<GameSession> = {}): GameSession {
     currentRound: null,
     lastOutcome: null,
     endedEarly: false,
+    completedRounds: [],
     used: new Set(),
     ...overrides,
   }
@@ -41,6 +42,7 @@ export function makeCityRound(overrides: Partial<CityRoundSpec> = {}): CityRound
     kind: 'city-guessing',
     targetId: 'FRA-paris',
     targetName: 'Paris',
+    targetCountryCca3: 'FRA',
     targetCountryName: 'France',
     targetCountryFlag: 'flags/FR.svg',
     targetCentroid: [2.3522, 48.8566],

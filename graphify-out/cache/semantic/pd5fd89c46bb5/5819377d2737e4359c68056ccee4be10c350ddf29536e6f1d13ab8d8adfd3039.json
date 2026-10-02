@@ -1,0 +1,192 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_plan",
+      "label": "Assessment Remediation Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "label": "plans/archive/ convention for shipped plans",
+      "file_type": "rationale",
+      "rationale": "Moving a plan into archive/ is the signal that its work shipped; forward plans stay directly under plans/, at most one per concurrent work stream. Filenames are preserved so back-links only change directory.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_remove_window_guess",
+      "label": "Provider restructure to remove window.__funworldmap_guess",
+      "file_type": "rationale",
+      "rationale": "Classified as the medium-risk half of the remediation and deferred to PR 2, which only opens after the low-risk docs/UX/test PR is green on main.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plans_forward_convention",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_16_polish_keyboard_compare_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_archive_convention",
+      "target": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_assessment_remediation_remove_window_guess",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_provider",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

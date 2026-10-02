@@ -12,7 +12,12 @@ const FUSE_OPTIONS: IFuseOptions<CountryData> = {
     { name: 'cca2', weight: 0.3 },
     { name: 'cca3', weight: 0.3 },
   ],
-  threshold: 0.4,
+  // 0.3, down from 0.4 (C-9 search noise): at 0.4 the 2-errors-in-5-chars
+  // bitap class (raw score exactly 0.4) sails through, which ranked Iran
+  // second for "franc" ("ran" ⊂ "franc"). 0.3 drops that class while keeping
+  // low-error-rate typos ("Germani"→Germany, "Swtzerland"→Switzerland,
+  // "argentnia"→Argentina) — regression-pinned in useCountrySearch.test.ts.
+  threshold: 0.3,
 }
 
 const MAX_RESULTS = 8

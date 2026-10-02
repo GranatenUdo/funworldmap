@@ -1,0 +1,104 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_plan",
+      "label": "Run Map-Interaction Tests on the Linux CI Runner Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_skipinci_removal",
+      "label": "Removal of the skipInCI guard on map-interaction tests",
+      "file_type": "rationale",
+      "rationale": "The guard was added defensively when ANGLE behaviour on headless Linux was unknown; map-reliability.spec.ts passing in CI under chromium-gpu proves ANGLE's software fallback fully initialises MapLibre, so the guard is stale.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_expect_poll",
+      "label": "expect.poll on the real observable instead of waitForTimeout",
+      "file_type": "rationale",
+      "rationale": "Fixed waits calibrated against hardware ANGLE are too short under Linux software rendering; polling the actual post-action observable (hash change, cursor change, MapLibre idle) has identical semantics with no flake.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_serial_escape_hatch",
+      "label": "describe.configure serial mode as a CPU-contention escape hatch",
+      "file_type": "rationale",
+      "rationale": "Two MapLibre instances rendering concurrently in software on a 4-core runner contend for CPU; serial mode confines the map spec to one worker without dropping global parallelism. Explicitly not to be applied preemptively.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_ci_workers_two",
+      "target": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_serial_escape_hatch",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_two_project_split",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_skipinci_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_skipinci_removal",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_probe_basemap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_expect_poll",
+      "target": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_skipinci_removal",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-17-chromium-gpu-on-linux.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

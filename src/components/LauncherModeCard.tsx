@@ -36,21 +36,23 @@ const ICONS: Record<ModeId, React.ReactNode> = {
 }
 
 const TITLE: Record<ModeId, string> = {
-  'country-pinning': 'Country',
-  'city-guessing': 'City',
+  'country-pinning': 'Find countries',
+  'city-guessing': 'Locate cities',
 }
 
 const SUBTITLE: Record<ModeId, string> = {
-  'country-pinning': 'Click the right country on the map',
-  'city-guessing': 'Pin where the city is',
+  'country-pinning': 'Three lives. One world. How long can you go?',
+  'city-guessing': 'Ten cities. Drop a pin as close as you can.',
 }
 
 interface Props {
   modeId: ModeId
+  ready?: boolean
+  preferred?: boolean
   onPlay: () => void
 }
 
-export function LauncherModeCard({ modeId, onPlay }: Props) {
+export function LauncherModeCard({ modeId, onPlay, ready = true, preferred = false }: Props) {
   const testIdBase = `launcher-card-${modeId}`
   const { best } = usePersonalBests(modeId)
   const hasPlayed = best.gamesPlayed > 0
@@ -66,23 +68,30 @@ export function LauncherModeCard({ modeId, onPlay }: Props) {
   return (
     <div
       data-testid={testIdBase}
-      className="p-5 rounded-2xl bg-sand-50/95 dark:bg-dark-400/95 border border-sand-300/50 dark:border-dark-200/30 shadow-lg transition-all duration-150"
+      className="mode-card p-6 rounded-2xl bg-sand-50/95 dark:bg-dark-400/95 border border-sand-300/50 dark:border-dark-200/30 shadow-lg transition-all duration-150"
     >
       <div className="flex items-start gap-3 mb-3">
         {ICONS[modeId]}
         <div className="min-w-0 flex-1">
-          <div className="text-lg font-bold text-sand-900 dark:text-dark-50 leading-tight">
+          <div className="text-2xl font-bold text-sand-900 dark:text-dark-50 leading-tight">
             {TITLE[modeId]}
           </div>
-          <div className="text-xs text-sand-600 dark:text-dark-100 mt-0.5">{SUBTITLE[modeId]}</div>
+          <div className="text-base text-sand-600 dark:text-dark-100 mt-2">{SUBTITLE[modeId]}</div>
         </div>
       </div>
 
+      <p className="text-sm text-sand-600 dark:text-dark-100 mb-5">
+        {modeId === 'country-pinning'
+          ? '100 points for a correct answer. Wrong guesses cost a life but earn proximity points.'
+          : 'Up to 100 points per city. The closer your pin, the higher your score.'}
+      </p>
       <button
+        data-autofocus={preferred || undefined}
+        disabled={!ready}
         type="button"
         onClick={onPlay}
         data-testid={`${testIdBase}-play`}
-        className="w-full px-4 py-2 rounded-xl bg-ice-accessible text-white font-semibold hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60"
+        className="w-full min-h-12 px-4 py-3 disabled:opacity-50 disabled:cursor-wait rounded-xl bg-ice-accessible text-white font-semibold hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/60 dark:focus-visible:ring-ice/60"
       >
         Play
       </button>

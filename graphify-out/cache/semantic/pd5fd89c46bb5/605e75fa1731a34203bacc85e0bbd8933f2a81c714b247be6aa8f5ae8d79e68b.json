@@ -1,0 +1,325 @@
+{
+  "nodes": [
+    {
+      "id": "docs_purpose",
+      "label": "funworldmap Purpose",
+      "file_type": "document",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Identity confirmed 2026-08-03 with PRODUCT.md as the authoritative product record: earlier versions framed funworldmap reference-first, but the games shipped and became the product's center. Success is measured in craft \u2014 a polished public artifact demonstrating engineering and design quality; visitor counts are secondary."
+    },
+    {
+      "id": "docs_purpose_country_pinning",
+      "label": "Country Pinning mode",
+      "file_type": "concept",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Identify a country by clicking its polygon. Three lives, unlimited rounds, distance-weighted score, running streak on correct guesses."
+    },
+    {
+      "id": "docs_purpose_city_guessing",
+      "label": "City Guessing mode",
+      "file_type": "concept",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Locate a named city by clicking anywhere on the map. 10 rounds, scored by distance from the true centroid; ocean clicks are valid because the guess is spatial, not a menu choice."
+    },
+    {
+      "id": "docs_purpose_play_is_the_front_door",
+      "label": "Principle: Play Is the Front Door",
+      "file_type": "rationale",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The games are the primary reason to visit; reference depth serves the play and the curious moment after a round, not the other way around. The core loop is game \u2192 curiosity \u2192 lookup: a missed country is one click from its facts."
+    },
+    {
+      "id": "docs_purpose_real_map_is_the_game_board",
+      "label": "Principle: The Real Map Is the Game Board",
+      "file_type": "rationale",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Geography games usually happen on abstract cards or toy maps; funworldmap puts play on real country polygons with satellite imagery and terrain. Smooth fly-to animations maintain spatial context so the user never feels lost, and play never retreats to abstract quiz UI."
+    },
+    {
+      "id": "docs_purpose_search_first",
+      "label": "Principle: Search First",
+      "file_type": "rationale",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Search is the keyboard-driven complement to the map's visual navigation \u2014 fuzzy matching forgives typos, and selecting a result flies the map and opens the panel."
+    },
+    {
+      "id": "docs_purpose_no_barriers",
+      "label": "Principle: No Barriers",
+      "file_type": "rationale",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "No application backend, no API keys, no accounts; everything ships as static files deployable to any CDN. The only server-side piece is an optional free-tier analytics Worker, and runtime network use is limited to map tiles plus optional cookieless analytics and error reporting."
+    },
+    {
+      "id": "docs_purpose_accessible_to_everyone",
+      "label": "Principle: Accessible to Everyone (with the pointer-only games carve-out)",
+      "file_type": "rationale",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Reference flows (map, search, panels, compare) are keyboard navigable end to end, screen-reader compatible, reduced-motion respecting, WCAG AA. The games are deliberately pointer-only (owner scope decision 2026-08-04) because guessing means physically finding the place on the globe; a spatial keyboard cursor may come later, typed guessing never will."
+    },
+    {
+      "id": "docs_purpose_canonical_195",
+      "label": "Scope: the canonical 195 sovereign states",
+      "file_type": "rationale",
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "193 UN members plus the Vatican and Palestine (observer states); partially-recognized or contested territories are out of scope. Together with current-boundaries-only and no-news this is pragmatism rather than doctrine \u2014 open to revisit as of 2026-08-03, but any change starts with an explicit product decision and its own spec. The GIS exclusion stands."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_country_pinning",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_city_guessing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_play_is_the_front_door",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_real_map_is_the_game_board",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_search_first",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_no_barriers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_accessible_to_everyone",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose",
+      "target": "docs_purpose_canonical_195",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_no_barriers",
+      "target": "docs_systems_analytics",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_search_first",
+      "target": "docs_systems_search",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_accessible_to_everyone",
+      "target": "docs_systems_accessibility",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_real_map_is_the_game_board",
+      "target": "docs_systems_map_rendering",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_real_map_is_the_game_board",
+      "target": "docs_systems_map_rendering_camera_animations",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_no_barriers",
+      "target": "docs_systems_build_deployment_targets",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_no_barriers",
+      "target": "docs_systems_data",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_canonical_195",
+      "target": "docs_systems_data_canonical_195_filter",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_canonical_195",
+      "target": "docs_systems_data_disputed_territories",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_country_pinning",
+      "target": "docs_systems_overview_game_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_city_guessing",
+      "target": "docs_systems_overview_game_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_play_is_the_front_door",
+      "target": "docs_systems_ui_layout_header",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_purpose_accessible_to_everyone",
+      "target": "docs_systems_accessibility_canvas_limitation",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/purpose.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

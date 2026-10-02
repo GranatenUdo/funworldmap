@@ -19,14 +19,35 @@ export interface FlyToCountryOptions {
    *  decision). Auto selections (search, border chips, deep links) omit this
    *  and fly to the computed zoom, which may zoom out. */
   preserveZoom?: boolean
+  /** Breakpoint re-center (B-1, 2026-08-04): panelScreenOffset() is evaluated
+   *  at fly time, so crossing the desktop/mobile breakpoint afterwards leaves
+   *  the selection displaced by the stale offset (panel-side vs sheet-top).
+   *  Re-apply ONLY the offset: keep the user's current zoom and pitch,
+   *  recompute center + offset for the new layout, and jump — duration 0, no
+   *  autonomous animation, so reduced motion is trivially satisfied. easeTo
+   *  rather than jumpTo because JumpToOptions has no `offset`; easeTo with
+   *  duration 0 applies the final state synchronously. */
+  recenter?: boolean
 }
 
 export function flyToCountry(
   map: maplibregl.Map,
   country: CountryData,
-  { preserveZoom = false }: FlyToCountryOptions = {},
+  { preserveZoom = false, recenter = false }: FlyToCountryOptions = {},
 ): void {
   const [lat, lng] = country.latlng
+
+  if (recenter) {
+    map.easeTo({
+      center: [lng, lat],
+      zoom: map.getZoom(),
+      offset: panelScreenOffset(),
+      pitch: map.getPitch(),
+      duration: 0,
+    })
+    return
+  }
+
   const computed = zoomFromArea(country.area)
   const zoom = preserveZoom ? Math.max(map.getZoom(), computed) : computed
   const reducedMotion = prefersReducedMotion()

@@ -1,0 +1,214 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_plan",
+      "label": "Country News Feed Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "label": "Guardian Open Platform build-time news pipeline",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": "scripts/news/build.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "No runtime backend: a daily GitHub Action iterates all 249 countries, queries content.guardianapis.com/search by world/<country> tag, tops up to five stories from the Guardian region tag, and commits static per-country JSON under public/news/. The client only fetches a static file."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_region_fallback",
+      "label": "Guardian region-tag fallback",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": "scripts/news/regions.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Small countries rarely have five country-tagged stories in a 7-day window, so results are topped up from world/africa, world/americas, world/asia-pacific, world/europe or world/middleeast and badged as region scope so the user can tell them apart."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_sanitise",
+      "label": "sanitise() HTML strip + entity decode",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": "scripts/news/sanitise.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Guardian trailText is HTML; tags are stripped and named/numeric/hex entities decoded at build time so the client never renders third-party markup."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_tags",
+      "label": "Hand-curated cca3 to Guardian tag lookup",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": "scripts/news/guardian-tags.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Seeded with roughly 40 major countries and null for the rest \u2014 an accepted maintenance burden that later became one of the arguments for migrating off Guardian."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_countrynewssection",
+      "label": "CountryNewsSection panel component",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": "src/components/CountryNewsSection.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Fetches the per-country JSON on panel open and is gated on !inGameRound so news never leaks into a guess phase."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_relativetime",
+      "label": "relativeTime hand-rolled formatter",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": "src/lib/relativeTime.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Hand-rolled with bucket-boundary unit tests rather than adding a date library, keeping the zero-new-dependency constraint."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_key_rotation",
+      "label": "GUARDIAN_KEY secret + rotation procedure",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Requires a human pre-flight step (register a developer key, add it as a GitHub Actions secret); if absent the initial data commit is skipped and clients see 'News unavailable' until the first scheduled run."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_removal",
+      "label": "Country-news feature removal (PR #40, 2026-05-12)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: the country-news feature was removed in PR #40, so both the Guardian plan and its GDELT successor are history-only."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_countrynewssection",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_sanitise",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_region_fallback",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_tags",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_key_rotation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_countrynewssection",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_relativetime",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_countrynewssection",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_guardian_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_countrynewssection",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-news-feed.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

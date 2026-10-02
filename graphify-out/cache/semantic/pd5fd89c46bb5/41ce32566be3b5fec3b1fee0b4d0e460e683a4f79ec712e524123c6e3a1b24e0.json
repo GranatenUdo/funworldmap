@@ -1,0 +1,192 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_spec",
+      "label": "Game-flow cascade fixes design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_session_state_daily_oracle",
+      "label": "Session state, not URL hash, as the daily oracle",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "Architectural decision",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "GameController and GameOverOverlay re-parsed window.location.hash to answer 'is this a daily?'. The hash is also a routing input that useMapInteractions.clickMap mutates on ocean clicks (onDeselect -> history.replaceState), so one off-target click corrupted the whole end-of-game flow. Coupling routing state to session state is the defect; making the session carry the daily date decouples them."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_dailydate_field",
+      "label": "dailyDate field on GameSession",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "src/game/shared/types.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Set by start/resume, preserved by attempt/completeNow/advance/overrideRound via ...state spread, reset to null by endGame via ...EMPTY. Optional new field with default null so no localStorage migration or backward-compat shim is needed."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_deselect_gate",
+      "label": "Gate click-deselect during active gameplay",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "Defense in depth",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Defense-in-depth: even with session.dailyDate, silently rewriting the hash mid-game breaks refresh/share/browser-back semantics. sessionRef mirrors the existing onSelectRef/onDeselectRef pattern so the listener stack stays attached once."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_finishfree",
+      "label": "finishFree reducer action",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "PR 2, Bug 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "'End game' in free mode silently abandoned the run with no game-over UI and no personal-best write. finishFree transitions playing/round-ended to game-over so the existing recordedRef branch fires; it refuses when dailyDate !== null because daily keeps abandon semantics."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_round_end_announcement_removal",
+      "label": "Drop redundant round-end App-level announcement",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "Bugs 7 + 8",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Both mode HUDs already render an inline role=status whose content is richer than the App-level dispatchAnnouncement. Deleting the App-level block also auto-resolves the 'Plus 1 points' pluralization bug, since all three strings live inside it."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_live_region_clear_timer",
+      "label": "Clear stale aria-live region after each announcement",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "Bug 9, src/App.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "8s is enough for a screen reader to read the longest (~80 char) announcement; each new announcement cancels the prior timer so 'Game over. Final score N.' does not persist after navigation away."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_subscribe_reduced_motion",
+      "label": "subscribeReducedMotion API",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "Bug 10, src/lib/motion.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "prefersReducedMotion() already returns a live value; only useMapInstance captured it once at map construction for the initial pitch. Scope narrowed to that one knob \u2014 the other four call sites read fresh inside callbacks and pick up OS toggles automatically."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_session_state_daily_oracle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_session_state_daily_oracle",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_dailydate_field",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_deselect_gate",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_deselect_gate",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_session_state_daily_oracle",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "Defense in depth",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_finishfree",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_finishfree",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_dailydate_field",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": "finishFree gated on dailyDate !== null",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_round_end_announcement_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_live_region_clear_timer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_spec",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_subscribe_reduced_motion",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

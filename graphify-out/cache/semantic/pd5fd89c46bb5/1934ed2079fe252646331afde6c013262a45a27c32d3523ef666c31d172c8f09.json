@@ -1,0 +1,103 @@
+{
+  "nodes": [
+    {
+      "id": "docs_adr_readme",
+      "label": "Architecture Decision Records README",
+      "file_type": "document",
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "ADRs are for load-bearing decisions that need to be discoverable as decisions; anything that can live as a paragraph in docs/systems/ should live there instead."
+    },
+    {
+      "id": "docs_adr_readme_filing_convention",
+      "label": "ADR filing convention",
+      "file_type": "rationale",
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Filename NNNN-short-kebab-slug.md, next available number wins. Required sections: Context, Decision, Consequences, Alternatives, Status (Proposed/Accepted/Superseded by NNNN/Deprecated), Date. ADRs 0001\u20130003 are a deliberate one-time exception to the no-historical-backfill guidance, for discoverability in a showcase repo; 0004 onward follow the guidance."
+    },
+    {
+      "id": "docs_adr_readme_superseding",
+      "label": "ADR superseding policy",
+      "file_type": "rationale",
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A superseded ADR is kept in place for historical continuity; the newer ADR names the superseded number and the old record's Status becomes 'Superseded by NNNN'. History is annotated, never deleted or reused."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_adr_readme",
+      "target": "docs_adr_readme_filing_convention",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_readme",
+      "target": "docs_adr_readme_superseding",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_readme",
+      "target": "docs_adr_0001_maplibre_webgl2_basemap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_readme",
+      "target": "docs_adr_0002_url_hash_single_source_of_truth",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_readme",
+      "target": "docs_adr_0003_usegamesession_reducer_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_readme_filing_convention",
+      "target": "docs_adr_readme_superseding",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/README.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

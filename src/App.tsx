@@ -10,13 +10,14 @@ import { useSelectedCountry } from './hooks/useSelectedCountry'
 import { useMediaQuery } from './hooks/useMediaQuery'
 import { useTheme } from './hooks/useTheme'
 import { useLauncherVisibility } from './hooks/useLauncherVisibility'
-import { useMapReady } from './hooks/useMapReady'
+import { useGameplayReady } from './hooks/useGameplayReady'
 import { hintCopy, useFirstVisitHint } from './hooks/useFirstVisitHint'
 import { useLiveAnnouncements } from './hooks/useLiveAnnouncements'
 import { MapProvider } from './hooks/useMap'
 import { GameSessionProvider, useGameSessionContext } from './game/shared/GameSessionProvider'
 import { isCountryPinning } from './game/shared/modePredicates'
 import { GameController } from './game/GameController'
+import { dispatchOceanMiss } from './game/modes/country-pinning/oceanMiss'
 import type { CityLike, CountryLike } from './game/shared/types'
 import { centroidFromLatLng } from './game/shared/distance'
 import type { CountryData, CountriesFile } from './lib/types'
@@ -96,13 +97,14 @@ function AppInner({
   } = useSelectedCountry(byCca3)
   const isDesktop = useMediaQuery()
   const { theme, resolved, cycle } = useTheme()
-  const { session, submitGuessInput, advance, mode, finalize } = useGameSessionContext()
+  const { session, submitGuessInput } = useGameSessionContext()
   const {
     visible: launcherVisible,
     dismiss: dismissLauncher,
     show: showLauncher,
   } = useLauncherVisibility()
-  const mapReady = useMapReady()
+  const { ready: gameplayReady, failed: mapFailed } = useGameplayReady()
+  const mapReady = gameplayReady || mapFailed
   const finePointer = useMediaQuery(FINE_POINTER_MEDIA_QUERY)
   const liveRegionRef = useLiveAnnouncements(selected?.name.common ?? null)
   const [satellite, setSatellite] = useState(true)
@@ -124,7 +126,15 @@ function AppInner({
   })
 
   const enterComparePicking = useCallback(() => {
-    if (selected) setComparePickingMode(true)
+    if (!selected) return
+    setComparePickingMode(true)
+    // C-3b: the search box IS the picking tool (its placeholder already swaps
+    // to "Choose country to compare..."), so hand it focus. Header stays
+    // mounted through this flip, so a single rAF after the commit suffices —
+    // no cancel bookkeeping needed in a plain event handler.
+    window.requestAnimationFrame(() => {
+      document.getElementById('search-input')?.focus()
+    })
   }, [selected])
   const exitCompare = useCallback(() => {
     setComparePickingMode(false)
@@ -132,24 +142,6 @@ function AppInner({
   }, [clearCompare])
 
   const gameActive = session.status !== 'idle'
-
-  const roundEndTarget = useMemo(() => {
-    if (session.status !== 'round-ended') return null
-    if (!isCountryPinning(session.modeId)) return null
-    const reveal = session.lastOutcome?.reveal
-    if (!reveal || reveal.kind !== 'country') return null
-    return byCca3.get(reveal.targetCca3) ?? null
-  }, [session.status, session.modeId, session.lastOutcome, byCca3])
-
-  const advanceRoundEndPanel = useCallback(() => {
-    if (session.status !== 'round-ended' || !mode) return
-    if (session.lastOutcome?.endsGame) {
-      finalize()
-      return
-    }
-    const next = mode.nextRound(session.used)
-    advance(next)
-  }, [session.status, session.lastOutcome, session.used, advance, finalize, mode])
 
   const onMapSelect = useCallback(
     (cca3: string) => {
@@ -353,7 +345,8 @@ function AppInner({
 
       {!mapReady && (
         <div
-          aria-hidden="true"
+          role="status"
+          aria-label="Loading the world map"
           className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-sand-100 dark:bg-dark-500 transition-opacity duration-300 pointer-events-none"
         >
           <span className="text-2xl font-bold tracking-wide text-ice-accessible dark:text-ice mb-6">
@@ -392,6 +385,7 @@ function AppInner({
           satellite={satellite}
           onSelect={onMapCountryClick}
           onDeselect={onMapDeselect}
+          onGameOceanMiss={dispatchOceanMiss}
         />
       </main>
       <Header
@@ -408,9 +402,9 @@ function AppInner({
         onLauncherDismiss={onLauncherDismissFromSearch}
       />
 
-      {launcherVisible && <Launcher onDismiss={dismissLauncher} />}
+      {launcherVisible && !mapFailed && <Launcher ready={gameplayReady} onDismiss={dismissLauncher} />}
 
-      <GameController countries={pool} cities={cities} byCca3={poolByCca3} />
+      <GameController countries={pool} cities={cities} byCca3={poolByCca3} ready={gameplayReady} referenceCountries={byCca3} sources={sources} onChooseGame={showLauncher} onExplore={dismissLauncher} />
 
       {/* explore/game hints render on the empty map; the compare tip (C5,
           mobile-enabled by D4/Task 6) renders while a panel is open. Same
@@ -429,7 +423,7 @@ function AppInner({
           which left the pill floating over the launcher indefinitely for a
           first-timer who closes their first panel (fires the 'game' hint)
           and then opens the launcher. */}
-      {hint && !gameActive && (hint === 'compare' ? !!selected : !selected) && (
+      {hint && !gameActive && !launcherVisible && (hint === 'compare' ? !!selected : !selected) && (
         <div
           role="status"
           data-testid="onboarding-hint"
@@ -442,6 +436,7 @@ function AppInner({
 
       {selected && !gameActive && (
         <CountryPanel
+          key={`${selected.cca3}-${compareWith?.cca3 ?? ""}`}
           country={selected}
           compareWith={compareWith}
           comparePickingMode={comparePickingMode}
@@ -457,33 +452,7 @@ function AppInner({
         />
       )}
 
-      {roundEndTarget && (
-        <CountryPanel
-          country={roundEndTarget}
-          compareWith={null}
-          comparePickingMode={false}
-          sources={sources}
-          isDesktop={isDesktop}
-          onSelect={() => {
-            /* no-op during round-end */
-          }}
-          onClose={advanceRoundEndPanel}
-          onEnterCompare={() => {
-            /* no-op — hidden by inGameRound */
-          }}
-          onCancelCompare={() => {
-            /* no-op — picking mode is never active during a round */
-          }}
-          onExitCompare={() => {
-            /* no-op — hidden by inGameRound */
-          }}
-          onCompareColumnSelect={() => {
-            /* no-op — compare never renders during a round */
-          }}
-          byCca3={byCca3}
-          inGameRound={true}
-        />
-      )}
+
     </div>
   )
 }

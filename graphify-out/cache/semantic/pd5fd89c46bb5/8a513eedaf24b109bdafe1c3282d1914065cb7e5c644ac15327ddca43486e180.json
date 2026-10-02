@@ -1,0 +1,50 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_satellite_default_plan",
+      "label": "Satellite Default View Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-satellite-default.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_satellite_default_flip",
+      "label": "EOX Sentinel-2 satellite basemap as the first-load default",
+      "file_type": "rationale",
+      "rationale": "A one-line initial-state flip in App.tsx; all supporting infrastructure (tiles, terrain DEM, toggle, paint overrides) already existed. Persisting the user's toggle choice to localStorage was an explicit non-goal.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-satellite-default.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_terrain_dem",
+      "target": "docs_superpowers_plans_archive_2026_04_18_satellite_default_flip",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-satellite-default.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_satellite_default_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_plan",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-satellite-default.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

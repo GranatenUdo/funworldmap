@@ -1,0 +1,380 @@
+{
+  "nodes": [
+    {
+      "id": "docs_assets_hero_launcher_modal",
+      "label": "Launcher Modal (hero screenshot)",
+      "file_type": "image",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "full frame, centered overlay at 1200x675",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_funworldmap_wordmark",
+      "label": "funworldmap Wordmark",
+      "file_type": "image",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "modal header, teal lowercase logotype",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_tagline_pick_a_mode",
+      "label": "Tagline: 'Pick a mode and beat your best'",
+      "file_type": "concept",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "subtitle beneath wordmark",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_country_mode_card",
+      "label": "Country Mode Card",
+      "file_type": "image",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "left card: pin icon, 'Country', 'Click the right country on the map'",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_city_mode_card",
+      "label": "City Mode Card",
+      "file_type": "image",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "right card: cityscape icon, 'City', 'Pin where the city is'",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_play_cta",
+      "label": "Play Primary CTA Button",
+      "file_type": "image",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "one full-width teal button per mode card",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_personal_best_empty_state",
+      "label": "Personal-Best Empty State ('No games yet \u2014 play your first')",
+      "file_type": "concept",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "footer line of each mode card",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_launcher_dismiss",
+      "label": "Launcher Dismiss (X) Control",
+      "file_type": "image",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "top-right of overlay, outside the card row",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_globe_basemap_backdrop",
+      "label": "Dimmed Globe Basemap Backdrop",
+      "file_type": "image",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "background layer: dark globe with Africa/Europe landmass, scrim-dimmed map chrome and attribution",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_map_first_launcher_overlay",
+      "label": "Map-First Launcher Overlay Pattern",
+      "file_type": "rationale",
+      "source_file": "docs/assets/hero.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_two_mode_choice_architecture",
+      "label": "Two-Mode Choice Architecture",
+      "file_type": "rationale",
+      "source_file": "docs/assets/hero.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_pointer_only_guessing",
+      "label": "Pointer-Only Spatial Guessing",
+      "file_type": "rationale",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "card copy: 'Click the right country on the map' / 'Pin where the city is'",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_assets_hero_teal_on_dark_palette",
+      "label": "Teal-on-Dark Accent Palette",
+      "file_type": "concept",
+      "source_file": "docs/assets/hero.png",
+      "source_location": "wordmark, mode icons, Play buttons all share one teal accent against near-black ground",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_assets_hero_funworldmap_wordmark",
+      "target": "docs_assets_hero_launcher_modal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "modal header",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_tagline_pick_a_mode",
+      "target": "docs_assets_hero_launcher_modal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "subtitle beneath wordmark",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_country_mode_card",
+      "target": "docs_assets_hero_launcher_modal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "left card in two-up row",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_city_mode_card",
+      "target": "docs_assets_hero_launcher_modal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "right card in two-up row",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_launcher_dismiss",
+      "target": "docs_assets_hero_launcher_modal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "top-right X control",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_play_cta",
+      "target": "docs_assets_hero_country_mode_card",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "teal Play button inside the Country card",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_play_cta",
+      "target": "docs_assets_hero_city_mode_card",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "teal Play button inside the City card",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_personal_best_empty_state",
+      "target": "docs_assets_hero_country_mode_card",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "'No games yet \u2014 play your first' under the Country Play button",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_personal_best_empty_state",
+      "target": "docs_assets_hero_city_mode_card",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "'No games yet \u2014 play your first' under the City Play button",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_globe_basemap_backdrop",
+      "target": "docs_assets_hero_launcher_modal",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "modal composited over a dimmed live map, map attribution still faintly visible",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_map_first_launcher_overlay",
+      "target": "docs_assets_hero_launcher_modal",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "the map is fully rendered and merely scrimmed behind the launcher, not replaced by a splash screen",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_map_first_launcher_overlay",
+      "target": "docs_assets_hero_launcher_dismiss",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "an explicit X exists so the player can fall back to free map exploration instead of committing to a game",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_two_mode_choice_architecture",
+      "target": "docs_assets_hero_country_mode_card",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "exactly two symmetric cards, identical internal layout (icon, title, one-line rule, Play, best-score slot)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_two_mode_choice_architecture",
+      "target": "docs_assets_hero_city_mode_card",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "second of the two symmetric mode cards",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_pointer_only_guessing",
+      "target": "docs_assets_hero_country_mode_card",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "'Click the right country on the map' states the interaction as a pointer act, no text-entry affordance shown",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_pointer_only_guessing",
+      "target": "docs_assets_hero_city_mode_card",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "'Pin where the city is' \u2014 placement on the map, not naming",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_teal_on_dark_palette",
+      "target": "docs_assets_hero_play_cta",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "the single saturated teal is reserved for the primary action, wordmark, and mode icons",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_teal_on_dark_palette",
+      "target": "docs_assets_hero_globe_basemap_backdrop",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "light cards and teal accents carry contrast against the near-black basemap",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_personal_best_empty_state",
+      "target": "docs_assets_hero_tagline_pick_a_mode",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "both frame the loop as self-competition \u2014 'beat your best' promised in the header, per-mode best slot reserved in each card",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_assets_hero_country_mode_card",
+      "target": "docs_assets_hero_city_mode_card",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/assets/hero.png",
+      "source_location": "identical card schema \u2014 icon, title, rule copy, Play CTA, personal-best line \u2014 implies one shared mode/personal-best record shape",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "hero_launcher_mode_selection_surface",
+      "label": "Launcher Mode-Selection Surface",
+      "nodes": [
+        "docs_assets_hero_launcher_modal",
+        "docs_assets_hero_country_mode_card",
+        "docs_assets_hero_city_mode_card",
+        "docs_assets_hero_play_cta",
+        "docs_assets_hero_launcher_dismiss"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/assets/hero.png"
+    },
+    {
+      "id": "hero_mode_card_template",
+      "label": "Shared Mode-Card Template (icon, title, rule, Play, personal best)",
+      "nodes": [
+        "docs_assets_hero_country_mode_card",
+        "docs_assets_hero_city_mode_card",
+        "docs_assets_hero_play_cta",
+        "docs_assets_hero_personal_best_empty_state"
+      ],
+      "relation": "implement",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/assets/hero.png"
+    }
+  ]
+}

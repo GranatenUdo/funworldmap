@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { gotoAndWaitForMap, waitForAppReady, waitForAnimationIdle, openLauncher } from './helpers'
+import { gotoAndWaitForMap, waitForAppReady, waitForAnimationIdle, openLauncher, ensureLauncherDismissed } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -8,6 +8,7 @@ test.describe('Launcher (free-play hub)', () => {
     await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
 
+    await ensureLauncherDismissed(page)
     await page.getByTestId('header-play').click()
     const launcher = page.getByTestId('launcher')
     await expect(launcher).toBeVisible()
@@ -23,9 +24,10 @@ test.describe('Launcher (free-play hub)', () => {
     await expect(page.getByTestId('game-hud')).toBeVisible()
   })
 
-  test('does NOT appear on cold load at /; header CTA opens it', async ({ page }) => {
+  test('appears on cold load at /; header CTA reopens it after exploration', async ({ page }) => {
     await gotoAndWaitForMap(page, '/')
-    await expect(page.getByTestId('launcher')).not.toBeAttached()
+    await expect(page.getByTestId('launcher')).toBeVisible()
+    await ensureLauncherDismissed(page)
     await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher')).toBeVisible()
   })
@@ -82,6 +84,7 @@ test.describe('Launcher (free-play hub)', () => {
 
   test('play button re-opens launcher', async ({ page }) => {
     await gotoAndWaitForMap(page, '/')
+    await ensureLauncherDismissed(page)
     await expect(page.getByTestId('header-play')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('header-play').click()
     await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 3_000 })
@@ -96,13 +99,12 @@ test.describe('Launcher (free-play hub)', () => {
     await expect(launcher).toHaveAttribute('aria-label', 'Choose how to play')
   })
 
-  test('dismissing + reloading does NOT re-show launcher (map-first posture)', async ({ page }) => {
+  test('a new page load resets page-lifetime chooser dismissal', async ({ page }) => {
     await gotoAndWaitForMap(page, '/')
     await openLauncher(page)
     await page.getByTestId('launcher-close').click()
     await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
     await page.reload()
-    await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
-    await expect(page.getByTestId('launcher')).not.toBeAttached({ timeout: 5_000 })
+    await expect(page.getByTestId('launcher')).toBeVisible({ timeout: 5_000 })
   })
 })

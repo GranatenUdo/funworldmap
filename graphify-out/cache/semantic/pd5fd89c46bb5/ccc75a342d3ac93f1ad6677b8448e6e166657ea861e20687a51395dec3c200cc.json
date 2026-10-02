@@ -1,0 +1,116 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_05_flake_triage_design_spec",
+      "label": "Chromium e2e flake triage spec",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_05_flake_triage_design_phased_fix_and_monitor",
+      "label": "Phased fix-and-monitor flake approach",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "Approach",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The 2026-04-28 prescription ('remove waitForTimeout / force:true anti-patterns') was stale \u2014 grep found 1 waitForTimeout and 0 force:true. Diagnosis must be evidence-driven per failing test. All phases land on the in-flight PR branch rather than follow-ups, to avoid doubling the review cycle."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_05_flake_triage_design_dismisslauncher_race",
+      "label": "dismissLauncher Header-remount race",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "Phase 1, e2e/helpers.ts:149",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The project's last waitForTimeout(150) waited for the Header to remount after the launcher closed. On CI's 5-10x slower runner it races, so newly-attached Header controls (theme-toggle) fail actionability. Replaced with a deterministic attached-state wait on a Header child."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_05_flake_triage_design_five_consecutive_green",
+      "label": "Five-consecutive-green CI criterion",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "Phase 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Deliberately locked as a forcing function: if unreachable, the outcome is 'escalate to option D (real GPU CI runner)', never 'relax the criterion'. Explicitly refuses retries or blanket timeout bumps as a substitute for diagnosis."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_05_flake_triage_design_routemaptilesrich_hypothesis",
+      "label": "routeMapTilesRich stub coverage hypothesis",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "Phase 2, label-contrast.spec.ts:316",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "If the stub's URL patterns miss the light-positron basemap's tile URLs, MapLibre waits indefinitely on an intercepted-but-unfulfilled fetch, so data-map-loaded never appears within 90s. Investigation is required before the fix."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_05_flake_triage_design_spec",
+      "target": "docs_superpowers_specs_2026_05_05_flake_triage_design_phased_fix_and_monitor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_05_flake_triage_design_phased_fix_and_monitor",
+      "target": "docs_superpowers_specs_2026_05_05_flake_triage_design_dismisslauncher_race",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "Phase 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_05_flake_triage_design_phased_fix_and_monitor",
+      "target": "docs_superpowers_specs_2026_05_05_flake_triage_design_routemaptilesrich_hypothesis",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "Phase 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_05_flake_triage_design_phased_fix_and_monitor",
+      "target": "docs_superpowers_specs_2026_05_05_flake_triage_design_five_consecutive_green",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "Phase 4",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_05_flake_triage_design_dismisslauncher_race",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_ensurelauncherdismissed",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-05-05-flake-triage-design.md",
+      "source_location": "e2e/helpers.ts dismissLauncher",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

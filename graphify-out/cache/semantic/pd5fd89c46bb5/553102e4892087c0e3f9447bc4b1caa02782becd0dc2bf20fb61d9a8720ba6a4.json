@@ -1,0 +1,51 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_country_click_preserve_zoom_preserve_user_zoom_plan",
+      "label": "Preserve user zoom on country selection Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-country-click-preserve-zoom.md",
+      "source_location": "line 1",
+      "rationale": "Selecting a country from a close-in view made the camera recede to roughly world zoom, discarding the user's navigation context.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_country_click_preserve_zoom_zoom_clamp",
+      "label": "flyToCountry zoom clamp",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-country-click-preserve-zoom.md",
+      "source_location": "Task 1",
+      "rationale": "One-expression fix: clamp the computed target zoom against map.getZoom() via Math.max, so selection re-centres but never decreases the user's zoom. Contained to one module; four unit cases cover small country, large country above/below the computed zoom, and reduced-motion composition.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_country_click_preserve_zoom_preserve_user_zoom_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_17_country_click_preserve_zoom_zoom_clamp",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-country-click-preserve-zoom.md",
+      "source_location": "Task 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_country_click_preserve_zoom_zoom_clamp",
+      "target": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_preserve_user_view_rule",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-country-click-preserve-zoom.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

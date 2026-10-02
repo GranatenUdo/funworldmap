@@ -1,0 +1,335 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_plan",
+      "label": "Workstream C \u2014 Compare Redesign Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_compare_fields",
+      "label": "COMPARE_FIELDS shared field-definition array (C1)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_compare_field_row_bars",
+      "label": "CompareFieldRow \u2014 paired bars, delta chips, derived density (C2+C3)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_ice_mid_rename",
+      "label": "ICE_DIM \u2192 ICE_MID rename (map-paint vs chrome token name collision)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_field_source_markers",
+      "label": "fieldSourceMarkers.ts \u2014 dominant-source computation (C4)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_source_marker_component",
+      "label": "SourceMarker superscript exception marker component",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_compare_pill_entry",
+      "label": "C5 \u2014 labeled Compare pill + one-time compare tip",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_mobile_single_scroll",
+      "label": "C6 \u2014 mobile compare single scroll container + sheet-aware camera",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 6",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_mobile_compare_camera_bug",
+      "label": "Unfixed: cameraForBounds degenerate fit under large bottom padding (wide mobile pairs)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "## Completion ledger",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_completion_ledger",
+      "label": "Workstream C completion ledger (shipped, deferred, and unfixed)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "## Completion ledger (Task 7, post-verification)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_c_panel_header_truncation_regression",
+      "label": "Desktop single-panel header truncation regression from the C5 pill",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "## Completion ledger",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_plan",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_ux_visual_program_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "**Spec:**",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_plan",
+      "target": "docs_superpowers_plans_2026_07_28_e_foundations_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "Do NOT touch docs/superpowers/plans/2026-07-28-e-foundations.md",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_ice_mid_rename",
+      "target": "docs_superpowers_plans_2026_07_28_e_foundations_map_palette_constants",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_ice_mid_rename",
+      "target": "docs_superpowers_plans_2026_07_28_e_foundations_ice_signal_token_system",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 1 \u2014 Context",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_compare_field_row_bars",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_c_compare_fields",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 3",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_compare_field_row_bars",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_c_ice_mid_rename",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "the compare-bars task C2 imports ICE_MID and SIGNAL",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_compare_field_row_bars",
+      "target": "docs_superpowers_plans_2026_07_28_e_foundations_type_role_utilities",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": ".text-readout numerals",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_source_marker_component",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_c_field_source_markers",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "### Task 4",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_compare_fields",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_exception_badges",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "UN/independence render as exception badges (shared module with SingleCountryPanel)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_compare_fields",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_comparemapclick",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "Chip semantics (A8 inheritance)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_mobile_single_scroll",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_b_core_compare_camera_padding",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "sheet-aware comparePanelPadding \u2014 closing the mobile-framing gap B-core documented",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_mobile_compare_camera_bug",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_b_core_compare_camera_padding",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "## Completion ledger",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_completion_ledger",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_c_mobile_compare_camera_bug",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "## Completion ledger",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_completion_ledger",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_c_panel_header_truncation_regression",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "## Completion ledger",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_panel_header_truncation_regression",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_c_compare_pill_entry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": "C5's wider icon+text Compare pill",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_panel_header_truncation_regression",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_mobile_name_truncation",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_field_source_markers",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_exception_badges",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_plan",
+      "target": "docs_superpowers_readme_well_formed_plan_checklist",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_c_completion_ledger",
+      "target": "docs_superpowers_readme_plans_are_forward_looking",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "observatory_ux_program_tranches",
+      "label": "Observatory UX/visual program implementation tranches (A, B-core, C, E-foundations + B1 spike)",
+      "nodes": [
+        "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_plan",
+        "docs_superpowers_plans_2026_07_28_workstream_b_core_plan",
+        "docs_superpowers_plans_2026_07_28_workstream_c_plan",
+        "docs_superpowers_plans_2026_07_28_e_foundations_plan",
+        "docs_superpowers_notes_2026_07_28_b1_glyph_spike_note",
+        "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_ux_visual_program_spec"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-c.md"
+    }
+  ]
+}

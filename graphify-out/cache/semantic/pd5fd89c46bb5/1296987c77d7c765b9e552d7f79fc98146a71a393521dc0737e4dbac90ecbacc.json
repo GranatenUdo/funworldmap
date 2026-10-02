@@ -1,0 +1,299 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "label": "Vision-audit remediation plan (2026-05-04)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "label": "Toast z-index raised above modal overlays",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": "src/components/Toast.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Toast rendered at z-50 while modals sit at z-[210], so any toast dispatched over a modal was invisible behind its backdrop. This single finding explained the audit's unresolved 'share button gives no feedback' report \u2014 dispatchToast('Copied!') was firing all along."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_z_stack_module",
+      "label": "Single z-stack constants module",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": "src/lib/zStack.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Preferred over a one-off number bump so a future modal cannot accidentally out-z-index the Toast again."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_daily_card_three_states",
+      "label": "Daily-card copy: three states, not one",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": "src/components/LauncherModeCard.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "loading, fetch-failed and ready-but-today-missing all collapsed into one 'Today's daily is syncing.' string. Splitting the discriminated union lets each state say something actionable, including a CTA to the most recent available date derived from index.window.end."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_compare_ab_colours",
+      "label": "Compare A/B distinct map-highlight colours",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": "src/lib/mapLayers.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Panel badges were coral/teal but both compared countries painted the same red on the map. The fix belongs in mapLayers paint properties, not useSelectionHighlight, which only sets filters \u2014 a source-pointer correction found during plan review."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_cf_rum_prod_gating",
+      "label": "Cloudflare RUM gated to production builds",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": "index.html",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Two CORS errors per dev page load were drowning real console signal; wrapping the script in import.meta.env.PROD drops it from the dev bundle entirely."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_launcher_focus_guard",
+      "label": "Launcher initial-focus a11y guard",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Naively re-running the focus effect when puzzlesStatus becomes ready would steal focus from a user who tabbed away during loading, so the effect only re-focuses if activeElement is still the loading placeholder. Fixing the original bug without this guard would introduce a different a11y bug."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_dark_mode_label_contrast",
+      "label": "Dark-mode map label contrast 2.44:1",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Runtime sampling of MapLibre text-color and text-halo-color turned a subjective audit claim into a measured 2.44:1 against a 3:1 minimum \u2014 and the measurement spec was deliberately converted to collect-not-fail so verification reports data instead of blocking CI."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_webgl_context_loss",
+      "label": "WebGL context-loss handler",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_source_review_on_plans",
+      "label": "Source review applies to plans, not just findings",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Meta-lesson from Revision 2: roughly thirty minutes of reading the actual source produced six edits to the plan \u2014 one new finding (toast z-index), two corrected file pointers, one new a11y guard, one simplified approach and one elevated risk. Vision shows symptoms; source review shows causes, and that applies to the plan itself."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_phased_sequencing",
+      "label": "Quick wins to verification to major fixes sequencing",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Verification is placed before the major fixes because its results can re-scope them, with an explicit stakeholder checkpoint between the two phases; each phase carries its own definition of done."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_tiered_review_rigor",
+      "label": "Tiered subagent review rigor",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Honest execution-log admission: formal review was skipped for two single-line changes and got lucky. Proposed correction is explicit tiers \u2014 trivial gets controller-only, moderate gets one combined review, substantive gets full implementer plus spec plus code-quality review \u2014 rather than an unstated case-by-case call."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_phased_sequencing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_z_stack_module",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_toast_event",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_source_review_on_plans",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_source_review_on_plans",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_compare_ab_colours",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_source_review_on_plans",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_launcher_focus_guard",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_daily_card_three_states",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_targetname_rename",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_cf_rum_prod_gating",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_webgl_context_loss",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_tiered_review_rigor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_axe_wcag2aa_audit",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_dark_mode_label_contrast",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_per_surface_descope",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_launcher_focus_guard",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_launcherstreakpill",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/plans/archive/2026-05-04-vision-audit-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

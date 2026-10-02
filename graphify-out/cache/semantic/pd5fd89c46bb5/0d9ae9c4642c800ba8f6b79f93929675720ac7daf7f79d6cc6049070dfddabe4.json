@@ -1,0 +1,122 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_game_divergences_2026_05_11_bug1_retracted",
+      "label": "Bug 1 (deep-link bootstrap) \u2014 retracted correction memo",
+      "file_type": "rationale",
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Correction memo / Bug 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_divergences_2026_05_11_test_seam_catalog",
+      "label": "Eight-method test seam catalog discovery",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Findings that contradicted my prior critical review",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_divergences_2026_05_11_city_scoring_range",
+      "label": "City scoring is 0-100 per round, 1000 per game",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Test-plan inaccuracy 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_divergences_2026_05_11_wrong_guess_panel_flow",
+      "label": "Wrong-guess opens panel with Continue; no auto-advance",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Test-plan inaccuracy 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_divergences_2026_05_11_readiness_attribute_hosts",
+      "label": "data-app-ready on <main>, data-map-loaded on div[role=application]",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Doc gap 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "product_url_hash_source_of_truth",
+      "target": "docs_testing_game_divergences_2026_05_11_bug1_retracted",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Bug 1 / Correction memo",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_readiness_helpers",
+      "target": "docs_testing_game_divergences_2026_05_11_readiness_attribute_hosts",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Doc gap 3",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_game_test_seams",
+      "target": "docs_testing_game_divergences_2026_05_11_test_seam_catalog",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Findings that contradicted my prior critical review",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_divergences_2026_05_11_wrong_guess_panel_flow",
+      "target": "docs_testing_game_happy_paths_free_country_pinning",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Test-plan inaccuracy 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_divergences_2026_05_11_city_scoring_range",
+      "target": "docs_testing_game_happy_paths_free_city_guessing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Test-plan inaccuracy 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_divergences_2026_05_11_bug1_retracted",
+      "target": "docs_testing_game_unhappy_paths_section_a_animations",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/testing/game-divergences-2026-05-11.md",
+      "source_location": "Suggested next actions",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

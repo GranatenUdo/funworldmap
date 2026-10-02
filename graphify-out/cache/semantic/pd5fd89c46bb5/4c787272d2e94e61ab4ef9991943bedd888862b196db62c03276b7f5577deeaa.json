@@ -1,0 +1,183 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_review_fixes_batch_2_plan",
+      "label": "Review Fixes Batch 2 Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "line 1",
+      "rationale": "Four approved streams: game basemap tuning, panel polish, compare-view camera framing, and the batch-1 deferred cleanups. The game gate is session.status === 'playing' so reveal and game-over render normally; satellite default and space-dark backdrop are intentional and untouched.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_single_owner_pattern",
+      "label": "Single-owner map-layer pattern",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Architecture",
+      "rationale": "Every map change goes through an existing single-owner function in mapLayers (the repo's #111 pattern): basemap visibility gets one new owner and border emphasis extends the existing baseline-paint owner, so no two code paths write the same layer property.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_layoutconstants",
+      "label": "layoutConstants module + drift alarm",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 1",
+      "rationale": "Camera geometry that both fly helpers depended on lived as a private panelOffset in flyToCountry; hoisting it into a shared module and guarding it with a drift-alarm test means a CSS panel-width change cannot silently desynchronise the camera offset.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_extrusion_fade",
+      "label": "Extrusion fade replaces the z6 cliff",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 2",
+      "rationale": "The batch-1 maxzoom:6 cap made the highlight walls vanish abruptly; an interpolated fade replaces the hard cliff so the transition reads as intentional.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_hide_basemap_labels_during_play",
+      "label": "Hide basemap labels during play",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 4",
+      "rationale": "Basemap place labels give away the answer while guessing; visibility is toggled through a single new owner gated on session.status === 'playing' so reveal and game-over still show labels.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_satellite_border_emphasis",
+      "label": "Satellite border emphasis during play",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 5",
+      "rationale": "With labels hidden and satellite imagery as the default basemap, country boundaries become unreadable; emphasising borders during play restores the spatial cues the game needs without reintroducing the answer.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_compare_view_camera",
+      "label": "Compare-view camera framing",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 7",
+      "rationale": "Compare mode needs both countries framed at once, which the single-country fly helper cannot express; the shared layout constants make the two-country framing consistent with the panel-aware offsets used elsewhere.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_fake_map_helper_consolidation",
+      "label": "Fake-map helper consolidation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 3",
+      "rationale": "Collapses the remaining duplicate fake-map test doubles into one, closing the multi-implementation problem first catalogued in the 2026-05-15 cleanup assessment. Test files must live under src/** to satisfy tsconfig.app.json, and a same-basename .tsx next to an existing .ts is forbidden because TypeScript silently drops one.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_review_fixes_batch_2_plan",
+      "target": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_review_fixes_batch_1_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Goal \u2014 the batch-1 deferred cleanups",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_extrusion_fade",
+      "target": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_extrusion_maxzoom_cap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 2 \u2014 extrusion fade replaces the z6 cliff",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_layoutconstants",
+      "target": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_flytocountry_preserve_zoom",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 1 \u2014 replace private panelOffset in flyToCountry",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_single_owner_pattern",
+      "target": "docs_superpowers_plans_archive_2026_06_12_review_followups_applycountrybaselinepaint",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Architecture \u2014 the repo's #111 pattern; border emphasis extends the existing baseline-paint owner",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_hide_basemap_labels_during_play",
+      "target": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_single_owner_pattern",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 4 \u2014 single-owner visibility",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_satellite_border_emphasis",
+      "target": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_hide_basemap_labels_during_play",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Tasks 4-5",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_compare_view_camera",
+      "target": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_layoutconstants",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 7 \u2014 shared layoutConstants consumed by both fly helpers",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_2_fake_map_helper_consolidation",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_test_fixture_consolidation",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-2.md",
+      "source_location": "Task 3 \u2014 three implementations of makeFakeMap catalogued in \u00a71.3",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

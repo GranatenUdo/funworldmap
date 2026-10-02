@@ -13,7 +13,7 @@ describe('LauncherModeCard (free-play)', () => {
   it('shows the mode title and a Play button that calls onPlay', () => {
     const onPlay = vi.fn()
     render(<LauncherModeCard modeId="country-pinning" onPlay={onPlay} />)
-    expect(screen.getByText('Country')).toBeTruthy()
+    expect(screen.getByText('Find countries')).toBeTruthy()
     screen.getByTestId('launcher-card-country-pinning-play').click()
     expect(onPlay).toHaveBeenCalledTimes(1)
   })

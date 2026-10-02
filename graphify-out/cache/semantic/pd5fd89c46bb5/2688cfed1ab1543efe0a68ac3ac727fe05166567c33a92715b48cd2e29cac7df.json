@@ -1,0 +1,165 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_playwright_matrix_chromium_project",
+      "label": "chromium Playwright project (consolidated 2026-05-02)",
+      "file_type": "concept",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Projects",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_playwright_matrix_mobile_chromium_project",
+      "label": "mobile-chromium Playwright project (Pixel 7)",
+      "file_type": "concept",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Projects",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_playwright_matrix_mobile_webkit_project",
+      "label": "mobile-webkit Playwright project (iPhone 14)",
+      "file_type": "concept",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Projects",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_playwright_matrix_desktop_firefox_touch_project",
+      "label": "desktop-firefox-touch Playwright project (Gecko touch proxy)",
+      "file_type": "concept",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Projects",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_playwright_matrix_global_reduced_motion",
+      "label": "chromium project sets reducedMotion: 'reduce' globally",
+      "file_type": "rationale",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Known config caveats",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_playwright_matrix_ci_testignore",
+      "label": "CI testIgnore \u2014 10 GPU-dependent specs excluded (issue #106)",
+      "file_type": "concept",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "CI testIgnore",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_playwright_matrix_quarantined_tests",
+      "label": "Quarantined tests table (test.fixme on CI)",
+      "file_type": "concept",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Quarantined tests",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_playwright_matrix_manual_qa_firefox_android",
+      "label": "Manual QA \u2014 real Firefox-for-Android out of CI scope",
+      "file_type": "concept",
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Manual QA",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_playwright_matrix_chromium_project",
+      "target": "_github_workflows_ci_e2e_job",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Projects",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_playwright_matrix_ci_testignore",
+      "target": "_github_workflows_ci_e2e_job",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "CI testIgnore",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_playwright_matrix_global_reduced_motion",
+      "target": "claude_e2e_flake_rules",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Known config caveats",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_playwright_matrix_global_reduced_motion",
+      "target": "docs_testing_animation_verification_2026_05_13_reduced_motion_fix",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Known config caveats",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_playwright_matrix_manual_qa_firefox_android",
+      "target": "docs_testing_playwright_matrix_desktop_firefox_touch_project",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Manual QA",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_playwright_matrix_quarantined_tests",
+      "target": "docs_testing_game_unhappy_paths_d3_mode_switch_restart",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Quarantined tests (issue #32)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_playwright_matrix_quarantined_tests",
+      "target": "docs_testing_game_unhappy_paths_escape_precedence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/playwright-matrix.md",
+      "source_location": "Quarantined tests (issue #47)",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

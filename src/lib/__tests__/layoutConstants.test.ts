@@ -116,7 +116,8 @@ describe('A13 touch-target convention drift alarm', () => {
   })
 
   it('every touch surface references its convention constant', () => {
-    expect(closeButtonSource).toContain('TOUCH_TARGET_FROM_36')
+    // Calibrated fittings (2026-08-03): CloseButton is a 32px fitting now.
+    expect(closeButtonSource).toContain('TOUCH_TARGET_FROM_32')
     expect(singleCountryPanelSource).toContain('TOUCH_TARGET_FROM_36')
     expect(searchBarSource).toContain('TOUCH_TARGET_FROM_24')
     expect(hudShellSource).toContain('TOUCH_TARGET_TEXT_XS')
@@ -124,9 +125,9 @@ describe('A13 touch-target convention drift alarm', () => {
   })
 
   it('pins the base sizes the inset math assumes', () => {
-    // CloseButton visual box: p-2 (2*8px) + w-5 h-5 (20px) = 36px
-    expect(closeButtonSource).toContain('p-2 rounded-xl')
-    expect(closeButtonSource).toContain('w-5 h-5')
+    // CloseButton visual box: p-2 (2*8px) + w-4 h-4 (16px) = 32px
+    expect(closeButtonSource).toContain('p-2 rounded-lg')
+    expect(closeButtonSource).toContain('w-4 h-4')
     // HUD text buttons are text-xs (16px line box, no vertical padding)
     expect(hudShellSource).toContain('text-xs')
     expect(cityGuessingHudSource).toContain('text-xs')
@@ -162,7 +163,8 @@ describe('A13 supplemental touch targets (Task 6 ledger + Task 12 compare header
 
   it('the picking-banner Cancel and compare-header controls reference a convention constant', () => {
     expect(singleCountryPanelSource).toContain('TOUCH_TARGET_FROM_22')
-    expect(compareCountryPanelSource).toContain('TOUCH_TARGET_FROM_36')
+    // Calibrated fittings (2026-08-03): both compare-header controls (copy-link
+    // p-2 + w-4 = 32px; Exit compare py-1.5 + text-sm = 32px) are FROM_32.
     expect(compareCountryPanelSource).toContain('TOUCH_TARGET_FROM_32')
   })
 
@@ -222,8 +224,8 @@ describe('G1 sheet fundamentals drift alarm', () => {
     // breakpoint. px-4/pt-4 keep the original p-4 on the other three sides;
     // pb adds the safe-area inset on top of the original 1rem so the card
     // clears the home indicator instead of sitting flush under it.
-    expect(gameOverOverlaySource).toContain('items-end')
-    expect(gameOverOverlaySource).toContain('pb-[calc(env(safe-area-inset-bottom)+1rem)]')
+    expect(gameOverOverlaySource).toContain('results-backdrop')
+    expect(gameOverOverlaySource).toContain('safe-results')
   })
 
   it('sheet grabber: TOUCH_TARGET_FROM_20 pins the A13 inset math and its consumer', () => {

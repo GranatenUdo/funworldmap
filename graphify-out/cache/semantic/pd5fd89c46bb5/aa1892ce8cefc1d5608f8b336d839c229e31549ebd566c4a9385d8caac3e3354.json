@@ -1,0 +1,187 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_plan",
+      "label": "E2E Flake Elimination Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_chromium_consolidation",
+      "label": "Chromium project consolidation (drop Software ANGLE)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": "playwright.config.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The separate Software-ANGLE chromium project was the documented largest contributor to the flake regression; collapsing it into the real-GPU-capable project removed the slow backend and an eight-minute redundant CI job at the same time."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_force_click_antipattern",
+      "label": "click({ force: true }) anti-pattern",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "force:true skips Playwright's visible/enabled/stable checks, papering over the real problem \u2014 an overlay, animation or portal still in transition. When a force click is needed, the occluder's timing is the actual bug, so every site is replaced with a wait for the occluder to detach."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_data_animation_state",
+      "label": "data-animation-state component signal",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Components that stay mounted through their animation cannot be waited on with not.toBeAttached, so they expose entering|idle|exiting. Driven by Element.getAnimations({subtree:true}) so no duration is hand-typed on either the component or the test side."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_waitforanimationidle",
+      "label": "waitForAnimationIdle(locator) e2e helper",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": "e2e/helpers.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Gives tests one canonical call for CSS-transition timing, and the CLAUDE.md update makes it the documented replacement for waitForTimeout so new tests do not reintroduce the pattern."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_flake_regression_note",
+      "label": "2026-04-28 flake regression analysis",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": "docs/superpowers/notes/2026-04-28-flake-regression-analysis.md",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Documents why the earlier deflake fix did not hold: it was load-time-only (data-app-ready), per-test sleeps and force clicks were never removed, and later PRs copied the same patterns until cumulative flake exceeded CI tolerance."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_chromium_consolidation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_flake_regression_note",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_flake_regression_note",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_waitfortimeout_antipattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_flake_regression_note",
+      "target": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_force_click_antipattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_data_animation_state",
+      "target": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_waitforanimationidle",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_waitforanimationidle",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_state_based_wait_patterns",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_chromium_consolidation",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_mobile_project_matrix",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_force_click_antipattern",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_waitfortimeout_antipattern",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_waitforanimationidle",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_ci_aware_timing_defaults",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "e2e_flake_elimination_program",
+      "label": "The e2e flake-elimination program (anti-patterns, project shape, deterministic signals, verification gates)",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_waitfortimeout_antipattern",
+        "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_force_click_antipattern",
+        "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_ci_aware_timing_defaults",
+        "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_chromium_consolidation",
+        "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_data_animation_state",
+        "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_waitforanimationidle",
+        "docs_superpowers_plans_archive_2026_05_05_flake_triage_five_green_watch",
+        "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_flake_regression_note"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-e2e-flake-elimination.md"
+    }
+  ]
+}

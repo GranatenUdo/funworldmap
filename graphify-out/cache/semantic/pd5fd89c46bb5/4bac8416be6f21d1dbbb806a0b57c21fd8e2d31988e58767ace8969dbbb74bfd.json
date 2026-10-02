@@ -1,0 +1,548 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_screenshot",
+      "label": "Screenshot A1-02: Country Panel Idle (2026-05-13)",
+      "file_type": "image",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-05-13",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_scenario_a1_step_02",
+      "label": "Scenario A1 Step 02 \u2014 Panel Settled After Guess",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_animation_verification_report",
+      "label": "Animation Verification Report (2026-05-13)",
+      "file_type": "document",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-05-13",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "label": "Single Country Panel (France)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_animation_idle_state",
+      "label": "data-animation-state=\"idle\" (Animations Settled)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wait_for_animation_idle",
+      "label": "waitForAnimationIdle Test Helper",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_game_hud",
+      "label": "Game HUD Card (Lives, Score, Prompt, End Game)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wrong_guess_feedback",
+      "label": "Wrong-Guess Feedback Line (\"Wrong \u2014 that was Germany. +78 points. The answer was France. \u22121 life.\")",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_hearts_lives_indicator",
+      "label": "Hearts Lives Indicator (2 of 3 Remaining)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_score_display",
+      "label": "Score Display (78)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_end_game_control",
+      "label": "End Game Control",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_continue_button",
+      "label": "Continue Button (Advance to Next Round)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_facts_grid",
+      "label": "Country Facts Grid (Capital, Population, Area, Region, Government, UN Member, Independent, Languages, Currencies, Timezones)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_field_attribution_info_icons",
+      "label": "Per-Field Info Icons (Field-Level Source Attribution)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_borders_chips",
+      "label": "Bordering-Country Flag Chips (Andorra, Belgium, Germany, Italy, Luxembourg, Monaco)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_france_country_record",
+      "label": "France Country Record (French Republic, Paris, Europe / Western Europe)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_globe_view",
+      "label": "3D Globe View with Satellite Basemap",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_answer_marker",
+      "label": "Orange Answer Marker over France",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_basemap_attribution",
+      "label": "Basemap Attribution (AWS Terrain Tiles, Sentinel-2 Cloudless by EOX)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_header_view_toggle",
+      "label": "Header Brand and Globe/Panel View Toggle",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_pointer_only_game_flow",
+      "label": "Pointer-Only Guess Flow (Click Country on Globe)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_game_hud",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_globe_view",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_header_view_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_scenario_a1_step_02",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_scenario_a1_step_02",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_animation_verification_report",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_animation_idle_state",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_animation_idle_state",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wait_for_animation_idle",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_animation_idle_state",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_animation_verification_report",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wait_for_animation_idle",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_france_country_record",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_facts_grid",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_borders_chips",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_continue_button",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_facts_grid",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_field_attribution_info_icons",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_borders_chips",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_france_country_record",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_hearts_lives_indicator",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_score_display",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wrong_guess_feedback",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_end_game_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wrong_guess_feedback",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_hearts_lives_indicator",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wrong_guess_feedback",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_score_display",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wrong_guess_feedback",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_france_country_record",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_globe_view",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_answer_marker",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_globe_view",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_basemap_attribution",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_answer_marker",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_france_country_record",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_globe_view",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_pointer_only_game_flow",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_scenario_a1_step_02",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_wrong_guess_feedback",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_game_hud",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_header_view_toggle",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_country_panel",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_continue_button",
+      "target": "docs_testing_screenshots_2026_05_13_a1_02_panel_idle_pointer_only_game_flow",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-02-panel-idle.png",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

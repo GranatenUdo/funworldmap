@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_06_12_review_followups_design_spec",
+      "label": "Review follow-ups design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Scope rule: unconditioned work only. Items whose deferral conditions still hold (search match highlighting needs a UI design, messages.ts routing needs i18n to start, the preamble-prefix helper needs a fourth duplication site) stay out."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_12_review_followups_design_baseline_paint_reconciler",
+      "label": "useCountryBaselinePaint single-owner reconciler",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Decision 3 / Phase 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One hook becomes the single owner of country-fill opacity and country-borders paint across {satellite, inCompareView, resolvedTheme}, eliminating the documented 'must run AFTER' call-order dependency. useCompareViewDimming narrows to highlight colours + hover suppression and is renamed useCompareViewHighlight. Matrix unit tests pin every cell before the hooks are rewired."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_12_review_followups_design_style_latch_clear_on_load",
+      "label": "Clear the latched 'style' error on map load",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Decision 2 / Phase 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "MapLibre's load event proves the style loaded, so a pre-load latched 'style' error is cleared there. timeout, webgl-lost and country-data latches are unaffected and post-load tile hiccups keep routing to BasemapBanner. Verified TDD at the suite level: the new 'clean load leaves no [data-map-error]' assertion fails before the fix in the stubbed environment."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_12_review_followups_design_shared_test_utilities",
+      "label": "Shared unit-test utilities in src/test/",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Phase 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dedupes a CountryData factory duplicated 5x, a matchMedia stub 6x, and a fake-map wrapper 2x across 13 sites. Ordered before the unit-test-gap phase so the new gap tests consume the shared utilities."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_12_review_followups_design_eslint_plugin_playwright",
+      "label": "eslint-plugin-playwright on the e2e lint block",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Phase 8",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Mechanizes the CLAUDE.md waitForTimeout and force-click bans. Type-checked ESLint for e2e is declined on latency grounds \u2014 the plugin's syntactic rules cover the high-value gap. Expected fallout: no-standalone-expect flags helpers.ts's exported expect.poll helpers, which is configured around rather than restructured. Abort criterion: >20 non-trivial errors means exclude and report."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_06_12_review_followups_design_e2e_helper_consolidation",
+      "label": "waitForMapLoaded + parameterised routeMapTiles",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Phase 7",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Absorbs label-contrast's ~70-line copied tile interceptor into a shared helper, so map-load waiting and tile stubbing have one implementation instead of per-spec copies."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_spec",
+      "target": "docs_superpowers_specs_2026_06_11_repo_cleanup_and_fixes_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Context \u2014 the 2026-06 cleanup (PRs #103-#110, #112)",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_spec",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_baseline_paint_reconciler",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Decision 3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_spec",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_style_latch_clear_on_load",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Decision 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_spec",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_shared_test_utilities",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Phase 5",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_spec",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_eslint_plugin_playwright",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Phase 8",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_spec",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_e2e_helper_consolidation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "Phase 7",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_eslint_plugin_playwright",
+      "target": "docs_superpowers_specs_2026_05_05_flake_triage_design_phased_fix_and_monitor",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_06_12_review_followups_design_e2e_helper_consolidation",
+      "target": "docs_superpowers_specs_2026_05_05_flake_triage_design_routemaptilesrich_hypothesis",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-06-12-review-followups-design.md",
+      "source_location": "absorbs label-contrast's ~70-line interceptor copy",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

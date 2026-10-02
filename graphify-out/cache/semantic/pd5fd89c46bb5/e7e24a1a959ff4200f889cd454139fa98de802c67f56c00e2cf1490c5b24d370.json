@@ -1,0 +1,156 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_plan",
+      "label": "Verify Animations + Share Button Plan (revised 2026-05-13)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_share_branch_coverage",
+      "label": "Share-button branch e2e coverage",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Unit tests covered the navigator.share, clipboard and error branches but could not prove the toast actually rendered end to end; the e2e specs drive the branches through the existing window.__PLAYWRIGHT__ analytics seam rather than stubbing fetch."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_animation_interrupt_coverage",
+      "label": "Animation interrupt coverage (4 cases)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Rapid Continue, Escape mid-reveal, Escape mid-panel-slide-in and hash mutation mid-animation had no coverage. The tests key on data-animation-state=\"entering\" instead of wall-clock timing, so they assert the interrupt happens genuinely mid-animation without sleeping."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_mcp_visual_verification",
+      "label": "Playwright MCP state-signaled visual verification",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Visual polish cannot be asserted by a test, so screenshots are captured at state-signaled frames and reconciled against the documented unhappy-path scenarios, with a scope guardrail limiting in-line fixes to trivial deviations."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_coverage_gap_rating",
+      "label": "Coverage gaps that held ratings below 9",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The plan is scoped precisely to the two gaps the 2026-05-11 assessment named, rather than a general coverage push \u2014 the assessment's rating is the acceptance criterion."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_share_branch_coverage",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_animation_interrupt_coverage",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_coverage_gap_rating",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_share_branch_coverage",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_share_branch_coverage",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_animation_interrupt_coverage",
+      "target": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_data_animation_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_animation_interrupt_coverage",
+      "target": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_reveal_camera_follow",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_mcp_visual_verification",
+      "target": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_animation_interrupt_coverage",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_13_verify_animations_and_share_mcp_visual_verification",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_source_review_on_plans",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-13-verify-animations-and-share.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

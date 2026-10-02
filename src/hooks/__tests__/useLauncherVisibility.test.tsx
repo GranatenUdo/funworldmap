@@ -37,10 +37,10 @@ describe('useLauncherVisibility', () => {
     window.history.replaceState(null, '', '/')
   })
 
-  it('returns visible=false initially (map-first)', () => {
+  it('opens the chooser on a fresh root visit', () => {
     const api = makeApi(makeSession())
     const { result } = renderHook(() => useLauncherVisibility(), { wrapper: wrapper(api) })
-    expect(result.current.visible).toBe(false)
+    expect(result.current.visible).toBe(true)
   })
 
   it('show() makes visible=true when session is idle', () => {
@@ -76,7 +76,7 @@ describe('useLauncherVisibility', () => {
     expect(result.current.visible).toBe(false)
   })
 
-  it('game-end transition (playing → idle) resets intent to default (not open)', () => {
+  it('game-end does not reopen a dismissed chooser', () => {
     // Mutable holder the wrapper reads from each render. `rerender()` re-invokes
     // the wrapper, which re-reads this ref and provides a fresh context value —
     // triggering the hook's session.status effect.
@@ -96,6 +96,7 @@ describe('useLauncherVisibility', () => {
     act(() => result.current.show())
     expect(result.current.visible).toBe(false)
 
+    act(() => result.current.dismiss())
     // Game ends: swap to idle api, rerender so the wrapper picks up new value.
     act(() => {
       currentApi = makeApi(makeSession({ status: 'idle' }))

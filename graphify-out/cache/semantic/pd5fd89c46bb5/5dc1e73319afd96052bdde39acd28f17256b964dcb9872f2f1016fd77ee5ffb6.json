@@ -1,0 +1,538 @@
+{
+  "nodes": [
+    {
+      "id": "design_observatory",
+      "label": "The Observatory (creative north star)",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Overview",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_ice_accent",
+      "label": "Ice accent (#7dd3fc) \u2014 interactive/wayfinding",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Primary",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_signal_accent",
+      "label": "Signal accent (#ff8a4c) \u2014 live game state and loss",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Secondary",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_sand_ramp",
+      "label": "Sand ramp (#fefdfb \u2192 #1e1b18) light instrument housing",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Neutral",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_dark_ramp",
+      "label": "Dark ramp (#f1f5f9 \u2192 #121518) dark instrument housing",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Neutral",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_spotlight_scrim",
+      "label": "Spotlight Dim scrim (#020617) \u2014 emphasis by subtraction",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Neutral / Elevation",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_two_accent_rule",
+      "label": "The Two-Accent Rule",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_accessible_pair_rule",
+      "label": "The Accessible-Pair Rule",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_retirement_rule",
+      "label": "The Retirement Rule (teal + coral pinned absent)",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_data_encodings",
+      "label": "Data encodings outside the accent system",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Data encodings",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_colorless_role_rule",
+      "label": "The Colorless-Role Rule",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Typography > Named Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_tabular_rule",
+      "label": "The Tabular Rule",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Typography > Named Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_frosted_card_rule",
+      "label": "The Frosted Card Rule",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Elevation & Depth > Named Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_space_dark_rule",
+      "label": "The Space-Dark Rule",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Elevation & Depth > Named Rules",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_outfit_typeface",
+      "label": "Outfit display/body typeface",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Typography",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_readout_voice",
+      "label": "Readout voice (system mono + tabular-nums)",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Typography",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_micro_glyph_floor",
+      "label": "Micro-glyph floor (10px)",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Typography > Hierarchy",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_camera_absorbs_occlusion",
+      "label": "Camera absorbs occlusion (map-first, zero page scroll)",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Layout",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_touch_target_floor",
+      "label": "44px touch floor via invisible ::after hit-area insets",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Layout / Do's and Don'ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_calibrated_unobtrusive",
+      "label": "Calibrated & unobtrusive component philosophy",
+      "file_type": "rationale",
+      "source_file": "DESIGN.md",
+      "source_location": "Components",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_compare_pair_encoding",
+      "label": "Signature: the compare pair encoding (A signal / B ice)",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Components > Signature",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_data_cell_voice",
+      "label": "Signature: the data cell voice (instrument dial unit)",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Components > Signature",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_house_motion_grammar",
+      "label": "House motion grammar (100\u2013300ms ease-out, 6\u201312px rise, staggers)",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Do's and Don'ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "design_token_pin_tests",
+      "label": "Token/layout pin tests as the system's alarm",
+      "file_type": "concept",
+      "source_file": "DESIGN.md",
+      "source_location": "Do's and Don'ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "design_two_accent_rule",
+      "target": "design_ice_accent",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "weight": 1.0
+    },
+    {
+      "source": "design_two_accent_rule",
+      "target": "design_signal_accent",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "weight": 1.0
+    },
+    {
+      "source": "design_two_accent_rule",
+      "target": "design_data_encodings",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Data encodings",
+      "weight": 1.0
+    },
+    {
+      "source": "design_accessible_pair_rule",
+      "target": "design_sand_ramp",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "weight": 1.0
+    },
+    {
+      "source": "design_accessible_pair_rule",
+      "target": "design_ice_accent",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "weight": 1.0
+    },
+    {
+      "source": "design_retirement_rule",
+      "target": "design_token_pin_tests",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Named Rules",
+      "weight": 1.0
+    },
+    {
+      "source": "design_colorless_role_rule",
+      "target": "design_accessible_pair_rule",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Typography > Named Rules",
+      "weight": 1.0
+    },
+    {
+      "source": "design_tabular_rule",
+      "target": "design_readout_voice",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Typography > Named Rules",
+      "weight": 1.0
+    },
+    {
+      "source": "design_data_cell_voice",
+      "target": "design_readout_voice",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Components > Signature",
+      "weight": 1.0
+    },
+    {
+      "source": "design_data_cell_voice",
+      "target": "design_ice_accent",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Components > Signature",
+      "weight": 1.0
+    },
+    {
+      "source": "design_compare_pair_encoding",
+      "target": "design_accessible_pair_rule",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Components > Signature",
+      "weight": 1.0
+    },
+    {
+      "source": "design_observatory",
+      "target": "design_frosted_card_rule",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Overview / Elevation",
+      "weight": 1.0
+    },
+    {
+      "source": "design_observatory",
+      "target": "design_space_dark_rule",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Overview / Elevation",
+      "weight": 1.0
+    },
+    {
+      "source": "design_observatory",
+      "target": "design_calibrated_unobtrusive",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Components",
+      "weight": 1.0
+    },
+    {
+      "source": "design_observatory",
+      "target": "design_readout_voice",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Typography > Character",
+      "weight": 1.0
+    },
+    {
+      "source": "design_spotlight_scrim",
+      "target": "design_observatory",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Elevation & Depth",
+      "weight": 1.0
+    },
+    {
+      "source": "design_camera_absorbs_occlusion",
+      "target": "design_token_pin_tests",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Layout",
+      "weight": 1.0
+    },
+    {
+      "source": "design_house_motion_grammar",
+      "target": "claude_data_animation_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Do's and Don'ts",
+      "weight": 1.0
+    },
+    {
+      "source": "design_touch_target_floor",
+      "target": "product_wcag_aa_commitment",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "DESIGN.md",
+      "source_location": "Layout / Do's and Don'ts",
+      "weight": 1.0
+    },
+    {
+      "source": "design_micro_glyph_floor",
+      "target": "product_wcag_aa_commitment",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "DESIGN.md",
+      "source_location": "Typography > Hierarchy",
+      "weight": 1.0
+    },
+    {
+      "source": "design_outfit_typeface",
+      "target": "index_outfit_font_preload",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "DESIGN.md",
+      "source_location": "Typography",
+      "weight": 1.0
+    },
+    {
+      "source": "design_calibrated_unobtrusive",
+      "target": "design_frosted_card_rule",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md",
+      "source_location": "Components",
+      "weight": 1.0
+    },
+    {
+      "source": "design_house_motion_grammar",
+      "target": "docs_testing_animation_verification_2026_05_13_reduced_motion_fix",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "DESIGN.md",
+      "source_location": "Do's and Don'ts",
+      "weight": 1.0
+    },
+    {
+      "source": "design_signal_accent",
+      "target": "product_country_pinning",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Secondary",
+      "weight": 1.0
+    },
+    {
+      "source": "design_data_encodings",
+      "target": "docs_testing_animation_verification_2026_05_13_reveal_dashed_line",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "DESIGN.md",
+      "source_location": "Colors > Data encodings (Reveal Correct)",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "design_two_accent_color_system",
+      "label": "The two-accent color system and its guardrails",
+      "nodes": [
+        "design_ice_accent",
+        "design_signal_accent",
+        "design_two_accent_rule",
+        "design_accessible_pair_rule",
+        "design_retirement_rule",
+        "design_data_encodings"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "DESIGN.md"
+    }
+  ]
+}

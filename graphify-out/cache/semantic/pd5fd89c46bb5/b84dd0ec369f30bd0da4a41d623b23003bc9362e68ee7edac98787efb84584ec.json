@@ -1,0 +1,115 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+      "label": "Daily-city per-click feedback + reveal-overlay swap (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: designed a daily-puzzle feature removed in PR #97. Kept for history."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_per_click_hud_text",
+      "label": "Per-click HUD reveal line during play",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "Item 1, CityGuessingHud",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Attempts 1 and 2 of best-of-3 felt unregistered: a 10px marker held 600ms and a +pts toast gated on pointsEarned > 0 (which fails for far clicks scoring 0). Loosening the revealLine gate to include playing + best-of-N reads the latest attempt; the branches are mutually exclusive via the leading status check, so nothing double-renders."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_persistent_marker",
+      "label": "Persistent city intermediate click marker",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "Item 2, useRevealMapEffects",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Split the one intermediate-flash effect in two with distinct invariants. Country keeps its anchor ref (re-flashing an already-seen highlight on resume is noise); city deliberately has NO anchor because the marker is the current state of 'where you last clicked' \u2014 re-painting on resume restores it. Replace-only, never accumulate."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_overlay_swap",
+      "label": "Daily-city game-over renders DailyRevealOverlay",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "Item 3, GameController",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "A numeric GameOverOverlay with no city-name reveal read as 'ends abruptly'. Branch only on daily + city; daily-country and free play are byte-identical. Dual Escape handlers are kept deliberately \u2014 both are idempotent, and narrowing would regress Escape-to-close for the overlays that have no Esc handler of their own."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_per_click_hud_text",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "Item 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_persistent_marker",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "Item 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_overlay_swap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "Item 3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_overlay_swap",
+      "target": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_reveal_overlay_cta",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "onPlayUnlimitedFree mirrors App.tsx reveal-route handler",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_overlay_swap",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_dailydate_field",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "session.dailyDate !== null branch",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md",
+      "source_location": "Tombstone 2026-06-12",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test'
+const port = Number(process.env.E2E_PORT ?? 5173)
 const isCi = !!process.env.CI
 
 export default defineConfig({
@@ -12,12 +13,19 @@ export default defineConfig({
   timeout: 60_000,
   expect: { timeout: isCi ? 10_000 : 5_000 },
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: `http://localhost:${port}`,
     trace: 'on-first-retry',
     permissions: ['clipboard-read', 'clipboard-write'],
     actionTimeout: isCi ? 15_000 : 5_000,
   },
   projects: [
+    // Local screenshot evidence uses real tiles and a hardware renderer.
+    // CI selects the chromium interaction project and does not run captures.
+    {
+      name: 'visual-evidence',
+      testMatch: ['redesign-visual.spec.ts'],
+      use: { ...devices['Desktop Chrome'], channel: 'chromium', launchOptions: {args:['--use-gl=angle','--use-angle=default']} },
+    },
     {
       name: 'chromium',
       // ANGLE renderer — real GPU locally; software fallback on GitHub-hosted CI (see the 2026-05-05 note below). Software ANGLE was dropped 2026-05-02
@@ -55,6 +63,7 @@ export default defineConfig({
       },
       // Combined testMatch: every spec previously in chromium + chromium-gpu.
       testMatch: [
+        'redesign.spec.ts',
         // formerly chromium-gpu (real-GPU-needing):
         'animation-interrupt.spec.ts',
         'webgl-context-loss.spec.ts',
@@ -124,6 +133,7 @@ export default defineConfig({
         },
       },
       testMatch: [
+        'redesign.spec.ts',
         'mobile-smoke.spec.ts',
         'mobile-tap.spec.ts',
         'mobile-free-play.spec.ts',
@@ -140,6 +150,7 @@ export default defineConfig({
         permissions: [],
       },
       testMatch: [
+        'redesign.spec.ts',
         'mobile-smoke.spec.ts',
         'mobile-tap.spec.ts',
         // Phase 5.5 — canonical DOM specs added to surface WebKit CSS/DOM regressions.
@@ -167,6 +178,7 @@ export default defineConfig({
         permissions: [],
       },
       testMatch: [
+        'redesign.spec.ts',
         'mobile-smoke.spec.ts',
         'mobile-tap.spec.ts',
         // Phase 5.5 — canonical DOM specs added to surface Firefox CSS/DOM regressions.
@@ -180,8 +192,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build:e2e && npm run preview -- --port 5173 --strictPort',
-    url: 'http://localhost:5173',
+    command: `npm run build:e2e && npm run preview -- --port ${port} --strictPort`,
+    url: `http://localhost:${port}`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },

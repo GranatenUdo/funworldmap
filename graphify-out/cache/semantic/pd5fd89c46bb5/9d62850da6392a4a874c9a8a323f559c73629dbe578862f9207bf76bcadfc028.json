@@ -1,0 +1,151 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_tier_1_continuation_plan",
+      "label": "Tier-1 Continuation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "line 1",
+      "rationale": "Four independent subsystems (a11y, asset/perf, CI infra, architecture brainstorming) kept as one plan because each is too small to justify its own; phase order is recommended but not load-bearing except Phase 3 which must follow Phase 2.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_panel_open_focus_management",
+      "label": "Panel-open focus management (a11y)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 1",
+      "rationale": "docs/systems/accessibility.md:91 promised focus moves to the panel heading when the country panel opens, but SingleCountryPanel had a panelRootRef with no .focus() call \u2014 a real WCAG 2.4.3 bug leaving screen-reader users with no announcement. Fix: tabIndex={-1} + headingRef focused inside a requestAnimationFrame so the DOM commits before focus moves.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_countries_50m_chunk_swap",
+      "label": "countries-10m to countries-50m chunk swap",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 2",
+      "rationale": "The async countries chunk had drifted to 954 KB gzip; world-atlas countries-50m.json is ~4.8x smaller than 10m. The visual-fidelity tradeoff (missing small island states rendered as synthetic 1deg squares) was accepted per 2026-05-14 user decision because the polygons are still clickable, which is what gameplay needs. Abort rule: if more than 5 canonical IDs are missing, the patching effort is not worth it and 10m stays.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_missing_countries_patch",
+      "label": "missingCountriesPatch synthetic geometry",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Task 2.2",
+      "rationale": "Synthesizes a tiny square polygon around each missing entity's centroid. Geographic accuracy is irrelevant \u2014 the polygon only needs to be clickable so queryRenderedFeatures returns the feature ID, keeping every canonical-195 country present without ballooning the bundle back to 10m.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_bundle_budget_ci_gate",
+      "label": "Bundle-size budget CI gate",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 3",
+      "rationale": "The 2026-05-11 audit found the real bundle was 2x the documented budget (710 KB documented vs 1,461 KB measured). Budgets set to measured+10%: the headroom prevents trivial-cause flake (a new icon adding 200 bytes) while still catching real regressions. Raising a budget requires measurement evidence in the commit message. Must be sequenced after the 50m swap because the numbers derive from post-swap sizes.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_playwright_matrix_refresh",
+      "label": "playwright-matrix.md refresh",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 0",
+      "rationale": "The matrix was two doc-revisions stale: it still showed the chromium/chromium-gpu split consolidated on 2026-05-02 when Software ANGLE was dropped, omitted four newer specs, and documented neither the 13-spec CI testIgnore list nor the 5 test.fixme quarantines (#31, #32, #47).",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_gamecontroller_extraction_brainstorm",
+      "label": "GameController extraction brainstorm (Phase 4 deliverable)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 4",
+      "rationale": "Deliberately produces a plan, not code: GameController.tsx is 833 lines with 9 ref-mirrors and comments referencing bug #32 (closure-staleness, two-render race), flagged by the 2026-05-11 audit as the largest single architectural risk and the most likely site of the next regression.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_gamecontroller_extraction_brainstorm",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 4 Task 4.1 Step 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_tier_1_continuation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_panel_open_focus_management",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_tier_1_continuation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_countries_50m_chunk_swap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_countries_50m_chunk_swap",
+      "target": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_missing_countries_patch",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Task 2.2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_bundle_budget_ci_gate",
+      "target": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_countries_50m_chunk_swap",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 3 Step 1 \u2014 depends on Phase 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_tier_1_continuation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_playwright_matrix_refresh",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-tier-1-continuation.md",
+      "source_location": "Phase 0",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

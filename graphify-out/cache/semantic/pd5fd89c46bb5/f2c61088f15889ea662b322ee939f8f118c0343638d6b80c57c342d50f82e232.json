@@ -1,0 +1,277 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_plan",
+      "label": "Workstream B-core \u2014 Political Map Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_countrylabelfeatures",
+      "label": "countryLabelFeatures.ts pure label builder (areaRank, [lng,lat] swap)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_country_labels_layer",
+      "label": "country-labels symbol layer + explicit visibility ownership (B1)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_cased_borders",
+      "label": "B2 \u2014 cased country borders on satellite (gameActive branch retired)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_spotlight_dim_layer",
+      "label": "B4 \u2014 country-dim spotlight scrim layer (selection as spotlight)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_reveal_fill_pulse",
+      "label": "B5 \u2014 country-reveal-fill pulse waveform (revealFillOpacityAt)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 6",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_compare_camera_padding",
+      "label": "B6 \u2014 compare camera via asymmetric cameraForBounds padding",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 7",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_map_paint_single_owner",
+      "label": "Map paint/visibility single-owner rule (mapLayers.ts owners + LAYER registry)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "## Global Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_seam_based_map_contract",
+      "label": "Seam-based e2e contract for invisible map animations",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 3 / Global Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_2026_07_28_workstream_b_core_verification_sweep",
+      "label": "Task 9 \u2014 B-core verification sweep (CI-covered vs local-only e2e split)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 9",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_plan",
+      "target": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_note",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "Spike input",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_plan",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_ux_visual_program_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "**Spec:**",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_country_labels_layer",
+      "target": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_label_visibility_rule",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_country_labels_layer",
+      "target": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_noto_sans_bold_glyphs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "## Global Constraints \u2014 Glyphs",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_country_labels_layer",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_b_core_countrylabelfeatures",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_countrylabelfeatures",
+      "target": "docs_superpowers_notes_2026_05_03_dropped_country_test_audit_canonical_195_filter",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "CANONICAL_CCA3 \u2014 the single 195-country filter",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_countrylabelfeatures",
+      "target": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_collision_untested_at_scale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "### Task 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_map_paint_single_owner",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_b_core_spotlight_dim_layer",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "## Global Constraints",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_map_paint_single_owner",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_b_core_cased_borders",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "## Global Constraints",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_seam_based_map_contract",
+      "target": "docs_superpowers_plans_2026_07_28_workstream_b_core_reveal_fill_pulse",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "## Global Constraints",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_seam_based_map_contract",
+      "target": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_test_seam_assertions",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_plan",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_touch_target_constants",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "## Global Constraints \u2014 Touch targets reuse the shipped TOUCH_TARGET_*",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_plan",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_light_theme_aa_parity",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "light-theme chrome aligns with A3's shipped .dark-scoped CSS",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_spotlight_dim_layer",
+      "target": "docs_superpowers_plans_2026_07_28_e_foundations_map_palette_constants",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "SPOTLIGHT_DIM in src/lib/mapPalette.ts",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_verification_sweep",
+      "target": "docs_superpowers_notes_2026_05_05_flake_watch_option_d_lite_testignore",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": "Step 4 \u2014 excluded on CI via the chromium testIgnore (issue #106)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_2026_07_28_workstream_b_core_cased_borders",
+      "target": "docs_superpowers_notes_2026_05_05_post_audit_verification_label_contrast_measurement",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/2026-07-28-workstream-b-core.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

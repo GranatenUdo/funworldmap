@@ -1,0 +1,193 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_reveal_animation_and_mobile_tap",
+      "label": "Animated Reveal, Mobile Tap Reliability, and Playwright Coverage",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A revision pass corrected an earlier misdiagnosis of the mobile-tap bug as a dual-handler collision, dropped mobile-firefox from the matrix (Firefox hard-rejects isMobile), and dropped great-circle helper language as a globe-projection fidelity concern only."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_animated_reveal",
+      "label": "Animated Distance-Line Reveal",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Players previously had no way to see how far off a wrong guess was. Correct guesses keep the border-pulse with no line; the dashed pattern survives because the paint expression is never mutated, only the source data."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_slerplnglat",
+      "label": "slerpLngLat",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "~12 lines of spherical slerp reusing the file's existing haversine for angular distance, with a near-zero-distance degenerate guard."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_tessellatearc",
+      "label": "tessellateArc",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "MapLibre renders a 2-vertex LineString as a Mercator-straight path, which warps visibly on the globe at long distances; a 64-vertex polyline follows the geodesic closely enough and costs only ~60 cheap trig calls, so it is applied unconditionally."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_computerevealanimationplan",
+      "label": "computeRevealAnimationPlan",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Pure function extracted for unit testing; returns null on a missing centroid or skipped round so the caller falls back to the border pulse rather than throwing, and reduced-motion short-circuits duration to zero."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_clicktolerance_fix",
+      "label": "clickTolerance: 8 Mobile Tap Fix",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "MapEventHandler.click silently drops a click when the mousedown-to-click delta exceeds the 3px default; a finger rolls 5-10px on a phone and Firefox-Android's touch synthesis preserves that delta, which is why the bug was Firefox-only. dragPan uses a separate higher threshold so drag detection is unaffected. Not empirically reproduced pre-ship, so a real-device checklist gates the merge."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_queryrenderedfeatures_bbox",
+      "label": "queryRenderedFeatures 4px Bbox",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Mapbox-recommended hit-testing pattern; helps taps on coastline-adjacent tiny islands without changing behaviour for large polygons, applied uniformly rather than scoped to mobile."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_playwright_mobile_projects",
+      "label": "Playwright Mobile Project Matrix",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "mobile-chromium, mobile-webkit, and desktop-firefox-touch. The Firefox project cannot spread the Pixel 7 descriptor because isMobile is hard-rejected by Firefox. A one-test GPU spike verifies each project's WebGL init before the full specs are written, and CI cannot run Firefox-Android at all \u2014 real-device reproduction stays a manual-QA step."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_animated_reveal",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_reveal_geometry_sources",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_animated_reveal",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_computerevealanimationplan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_tessellatearc",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_slerplnglat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_animated_reveal",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_tessellatearc",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_tessellatearc",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_globe_projection",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_queryrenderedfeatures_bbox",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_clicktolerance_fix",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_playwright_mobile_projects",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_clicktolerance_fix",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_computerevealanimationplan",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hybrid_distance_scoring",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_playwright_mobile_projects",
+      "target": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_disjoint_project_testmatch",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-24-reveal-animation-and-mobile-tap-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

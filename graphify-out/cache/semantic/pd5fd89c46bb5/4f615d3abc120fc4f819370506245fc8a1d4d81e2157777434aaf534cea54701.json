@@ -1,0 +1,91 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_note",
+      "label": "Phase 5.5 \u2014 Cross-browser testMatch expansion findings",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_mobile_webkit_project",
+      "label": "mobile-webkit Playwright project testMatch",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": "## Final testMatch",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_desktop_firefox_touch_project",
+      "label": "desktop-firefox-touch Playwright project testMatch",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": "## Final testMatch",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_viewport_mismatch",
+      "label": "panel-and-deeplink desktop-assumption viewport mismatch",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": "### panel-and-deeplink.spec.ts failures",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_note",
+      "target": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_mobile_webkit_project",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_note",
+      "target": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_desktop_firefox_touch_project",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_viewport_mismatch",
+      "target": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_mobile_webkit_project",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": "## Triage decisions",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_viewport_mismatch",
+      "target": "docs_superpowers_notes_2026_05_04_phase_5_5_cross_browser_testmatch_desktop_firefox_touch_project",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-phase-5.5-cross-browser-testmatch.md",
+      "source_location": "## Triage decisions",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

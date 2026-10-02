@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_19_daily_city_feedback_daily_city_feedback_plan",
+      "label": "Daily-city per-click feedback + reveal-overlay swap Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-19-daily-city-feedback.md",
+      "source_location": "line 3",
+      "rationale": "Daily-city attempts did not feel registered. Three independent revertable commits add per-click distance/points text and a persistent marker, then swap the daily-city game-over to DailyRevealOverlay. Tombstoned 2026-06-12 (daily removed in PR #97).",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_19_daily_city_feedback_persistent_city_marker",
+      "label": "Persistent city click marker",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-19-daily-city-feedback.md",
+      "source_location": "Task 2",
+      "rationale": "The intermediate-flash effect in useRevealMapEffects is narrowed to country-only and a separate city-only effect persists the marker until the next click or round-end, because a flash that disappears reads as 'the click did not register'. circle-color is reset in the round-end geometry effect so the persisted marker cannot leak its colour into the next round.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_19_daily_city_feedback_dailyrevealoverlay_swap",
+      "label": "Daily-city game-over renders DailyRevealOverlay",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-19-daily-city-feedback.md",
+      "source_location": "Task 5",
+      "rationale": "GameController branches its game-over render so daily-city gets DailyRevealOverlay while everything else keeps GameOverOverlay; daily-country deliberately stays on GameOverOverlay. The Esc handler is left unchanged on purpose.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_19_daily_city_feedback_daily_city_feedback_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_remove_daily_remove_daily_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-19-daily-city-feedback.md",
+      "source_location": "line 1 \u2014 Tombstone: removed in PR #97",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_19_daily_city_feedback_persistent_city_marker",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-19-daily-city-feedback.md",
+      "source_location": "Task 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_19_daily_city_feedback_dailyrevealoverlay_swap",
+      "target": "docs_superpowers_plans_archive_2026_05_18_daily_already_played_ux_play_unlimited_cta",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-05-19-daily-city-feedback.md",
+      "source_location": "Task 5 \u2014 both operate on DailyRevealOverlay",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

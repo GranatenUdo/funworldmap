@@ -1,0 +1,641 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_ui_layout",
+      "label": "UI Layout System",
+      "file_type": "document",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Design philosophy: the map is the primary interface and everything else floats on top of it. Nothing competes with the map for space; everything yields to it."
+    },
+    {
+      "id": "docs_systems_ui_layout_responsive_strategy",
+      "label": "Mobile-first responsive strategy (1024px breakpoint)",
+      "file_type": "rationale",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Layouts are built for small screens and progressively enhanced; the single breakpoint is 1024px (Tailwind lg:), which also switches the country panel between bottom sheet and sidebar."
+    },
+    {
+      "id": "docs_systems_ui_layout_bottom_sheet",
+      "label": "Bottom sheet (mobile panel presentation)",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Two states, peek 40vh and full 80vh, toggled by a keyboard- and pointer-accessible chevron. It overlays rather than displaces the map, so tapping the visible map above it still selects or deselects normally."
+    },
+    {
+      "id": "docs_systems_ui_layout_sidebar",
+      "label": "Sidebar (desktop panel presentation)",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Slides in from the right over a full-width map with a drop shadow, fixed width, full viewport height, scrollable for countries with extensive metadata."
+    },
+    {
+      "id": "docs_systems_ui_layout_country_panel",
+      "label": "Country panel (one component, two presentations)",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The same component renders as sidebar or bottom sheet, chosen by useMediaQuery; crossing the 1024px breakpoint while open transitions the presentation without closing the panel or changing the content. Primary fields (flag, names, capital caption, region badge, exception badges, prime grid) stay visible in peek; currencies, timezones, and border chips appear when expanded."
+    },
+    {
+      "id": "docs_systems_ui_layout_header",
+      "label": "Header (floating pills)",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A fixed, transparent, pointer-events: none container holds individually blurred pills with pointer-events: auto, so map interactions pass through the header's empty areas. Contains wordmark (desktop), search bar, Play button, satellite/map toggle (aria-pressed), theme toggle. During a game the search bar and Play button hide; while the launcher is open the header unmounts entirely."
+    },
+    {
+      "id": "docs_systems_ui_layout_map_controls",
+      "label": "Map controls and reset view",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "MapLibre NavigationControl plus a custom reticle 'Reset view' button that returns the camera to lon 0 / lat 20 / zoom 1.8 / pitch 20\u00b0 / bearing 0 without touching selection \u2014 the open panel and URL hash are preserved (Home key does the same). On coarse pointers every control grows to TOUCH_TARGET_MIN_PX (44px) via @media (pointer: coarse) on vendor DOM \u2014 real enlargement rather than an ::after hit extension \u2014 while fine-pointer desktops keep MapLibre's stock 29px."
+    },
+    {
+      "id": "docs_systems_ui_layout_source_attribution",
+      "label": "Per-field 'i' source attribution in the panel",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Desktop hover or focus shows the source name and link; touch devices toggle the tooltip on tap since hover is unavailable, dismissing on an outside tap."
+    },
+    {
+      "id": "docs_systems_ui_layout_compare",
+      "label": "Compare view",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Entered from an open panel's Compare pill (enterComparePicking in App.tsx, available only while a country is selected), which puts search into pick-to-compare mode; a one-time hint appears after the session's second distinct country selection. On the map A is highlighted signal and B ice-mid while every other country is dimmed by country-dim; exiting via Escape or the exit control clears B and restores borders. Desktop chromium only \u2014 the mobile Playwright projects contain no compare flow."
+    },
+    {
+      "id": "docs_systems_ui_layout_compare_fields",
+      "label": "COMPARE_FIELDS shared field definition",
+      "file_type": "rationale",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One array drives the whole view so rows always align and no field is silently dropped. Numeric fields render as paired bars scaled to max(A,B) with a delta chip whose subject is always the larger country; categorical fields collapse identical values into a centered 'Both: \u2026' row and show an em dash for missing values. Bars are static, so reduced-motion needs no gating. Capitals live in header captions and UN-membership/independence render as exception badges, never as rows."
+    },
+    {
+      "id": "docs_systems_ui_layout_compare_border_chips",
+      "label": "Compare border-chip column semantics",
+      "file_type": "rationale",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Per-column CountryBorders route through one onCompareColumnSelect(column, cca3): a chip in column A replaces A and keeps B (compareReplaceA), a chip in column B replaces B and keeps A (compareSelect), and a chip naming the other column's country is a no-op (compareChipClick in src/lib/compareMapClick.ts). Mobile repeats the same replace-that-country semantics inside one scroll container under a compact sticky header."
+    },
+    {
+      "id": "docs_systems_ui_layout_flytocomparepair",
+      "label": "flyToComparePair camera framing",
+      "file_type": "rationale",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "cameraForBounds + comparePanelPadding() frame both countries in the un-occluded area \u2014 desktop reserves the panel as right padding, mobile reserves the sheet as bottom padding (innerHeight \u00d7 COMPARE_SHEET_FRACTION, which is why the sheet is dvh not vh). Mobile renders at pitch 0 because cameraForBounds' globe fit ignores pitch and a tilted render of a pitch-0 fit hid the pair under the sheet (fixed 2026-07-29). Known unfixed gap: wide pairs under the 110\u00b0 threshold (e.g. Brazil+Nigeria) still fall below the sheet at 390px because cameraForBounds produces a degenerate center latitude under this bottom-padding ratio and does not respond linearly to padding \u2014 needs a dedicated fix, not a numeric tweak."
+    },
+    {
+      "id": "docs_systems_ui_layout_compare_source_footer",
+      "label": "Compare shared source footer and exception markers",
+      "file_type": "rationale",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Compare fields are deliberately not individually source-tagged; a shared footer lists the comparison's sources and only fields whose source differs from the dominant one carry a superscript exception marker. Shipped with C4; the single panel adopts the scheme in D2."
+    },
+    {
+      "id": "docs_systems_ui_layout_theme_system",
+      "label": "Three-state theme system",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "light / dark / system with detection priority: manual localStorage choice, then prefers-color-scheme, defaulting to system. <html> gets the dark class for Tailwind's dark: variant, basemap layers darken via setPaintProperty, country layer paints adapt for contrast, and transition-colors duration-200 prevents jarring switches. The toggle cycles sun \u2192 moon \u2192 monitor with an aria-label reflecting the next state."
+    },
+    {
+      "id": "docs_systems_ui_layout_deep_linking",
+      "label": "Deep linking via cca3 hash",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Selecting France yields /#FRA and opening /#FRA flies and opens the panel, enabling sharing, back/forward, and bookmarking. Implemented as a hashchange listener plus an initial parse, resolving cca3 \u2192 ccn3 through the bidirectional lookup for map feature lookup."
+    },
+    {
+      "id": "docs_systems_ui_layout_game_routes",
+      "label": "Game routes on the same hash channel",
+      "file_type": "concept",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "writeHash produces #game/<modeId> and parseHash also tolerates a trailing /play on inbound links; country selection and game routes share one hash channel with the app dispatching on the prefix, so the hash is the single source of truth for both."
+    },
+    {
+      "id": "docs_systems_ui_layout_browser_history",
+      "label": "Browser history semantics",
+      "file_type": "rationale",
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Each selection pushes a history entry so Back returns to the previous country, but deselection replaces the current entry rather than pushing \u2014 deliberately avoiding a blank '#' entry, at the cost that Back after deselecting leaves the page."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_responsive_strategy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_bottom_sheet",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_sidebar",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_country_panel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_header",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_map_controls",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_source_attribution",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_compare",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout",
+      "target": "docs_systems_ui_layout_deep_linking",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_country_panel",
+      "target": "docs_systems_ui_layout_bottom_sheet",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_country_panel",
+      "target": "docs_systems_ui_layout_sidebar",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_bottom_sheet",
+      "target": "docs_systems_ui_layout_sidebar",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_responsive_strategy",
+      "target": "docs_systems_ui_layout_country_panel",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_country_panel",
+      "target": "docs_systems_ui_layout_source_attribution",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_source_attribution",
+      "target": "docs_systems_data",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare",
+      "target": "docs_systems_ui_layout_compare_fields",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare",
+      "target": "docs_systems_ui_layout_compare_border_chips",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare",
+      "target": "docs_systems_ui_layout_flytocomparepair",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare",
+      "target": "docs_systems_ui_layout_compare_source_footer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare",
+      "target": "docs_systems_map_rendering_country_dim",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare",
+      "target": "docs_systems_ui_layout_country_panel",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare",
+      "target": "docs_systems_search",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare_source_footer",
+      "target": "docs_systems_data_source_registry",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare_fields",
+      "target": "docs_systems_data_enriched_data_model",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare_border_chips",
+      "target": "docs_systems_data_bidirectional_lookup",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_compare_fields",
+      "target": "docs_systems_accessibility_prefers_reduced_motion",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_flytocomparepair",
+      "target": "docs_systems_map_rendering_satellite_basemap",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_flytocomparepair",
+      "target": "docs_systems_ui_layout_responsive_strategy",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_theme_system",
+      "target": "docs_systems_map_rendering_dark_mode",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_deep_linking",
+      "target": "docs_systems_data_bidirectional_lookup",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_deep_linking",
+      "target": "docs_systems_ui_layout_game_routes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_deep_linking",
+      "target": "docs_systems_ui_layout_browser_history",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_game_routes",
+      "target": "docs_adr_0002_url_hash_single_source_of_truth_hashstate",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_browser_history",
+      "target": "docs_adr_0002_url_hash_single_source_of_truth_useselectedcountry",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_header",
+      "target": "docs_systems_map_rendering_satellite_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_header",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_map_controls",
+      "target": "docs_systems_accessibility_touch_targets",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_map_controls",
+      "target": "docs_systems_overview_page_load_flow",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_country_panel",
+      "target": "docs_systems_data_bidirectional_lookup",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_country_panel",
+      "target": "docs_systems_data_canonical_195_filter",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_bottom_sheet",
+      "target": "docs_systems_map_rendering_interaction_model",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_ui_layout_header",
+      "target": "docs_systems_overview_game_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/ui-layout.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

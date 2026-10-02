@@ -1,0 +1,455 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_data",
+      "label": "Data System",
+      "file_type": "document",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "All sources are bundled at build time \u2014 zero runtime API calls for country data, so the only network traffic is map tiles and optional cookieless telemetry. Every data point carries source attribution."
+    },
+    {
+      "id": "docs_systems_data_world_atlas",
+      "label": "world-atlas / Natural Earth boundaries",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Public-domain Natural Earth pre-processed as TopoJSON in the world-atlas npm package at 1:50m (~245KB gzipped) \u2014 chosen as the balance of detail and size. Each feature carries id = ISO 3166-1 numeric as a string and properties.name."
+    },
+    {
+      "id": "docs_systems_data_rest_countries",
+      "label": "REST Countries v3.1 (country metadata source)",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "MPL 2.0; supplies name, codes, capital, region, population, area, languages, currencies, coordinates, borders, UN status, timezones, continents."
+    },
+    {
+      "id": "docs_systems_data_cia_factbook",
+      "label": "CIA World Factbook archive (government type source)",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "CC0 JSON archive of the shut-down Factbook, last updated 2026-01-22; supplies government type only. Its _sources lastUpdated reflects the archive date, not the collection run date."
+    },
+    {
+      "id": "docs_systems_data_svg_flags",
+      "label": "Bundled SVG flags",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Downloaded at data-collection time and committed as static assets \u2014 no external CDN fetch at runtime. National flags are public domain in most jurisdictions."
+    },
+    {
+      "id": "docs_systems_data_enriched_data_model",
+      "label": "Enriched per-country data model",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Access is flat \u2014 country.population, not country.population.value \u2014 with source info held separately in country._fieldSources.population. Keeps ordinary reads simple while still carrying provenance."
+    },
+    {
+      "id": "docs_systems_data_source_registry",
+      "label": "_sources registry",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "countries.json carries a _sources metadata section mapping each source key to name, url, description, and lastUpdated; the 'i' tooltip resolves a field's _fieldSources key through this registry to get the display name and link."
+    },
+    {
+      "id": "docs_systems_data_data_join",
+      "label": "world-atlas \u2194 countries.json join on ISO 3166-1 numeric",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Geometry and metadata are joined by feature.id \u2194 ccn3 (\"250\" = France), making the numeric code the load-bearing key between the two datasets."
+    },
+    {
+      "id": "docs_systems_data_bidirectional_lookup",
+      "label": "byNumeric / byCca3 bidirectional lookup maps",
+      "file_type": "concept",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Two maps built at startup cover every conversion because CountryData carries both ccn3 and cca3: byNumeric serves map clicks (feature id \u2192 metadata \u2192 cca3 for the hash) and byCca3 serves hash/border-chip lookups (\u2192 ccn3 for the map feature). No separate index maps are needed."
+    },
+    {
+      "id": "docs_systems_data_canonical_195_filter",
+      "label": "Canonical 195 filter",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One allowlist in lib/canonicalCountries.ts (CANONICAL_CCA3 / CANONICAL_NUMERIC_IDS) applied in three places \u2014 useCountryData filters the raw 249 source rows, loadCountryGeojson filters the polygons (with missingCountriesPatch synthesizing ones the 50m dataset omits), useCityData filters cities by host country. Guarantees every rendered polygon carries full metadata."
+    },
+    {
+      "id": "docs_systems_data_unmatched_territories",
+      "label": "Unmatched territories defensive fallback",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Unreachable through normal map clicks because of the canonical filter, but retained: a polygon without a metadata match would still show the world-atlas properties.name plus 'Limited data available', with no flag and no crash."
+    },
+    {
+      "id": "docs_systems_data_disputed_territories",
+      "label": "Disputed territories stance",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "funworldmap takes no political positions: boundaries use Natural Earth's de facto defaults (as controlled in practice, not as claimed). Entities that are neither UN members nor observers are out of scope for v1 and not selectable, though their land may still appear in basemap imagery. Natural Earth's de jure and point-of-view variants remain a future option."
+    },
+    {
+      "id": "docs_systems_data_coordinate_system",
+      "label": "Coordinate-order mismatch (latlng vs center)",
+      "file_type": "rationale",
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "REST Countries stores [latitude, longitude] while MapLibre expects [longitude, latitude]; flyToCountry() owns the swap. Flagged as a critical implementation detail because getting it wrong silently puts the camera in the ocean."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_world_atlas",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_rest_countries",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_cia_factbook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_svg_flags",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_enriched_data_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_source_registry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_data_join",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_canonical_195_filter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_disputed_territories",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_coordinate_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_data_collection",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_cia_factbook",
+      "target": "docs_systems_data_collection_cia_factbook_archive",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data",
+      "target": "docs_systems_analytics",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_data_join",
+      "target": "docs_systems_data_bidirectional_lookup",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_data_join",
+      "target": "docs_systems_data_world_atlas",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_data_join",
+      "target": "docs_systems_data_enriched_data_model",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_canonical_195_filter",
+      "target": "docs_systems_data_unmatched_territories",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_canonical_195_filter",
+      "target": "docs_systems_data_disputed_territories",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_enriched_data_model",
+      "target": "docs_systems_data_source_registry",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_source_registry",
+      "target": "docs_systems_ui_layout_source_attribution",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_world_atlas",
+      "target": "docs_systems_map_rendering_topojson_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_bidirectional_lookup",
+      "target": "docs_systems_overview_selection_flow",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_bidirectional_lookup",
+      "target": "docs_systems_ui_layout_deep_linking",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_coordinate_system",
+      "target": "docs_systems_map_rendering_flytocountry",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_enriched_data_model",
+      "target": "docs_systems_search_index_construction",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_data_canonical_195_filter",
+      "target": "docs_systems_overview_error_handling",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "field_level_source_attribution_chain",
+      "label": "Field-level source attribution from collection to tooltip",
+      "nodes": [
+        "docs_systems_data_collection_pipeline",
+        "docs_systems_data_collection_field_sources",
+        "docs_systems_data_enriched_data_model",
+        "docs_systems_data_source_registry",
+        "docs_systems_ui_layout_source_attribution",
+        "docs_systems_ui_layout_compare_source_footer"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/data.md"
+    },
+    {
+      "id": "canonical_195_scope_decision",
+      "label": "The canonical-195 scope decision and its enforcement points",
+      "nodes": [
+        "docs_purpose_canonical_195",
+        "docs_systems_data_canonical_195_filter",
+        "docs_systems_data_unmatched_territories",
+        "docs_systems_data_disputed_territories",
+        "docs_systems_overview_error_handling"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/data.md"
+    }
+  ]
+}

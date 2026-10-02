@@ -1,0 +1,135 @@
+{
+  "nodes": [
+    {
+      "id": "docs_adr_0001_maplibre_webgl2_basemap",
+      "label": "ADR 0001: MapLibre GL with a WebGL2-required vector basemap",
+      "file_type": "document",
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Chosen because funworldmap is fully client-side and static-hosted with no backend, and needs crisp rendering at any zoom, runtime-themeable styling, per-feature hit-testing, smooth camera animation, and a permissively-licensed stack with no account or API key. Status Accepted, 2026-05-30."
+    },
+    {
+      "id": "docs_adr_0001_maplibre_webgl2_basemap_maplibre_gl_js",
+      "label": "MapLibre GL JS (rendering choice)",
+      "file_type": "concept",
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Open-source fork of Mapbox GL JS. Picked over Mapbox GL JS (proprietary license, access token, billing) and Leaflet + raster tiles (blurs on zoom, no runtime theming, weaker vector interaction). Cost: ships as a single non-tree-shakeable ~275 KB gzip bundle, the dominant bundle cost."
+    },
+    {
+      "id": "docs_adr_0001_maplibre_webgl2_basemap_openfreemap_positron",
+      "label": "OpenFreeMap Positron vector basemap",
+      "file_type": "concept",
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Free, key-free vector basemap. Depends on the OpenFreeMap CDN; if tiles fail, bundled country polygons still render and BasemapBanner surfaces the degradation."
+    },
+    {
+      "id": "docs_adr_0001_maplibre_webgl2_basemap_webgl_fallback",
+      "label": "WebGL fallback / \"WebGL Not Available\" overlay",
+      "file_type": "rationale",
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "maplibregl.Map prefers WebGL2, falls back to WebGL1 (verified against maplibre-gl 5.23; v4 was WebGL2-only), and throws only when no WebGL context exists at all. useMapInstance catches the throw so WorldMap.tsx renders a graceful unsupported message instead of a blank canvas."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap",
+      "target": "docs_adr_0001_maplibre_webgl2_basemap_maplibre_gl_js",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap",
+      "target": "docs_adr_0001_maplibre_webgl2_basemap_openfreemap_positron",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap",
+      "target": "docs_adr_0001_maplibre_webgl2_basemap_webgl_fallback",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap",
+      "target": "docs_systems_overview_bundle_size_budget",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap_maplibre_gl_js",
+      "target": "docs_systems_map_rendering",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap_openfreemap_positron",
+      "target": "docs_systems_map_rendering_positron_basemap",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap_webgl_fallback",
+      "target": "docs_systems_map_rendering_webgl_requirement",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0001_maplibre_webgl2_basemap_openfreemap_positron",
+      "target": "docs_ops_runbook_basemap_degradation",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/adr/0001-maplibre-webgl2-basemap.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,0 +1,218 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_game_unhappy_paths_section_a_animations",
+      "label": "Section A \u2014 animation & reveal behavior contracts",
+      "file_type": "document",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "A. Animation & reveal behavior",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_a9_animation_state_contract",
+      "label": "A9 \u2014 data-animation-state entering\u2192idle contract",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "A9",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_escape_precedence",
+      "label": "D1/A8 \u2014 Escape handling excludes round-ended country-pinning sub-state",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "D1 (2026-05-13 update)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_d2_rapid_double_submit",
+      "label": "D2 \u2014 rapid double-submit rejected by reducer status guard",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "D2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_d3_mode_switch_restart",
+      "label": "D3 \u2014 mode switch from game-over must dispatch restart in one tick (bug #32)",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "D3",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_e1_last_life",
+      "label": "E1 \u2014 last-life wrong guess still opens the round-end panel",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "E1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_f1_webgl2_unsupported",
+      "label": "F1 \u2014 WebGL2 unsupported error overlay",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "F1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_f2_webgl_context_loss",
+      "label": "F2 \u2014 WebGL context lost mid-game and restore",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "F2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_g4_forced_colors_gap",
+      "label": "G4 \u2014 forced-colors / Windows high-contrast known gap",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "G4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_g2_keyboard_player",
+      "label": "G2 \u2014 keyboard-only player completes a game (stale vs pointer-only ruling)",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "G2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_game_unhappy_paths_analytics_beacon",
+      "label": "H1/H2 \u2014 telemetry must not block UI; sendBeacon on unload",
+      "file_type": "concept",
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "H. Telemetry & observability",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_game_unhappy_paths_section_a_animations",
+      "target": "docs_testing_game_happy_paths_free_country_pinning",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "Companion to",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_a9_animation_state_contract",
+      "target": "claude_data_animation_state",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "A9",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_escape_precedence",
+      "target": "docs_testing_game_happy_paths_cross_game_invariants",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "D1 / A8",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_d2_rapid_double_submit",
+      "target": "claude_game_test_seams",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "D2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_f2_webgl_context_loss",
+      "target": "docs_testing_game_unhappy_paths_f1_webgl2_unsupported",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "F1 / F2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_g4_forced_colors_gap",
+      "target": "product_wcag_aa_commitment",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "G4",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_analytics_beacon",
+      "target": "security_analytics_worker_endpoint",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "H. Telemetry & observability",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_analytics_beacon",
+      "target": "cloudflare_worker_queries_readme_slot_mapping",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "H. Telemetry & observability",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_game_unhappy_paths_analytics_beacon",
+      "target": "readme_sentry_error_reporting",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/game-unhappy-paths.md",
+      "source_location": "H3",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

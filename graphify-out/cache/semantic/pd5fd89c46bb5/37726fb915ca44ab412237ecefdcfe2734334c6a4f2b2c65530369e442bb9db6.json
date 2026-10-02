@@ -1,0 +1,107 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_camera_coherence_plan",
+      "label": "Camera Coherence Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "line 1",
+      "rationale": "Make the camera obey one rule \u2014 preserve the user's view on every game lifecycle event (start, round advance, end); the reveal animation is the only place the camera intentionally moves. Four independently revertable commits.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_preserve_user_view_rule",
+      "label": "Preserve-the-user's-view camera rule",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "Task 1",
+      "rationale": "Two flyTo(DEFAULT_*) effects (App-level game-start and the reveal hook's round-start) yanked the camera away from wherever the user had navigated. Deleting both makes one coherent rule instead of per-lifecycle-event exceptions; the round-start flyTo test is rewritten as an anti-test asserting flyTo is NOT called on game start.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_line_gradient_reveal_animation",
+      "label": "line-gradient reveal animation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "Task 3",
+      "rationale": "Replaces the per-frame setData + jumpTo rAF loop with a one-shot full-arc setData plus a single easeTo camera and per-frame setPaintProperty('line-gradient'), using lineMetrics:true and line-progress. Moves per-frame cost off geometry rebuilds and onto a paint property, which the GPU already interpolates.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_initialcameraview_removal",
+      "label": "initialCameraView property removal",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "Task 2",
+      "rationale": "Once both camera resets are deleted, the per-mode initialCameraView ('preserve' for country-pinning, 'world' for city-guessing) and the mode parameter on useRevealMapEffects have no readers \u2014 vestigial state that would otherwise re-invite the deleted behaviour.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_reveal_artifact_cleanup",
+      "label": "Reveal-artifact cleanup on round transition",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "Task 4",
+      "rationale": "The round-ended cleanup only cleared some reveals; both city reveals and country wrong-guesses draw the same sources, so clearRevealSources must fire unconditionally at the round boundary or stale arcs/markers survive into the next round.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_camera_coherence_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_preserve_user_view_rule",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "Task 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_initialcameraview_removal",
+      "target": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_preserve_user_view_rule",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "Task 2 \u2014 orphaned by Task 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_camera_coherence_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "File Structure \u2014 three change zones in useRevealMapEffects.ts",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_line_gradient_reveal_animation",
+      "target": "docs_superpowers_plans_archive_2026_05_17_camera_coherence_reveal_artifact_cleanup",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-camera-coherence.md",
+      "source_location": "Tasks 3-4 \u2014 same reveal sources",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

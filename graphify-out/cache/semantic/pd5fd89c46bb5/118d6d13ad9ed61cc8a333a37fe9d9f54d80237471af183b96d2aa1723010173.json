@@ -1,0 +1,171 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_23_country_news_feed_design_country_news_feed",
+      "label": "Country News Feed Design (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: the country-news feature was removed in PR #40 (2026-05-12). Kept unmodified for history."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_23_country_news_feed_design_guardian_open_platform",
+      "label": "Guardian Open Platform Source",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Single-source by owner choice; multi-source aggregation was rejected for adding editorial-ranking complexity and TOS surface. Requires a hand-curated cca3-to-tag table because the Guardian's taxonomy is irregular (USA is us-news, not world/usa)."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_23_country_news_feed_design_news_build_pipeline",
+      "label": "Static News Build Pipeline",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A daily GitHub Action commits per-country static JSON so no runtime backend is introduced; the ~1.1s throttle keeps the full run inside the free-tier quota, and a failed run simply leaves yesterday's data live with no user-facing error."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_23_country_news_feed_design_region_fallback",
+      "label": "Continent-Level Region Fallback",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sparse-coverage countries are topped up from a continent tag, deduped by article id and visually badged; Americas and Antarctic map to null because no single Guardian tag unifies them, so those countries get an honest empty state instead."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_23_country_news_feed_design_build_time_sanitiser",
+      "label": "Build-Time HTML Sanitiser",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "trailText is stripped of tags and entity-decoded at build time, not on the client, so the client never receives HTML for that field."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_23_country_news_feed_design_countrynewssection",
+      "label": "CountryNewsSection Component",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Fetches per-country JSON on mount with loading / empty / error states that never break the panel; gated on !inGameRound because news is noise during a country-pinning round-end."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_23_country_news_feed_design_relativetime_helper",
+      "label": "relativeTime Helper",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Hand-rolled ~30-LOC formatter rather than a dependency, preserving the zero-new-runtime-dependency constraint."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_country_news_feed",
+      "target": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_guess_fixes_and_ux",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_countrynewssection",
+      "target": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_countrynewssection",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_news_build_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_news_build_pipeline",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_guardian_open_platform",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_region_fallback",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_news_build_pipeline",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_build_time_sanitiser",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_news_build_pipeline",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_countrynewssection",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_relativetime_helper",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_23_country_news_feed_design_news_build_pipeline",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_daily_content_pipeline",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-23-country-news-feed-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

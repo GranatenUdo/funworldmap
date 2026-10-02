@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import type { MutableRefObject } from 'react'
 import { useSelectionHighlight } from '../useSelectionHighlight'
@@ -8,6 +8,7 @@ import { flyToCountry } from '../../lib/flyToCountry'
 import { flyToComparePair } from '../../lib/flyToComparePair'
 import { makeCountryData } from '../../test/countryFixtures'
 import { makeFakeMap, makeMapWrapper } from '../../test/fakeMapHooks'
+import { stubMatchMediaWithChange } from '../../test/matchMediaStub'
 
 vi.mock('../../lib/flyToCountry', () => ({
   flyToCountry: vi.fn(),
@@ -25,9 +26,19 @@ function originRef(origin: SelectionOrigin = 'auto'): MutableRefObject<Selection
   return { current: origin }
 }
 
-describe('useSelectionHighlight', () => {
-  beforeEach(() => vi.clearAllMocks())
+// The hook subscribes to DESKTOP_MEDIA_QUERY whenever a single selection is
+// active (B-1), so every test needs a matchMedia (jsdom has none). The
+// controllable variant lets the B-1 tests drive a breakpoint flip.
+let mm: ReturnType<typeof stubMatchMediaWithChange>
 
+beforeEach(() => {
+  vi.clearAllMocks()
+  mm = stubMatchMediaWithChange()
+})
+
+afterEach(() => mm.restore())
+
+describe('useSelectionHighlight', () => {
   it('sets selection filter with ccn3 when a country is selected', () => {
     const fake = makeFakeMap()
     renderHook(
@@ -256,5 +267,98 @@ describe('useSelectionHighlight', () => {
       'visibility',
       'none',
     ])
+  })
+})
+
+describe('useSelectionHighlight — B-1 breakpoint re-center', () => {
+  it('re-centers once via the recenter jump when the breakpoint changes while selected', () => {
+    const fake = makeFakeMap()
+    const country = makeCountry('250')
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: country,
+          selectionOriginRef: originRef(),
+          compareWith: null,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    expect(flyToCountry).toHaveBeenCalledTimes(1) // the mount fly
+
+    mm.fireChange(false) // desktop → mobile
+
+    // recenter keeps the current zoom/pitch and recomputes only the offset —
+    // that contract is pinned in flyToCountry.test.ts; here we pin that the
+    // hook routes through the SAME single camera owner with the flag.
+    expect(flyToCountry).toHaveBeenCalledTimes(2)
+    expect(flyToCountry).toHaveBeenLastCalledWith(expect.anything(), country, { recenter: true })
+  })
+
+  it('does not re-center when nothing is selected', () => {
+    const fake = makeFakeMap()
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: null,
+          selectionOriginRef: originRef(),
+          compareWith: null,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+
+    mm.fireChange(true)
+
+    expect(flyToCountry).not.toHaveBeenCalled()
+  })
+
+  it("does not re-center while comparing — compare framing is flyToComparePair's job", () => {
+    const fake = makeFakeMap()
+    const selected = makeCountry('250')
+    const compareWith = makeCountryData({ cca3: 'DEU', ccn3: '276', latlng: [51, 9] })
+    renderHook(
+      () =>
+        useSelectionHighlight({
+          loaded: true,
+          selected,
+          selectionOriginRef: originRef(),
+          compareWith,
+        }),
+      { wrapper: makeMapWrapper(fake) },
+    )
+    expect(flyToCountry).toHaveBeenCalledTimes(1) // mount fly only
+    expect(flyToComparePair).toHaveBeenCalledTimes(1)
+    // The gate is the subscription's lifetime: no listener exists while a
+    // compare pair is active.
+    expect(mm.listenerCount()).toBe(0)
+
+    mm.fireChange(false)
+
+    expect(flyToCountry).toHaveBeenCalledTimes(1)
+    expect(flyToComparePair).toHaveBeenCalledTimes(1)
+  })
+
+  it('stops re-centering once the selection is cleared', () => {
+    const fake = makeFakeMap()
+    const country = makeCountry('250')
+    const { rerender } = renderHook<void, { selected: CountryData | null }>(
+      (props) =>
+        useSelectionHighlight({
+          loaded: true,
+          selected: props.selected,
+          selectionOriginRef: originRef(),
+          compareWith: null,
+        }),
+      { wrapper: makeMapWrapper(fake), initialProps: { selected: country } },
+    )
+    expect(mm.listenerCount()).toBe(1)
+
+    rerender({ selected: null })
+    expect(mm.listenerCount()).toBe(0)
+
+    mm.fireChange(false)
+
+    expect(flyToCountry).toHaveBeenCalledTimes(1) // mount fly only, no re-center
   })
 })

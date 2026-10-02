@@ -1,0 +1,71 @@
+{
+  "nodes": [
+    {
+      "id": "_github_workflows_ci_fast_job",
+      "label": "CI job: lint + type + unit (with bundle-size budget)",
+      "file_type": "code",
+      "source_file": ".github/workflows/ci.yml",
+      "source_location": "jobs.fast",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "_github_workflows_ci_e2e_job",
+      "label": "CI job: e2e chromium-only, 4-way sharded",
+      "file_type": "code",
+      "source_file": ".github/workflows/ci.yml",
+      "source_location": "jobs.e2e",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "_github_workflows_ci_mesa_drivers",
+      "label": "Mesa llvmpipe software OpenGL install (SwiftShader avoidance)",
+      "file_type": "rationale",
+      "source_file": ".github/workflows/ci.yml",
+      "source_location": "jobs.e2e steps",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "_github_workflows_ci_merge_reports_job",
+      "label": "CI job: merge e2e blob reports with gh run download retry",
+      "file_type": "code",
+      "source_file": ".github/workflows/ci.yml",
+      "source_location": "jobs.merge-reports",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "_github_workflows_ci_mesa_drivers",
+      "target": "docs_testing_playwright_matrix_chromium_project",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": ".github/workflows/ci.yml",
+      "source_location": "jobs.e2e steps",
+      "weight": 1.0
+    },
+    {
+      "source": "_github_workflows_ci_e2e_job",
+      "target": "_github_workflows_ci_merge_reports_job",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": ".github/workflows/ci.yml",
+      "source_location": "jobs.merge-reports.needs",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}
