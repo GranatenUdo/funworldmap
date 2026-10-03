@@ -4,6 +4,12 @@ import type { Page } from '@playwright/test'
 import { waitForMapLoaded, waitForGameTestHook, submitAndWait } from './helpers'
 
 async function settled(page: Page) {
+  const notice = page.getByTestId('basemap-banner')
+  if ((await notice.isVisible()) && !(await notice.evaluate((el) => !!el.closest('[inert]')))) {
+    await notice.getByRole('button', { name: 'Dismiss basemap notice' }).click()
+    await expect(notice).not.toBeAttached()
+  }
+
   await expect
     .poll(
       () =>
