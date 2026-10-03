@@ -42,3 +42,9 @@ Delta: +2,892 calculated-gzip bytes (+0.41%). These are asset compression calcul
 ![Mobile entry](mobile-entry.png)
 
 ![Map review](desktop-review.png)
+
+## Release-gate correction (2026-10-03)
+
+CI's browser shards passed, but CSS was 100 gzip bytes over its existing budget and CodeQL flagged dev-only regex HTML stripping. The same designated Astra-medium plan reviewer checked the narrow correction before edits. Tailwind now scans only runtime src/index templates; analytics uses Vite's escaped tag descriptor, emitted only for builds with a nonblank token. Five real-HTML-build tests cover gating and special-character attribute round-trip.
+
+Validation: lint/type/unit passed (689 tests); CSS budget 21,947 / 24,000 gzip bytes, all budgets unchanged and passing. Targeted responsive/dark/review browser smoke also passed after the correction. Merge remains gated on the new commit's CI and CodeQL results.
