@@ -1,0 +1,110 @@
+{
+  "nodes": [
+    {
+      "id": "contributing_pr_expectations",
+      "label": "Pull request expectations and green-gate checklist",
+      "file_type": "document",
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Pull Request Expectations",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "contributing_new_data_source_process",
+      "label": "Proposing a new data source (fetch module + merge priority + _fieldSources)",
+      "file_type": "concept",
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Proposing a New Data Source",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "contributing_code_style",
+      "label": "Code style: Prettier/ESLint authoritative, strict TS, no any",
+      "file_type": "concept",
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Code Style",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "contributing_pr_expectations",
+      "target": "_github_pull_request_template_test_plan",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Pull Request Expectations",
+      "weight": 1.0
+    },
+    {
+      "source": "contributing_pr_expectations",
+      "target": "_github_workflows_ci_fast_job",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Pull Request Expectations",
+      "weight": 1.0
+    },
+    {
+      "source": "contributing_pr_expectations",
+      "target": "readme_npm_scripts",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Local Development",
+      "weight": 1.0
+    },
+    {
+      "source": "contributing_code_style",
+      "target": "claude_e2e_flake_rules",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Code Style",
+      "weight": 1.0
+    },
+    {
+      "source": "contributing_new_data_source_process",
+      "target": "product_canonical_195",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Proposing a New Data Source",
+      "weight": 1.0
+    },
+    {
+      "source": "contributing_pr_expectations",
+      "target": "security_scope_and_reporting",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Security",
+      "weight": 1.0
+    },
+    {
+      "source": "_github_issue_template_bug_report_form",
+      "target": "contributing_new_data_source_process",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "CONTRIBUTING.md",
+      "source_location": "Reporting Data Errors",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

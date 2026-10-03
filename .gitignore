@@ -33,6 +33,16 @@ coverage/
 # Claude Code session state (scheduled tasks lock, etc.)
 .claude/
 
+# Impeccable design tooling: design.json (sidecar), live/config.json, and
+# critique/ignore.md are project config and stay tracked; live runtime state
+# and per-run critique snapshots do not.
+.impeccable/live/sessions/
+.impeccable/live/accept-receipts/
+.impeccable/live/roots.json
+.impeccable/live/inject-journal.json
+.impeccable/critique/*
+!.impeccable/critique/ignore.md
+
 # Playwright MCP session artifacts
 .playwright-mcp/
 
@@ -47,3 +57,13 @@ coverage/
 
 # Build-tool .bak corruption artefacts on Windows.
 /.tmp-*/
+
+# graphify knowledge graph. The outputs (graph.json, graph.html,
+# GRAPH_REPORT.md, manifest.json, cost.json, cache/) are tracked deliberately so
+# a fresh worktree off main inherits the graph without a 2.1M-token rebuild.
+# These two sidecars hold absolute machine-local paths and must not be.
+/graphify-out/.graphify_python
+/graphify-out/.graphify_root
+
+# Isolated redesign verification artifacts
+/.superpowers/playful-geography/

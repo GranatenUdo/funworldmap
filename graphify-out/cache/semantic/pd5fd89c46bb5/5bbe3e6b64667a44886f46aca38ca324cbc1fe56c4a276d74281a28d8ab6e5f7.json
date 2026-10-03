@@ -1,0 +1,527 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "label": "Screenshot a3-01-arc-mid (city arc reveal, mid-animation attempt)",
+      "file_type": "image",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-05-13",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "label": "City Round HUD Card",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_prompt_flag_baghdad_iraq",
+      "label": "City Prompt: Iraq flag + \"Baghdad\" / \"Iraq\"",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_round_progress_2_of_10",
+      "label": "Round Progress Indicator \"Round 2 / 10\"",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_score_chip_zero",
+      "label": "Circular Score Chip Showing 0",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_end_game_control",
+      "label": "End Game Control",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_skip_round_control",
+      "label": "Skip Round Control",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_geodesic_arc_reveal",
+      "label": "Orange Dashed Geodesic Arc Reveal",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_arc_endpoint_marker",
+      "label": "Arc Endpoint Marker (orange-ringed white dot)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_capture_timing_miss",
+      "label": "Capture Landed Too Late (arc mid-frame missed; next round shown)",
+      "file_type": "rationale",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_globe_satellite_basemap",
+      "label": "3D Globe with Satellite Basemap (Europe/Africa/Middle East framing)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_basemap_attribution",
+      "label": "Basemap Attribution: AWS Terrain Tiles | Sentinel-2 cloudless by EOX (Copernicus 2024)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_map_camera_controls",
+      "label": "Map Camera Controls (compass, zoom +/-, pitch)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_view_mode_toggle",
+      "label": "Top-Right View Mode Toggle (globe icon active / screen icon inactive)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_brand_wordmark",
+      "label": "funworldmap Wordmark (teal, top-left)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_hex_backdrop",
+      "label": "Dark Hexagonal-Pattern Backdrop Behind Globe",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_viewport_scrollbars",
+      "label": "Visible Page Scrollbars (right and bottom edges)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_stale_arc_across_rounds",
+      "label": "Arc Persisting Into Next Round (endpoint not at Baghdad)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_animation_verification_report",
+      "label": "Animation Verification Report (2026-05-13 capture batch a3)",
+      "file_type": "document",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_guessing_game_mode",
+      "label": "City Guessing Game Mode",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_round_progress_2_of_10",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_score_chip_zero",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_end_game_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_skip_round_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_prompt_flag_baghdad_iraq",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_geodesic_arc_reveal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_geodesic_arc_reveal",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_arc_endpoint_marker",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_globe_satellite_basemap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_globe_satellite_basemap",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_basemap_attribution",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_map_camera_controls",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_view_mode_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_brand_wordmark",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_hex_backdrop",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_viewport_scrollbars",
+      "relation": "references",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.6
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_capture_timing_miss",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_capture_timing_miss",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_round_progress_2_of_10",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_capture_timing_miss",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_score_chip_zero",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_stale_arc_across_rounds",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_geodesic_arc_reveal",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.6
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_stale_arc_across_rounds",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_prompt_flag_baghdad_iraq",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.2,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.6
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_capture_timing_miss",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_stale_arc_across_rounds",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.7
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_animation_verification_report",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "relation": "cites",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_guessing_game_mode",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_guessing_game_mode",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_geodesic_arc_reveal",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_guessing_game_mode",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_round_hud",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_geodesic_arc_reveal",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_globe_satellite_basemap",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_view_mode_toggle",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_globe_satellite_basemap",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.8
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_map_camera_controls",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_globe_satellite_basemap",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_skip_round_control",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_round_progress_2_of_10",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.9
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_arc_endpoint_marker",
+      "target": "docs_testing_screenshots_2026_05_13_a3_01_arc_mid_city_prompt_flag_baghdad_iraq",
+      "relation": "semantically_similar_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.2,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-01-arc-mid.png",
+      "source_location": null,
+      "weight": 0.5
+    }
+  ],
+  "hyperedges": []
+}

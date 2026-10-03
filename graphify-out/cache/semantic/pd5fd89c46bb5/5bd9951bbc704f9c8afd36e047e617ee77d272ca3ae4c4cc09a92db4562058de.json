@@ -1,0 +1,144 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_note",
+      "label": "Bug #31 \u2014 country-panel click stability race trace analysis",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_inline_style_animation_footgun",
+      "label": "Inline style animation is invisible to getAnimations({subtree:true})",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "### (A) Move staggered child animations from inline style to className-based CSS",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_classname_animation_fix",
+      "label": "Fix (A) \u2014 className-based panel animation utilities",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "### (A)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_reduced_motion_opt_in",
+      "label": "Fix (B) \u2014 chromium project reducedMotion: 'reduce'",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "### (B) Opt chromium project into reducedMotion",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_event_loop_starvation",
+      "label": "Event-loop starvation hypothesis (CDP pressure defeats rAF and setTimeout fallback)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "### Mechanism (working hypothesis)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_singlecountrypanel_animation_state",
+      "label": "SingleCountryPanel data-animation-state entering\u2192idle contract",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "## Page snapshot at failure",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_fake_timer_test_plan",
+      "label": "Non-flaky Vitest fake-timer animation-state test plan",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "## Non-flake-risk plan for the Vitest fake-timer test",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_note",
+      "target": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_event_loop_starvation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "## Hypothesis decision",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_inline_style_animation_footgun",
+      "target": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_classname_animation_fix",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "### (A)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_event_loop_starvation",
+      "target": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_reduced_motion_opt_in",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "### Why both (A) and (B)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_classname_animation_fix",
+      "target": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_singlecountrypanel_animation_state",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "### (A)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_fake_timer_test_plan",
+      "target": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_singlecountrypanel_animation_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": "## Non-flake-risk plan",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_singlecountrypanel_animation_state",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_data_animation_state_signal",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-31-diagnosis.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

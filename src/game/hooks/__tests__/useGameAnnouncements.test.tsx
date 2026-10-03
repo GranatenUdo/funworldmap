@@ -140,7 +140,7 @@ describe('useGameAnnouncements', () => {
       vi.useRealTimers()
     })
 
-    it('calls finalize() instead of advance() when lastOutcome.endsGame is true and not country-pinning', () => {
+    it('waits for explicit continuation even on a terminal city reveal', () => {
       const advance = vi.fn()
       const finalize = vi.fn()
       // PointReveal with clickedPoint=null yields no animation plan, so the
@@ -162,7 +162,7 @@ describe('useGameAnnouncements', () => {
       act(() => {
         vi.advanceTimersByTime(2000)
       })
-      expect(finalize).toHaveBeenCalledTimes(1)
+      expect(finalize).not.toHaveBeenCalled()
       expect(advance).not.toHaveBeenCalled()
     })
   })

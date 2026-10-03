@@ -1,0 +1,106 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_a11y_contrast_pass",
+      "label": "A11y + Contrast Pass Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_micro_typography_floor",
+      "label": "Micro-Typography Floor (11px minimum)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Raises every 10px region badge to 11px; no layout impact because each sits in an already-padded rounded-full container."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_meta_color_contrast_bump",
+      "label": "Meta-Color Contrast Bump (sand-500 \u2192 sand-600)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "sand-500 on sand-50 is ~4.0:1 and fails WCAG AA at 11-12px; sand-600 reaches ~6.0:1. Only the light half of each pair changes \u2014 dark-100 already has adequate contrast on dark surfaces."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_tabular_figures",
+      "label": "Tabular Figures on DataCell Values",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "font-variant-numeric: tabular-nums on the shared DataCell value so populations and areas align vertically when compare columns stack; non-numeric text is visually unaffected."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_game_first_direction",
+      "label": "Game-First Product Direction",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The owner clarified the product is game-first, not reference-first, so the 'Cartographer's Table' serif/paper-tone Foundation direction was cut; only product-direction-neutral a11y fixes survived into this spec."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_game_first_direction",
+      "target": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_a11y_contrast_pass",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_tabular_figures",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_comparison_feature",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_meta_color_contrast_bump",
+      "target": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_closebutton_fieldlabel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_micro_typography_floor",
+      "target": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_meta_color_contrast_bump",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-a11y-contrast-pass-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

@@ -21,7 +21,7 @@ afterEach(() => {
 describe('Launcher subtitle first-run gate (A16)', () => {
   it('addresses first-time visitors while neither mode has been played', () => {
     render(<Launcher onDismiss={vi.fn()} />)
-    expect(screen.getByTestId('launcher-subtitle').textContent).toBe('Two quick geography games')
+    expect(screen.getByTestId('launcher-subtitle').textContent).toBe('Take a guess. Discover somewhere new.')
   })
 
   it('switches to the beat-your-best subtitle once country-pinning has a game', () => {

@@ -1,0 +1,133 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_note",
+      "label": "Bug #32 \u2014 game-over \u2192 hash-mode-switch trace analysis",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_hud_remount_race",
+      "label": "HudShell unmount/remount race on endGame\u2192start transition",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "### Why line 77 takes 4 s on CI",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_restart_reducer_action",
+      "label": "Fix (A) \u2014 atomic 'restart' reducer action",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "### (A) Eliminate the HUD remount race",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_test_seam_assertions",
+      "label": "Fix (B) \u2014 drive post-hash assertions from __funworldmap_game.getSession()",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "### (B) Drive the post-hash assertions from the test seam",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_wall_clock_budget_exhaustion",
+      "label": "60s wall-clock test budget exhaustion",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "## Working hypothesis",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_parsehash_type_tightening",
+      "label": "parseHash ModeId validation tightening",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "### Test-side type tightening",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_note",
+      "target": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_wall_clock_budget_exhaustion",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "## Working hypothesis",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_hud_remount_race",
+      "target": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_restart_reducer_action",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "### (A)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_wall_clock_budget_exhaustion",
+      "target": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_test_seam_assertions",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "### (B)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_restart_reducer_action",
+      "target": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_parsehash_type_tightening",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": "### Test-side type tightening",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_note",
+      "target": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_note",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_bug_32_diagnosis_test_seam_assertions",
+      "target": "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_reduced_motion_opt_in",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/notes/2026-05-04-bug-32-diagnosis.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

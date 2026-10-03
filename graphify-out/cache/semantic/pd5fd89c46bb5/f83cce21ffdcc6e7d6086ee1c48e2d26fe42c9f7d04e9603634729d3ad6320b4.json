@@ -1,0 +1,194 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_polish_keyboard_compare",
+      "label": "Polish, Keyboard, and Compare Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_comparison_feature",
+      "label": "Side-by-Side Country Comparison",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Limited to A vs B only; three+ country comparison and rich delta visualizations rejected because plain data is clearer."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_picking_mode",
+      "label": "Compare Picking Mode",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Crosshair canvas cursor is the only visual mode indicator; a glow on all countries would be expensive and noisy."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_hash_format",
+      "label": "Comma-Separated Compare Hash (#FRA,DEU)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Extends the existing single-country hash rather than replacing it, keeping all prior deep links valid."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_map_layers",
+      "label": "Compare Map Layer Stack",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Filter-controlled glow/fill/border/extrusion layers mirroring the selection stack; base fill opacity is set to a fixed value (not an expression) while comparing so hover cannot fight the dimming."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_toast_component",
+      "label": "Toast Component",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Portal to document.body with role=status/aria-live=polite; single toast at a time, no queue \u2014 a new message replaces the current one."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_share_link_button",
+      "label": "Share Link Button",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "URL is constructed explicitly from state rather than read from location.hash to avoid a hash-sync race; window.prompt is the clipboard fallback."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_keyboard_shortcuts",
+      "label": "Slash and Escape Keyboard Shortcuts",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Only two shortcuts because they are user-expected and self-discoverable, so no help overlay is needed; Escape priority is exit compare \u2192 close panel \u2192 clear search."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_nav_control_restyling",
+      "label": "MapLibre Navigation Control Restyling",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "CSS scoped to bottom-right controls so the bottom-left attribution is not broken; the home icon is replaced by a globe-with-arrow because 'home' conceptually means 'go back', not 'reset orientation'."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_polish_keyboard_compare",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_globe_terrain_navigation_modernization",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_nav_control_restyling",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_reset_view_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_polish_keyboard_compare",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_country_name_tooltip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_picking_mode",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_comparison_feature",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_hash_format",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_comparison_feature",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_map_layers",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_comparison_feature",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_share_link_button",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_toast_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_keyboard_shortcuts",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_picking_mode",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-16-polish-keyboard-compare-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

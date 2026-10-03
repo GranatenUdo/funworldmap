@@ -403,7 +403,7 @@ describe('useRevealMapEffects', () => {
     expect(emptySetDataCalls.length).toBeGreaterThanOrEqual(2)
   })
 
-  it('reduced-motion: no easeTo, jumpTo target, gradient fully revealed', () => {
+  it('reduced-motion: immediate offset camera, gradient fully revealed', () => {
     // Override the matchMedia mock to report reduced-motion preference.
     stubMatchMedia((q) => q.includes('reduce'))
     const fake = createFakeMapRef()
@@ -415,9 +415,9 @@ describe('useRevealMapEffects', () => {
     })
     renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
 
-    expect(fake.calls.easeTo).not.toHaveBeenCalled()
-    expect(fake.calls.jumpTo).toHaveBeenCalled()
-    const lastJumpTo = fake.calls.jumpTo.mock.calls.at(-1)?.[0] as
+    expect(fake.calls.easeTo).toHaveBeenCalledWith(expect.objectContaining({duration:0}))
+    expect(fake.calls.easeTo).toHaveBeenCalled()
+    const lastJumpTo = fake.calls.easeTo.mock.calls.at(-1)?.[0] as
       | { center: [number, number] }
       | undefined
     expect(lastJumpTo?.center).toEqual([2.3522, 48.8566])

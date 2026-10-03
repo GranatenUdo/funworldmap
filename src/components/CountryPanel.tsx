@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { CountryData, CountriesFile } from '../lib/types'
 import { SingleCountryPanel } from './SingleCountryPanel'
 import { CompareCountryPanel } from './CompareCountryPanel'
@@ -34,22 +35,19 @@ export default function CountryPanel({
   byCca3,
   inGameRound,
 }: Props) {
-  if (compareWith) {
-    return (
-      <CompareCountryPanel
-        country={country}
-        compareWith={compareWith}
-        isDesktop={isDesktop}
-        onCompareColumnSelect={onCompareColumnSelect}
-        onClose={onClose}
-        onExitCompare={onExitCompare}
-        byCca3={byCca3}
-        sources={sources}
-      />
-    )
-  }
-
-  return (
+  const [mapVisible, setMapVisible] = useState(false)
+  const content = compareWith ? (
+    <CompareCountryPanel
+      country={country}
+      compareWith={compareWith}
+      isDesktop={isDesktop}
+      onCompareColumnSelect={onCompareColumnSelect}
+      onClose={onClose}
+      onExitCompare={onExitCompare}
+      byCca3={byCca3}
+      sources={sources}
+    />
+  ) : (
     <SingleCountryPanel
       country={country}
       comparePickingMode={comparePickingMode}
@@ -61,6 +59,27 @@ export default function CountryPanel({
       onCancelCompare={onCancelCompare}
       byCca3={byCca3}
       inGameRound={inGameRound}
+      fullDetails={!isDesktop}
     />
+  )
+  if (isDesktop || inGameRound) return content
+  return (
+    <div className="mobile-reference">
+      <div className={mapVisible ? 'mobile-reference-summary' : 'mobile-reference-toolbar'}>
+        <span className="font-bold truncate">
+          {country.name.common}
+          {compareWith ? ` & ${compareWith.name.common}` : ''}
+        </span>
+        <button className="game-secondary" onClick={() => setMapVisible((v) => !v)}>
+          {mapVisible ? 'View details' : 'View map'}
+        </button>
+        {mapVisible && (
+          <button className="game-text" aria-label="Close country details" onClick={onClose}>
+            Close
+          </button>
+        )}
+      </div>
+      <div hidden={mapVisible}>{content}</div>
+    </div>
   )
 }

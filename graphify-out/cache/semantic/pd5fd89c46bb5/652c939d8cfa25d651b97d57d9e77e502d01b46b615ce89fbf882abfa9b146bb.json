@@ -1,0 +1,148 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_guess_fixes_and_ux",
+      "label": "Country-Pinning Guess-Phase Fixes + Round-End UX Reform",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_tooltip_suppression",
+      "label": "Guess-Phase Tooltip Suppression",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Hovering a country revealed its name, invalidating the game. useMapInteractions reads useGameSessionContext directly rather than prop-drilling a flag, because the rule driving tooltip content is fundamentally a game-state concern. Highlight/extrusion/cursor behaviour is preserved."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_guessbyname_removal",
+      "label": "GuessByNameButton Removal",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The typing input let players type the name already shown in the HUD. Only the UI is deleted \u2014 submitGuessInput stays because it is the universal guess path used by map clicks, the skip button, and the test shim."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_round_end_panel",
+      "label": "Round-End Country Panel",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Rendered as a sibling JSX branch rather than by relaxing the existing !gameActive gate, because compare-related props are meaningless in-round and two clearly-named render sites read better than one branch full of conditionals."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "label": "SingleCountryPanel inGameRound Prop",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Hides Compare and Copy-link and relabels Close to Continue; documented as in-round chrome only, with a note that a third in-round behaviour should trigger a refactor to a discriminated state object."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_continue_auto_advance",
+      "label": "Continue / Auto-Advance Round-End Flow",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Wrong guesses wait for Continue so the panel is read; correct guesses auto-advance in 3000ms. Early-skip is scoped to Enter/Escape/Space plus the button \u2014 a window-level pointerdown would fire on clicks inside the panel and falsely advance."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_guess_fixes_and_ux",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_country_news_feed",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_tooltip_suppression",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_country_name_tooltip",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_guessbyname_removal",
+      "target": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_funworldmap_guess_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_round_end_panel",
+      "target": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_continue_auto_advance",
+      "target": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_round_end_panel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_countrypanel_split",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_country_pinning_guess_fixes_and_ux_continue_auto_advance",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_best_of_3_attempts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

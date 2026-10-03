@@ -32,11 +32,12 @@ function readSafely(modeId: string): PersonalBest {
   }
 }
 
-function writeSafely(modeId: string, value: PersonalBest): void {
+function writeSafely(modeId: string, value: PersonalBest): boolean {
   try {
     localStorage.setItem(v2Key(modeId), JSON.stringify(value))
+    return true
   } catch {
-    /* private-mode / quota — best effort */
+    return false
   }
 }
 
@@ -67,7 +68,15 @@ export function subscribe(modeId: ModeId, listener: () => void): () => void {
   }
 }
 
-export function record(modeId: ModeId, score: number, streak: number): PersonalBest {
+export interface ResultReceipt {
+  previous: PersonalBest
+  current: PersonalBest
+  firstResult: boolean
+  saved: boolean
+  newBest: boolean
+}
+
+export function recordResult(modeId: ModeId, score: number, streak: number): ResultReceipt {
   const prev = ensureLoaded(modeId)
   const next: PersonalBest = {
     bestScore: Math.max(prev.bestScore, score),
@@ -75,10 +84,20 @@ export function record(modeId: ModeId, score: number, streak: number): PersonalB
     gamesPlayed: prev.gamesPlayed + 1,
   }
   snapshots.set(modeId, next)
-  writeSafely(modeId, next)
+  const saved = writeSafely(modeId, next)
   const set = listenersByMode.get(modeId)
   if (set) for (const l of [...set]) l()
-  return next
+  return {
+    previous: prev,
+    current: next,
+    firstResult: prev.gamesPlayed === 0,
+    saved,
+    newBest: prev.gamesPlayed > 0 && (score > prev.bestScore || streak > prev.bestStreak),
+  }
+}
+
+export function record(modeId: ModeId, score: number, streak: number): PersonalBest {
+  return recordResult(modeId, score, streak).current
 }
 
 /** Test seam — clear all cached snapshots and listeners. */

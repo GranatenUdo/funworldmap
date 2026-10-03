@@ -1,0 +1,128 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_15_implementation_plan_design_implementation_design",
+      "label": "polworldmap Implementation Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_15_implementation_plan_design_vertical_slice_phasing",
+      "label": "Vertical Slice Phasing",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Each phase produces a deployable artifact so problems are caught early; chosen over horizontal layering."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_15_implementation_plan_design_data_tool_first",
+      "label": "Data-Collection-Tool-First Strategy",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Building the data collection tool before any UI validates the data model against real REST Countries + CIA Factbook data first."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_15_implementation_plan_design_phase_dependency_graph",
+      "label": "Phase Dependency Graph",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Phases 4 (Search) and 5 (Theme) are independent after 3b and may run in either order; all others are sequential."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_15_implementation_plan_design_test_after_per_phase",
+      "label": "Test-After Per Phase",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Implement feature, verify in browser, then lock down with Playwright; Vitest reserved for data-tool merge/validation logic."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_15_implementation_plan_design_github_pages_hosting",
+      "label": "GitHub Pages Hosting",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Free, git-integrated, deployable via GitHub Actions; consistent with the no-backend principle."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_15_implementation_plan_design_vertical_slice_phasing",
+      "target": "docs_superpowers_specs_2026_04_15_implementation_plan_design_implementation_design",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_15_implementation_plan_design_data_tool_first",
+      "target": "docs_superpowers_specs_2026_04_15_implementation_plan_design_implementation_design",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_15_implementation_plan_design_test_after_per_phase",
+      "target": "docs_superpowers_specs_2026_04_15_implementation_plan_design_implementation_design",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_15_implementation_plan_design_github_pages_hosting",
+      "target": "docs_superpowers_specs_2026_04_15_implementation_plan_design_implementation_design",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_15_implementation_plan_design_phase_dependency_graph",
+      "target": "docs_superpowers_specs_2026_04_15_implementation_plan_design_vertical_slice_phasing",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-15-implementation-plan-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

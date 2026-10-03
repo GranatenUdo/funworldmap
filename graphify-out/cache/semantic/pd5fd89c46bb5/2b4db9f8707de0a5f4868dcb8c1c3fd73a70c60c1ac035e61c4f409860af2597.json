@@ -1,0 +1,195 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_review_followups_plan",
+      "label": "Review Follow-ups Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "line 1",
+      "rationale": "Nine PR-sized phases ordered by dependency: the paint reconciler (Phase 2) lands before the work built on its surface (Phases 4, 6), and shared test utilities (Phase 5) land before the gap tests that consume them (Phase 6). Every behavioral change is matrix-pinned by unit tests before hooks are rewired.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_applycountrybaselinepaint",
+      "label": "applyCountryBaselinePaint single owner",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Task 3",
+      "rationale": "Establishes one function in mapLayers as the sole writer of country baseline paint, so satellite mode, compare dimming, and selection highlighting stop racing each other over the same properties.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_usecountrybaselinepaint",
+      "label": "useCountryBaselinePaint reconciler hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Task 4-5",
+      "rationale": "Wraps the single-owner paint function in a reconciler with matrix tests covering every combination of satellite/compare/selection state, so rewiring the existing hooks is guarded by pinned expectations rather than manual inspection.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_style_latch_fix",
+      "label": "Style-latch clear-on-load fix",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Phase 3",
+      "rationale": "A latched style flag survived a style reload, leaving paint stale. The fix is written TDD-style with a suite-level e2e assertion that provably fails before the fix, because a latch bug is exactly the kind that a passing-after test cannot distinguish from luck.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_mode_ids_exhaustiveness",
+      "label": "MODE_IDS compile-time exhaustiveness",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Task 8",
+      "rationale": "Makes the MODE_IDS array provably exhaustive against the ModeId union at compile time, so adding a mode cannot silently skip registration sites.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_borderchip",
+      "label": "Shared BorderChip component",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Task 9",
+      "rationale": "Border chips were duplicated across the single-country and compare panels; extracting one component prevents the two copies from drifting in styling and interactivity rules.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_shared_test_utilities",
+      "label": "Shared test utilities (13 duplication sites)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Phase 5",
+      "rationale": "Three shared utilities replace 13 duplicated sites, migrated one commit per group so a bad migration is bisectable. Sequenced before the unit-test gap phase so new tests are written against the shared surface rather than adding a 14th copy.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_waitformaploaded_helper",
+      "label": "waitForMapLoaded e2e helper consolidation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Tasks 17-18",
+      "rationale": "Replaces hand-rolled map-load waits scattered across specs with one helper, and parameterises routeMapTiles so label-contrast's private copy can be absorbed \u2014 the same readiness-helper discipline CLAUDE.md mandates for new tests.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_06_12_review_followups_eslint_plugin_playwright",
+      "label": "eslint-plugin-playwright mechanization",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Phase 8",
+      "rationale": "Turns the CLAUDE.md flake rules (no waitForTimeout, no force-click) from prose conventions into lint failures, so the 2026-04-28 flake regression pattern cannot silently re-accumulate through review oversight.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_review_followups_plan",
+      "target": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_repo_cleanup_and_fixes_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Goal \u2014 drains issue #111 and 'Deferred from the 2026-06 cleanup'",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_usecountrybaselinepaint",
+      "target": "docs_superpowers_plans_archive_2026_06_12_review_followups_applycountrybaselinepaint",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Tasks 3-4",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_applycountrybaselinepaint",
+      "target": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_satellite_aware_fill_opacity_restore",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Phase 2 \u2014 paint-ownership reconciler",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_mode_ids_exhaustiveness",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_mode_predicates",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Task 8",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_shared_test_utilities",
+      "target": "docs_superpowers_plans_archive_2026_05_15_repository_cleanup_presentability_test_fixture_consolidation",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Phase 5",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_waitformaploaded_helper",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_ensurelauncherdismissed_helper",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Task 17",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_eslint_plugin_playwright",
+      "target": "docs_superpowers_plans_archive_2026_06_12_review_followups_waitformaploaded_helper",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Phases 7-8",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_06_12_review_followups_borderchip",
+      "target": "docs_superpowers_plans_archive_2026_06_12_repo_cleanup_and_fixes_repo_cleanup_and_fixes_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-06-12-review-followups.md",
+      "source_location": "Task 9 \u2014 #111 item 5",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

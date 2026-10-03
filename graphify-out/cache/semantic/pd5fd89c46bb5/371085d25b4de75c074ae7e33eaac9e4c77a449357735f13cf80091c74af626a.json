@@ -1,0 +1,250 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_build",
+      "label": "Build & Deploy System",
+      "file_type": "document",
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_systems_build_vite_rolldown",
+      "label": "Vite 8 with the Rolldown bundler",
+      "file_type": "concept",
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dev uses native ES modules + HMR with esbuild transpilation that deliberately does NOT type-check (type errors surface in `npm run build` or the IDE). Production minifies, tree-shakes, hashes filenames, copies public/ flags, and code-splits world-atlas into an async chunk loaded after map init so the basemap paints first."
+    },
+    {
+      "id": "docs_systems_build_tailwind_css_4",
+      "label": "Tailwind CSS 4 (CSS-first config)",
+      "file_type": "concept",
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "No tailwind.config.js \u2014 configuration lives in src/index.css with @custom-variant dark (&:where(.dark, .dark *)) and @theme tokens. The @tailwindcss/vite plugin removes the need for any PostCSS configuration."
+    },
+    {
+      "id": "docs_systems_build_npm_scripts",
+      "label": "npm script surface",
+      "file_type": "concept",
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "build = `tsc -b && vite build`; build:e2e adds --mode e2e to expose VITE_TEST_HOOKS; check = lint + typecheck + unit as the local gate; update-data and fetch-cities are on-demand data regeneration, never invoked by build."
+    },
+    {
+      "id": "docs_systems_build_bundle_budget",
+      "label": "Bundle budget enforcement",
+      "file_type": "rationale",
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "scripts/bundle-budget/check.ts enforces budgets.json via npm run bundle:budget in CI, total-with-async ceiling 820 KB gzip. Raising a budget requires measurement evidence in the PR, so the ceiling cannot drift silently the way the old <700 KB target did."
+    },
+    {
+      "id": "docs_systems_build_cache_headers",
+      "label": "Cache header policy",
+      "file_type": "rationale",
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "index.html no-cache (always revalidate), hashed assets/* immutable for a year, flags/* one day since flags rarely change. Most static hosts set these automatically for hashed assets."
+    },
+    {
+      "id": "docs_systems_build_deployment_targets",
+      "label": "Static deployment targets",
+      "file_type": "concept",
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "dist/ is fully self-contained, so Netlify, Vercel, GitHub Pages, Cloudflare Pages, and S3+CloudFront are all interchangeable targets \u2014 which is what makes the bandwidth-cap migration path cheap."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_build",
+      "target": "docs_systems_build_vite_rolldown",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build",
+      "target": "docs_systems_build_tailwind_css_4",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build",
+      "target": "docs_systems_build_npm_scripts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build",
+      "target": "docs_systems_build_bundle_budget",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build",
+      "target": "docs_systems_build_cache_headers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build",
+      "target": "docs_systems_build_deployment_targets",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_bundle_budget",
+      "target": "docs_systems_overview_bundle_size_budget",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_npm_scripts",
+      "target": "docs_systems_data_collection_pipeline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_npm_scripts",
+      "target": "docs_systems_build_bundle_budget",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_npm_scripts",
+      "target": "docs_systems_testing_test_seams",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_npm_scripts",
+      "target": "docs_systems_testing",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_vite_rolldown",
+      "target": "docs_systems_map_rendering_topojson_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_vite_rolldown",
+      "target": "docs_systems_data_svg_flags",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_tailwind_css_4",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_tailwind_css_4",
+      "target": "docs_systems_ui_layout_responsive_strategy",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_build_deployment_targets",
+      "target": "docs_systems_build_cache_headers",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/build.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

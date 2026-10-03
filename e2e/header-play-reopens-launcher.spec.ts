@@ -7,7 +7,7 @@
  *   (b) the ▶ pill is visible and clicking it opens the launcher
  */
 import { test, expect } from '@playwright/test'
-import { gotoAndWaitForMap, waitForAppReady, waitForGameTestHook } from './helpers'
+import { gotoAndWaitForMap, waitForAppReady, waitForGameTestHook, ensureLauncherDismissed } from './helpers'
 
 test.setTimeout(60_000)
 
@@ -17,6 +17,7 @@ test.describe('header-play reopens launcher after game completion', () => {
   }) => {
     await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
+    await ensureLauncherDismissed(page)
 
     // Open launcher and start a free country-pinning game
     await page.getByTestId('header-play').click()
@@ -28,7 +29,9 @@ test.describe('header-play reopens launcher after game completion', () => {
     await expect(page).toHaveURL(/#game\/country-pinning/)
     await waitForGameTestHook(page)
 
-    // "End game" button triggers onEndGame → finishFree() → game-over overlay
+    // "End game" button triggers onEndGame → finishFree() → game-over overlay.
+    // No guess was submitted, so this is a trivial run (round 1, score 0) and
+    // the C-4 confirm dialog is deliberately skipped.
     await expect(page.getByTestId('game-end')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-end').click()
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
@@ -51,6 +54,7 @@ test.describe('header-play reopens launcher after game completion', () => {
   }) => {
     await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
+    await ensureLauncherDismissed(page)
 
     // Open launcher and start a free city-guessing game
     await page.getByTestId('header-play').click()
@@ -62,7 +66,9 @@ test.describe('header-play reopens launcher after game completion', () => {
     await expect(page).toHaveURL(/#game\/city-guessing/)
     await waitForGameTestHook(page)
 
-    // "End game" button triggers onEndGame → finishFree() → game-over overlay
+    // "End game" button triggers onEndGame → finishFree() → game-over overlay.
+    // No guess was submitted, so this is a trivial run (round 1, score 0) and
+    // the C-4 confirm dialog is deliberately skipped.
     await expect(page.getByTestId('game-end')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-end').click()
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })
@@ -86,7 +92,8 @@ test.describe('header-play reopens launcher after game completion', () => {
     await page.waitForSelector('[data-map-loaded]', { timeout: 60_000 })
     await waitForGameTestHook(page)
 
-    // End game via button
+    // End game via button — a trivial run (round 1, score 0), so the C-4
+    // confirm dialog is deliberately skipped.
     await expect(page.getByTestId('game-end')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-end').click()
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 10_000 })

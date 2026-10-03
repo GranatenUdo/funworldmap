@@ -49,7 +49,8 @@ describe('E4 retirement drift alarm — the teal/coral system must stay gone', (
   // teal-accessible #065f56, the dark attribution-link teal #7dd3c0,
   // coral #f43f5e, coral-light #fb7185, coral-dim #e11d48, and the amber
   // reveal #f59e0b (absorbed into the signal family by E4). The Oceania
-  // region badge's teal-100/-300/-800/-900 classes are Tailwind's default
+  // region tint's teal-100/-300/-800/-900 classes (src/lib/regionTints.ts,
+  // both `solid` and `soft` variants) are Tailwind's default
   // numbered palette (a region-keyed data encoding), NOT these tokens.
   const RETIRED_HEXES = [
     '14b8a6',
@@ -106,33 +107,33 @@ describe('E4 retirement drift alarm — the teal/coral system must stay gone', (
 
 describe('E2 type-role utilities (index.css)', () => {
   it('.text-readout is the system mono stack with tabular figures', () => {
-    expect(css).toContain(`.text-readout {
+    expect(css.replace(/\s+/g, " ")).toContain(`.text-readout {
     font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
     font-variant-numeric: tabular-nums;
-  }`)
+  }`.replace(/\s+/g, " "))
   })
 
   it('.text-display is Outfit 700 with tight tracking', () => {
-    expect(css).toContain(`.text-display {
+    expect(css.replace(/\s+/g, " ")).toContain(`.text-display {
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.025em;
-  }`)
+  }`.replace(/\s+/g, " "))
   })
 
   it('.text-label is 11px uppercase with 0.12em tracking', () => {
-    expect(css).toContain(`.text-label {
+    expect(css.replace(/\s+/g, " ")).toContain(`.text-label {
     font-size: 11px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-  }`)
+  }`.replace(/\s+/g, " "))
   })
 })
 
-describe('backdrop hex-tile stroke (E4 interim recolor, replaced by E1)', () => {
-  it('strokes the hex grid in ice, not retired teal-light', () => {
-    expect(css).toContain("stroke='%237dd3fc'")
+describe('quiet globe backdrop', () => {
+  it('removes the decorative hex grid', () => {
+    expect(css).not.toContain("stroke='%237dd3fc'")
     expect(css).not.toContain("stroke='%235eead4'")
   })
 })

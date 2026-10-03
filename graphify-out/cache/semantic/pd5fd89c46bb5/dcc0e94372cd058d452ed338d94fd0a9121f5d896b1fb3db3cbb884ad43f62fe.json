@@ -1,0 +1,282 @@
+{
+  "nodes": [
+    {
+      "id": "product_funworldmap",
+      "label": "funworldmap product definition",
+      "file_type": "document",
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Purpose",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_country_pinning",
+      "label": "Country Pinning game mode",
+      "file_type": "concept",
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_city_guessing",
+      "label": "City Guessing game mode",
+      "file_type": "concept",
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_pointer_only_games",
+      "label": "Games are pointer-only (owner ruling 2026-08-04)",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_play_is_the_front_door",
+      "label": "Principle: Play is the front door",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_real_map_is_game_board",
+      "label": "Principle: The real map is the game board",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_craft_is_success_metric",
+      "label": "Principle: Craft is the success metric",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_no_barriers_ever",
+      "label": "Principle: No barriers, ever",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_field_level_attribution",
+      "label": "Principle: Every fact carries its source (_fieldSources)",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_personal_bests",
+      "label": "Personal bests in localStorage as replay motivation",
+      "file_type": "concept",
+      "source_file": "PRODUCT.md",
+      "source_location": "Operating Context",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_url_hash_source_of_truth",
+      "label": "URL hash is the single source of truth for selection/deep links",
+      "file_type": "concept",
+      "source_file": "PRODUCT.md",
+      "source_location": "Operating Context",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_static_delivery",
+      "label": "Fully static delivery, no application backend",
+      "file_type": "concept",
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_wcag_aa_commitment",
+      "label": "WCAG AA standing commitment with scoped game exception",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Accessibility & Inclusion",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_canonical_195",
+      "label": "Canonical 195 sovereign states reference dataset",
+      "file_type": "concept",
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_daily_mode_removal",
+      "label": "Daily mode shipped then deliberately removed (2026-05-30)",
+      "file_type": "rationale",
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "product_funworldmap",
+      "target": "design_observatory",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PRODUCT.md",
+      "source_location": "Brand Commitments",
+      "weight": 1.0
+    },
+    {
+      "source": "product_funworldmap",
+      "target": "product_country_pinning",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "weight": 1.0
+    },
+    {
+      "source": "product_funworldmap",
+      "target": "product_city_guessing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities and Constraints",
+      "weight": 1.0
+    },
+    {
+      "source": "product_pointer_only_games",
+      "target": "product_wcag_aa_commitment",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PRODUCT.md",
+      "source_location": "Accessibility & Inclusion",
+      "weight": 1.0
+    },
+    {
+      "source": "product_pointer_only_games",
+      "target": "product_real_map_is_game_board",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "PRODUCT.md",
+      "source_location": "Capabilities / Principles",
+      "weight": 1.0
+    },
+    {
+      "source": "product_play_is_the_front_door",
+      "target": "product_country_pinning",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "weight": 1.0
+    },
+    {
+      "source": "product_field_level_attribution",
+      "target": "contributing_new_data_source_process",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "weight": 1.0
+    },
+    {
+      "source": "product_no_barriers_ever",
+      "target": "product_static_delivery",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles",
+      "weight": 1.0
+    },
+    {
+      "source": "product_static_delivery",
+      "target": "_github_workflows_deploy_deploy_job",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "PRODUCT.md",
+      "source_location": "Operating Context",
+      "weight": 1.0
+    },
+    {
+      "source": "product_personal_bests",
+      "target": "docs_testing_game_happy_paths_cross_game_invariants",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "PRODUCT.md",
+      "source_location": "Operating Context",
+      "weight": 1.0
+    },
+    {
+      "source": "product_craft_is_success_metric",
+      "target": "design_observatory",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "PRODUCT.md",
+      "source_location": "Product Principles / Brand Commitments",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

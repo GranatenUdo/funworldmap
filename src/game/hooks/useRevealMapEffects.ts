@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
-import type { CountryLike, GameSession, GuessInput } from '../shared/types'
+import type { CountryLike, GameSession, GuessInput, CompletedRound } from '../shared/types'
 import { EMPTY_FILTER, ensureRevealFillLayer, LAYER } from '../../lib/mapLayers'
 import { REVEAL_CORRECT, REVEAL_WRONG, ICE_DEEP } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
@@ -106,6 +106,8 @@ function clearRevealSources(map: maplibregl.Map): void {
 
 export interface UseRevealMapEffectsArgs {
   session: GameSession
+  review?: CompletedRound | null
+  ready?: boolean
   mapRef: RefObject<maplibregl.Map | null>
   byCca3: Map<string, CountryLike>
   submitGuessInput: (input: GuessInput) => void
@@ -117,6 +119,8 @@ export interface UseRevealMapEffectsArgs {
  */
 export function useRevealMapEffects({
   session,
+  review = null,
+  ready = true,
   mapRef,
   byCca3,
   submitGuessInput,
@@ -126,12 +130,34 @@ export function useRevealMapEffects({
   // guess location) animate the dashed line growing along the geodesic arc
   // while the camera tracks the line head to the target.
   useEffect(() => {
-    if (session.status !== 'round-ended' || !session.lastOutcome) return
+    if (!ready || (!review && (session.status !== 'round-ended' || !session.lastOutcome))) return
     const map = mapRef.current
     if (!map) return
 
-    const reveal = session.lastOutcome.reveal
-    const reduced = prefersReducedMotion()
+    const reveal = (review?.outcome ?? session.lastOutcome)!.reveal
+    const reduced = !!review || prefersReducedMotion()
+    const offset = (): [number, number] =>
+      window.innerWidth >= 1024 ? [-220, 0] : [0, -Math.min(160, window.innerHeight * 0.22)]
+    const centerReveal = (center?: [number, number]) => {
+      const target = center ?? review?.round.targetCentroid ?? session.currentRound?.targetCentroid
+      if (!target) return
+      map.easeTo({ center: target, duration: 0, offset: offset(), ...(review ? { zoom: 2 } : {}) })
+    }
+
+    let resizeFrame: number | null = null
+    const onResize = () => {
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame)
+      resizeFrame = requestAnimationFrame(() => {
+        map.stop()
+        centerReveal()
+        resizeFrame = null
+      })
+    }
+    window.addEventListener('resize', onResize)
+    const clearResize = () => {
+      window.removeEventListener('resize', onResize)
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame)
+    }
 
     // Reveal fill pulse (B5): rAF handle for the two-beat fill-opacity pulse
     // on the dedicated country-reveal-fill layer. Declared ahead of the
@@ -195,6 +221,7 @@ export function useRevealMapEffects({
     // hover-border filter is restored. The layer itself persists, like the
     // reveal marker/line layers.
     const clearRevealFill = () => {
+      clearResize()
       if (pulseFrameId !== null) window.cancelAnimationFrame(pulseFrameId)
       if (reveal.kind !== 'country') return
       try {
@@ -210,6 +237,7 @@ export function useRevealMapEffects({
     // No animation plan: city skip renders the target marker only; country
     // skip falls through to border pulse (already done above).
     if (!plan) {
+      centerReveal()
       if (reveal.kind === 'point') {
         try {
           ensureRevealSources(map)
@@ -231,6 +259,7 @@ export function useRevealMapEffects({
             /* no-op */
           }
         }
+        map.stop()
         clearRevealSources(map)
       }
     }
@@ -276,13 +305,14 @@ export function useRevealMapEffects({
           1,
           TRANSPARENT,
         ])
-        map.jumpTo({ center: plan.to })
+        centerReveal(plan.to)
       } else {
         // Snap camera to the wrong-guess start so easeTo has a deterministic
         // starting position regardless of where the user was looking.
         map.jumpTo({ center: plan.from })
         map.easeTo({
           center: plan.to,
+          offset: offset(),
           duration: plan.durationMs,
           easing: (t) => 1 - Math.pow(1 - t, 3),
         })
@@ -343,13 +373,14 @@ export function useRevealMapEffects({
       // clickedCca3 is known) and city reveals draw these via
       // computeRevealAnimationPlan, so the cleanup is mode-neutral — even though
       // marker *population* is point-specific (only city reveals add a guess).
+      map.stop()
       clearRevealSources(map)
     }
-  }, [session.status, session.lastOutcome, byCca3, mapRef])
+  }, [session.status, session.lastOutcome, byCca3, mapRef, review, ready, session.currentRound])
 
   // City-mode any-click handler.
   useEffect(() => {
-    if (session.status !== 'playing') return
+    if (!ready || session.status !== 'playing') return
     if (!isCityGuessing(session.modeId)) return
     const map = mapRef.current
     if (!map) return
@@ -360,7 +391,7 @@ export function useRevealMapEffects({
     return () => {
       map.off('click', onClick)
     }
-  }, [session.status, session.modeId, submitGuessInput, mapRef])
+  }, [session.status, session.modeId, submitGuessInput, mapRef, ready])
 
   // Clear reveal geometry on every transition into idle.
   useEffect(() => {

@@ -1,0 +1,191 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_plan",
+      "label": "Animated Reveal + Mobile Tap + Playwright Coverage Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_slerplnglat",
+      "label": "slerpLngLat great-circle interpolation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": "src/game/shared/distance.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Spherical interpolation keeps the guess-to-target line on a great circle so the dashed reveal reads as a real distance on the globe rather than a straight screen-space segment."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_tessellatearc",
+      "label": "tessellateArc arc subdivision",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": "src/game/shared/distance.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+      "label": "computeRevealAnimationPlan pure helper",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": "src/game/shared/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "All reveal geometry and timing is computed as a plain data plan by a pure function so it is unit-testable in jsdom; the requestAnimationFrame loop in GameController only replays the plan frame by frame."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_clicktolerance",
+      "label": "MapLibre clickTolerance mobile tap fix",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A one-line constructor config: finger jitter during a tap exceeded MapLibre's default click tolerance so touches were classified as drags and never became guesses (the Italy tap bug)."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_queryrenderedfeatures_bbox",
+      "label": "4px bbox widening on queryRenderedFeatures",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": "src/hooks/useMapInteractions.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Complements the clickTolerance fix: hit-testing a small box instead of a single pixel makes taps near a thin border resolve to the intended country."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_mobile_project_matrix",
+      "label": "Playwright mobile/touch project matrix",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": "playwright.config.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "mobile-chromium, mobile-webkit and desktop-firefox-touch projects were added specifically so the tap fix has a regression home; the matrix doc records which specs run under which project and which manual QA stays out of CI scope."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_reduced_motion_reveal",
+      "label": "Reduced-motion reveal path",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "prefers-reduced-motion skips the animated line draw and jumps straight to the end state, with its own e2e spec so the branch cannot silently rot."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_clicktolerance",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_mobile_project_matrix",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_slerplnglat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_tessellatearc",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_tessellatearc",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_slerplnglat",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_clicktolerance",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_queryrenderedfeatures_bbox",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_mobile_project_matrix",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_clicktolerance",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_reduced_motion_reveal",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-24-reveal-animation-and-mobile-tap.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

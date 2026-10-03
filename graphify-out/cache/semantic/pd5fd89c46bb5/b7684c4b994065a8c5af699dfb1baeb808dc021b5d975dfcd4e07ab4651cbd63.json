@@ -1,0 +1,538 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "label": "Screenshot A1-01: Reveal Mid-Animation",
+      "file_type": "image",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-05-13",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_scenario_a1_step_01",
+      "label": "Animation Verification Scenario A1, Step 01",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_mid_state",
+      "label": "Answer Reveal Mid-Animation State",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "label": "Game HUD Card (hearts, score, prompt, feedback)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_hearts_lives_indicator",
+      "label": "Hearts Lives Indicator (2 filled, 1 spent)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_score_counter_78",
+      "label": "Score Counter Showing 78",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_wrong_answer_feedback",
+      "label": "Wrong-Answer Feedback Line (\"Wrong \u2014 that was Germany. +78 points. The answer was France. -1 life.\")",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_round_prompt_france",
+      "label": "Round Prompt: France (flag + name)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_end_game_control",
+      "label": "End Game Control in HUD",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_single_country_panel",
+      "label": "Single Country Panel (France) Open",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_continue_button",
+      "label": "Continue Button (advance to next round)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_country_fact_grid",
+      "label": "Country Fact Grid (capital, population, area, region, government, UN member, independent, languages, currencies, timezones)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_field_info_affordance",
+      "label": "Per-Field Info Icon (field-level source attribution affordance)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_border_country_chips",
+      "label": "Border Country Chips (Andorra, Belgium, Germany, Italy, Luxembourg, Monaco)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_globe_view",
+      "label": "3D Globe View with Satellite Basemap",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_marker",
+      "label": "Answer Reveal Marker on Globe (orange dot + leader line over France)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_projection_toggle",
+      "label": "Globe / Flat-Map Projection Toggle (header, globe active)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_basemap_attribution",
+      "label": "Basemap Attribution (AWS Terrain Tiles, Sentinel-2 cloudless by EOX)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_dark_theme_shell",
+      "label": "Dark App Shell with funworldmap Wordmark and Hex-Grid Backdrop",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_partial_credit_scoring",
+      "label": "Partial-Credit Proximity Scoring (wrong guess still awards points)",
+      "file_type": "rationale",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_animation_state_verification",
+      "label": "Animation-State Verification via Screenshot Evidence",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_scenario_a1_step_01",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_mid_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_single_country_panel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_globe_view",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_dark_theme_shell",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_animation_state_verification",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_hearts_lives_indicator",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_score_counter_78",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_wrong_answer_feedback",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_round_prompt_france",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_end_game_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_wrong_answer_feedback",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_hearts_lives_indicator",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_wrong_answer_feedback",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_score_counter_78",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_partial_credit_scoring",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_wrong_answer_feedback",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_mid_state",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_marker",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_mid_state",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_single_country_panel",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_marker",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_globe_view",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_single_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_continue_button",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_single_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_country_fact_grid",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_single_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_border_country_chips",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_country_fact_grid",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_field_info_affordance",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_continue_button",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_game_hud",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_border_country_chips",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_wrong_answer_feedback",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_globe_view",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_basemap_attribution",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_projection_toggle",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_globe_view",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_dark_theme_shell",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_projection_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_animation_state_verification",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_mid_state",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_scenario_a1_step_01",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_reveal_mid_state",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_round_prompt_france",
+      "target": "docs_testing_screenshots_2026_05_13_a1_01_reveal_mid_single_country_panel",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-01-reveal-mid.png",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

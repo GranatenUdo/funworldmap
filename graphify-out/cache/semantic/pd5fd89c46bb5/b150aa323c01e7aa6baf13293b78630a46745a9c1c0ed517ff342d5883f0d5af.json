@@ -1,0 +1,275 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "label": "GameController Extraction Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "line 1",
+      "rationale": "One plan with five phases rather than five plans: the five extractions share state ownership (all read useGameSessionContext session + dispatchers) and a single physical source file, so splitting would force each plan to re-establish the same characterization-test methodology, file-map decisions, and deferral list, and would lose the safest-first ordering rationale that only makes sense as one document.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegametestseams",
+      "label": "useGameTestSeams hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 1",
+      "rationale": "Chosen as the safest first extraction: the effect only registers/unregisters keys on window.__funworldmap_game when VITE_TEST_HOOKS is truthy, so in production builds the body is a no-op \u2014 zero production-regression risk \u2014 while e2e failures would be a loud signal.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usedailyresumepersistence",
+      "label": "useDailyResumePersistence hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 2",
+      "rationale": "Safe second because it is a single concern (one useEffect, one localStorage key) whose guards are pure expressions over session \u2014 no timers, no map state, no animations \u2014 with the failure mode contained to the daily resume feature already covered by e2e/daily-best-of-3.spec.ts.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegameannouncements",
+      "label": "useGameAnnouncements hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 3",
+      "rationale": "Third-safest: touches the screen-reader live region, auto-advance timers, and personal-best/daily-history recording \u2014 all reducer-state-driven with no MapLibre coupling, no map paint, no rAF, no hash routing.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+      "label": "useRevealMapEffects hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 4",
+      "rationale": "Riskier because it drives the reveal layer (paint properties, geodesic arc rAF loop), intermediate-reveal flashes, camera reset on round start, city-mode any-click handler, and idle-state reveal clear \u2014 GPU/animation coupling plus App.tsx touch-points on session.lastOutcome.reveal.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usehashgamerouter",
+      "label": "useHashGameRouter hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 5",
+      "rationale": "Extracted last because it is the most tangled: parses the location hash, drives initial bootstrap, listens to hashchange, drains deferred starts once pools arrive, emits deep_link_opened analytics and daily_attempted telemetry, and owns four refs plus the statusRef other hooks consume.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_characterization_test_methodology",
+      "label": "Characterization-test methodology",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Shared characterization-test methodology",
+      "rationale": "Write the test FIRST against the current inlined behaviour so it PASSES on main; then extract; then re-run the same test via renderHook against the new hook. If the test still passes, behaviour is preserved. A test that fails on main signals either a separate bug or a misunderstood spec \u2014 stop before extracting.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_src_game_hooks_directory",
+      "label": "src/game/hooks/ directory convention",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "File map \u2014 New hooks directory",
+      "rationale": "src/hooks/ is the app-shell hook home (map, country/city data, theme, search) so game hooks would be out of place there; src/game/shared/ hosts the session core (reducer, provider, personal bests) and mixing five effect-only hooks in would blur shape. Option C (src/game/GameController/index.tsx) was rejected because a file move breaks every existing import \u2014 blast radius outweighs the organisational win.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_ref_mirror_smell",
+      "label": "Nine useRef mirrors of reducer state",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Architecture",
+      "rationale": "The 9 useRef mirrors of reducer state get re-homed into the hooks that own them rather than eliminated. The ref-mirror code smell is real (it is the closure-staleness site behind bug #32), but replacing it via useSyncExternalStore or commit-driven patterns is a separate architectural refactor, explicitly out of scope for this extraction.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_ci_testignore_interaction",
+      "label": "CI testIgnore + quarantine interaction risk",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "CI testIgnore interaction (Phases 3, 4, 5)",
+      "rationale": "game-country-pinning.spec.ts sits in CI's testIgnore list, so CI alone cannot validate phases 3-5 \u2014 the spec must be run locally. Five tests are quarantined via test.fixme(!!process.env.CI) under issues #31/#32/#47, and the extractions interact with all three: if a quarantined test starts passing locally the underlying fix may have landed as a side effect; if it fails harder, revisit the extraction.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_app_tsx_coupling_risk",
+      "label": "App.tsx coupling to GameController",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "App.tsx coupling (Phase 4 + Phase 5 risk)",
+      "rationale": "App.tsx reads session.lastOutcome.reveal.targetCca3, dispatches advance/finalize, branches on session.modeId, and runs a second hashchange subscriber that duplicates the router. If an extracted hook changes the shape or timing of any field App.tsx reads, the parallel App.tsx update must land in the SAME PR as the extraction, not a follow-up.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegametestseams",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usedailyresumepersistence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegameannouncements",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 3",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 4",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usehashgamerouter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Phase 5",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_characterization_test_methodology",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Shared characterization-test methodology",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_src_game_hooks_directory",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "File map",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_ref_mirror_smell",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "Architecture",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_ci_testignore_interaction",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegameannouncements",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "CI testIgnore interaction",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_app_tsx_coupling_risk",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "App.tsx coupling",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_app_tsx_coupling_risk",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usehashgamerouter",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "App.tsx coupling",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usehashgamerouter",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegametestseams",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md",
+      "source_location": "File map \u2014 statusRef ownership",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "gamecontroller_five_hook_decomposition",
+      "label": "The five hooks GameController.tsx decomposes into",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegametestseams",
+        "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usedailyresumepersistence",
+        "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usegameannouncements",
+        "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_userevealmapeffects",
+        "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usehashgamerouter"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-14-game-controller-extraction.md"
+    }
+  ]
+}

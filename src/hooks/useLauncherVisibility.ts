@@ -1,39 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useGameSessionContext } from '../game/shared/GameSessionProvider'
 
-export interface LauncherVisibility {
-  visible: boolean
-  dismiss: () => void
-  show: () => void
-}
-
-type IntentState = { kind: 'default' } | { kind: 'open' } | { kind: 'dismissed' }
-
-export function useLauncherVisibility(): LauncherVisibility {
+export function useLauncherVisibility() {
   const { session } = useGameSessionContext()
-  const [intent, setIntent] = useState<IntentState>({ kind: 'default' })
-  const prevSessionStatusRef = useRef(session.status)
-
-  // Reset to default on non-idle → idle transitions (game end).
-  // Map-first: do NOT set intent to 'open' here — the launcher stays hidden
-  // until the user explicitly clicks the header-play button after a game ends.
+  const [visible, setVisible] = useState(() => !window.location.hash)
+  const dismiss = useCallback(() => setVisible(false), [])
+  const show = useCallback(() => setVisible(true), [])
   useEffect(() => {
-    const prev = prevSessionStatusRef.current
-    if (prev !== 'idle' && session.status === 'idle') {
-      setIntent({ kind: 'default' })
+    const routeChanged = () => {
+      if (window.location.hash) setVisible(false)
     }
-    prevSessionStatusRef.current = session.status
-  }, [session.status])
-
-  const dismiss = useCallback(() => {
-    setIntent((prev) => (prev.kind === 'dismissed' ? prev : { kind: 'dismissed' }))
+    window.addEventListener('hashchange', routeChanged)
+    return () => window.removeEventListener('hashchange', routeChanged)
   }, [])
-
-  const show = useCallback(() => {
-    setIntent((prev) => (prev.kind === 'open' ? prev : { kind: 'open' }))
-  }, [])
-
-  const visible = intent.kind === 'open' && session.status === 'idle'
-
-  return { visible, dismiss, show }
+  return { visible: visible && session.status === 'idle', dismiss, show }
 }

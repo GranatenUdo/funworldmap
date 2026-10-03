@@ -1,0 +1,137 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_migration",
+      "label": "Guardian \u2192 GDELT Migration Design (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: country-news was removed in PR #40; the 'execute when monetisation becomes concrete' deferral is void because the migration in fact shipped the same day it was specced (PR #17)."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_doc_api",
+      "label": "GDELT 2.0 Doc API Source",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Chosen for unrestricted commercial-use licensing, no API key to rotate, and ~8000 outlets of coverage; accepted trade-offs are no trailText summary field and algorithmic hybridrel ranking that occasionally outranks major outlets."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_commercial_use_licence_gate",
+      "label": "Commercial-Use Licence Gate",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Guardian Open Platform's free tier forbids commercial use, so this migration is the gate on turning ads on \u2014 the spec was written ready-to-execute and deliberately parked until monetisation became concrete."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_fips_codes_lookup",
+      "label": "cca3 \u2192 FIPS-10-4 Lookup",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "GDELT filters on FIPS, which diverges from ISO alpha-2 in ~40 of 249 cases (Germany GM, Switzerland SZ, China CH). The code IS the query input, not defensive metadata; codes also sidestep the Georgia/Chad/Niger name-collision problem entirely."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_locationcc_query",
+      "label": "locationcc: Query Operator Choice",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Verified against the live API on 2026-04-24: locationcc surfaces articles about a country from any English outlet, whereas sourcecountry restricts to domestic outlets and fails for non-English-primary countries; plain location rejects 2-character arguments, and the language code must be the full word 'english', not 'eng'."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_migration",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_country_news_feed",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_doc_api",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_guardian_open_platform",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_commercial_use_licence_gate",
+      "target": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_doc_api",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_fips_codes_lookup",
+      "target": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_doc_api",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_locationcc_query",
+      "target": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_fips_codes_lookup",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_gdelt_doc_api",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_region_fallback",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_24_gdelt_migration_design_fips_codes_lookup",
+      "target": "docs_superpowers_specs_2026_04_23_country_news_feed_design_guardian_open_platform",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-24-gdelt-migration-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

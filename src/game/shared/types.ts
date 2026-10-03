@@ -37,6 +37,7 @@ export type CityRoundSpec = {
   kind: 'city-guessing'
   targetId: string // city record id, used for 'used' set
   targetName: string // "Paris"
+  targetCountryCca3: string
   targetCountryName: string // "France"
   targetCountryFlag: string // "flags/FR.svg"
   targetCentroid: [number, number] // [lng, lat]
@@ -76,6 +77,8 @@ export type ModeGuessResult = {
 
 export type GuessOutcome = ModeGuessResult & { endsGame: boolean }
 
+export type CompletedRound = { round: RoundSpec; input: GuessInput; outcome: GuessOutcome }
+
 // ---- Session state ----
 export type GameSession = {
   modeId: ModeId
@@ -89,6 +92,7 @@ export type GameSession = {
   currentRound: RoundSpec | null
   lastOutcome: GuessOutcome | null
   endedEarly: boolean // true when finishFree() ended the game before natural completion
+  completedRounds: CompletedRound[]
   used: Set<string>
 }
 

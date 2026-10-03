@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    {
+      "id": "cloudflare_worker_queries_readme_slot_mapping",
+      "label": "Analytics Engine blob/double slot mapping (legacy daily slots reserved)",
+      "file_type": "document",
+      "source_file": "cloudflare-worker/queries/README.md",
+      "source_location": "Blob / double slot mapping",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "product_daily_mode_removal",
+      "target": "cloudflare_worker_queries_readme_slot_mapping",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "cloudflare-worker/queries/README.md",
+      "source_location": "Blob / double slot mapping",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

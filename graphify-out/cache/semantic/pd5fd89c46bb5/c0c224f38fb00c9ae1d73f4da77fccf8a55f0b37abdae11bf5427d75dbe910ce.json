@@ -1,0 +1,141 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_ux_smoothening_plan",
+      "label": "UX Smoothening Plan (PR1 + PR2)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "line 1",
+      "rationale": "Two sequential PRs: PR1 rewrites launcher copy, restructures composition, adds a tomorrow-countdown and softens the daily game-over screen; PR2 changes the first-load posture so the map is the homepage. UI vocabulary moves from 'free' to 'unlimited' while analytics event names stay unchanged for backwards compatibility.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_usenextdailycountdown",
+      "label": "useNextDailyCountdown hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Task 1.4",
+      "rationale": "Computes hours/minutes until local midnight and ticks every 60s; the unit logic lives in the hook so the LauncherCountdown component test can stay small and clock-mocking is confined to one place.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_launchercountdown",
+      "label": "LauncherCountdown component",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Phase 4",
+      "rationale": "Purely presentational 'Next puzzle in 4h 23m' line, mounted only when both modes are already played \u2014 it exists to give the exhausted-for-today state a forward-looking answer instead of a dead end.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_map_first_load_posture",
+      "label": "Map-first load posture",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Phase 7 (\u00a7C)",
+      "rationale": "useLauncherVisibility changes a single boolean rule so a bare hash returns visible:false \u2014 the map becomes the homepage and no modal blocks a cold visitor. Carries funnel risk, which is why the plan tracks it explicitly and pairs the change with a stateful header CTA so the daily stays reachable.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_header_cta_pill",
+      "label": "Stateful header CTA pill",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Phase 8 (\u00a7C)",
+      "rationale": "Replaces the bare icon play button with a three-state pill plus a streak chip and a mobile combined form, wired to a new header_cta_clicked analytics event \u2014 it is the compensating affordance for removing the auto-opening launcher modal.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_ensurelauncherdismissed_helper",
+      "label": "ensureLauncherDismissed / openLauncher e2e helpers",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Task 9.1",
+      "rationale": "Renaming dismissLauncher to ensureLauncherDismissed encodes the new posture in the helper name: the launcher may or may not be open on a bare load, so the helper must be a conditional no-op rather than an unconditional dismissal. openLauncher is its inverse for tests that need the launcher visible.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_unlimited_vocabulary_rename",
+      "label": "'free' to 'unlimited' vocabulary rename",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Architecture",
+      "rationale": "UI vocabulary changes from 'free' (which reads as a pricing tier) to 'unlimited' (which reads as a play mode), but analytics event names deliberately stay on the old spelling so historical funnel data remains comparable.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_ux_smoothening_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_usenextdailycountdown",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Task 1.4",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_launchercountdown",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_usenextdailycountdown",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Phase 4",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_header_cta_pill",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_map_first_load_posture",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Phases 7-8 (\u00a7C)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_ensurelauncherdismissed_helper",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_map_first_load_posture",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Task 9.1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_unlimited_vocabulary_rename",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_ux_smoothening_plan",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-17-ux-smoothening.md",
+      "source_location": "Architecture",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

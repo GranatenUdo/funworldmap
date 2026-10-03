@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_plan",
+      "label": "Launcher Landing State Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_launcher",
+      "label": "Launcher overlay with mode cards and explore-the-map dismiss",
+      "file_type": "concept",
+      "rationale": "Session-scoped: a dismiss hides it for the session, a fresh tab re-shows it, deep-link URLs bypass it, and game end re-shows it \u2014 so the default route sells the games without trapping returning explorers.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_use_launcher_visibility",
+      "label": "useLauncherVisibility hook",
+      "file_type": "concept",
+      "rationale": "Visibility is derived from window.location.hash plus session.status plus an in-memory dismissed flag; GameSessionContext is exported so tests can inject a mock API without booting real country/city pools.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_last_mode",
+      "label": "lastMode.ts storage helpers extracted before PlayMenu deletion",
+      "file_type": "rationale",
+      "rationale": "LAST_MODE_KEY and readLastMode lived inside PlayMenu; extracting them first keeps every intermediate commit compilable even though PlayMenu is deleted two phases later.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_playmenu_removal",
+      "label": "PlayMenu popover deleted in favour of the launcher",
+      "file_type": "rationale",
+      "rationale": "Two competing mode pickers would drift; the launcher becomes the single source of truth for mode selection.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_dismiss_helper",
+      "label": "e2e/helpers.ts dismissLauncher migration helper",
+      "file_type": "concept",
+      "rationale": "Changing the default route breaks roughly ten existing specs; a single shared helper migrates their beforeEach in one pass instead of scattering ad-hoc dismiss code.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_launcher",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_launcher",
+      "target": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_use_launcher_visibility",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_playmenu_removal",
+      "target": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_play_menu",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_last_mode",
+      "target": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_playmenu_removal",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_use_launcher_visibility",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_provider",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_personal_bests",
+      "target": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_last_mode",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-20-launcher-landing-state.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

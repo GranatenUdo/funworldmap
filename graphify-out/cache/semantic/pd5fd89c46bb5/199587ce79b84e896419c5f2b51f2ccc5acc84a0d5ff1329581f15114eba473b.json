@@ -1,0 +1,116 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_plan",
+      "label": "Deferred Cleanups Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_layer_constants",
+      "label": "Typed LAYER id registry in mapLayers.ts",
+      "file_type": "concept",
+      "rationale": "String-literal layer IDs scattered across five hooks made renames unsafe; a const map makes typos a compile-time error.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_stale_closure_fix",
+      "label": "Stale `loaded` closure fix in useMapInstance",
+      "file_type": "rationale",
+      "rationale": "The captured closure could produce one extra MapErrorOverlay after a post-load tile error \u2014 the only non-behaviour-preserving change in the cleanup batch besides deleting a silently-throwing setFog call.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_compare_view_dimming",
+      "label": "useCompareViewDimming split out of useSelectionHighlight",
+      "file_type": "concept",
+      "rationale": "The dimming effect is call-order coupled to the selection filters, so an e2e spec guards the ordering after the split.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_shared_atoms",
+      "label": "Shared CloseButton and FieldLabel components",
+      "file_type": "concept",
+      "rationale": "Extracted only where the duplication was literal; a variant CountryHeader extraction was rejected as over-parameterized.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_17_findings_implementation_and_voting_removal_worldmap_refactor",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_layer_constants",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_layer_constants",
+      "target": "docs_superpowers_plans_archive_2026_04_16_polish_keyboard_compare_compare_layers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_stale_closure_fix",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_error_overlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_compare_view_dimming",
+      "target": "docs_superpowers_plans_archive_2026_04_16_polish_keyboard_compare_compare_mode",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-deferred-cleanups.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

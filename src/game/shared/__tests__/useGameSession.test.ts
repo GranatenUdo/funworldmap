@@ -67,6 +67,7 @@ describe('useGameSession (single-attempt free-play)', () => {
         kind: 'city-guessing',
         targetId: 'FRA-paris',
         targetName: 'Paris',
+        targetCountryCca3: 'FRA',
         targetCountryName: 'France',
         targetCountryFlag: 'flags/FRA.svg',
         targetCentroid: [2.35, 48.85],
@@ -430,6 +431,7 @@ describe('useGameSession (single-attempt free-play)', () => {
         kind: 'city-guessing',
         targetId: 'paris',
         targetName: 'Paris',
+        targetCountryCca3: 'FRA',
         targetCountryName: 'France',
         targetCountryFlag: 'flags/FRA.svg',
         targetCentroid: [2.35, 48.85],
@@ -470,6 +472,7 @@ describe('useGameSession (single-attempt free-play)', () => {
         kind: 'city-guessing',
         targetId: 'tokyo',
         targetName: 'Tokyo',
+        targetCountryCca3: 'FRA',
         targetCountryName: 'Japan',
         targetCountryFlag: 'flags/JPN.svg',
         targetCentroid: [139.69, 35.68],
@@ -575,6 +578,7 @@ describe('useGameSession (single-attempt free-play)', () => {
         kind: 'city-guessing',
         targetId: 'FRA-paris',
         targetName: 'Paris',
+        targetCountryCca3: 'FRA',
         targetCountryName: 'France',
         targetCountryFlag: 'flags/FRA.svg',
         targetCentroid: [2.35, 48.85],
@@ -600,5 +604,31 @@ describe('useGameSession (single-attempt free-play)', () => {
       expect(result.current.session.status).toBe('round-ended')
       expect(result.current.session.lastOutcome?.endsGame).toBe(true)
     })
+  })
+})
+
+
+describe('completed round review', () => {
+  it('records only accepted attempts and clears history on restart', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => result.current.start('country-pinning', round('FRA'), null))
+    act(() => {
+      result.current.attempt(countryInput('FRA'), exact('FRA'))
+      result.current.attempt(countryInput('FRA'), exact('FRA'))
+    })
+    expect(result.current.session.completedRounds).toHaveLength(1)
+    expect(result.current.session.completedRounds[0]).toMatchObject({ round: round('FRA'), input: countryInput('FRA'), outcome: exact('FRA') })
+    act(() => result.current.restart('country-pinning', round('DEU'), null))
+    expect(result.current.session.completedRounds).toEqual([])
+  })
+  it('cannot advance a terminal round or lose its recorded outcome', () => {
+    const { result } = renderHook(() => useGameSession())
+    act(() => result.current.start('country-pinning', round('FRA'), 1))
+    act(() => result.current.attempt(countryInput('FRA'), exact('FRA')))
+    act(() => result.current.advance(round('DEU')))
+    expect(result.current.session.status).toBe('round-ended')
+    expect(result.current.session.currentRound).toEqual(round('FRA'))
+    act(() => result.current.finalize())
+    expect(result.current.session.completedRounds).toHaveLength(1)
   })
 })

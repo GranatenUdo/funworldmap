@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCountrySearch } from '../hooks/useCountrySearch'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { FINE_POINTER_MEDIA_QUERY, TOUCH_TARGET_FROM_24 } from '../lib/layoutConstants'
+import { REGION_TINTS, REGION_TINT_FALLBACK } from '../lib/regionTints'
 import type { CountryData } from '../lib/types'
 
 interface Props {
@@ -12,15 +13,6 @@ interface Props {
 }
 
 const LISTBOX_ID = 'search-results'
-
-const REGION_COLORS: Record<string, string> = {
-  Africa: 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300',
-  Americas: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300',
-  Asia: 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-300',
-  Europe: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-  Oceania: 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300',
-  Antarctic: 'bg-slate-100 text-slate-800 dark:bg-slate-800/30 dark:text-slate-300',
-}
 
 export default function SearchBar({
   countries,
@@ -142,7 +134,7 @@ export default function SearchBar({
           if (query.trim()) setIsOpen(true)
         }}
         onBlur={() => setIsFocused(false)}
-        className="w-full pl-10 pr-9 py-3 rounded-xl bg-sand-100 dark:bg-dark-400/80 backdrop-blur-md border border-sand-300 dark:border-dark-200/30 text-sand-900 dark:text-dark-50 text-sm max-sm:text-base placeholder-sand-400 dark:placeholder-dark-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/40 dark:focus-visible:ring-ice/40 focus:border-ice-dim/40 dark:focus:border-ice/30 transition-all duration-150"
+        className="w-full pl-10 pr-9 py-3 rounded-xl bg-sand-100 dark:bg-dark-400/80 backdrop-blur-md border border-sand-300 dark:border-dark-200/30 text-sand-900 dark:text-dark-50 text-sm max-sm:text-base placeholder-sand-600 dark:placeholder-dark-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/40 dark:focus-visible:ring-ice/40 focus:border-ice-dim/40 dark:focus:border-ice/30 transition-all duration-150"
         id="search-input"
         data-testid="search-input"
       />
@@ -154,7 +146,7 @@ export default function SearchBar({
             setIsOpen(false)
             inputRef.current?.focus()
           }}
-          className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-sand-400 hover:text-sand-600 dark:text-dark-100 dark:hover:text-dark-50 ${TOUCH_TARGET_FROM_24}`}
+          className={`absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-sand-500 hover:text-sand-600 dark:text-dark-100 dark:hover:text-dark-50 ${TOUCH_TARGET_FROM_24}`}
           aria-label="Clear search"
           data-testid="search-clear"
         >
@@ -177,7 +169,7 @@ export default function SearchBar({
         <kbd
           aria-hidden="true"
           data-testid="search-shortcut-hint"
-          className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none px-1.5 py-0.5 rounded-md border border-sand-300/60 dark:border-dark-200/40 bg-sand-200/60 dark:bg-dark-300/60 text-[11px] font-medium text-sand-500 dark:text-dark-100"
+          className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none px-1.5 py-0.5 rounded-md border border-sand-300/60 dark:border-dark-200/40 bg-sand-200/60 dark:bg-dark-300/60 text-[11px] font-medium text-sand-600 dark:text-dark-100"
         >
           /
         </kbd>
@@ -220,15 +212,14 @@ export default function SearchBar({
                     </div>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       {country.capital.length > 0 && (
-                        <span className="text-xs text-sand-500 dark:text-dark-100 truncate">
+                        <span className="text-xs text-sand-600 dark:text-dark-100 truncate">
                           {country.capital[0]}
                         </span>
                       )}
                       <span
                         data-testid="region-badge"
                         className={`text-[11px] font-medium px-1.5 py-0.5 rounded-full ${
-                          REGION_COLORS[country.region] ||
-                          'bg-sand-200 text-sand-600 dark:bg-dark-200 dark:text-dark-100'
+                          REGION_TINTS[country.region]?.solid ?? REGION_TINT_FALLBACK
                         }`}
                       >
                         {country.region}
@@ -239,7 +230,7 @@ export default function SearchBar({
               ))
             : query.trim().length > 0 && (
                 <li
-                  className="px-4 py-3 text-sm text-sand-500 dark:text-dark-100"
+                  className="px-4 py-3 text-sm text-sand-600 dark:text-dark-100"
                   data-testid="search-no-results"
                 >
                   No countries found for &ldquo;{query}&rdquo;
@@ -248,7 +239,7 @@ export default function SearchBar({
           {results.length > 0 && finePointer && (
             <li role="presentation" aria-hidden="true">
               <div
-                className="px-3 py-2 border-t border-sand-200/60 dark:border-dark-200/30 text-[11px] text-sand-500 dark:text-dark-100 flex gap-3 justify-end sticky bottom-0 bg-sand-50/95 dark:bg-dark-400/95"
+                className="px-3 py-2 border-t border-sand-200/60 dark:border-dark-200/30 text-[11px] text-sand-600 dark:text-dark-100 flex gap-3 justify-end sticky bottom-0 bg-sand-50/95 dark:bg-dark-400/95"
                 data-testid="search-keyboard-hint"
                 aria-hidden="true"
               >

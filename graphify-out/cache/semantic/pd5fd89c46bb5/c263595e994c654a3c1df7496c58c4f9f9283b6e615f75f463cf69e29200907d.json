@@ -1,0 +1,63 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_29_daily_content_data_branch_daily_content_data_branch_plan",
+      "label": "Daily content on a data branch Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-29-daily-content-data-branch.md",
+      "source_location": "line 3",
+      "rationale": "Move the generated daily index off main so main stops accruing chore(daily) bot commits, while preserving production freshness, per-date provenance, and the scheduled-workflow keepalive. Rewriting the 137 existing bot commits was declined by the owner. Tombstoned 2026-06-12 (daily removed in PR #97).",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_29_daily_content_data_branch_orphan_data_branch",
+      "label": "Orphan data branch for the daily index",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-29-daily-content-data-branch.md",
+      "source_location": "Tasks 1-3",
+      "rationale": "The bot commits index.json to an orphan data branch 4x/day; deploy.yml fetches it from there at build time with a generate-fallback so a missing or stale branch cannot break a deploy. Orphan (not a normal branch) so the content history never entangles with source history.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_29_daily_content_data_branch_generate_on_demand_index",
+      "label": "Generate-on-demand index for dev and e2e",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-29-daily-content-data-branch.md",
+      "source_location": "Task 4",
+      "rationale": "Once the index is untracked, local dev and Playwright would have no file to serve; a predev npm script and a playwright.config webServer regeneration keep both environments self-sufficient without re-tracking a generated artifact.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_29_daily_content_data_branch_daily_content_data_branch_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_remove_daily_remove_daily_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-29-daily-content-data-branch.md",
+      "source_location": "line 1 \u2014 Tombstone: removed in PR #97",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_29_daily_content_data_branch_orphan_data_branch",
+      "target": "docs_superpowers_plans_archive_2026_05_29_daily_content_data_branch_generate_on_demand_index",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-29-daily-content-data-branch.md",
+      "source_location": "Tasks 1-4",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

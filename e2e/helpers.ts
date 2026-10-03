@@ -107,6 +107,7 @@ export async function ensureLauncherDismissed(page: Page): Promise<void> {
  * map-first posture (PR2) means bare '/' no longer auto-opens the launcher.
  */
 export async function openLauncher(page: Page): Promise<void> {
+  if (await page.getByTestId("launcher").isVisible()) return
   await waitForAppReady(page)
   await page.getByTestId('header-play').click()
   await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 5_000 })
@@ -267,8 +268,8 @@ export async function waitForRevealLineCoords(
  *   - *.pbf                                  — vector tiles and glyph ranges → empty body
  *
  * The map renders blank after these stubs, but layer-style assertions,
- * satellite-toggle aria-pressed state, and map.getLayoutProperty() calls
- * still work because they read MapLibre's in-memory style — not pixels.
+ * satellite-toggle data-satellite-active state, and map.getLayoutProperty()
+ * calls still work because they read MapLibre's in-memory style — not pixels.
  *
  * All localhost requests (app assets, preview-server routes) pass through
  * unchanged.

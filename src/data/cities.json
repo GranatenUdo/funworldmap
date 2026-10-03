@@ -5,10 +5,7 @@
     "countryCca3": "JPN",
     "countryName": "Japan",
     "countryFlag": "flags/JP.svg",
-    "latlng": [
-      35.686963,
-      139.749462
-    ],
+    "latlng": [35.686963, 139.749462],
     "scalerank": 0
   },
   {
@@ -17,10 +14,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      40.721562,
-      -73.995718
-    ],
+    "latlng": [40.721562, -73.995718],
     "scalerank": 0
   },
   {
@@ -29,10 +23,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      19.444388,
-      -99.132934
-    ],
+    "latlng": [19.444388, -99.132934],
     "scalerank": 0
   },
   {
@@ -41,10 +32,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      19.068408,
-      72.875839
-    ],
+    "latlng": [19.068408, 72.875839],
     "scalerank": 0
   },
   {
@@ -53,10 +41,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -23.556734,
-      -46.626966
-    ],
+    "latlng": [-23.556734, -46.626966],
     "scalerank": 0
   },
   {
@@ -65,10 +50,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      31.218398,
-      121.434559
-    ],
+    "latlng": [31.218398, 121.434559],
     "scalerank": 0
   },
   {
@@ -77,10 +59,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      22.569579,
-      88.369126
-    ],
+    "latlng": [22.569579, 88.369126],
     "scalerank": 0
   },
   {
@@ -89,10 +68,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      34.049219,
-      -118.231986
-    ],
+    "latlng": [34.049219, -118.231986],
     "scalerank": 0
   },
   {
@@ -101,10 +77,7 @@
     "countryCca3": "EGY",
     "countryName": "Egypt",
     "countryFlag": "flags/EG.svg",
-    "latlng": [
-      30.051906,
-      31.248022
-    ],
+    "latlng": [30.051906, 31.248022],
     "scalerank": 0
   },
   {
@@ -113,10 +86,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -22.907308,
-      -43.212117
-    ],
+    "latlng": [-22.907308, -43.212117],
     "scalerank": 0
   },
   {
@@ -125,10 +95,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      39.90172,
-      116.394201
-    ],
+    "latlng": [39.90172, 116.394201],
     "scalerank": 0
   },
   {
@@ -137,10 +104,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      55.75411,
-      37.613577
-    ],
+    "latlng": [55.75411, 37.613577],
     "scalerank": 0
   },
   {
@@ -149,10 +113,7 @@
     "countryCca3": "TUR",
     "countryName": "Turkey",
     "countryFlag": "flags/TR.svg",
-    "latlng": [
-      41.017602,
-      28.974277
-    ],
+    "latlng": [41.017602, 28.974277],
     "scalerank": 0
   },
   {
@@ -161,10 +122,7 @@
     "countryCca3": "FRA",
     "countryName": "France",
     "countryFlag": "flags/FR.svg",
-    "latlng": [
-      48.858092,
-      2.352992
-    ],
+    "latlng": [48.858092, 2.352992],
     "scalerank": 0
   },
   {
@@ -173,10 +131,7 @@
     "countryCca3": "NGA",
     "countryName": "Nigeria",
     "countryFlag": "flags/NG.svg",
-    "latlng": [
-      6.445208,
-      3.389585
-    ],
+    "latlng": [6.445208, 3.389585],
     "scalerank": 0
   },
   {
@@ -185,10 +140,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -6.172472,
-      106.827492
-    ],
+    "latlng": [-6.172472, 106.827492],
     "scalerank": 0
   },
   {
@@ -197,10 +149,7 @@
     "countryCca3": "GBR",
     "countryName": "United Kingdom",
     "countryFlag": "flags/GB.svg",
-    "latlng": [
-      51.501941,
-      -0.118668
-    ],
+    "latlng": [51.501941, -0.118668],
     "scalerank": 0
   },
   {
@@ -209,10 +158,7 @@
     "countryCca3": "COL",
     "countryName": "Colombia",
     "countryFlag": "flags/CO.svg",
-    "latlng": [
-      4.598369,
-      -74.08529
-    ],
+    "latlng": [4.598369, -74.08529],
     "scalerank": 0
   },
   {
@@ -221,10 +167,7 @@
     "countryCca3": "HKG",
     "countryName": "Hong Kong",
     "countryFlag": "flags/HK.svg",
-    "latlng": [
-      22.306927,
-      114.183064
-    ],
+    "latlng": [22.306927, 114.183064],
     "scalerank": 0
   },
   {
@@ -233,10 +176,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -33.440205,
-      -70.650504
-    ],
+    "latlng": [-33.440205, -70.650504],
     "scalerank": 0
   },
   {
@@ -245,10 +185,7 @@
     "countryCca3": "SGP",
     "countryName": "Singapore",
     "countryFlag": "flags/SG.svg",
-    "latlng": [
-      1.294979,
-      103.853875
-    ],
+    "latlng": [1.294979, 103.853875],
     "scalerank": 0
   },
   {
@@ -257,10 +194,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -33.871373,
-      151.212548
-    ],
+    "latlng": [-33.871373, 151.212548],
     "scalerank": 0
   },
   {
@@ -269,22 +203,16 @@
     "countryCca3": "SAU",
     "countryName": "Saudi Arabia",
     "countryFlag": "flags/SA.svg",
-    "latlng": [
-      24.634497,
-      46.720487
-    ],
+    "latlng": [24.634497, 46.720487],
     "scalerank": 0
   },
   {
     "id": "USA-washington-d-c",
-    "name": "Washington,  D.C.",
+    "name": "Washington, D.C.",
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      38.901495,
-      -77.011364
-    ],
+    "latlng": [38.901495, -77.011364],
     "scalerank": 0
   },
   {
@@ -293,10 +221,7 @@
     "countryCca3": "ITA",
     "countryName": "Italy",
     "countryFlag": "flags/IT.svg",
-    "latlng": [
-      41.897902,
-      12.481313
-    ],
+    "latlng": [41.897902, 12.481313],
     "scalerank": 0
   },
   {
@@ -305,10 +230,7 @@
     "countryCca3": "ZAF",
     "countryName": "South Africa",
     "countryFlag": "flags/ZA.svg",
-    "latlng": [
-      -33.918065,
-      18.433042
-    ],
+    "latlng": [-33.918065, 18.433042],
     "scalerank": 0
   },
   {
@@ -317,10 +239,7 @@
     "countryCca3": "KEN",
     "countryName": "Kenya",
     "countryFlag": "flags/KE.svg",
-    "latlng": [
-      -1.281401,
-      36.814711
-    ],
+    "latlng": [-1.281401, 36.814711],
     "scalerank": 0
   },
   {
@@ -329,10 +248,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -34.610715,
-      -58.432513
-    ],
+    "latlng": [-34.610715, -58.432513],
     "scalerank": 1
   },
   {
@@ -341,10 +257,7 @@
     "countryCca3": "JPN",
     "countryName": "Japan",
     "countryFlag": "flags/JP.svg",
-    "latlng": [
-      34.691095,
-      135.503754
-    ],
+    "latlng": [34.691095, 135.503754],
     "scalerank": 1
   },
   {
@@ -353,10 +266,7 @@
     "countryCca3": "PHL",
     "countryName": "Philippines",
     "countryFlag": "flags/PH.svg",
-    "latlng": [
-      14.606105,
-      120.980271
-    ],
+    "latlng": [14.606105, 120.980271],
     "scalerank": 1
   },
   {
@@ -365,10 +275,7 @@
     "countryCca3": "KOR",
     "countryName": "South Korea",
     "countryFlag": "flags/KR.svg",
-    "latlng": [
-      37.568295,
-      126.997785
-    ],
+    "latlng": [37.568295, 126.997785],
     "scalerank": 1
   },
   {
@@ -377,10 +284,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      41.847961,
-      -87.635237
-    ],
+    "latlng": [41.847961, -87.635237],
     "scalerank": 1
   },
   {
@@ -389,10 +293,7 @@
     "countryCca3": "PER",
     "countryName": "Peru",
     "countryFlag": "flags/PE.svg",
-    "latlng": [
-      -12.046067,
-      -77.052008
-    ],
+    "latlng": [-12.046067, -77.052008],
     "scalerank": 1
   },
   {
@@ -401,10 +302,7 @@
     "countryCca3": "IRN",
     "countryName": "Iran",
     "countryFlag": "flags/IR.svg",
-    "latlng": [
-      35.673889,
-      51.422398
-    ],
+    "latlng": [35.673889, 51.422398],
     "scalerank": 1
   },
   {
@@ -413,10 +311,7 @@
     "countryCca3": "COD",
     "countryName": "DR Congo",
     "countryFlag": "flags/CD.svg",
-    "latlng": [
-      -4.327778,
-      15.313026
-    ],
+    "latlng": [-4.327778, 15.313026],
     "scalerank": 1
   },
   {
@@ -425,10 +320,7 @@
     "countryCca3": "TWN",
     "countryName": "Taiwan",
     "countryFlag": "flags/TW.svg",
-    "latlng": [
-      25.035833,
-      121.568333
-    ],
+    "latlng": [25.035833, 121.568333],
     "scalerank": 1
   },
   {
@@ -437,10 +329,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      12.971941,
-      77.558064
-    ],
+    "latlng": [12.971941, 77.558064],
     "scalerank": 1
   },
   {
@@ -449,10 +338,7 @@
     "countryCca3": "THA",
     "countryName": "Thailand",
     "countryFlag": "flags/TH.svg",
-    "latlng": [
-      13.751945,
-      100.514699
-    ],
+    "latlng": [13.751945, 100.514699],
     "scalerank": 1
   },
   {
@@ -461,10 +347,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      25.789557,
-      -80.226052
-    ],
+    "latlng": [25.789557, -80.226052],
     "scalerank": 1
   },
   {
@@ -473,10 +356,7 @@
     "countryCca3": "ESP",
     "countryName": "Spain",
     "countryFlag": "flags/ES.svg",
-    "latlng": [
-      40.401972,
-      -3.685297
-    ],
+    "latlng": [40.401972, -3.685297],
     "scalerank": 1
   },
   {
@@ -485,10 +365,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      43.664645,
-      -79.389459
-    ],
+    "latlng": [43.664645, -79.389459],
     "scalerank": 1
   },
   {
@@ -497,10 +374,7 @@
     "countryCca3": "IRQ",
     "countryName": "Iraq",
     "countryFlag": "flags/IQ.svg",
-    "latlng": [
-      33.340594,
-      44.391923
-    ],
+    "latlng": [33.340594, 44.391923],
     "scalerank": 1
   },
   {
@@ -509,10 +383,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      33.739457,
-      -84.367642
-    ],
+    "latlng": [33.739457, -84.367642],
     "scalerank": 1
   },
   {
@@ -521,10 +392,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      29.741273,
-      -95.348436
-    ],
+    "latlng": [29.741273, -95.348436],
     "scalerank": 1
   },
   {
@@ -533,10 +401,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -37.818086,
-      144.97307
-    ],
+    "latlng": [-37.818086, 144.97307],
     "scalerank": 1
   },
   {
@@ -545,10 +410,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      30.671946,
-      104.068074
-    ],
+    "latlng": [30.671946, 104.068074],
     "scalerank": 1
   },
   {
@@ -557,10 +419,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      25.671941,
-      -100.331931
-    ],
+    "latlng": [25.671941, -100.331931],
     "scalerank": 1
   },
   {
@@ -569,10 +428,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      43.806958,
-      87.57306
-    ],
+    "latlng": [43.806958, 87.57306],
     "scalerank": 1
   },
   {
@@ -581,10 +437,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      37.784263,
-      -122.3996
-    ],
+    "latlng": [37.784263, -122.3996],
     "scalerank": 1
   },
   {
@@ -593,10 +446,7 @@
     "countryCca3": "ZAF",
     "countryName": "South Africa",
     "countryFlag": "flags/ZA.svg",
-    "latlng": [
-      -26.168099,
-      28.028064
-    ],
+    "latlng": [-26.168099, 28.028064],
     "scalerank": 1
   },
   {
@@ -605,10 +455,7 @@
     "countryCca3": "DEU",
     "countryName": "Germany",
     "countryFlag": "flags/DE.svg",
-    "latlng": [
-      52.523764,
-      13.399603
-    ],
+    "latlng": [52.523764, 13.399603],
     "scalerank": 1
   },
   {
@@ -617,10 +464,7 @@
     "countryCca3": "AFG",
     "countryName": "Afghanistan",
     "countryFlag": "flags/AF.svg",
-    "latlng": [
-      34.518636,
-      69.181314
-    ],
+    "latlng": [34.518636, 69.181314],
     "scalerank": 1
   },
   {
@@ -629,10 +473,7 @@
     "countryCca3": "GRC",
     "countryName": "Greece",
     "countryFlag": "flags/GR.svg",
-    "latlng": [
-      37.985272,
-      23.731375
-    ],
+    "latlng": [37.985272, 23.731375],
     "scalerank": 1
   },
   {
@@ -641,10 +482,7 @@
     "countryCca3": "MAR",
     "countryName": "Morocco",
     "countryFlag": "flags/MA.svg",
-    "latlng": [
-      33.601922,
-      -7.618313
-    ],
+    "latlng": [33.601922, -7.618313],
     "scalerank": 1
   },
   {
@@ -653,10 +491,7 @@
     "countryCca3": "ETH",
     "countryName": "Ethiopia",
     "countryFlag": "flags/ET.svg",
-    "latlng": [
-      9.035256,
-      38.698059
-    ],
+    "latlng": [9.035256, 38.698059],
     "scalerank": 1
   },
   {
@@ -665,10 +500,7 @@
     "countryCca3": "VEN",
     "countryName": "Venezuela",
     "countryFlag": "flags/VE.svg",
-    "latlng": [
-      10.502944,
-      -66.918983
-    ],
+    "latlng": [10.502944, -66.918983],
     "scalerank": 1
   },
   {
@@ -677,10 +509,7 @@
     "countryCca3": "UKR",
     "countryName": "Ukraine",
     "countryFlag": "flags/UA.svg",
-    "latlng": [
-      50.435313,
-      30.514682
-    ],
+    "latlng": [50.435313, 30.514682],
     "scalerank": 1
   },
   {
@@ -689,10 +518,7 @@
     "countryCca3": "SEN",
     "countryName": "Senegal",
     "countryFlag": "flags/SN.svg",
-    "latlng": [
-      14.717778,
-      -17.475076
-    ],
+    "latlng": [14.717778, -17.475076],
     "scalerank": 1
   },
   {
@@ -701,10 +527,7 @@
     "countryCca3": "AUT",
     "countryName": "Austria",
     "countryFlag": "flags/AT.svg",
-    "latlng": [
-      48.201961,
-      16.364693
-    ],
+    "latlng": [48.201961, 16.364693],
     "scalerank": 1
   },
   {
@@ -713,10 +536,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      49.275362,
-      -123.12359
-    ],
+    "latlng": [49.275362, -123.12359],
     "scalerank": 1
   },
   {
@@ -725,10 +545,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      39.741134,
-      -104.985962
-    ],
+    "latlng": [39.741134, -104.985962],
     "scalerank": 1
   },
   {
@@ -737,10 +554,7 @@
     "countryCca3": "UZB",
     "countryName": "Uzbekistan",
     "countryFlag": "flags/UZ.svg",
-    "latlng": [
-      41.303828,
-      69.268823
-    ],
+    "latlng": [41.303828, 69.268823],
     "scalerank": 1
   },
   {
@@ -749,10 +563,7 @@
     "countryCca3": "ARE",
     "countryName": "United Arab Emirates",
     "countryFlag": "flags/AE.svg",
-    "latlng": [
-      25.214912,
-      55.286946
-    ],
+    "latlng": [25.214912, 55.286946],
     "scalerank": 1
   },
   {
@@ -761,10 +572,7 @@
     "countryCca3": "NZL",
     "countryName": "New Zealand",
     "countryFlag": "flags/NZ.svg",
-    "latlng": [
-      -36.848055,
-      174.763027
-    ],
+    "latlng": [-36.848055, 174.763027],
     "scalerank": 1
   },
   {
@@ -773,10 +581,7 @@
     "countryCca3": "SWE",
     "countryName": "Sweden",
     "countryFlag": "flags/SE.svg",
-    "latlng": [
-      59.324127,
-      18.0663
-    ],
+    "latlng": [59.324127, 18.0663],
     "scalerank": 1
   },
   {
@@ -785,10 +590,7 @@
     "countryCca3": "CHE",
     "countryName": "Switzerland",
     "countryFlag": "flags/CH.svg",
-    "latlng": [
-      46.210008,
-      6.140028
-    ],
+    "latlng": [46.210008, 6.140028],
     "scalerank": 1
   },
   {
@@ -797,10 +599,7 @@
     "countryCca3": "NLD",
     "countryName": "Netherlands",
     "countryFlag": "flags/NL.svg",
-    "latlng": [
-      52.351914,
-      4.914694
-    ],
+    "latlng": [52.351914, 4.914694],
     "scalerank": 1
   },
   {
@@ -809,10 +608,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      28.600023,
-      77.19998
-    ],
+    "latlng": [28.600023, 77.19998],
     "scalerank": 1
   },
   {
@@ -821,10 +617,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      28.671939,
-      77.228058
-    ],
+    "latlng": [28.671939, 77.228058],
     "scalerank": 2
   },
   {
@@ -833,10 +626,7 @@
     "countryCca3": "BGD",
     "countryName": "Bangladesh",
     "countryFlag": "flags/BD.svg",
-    "latlng": [
-      23.725006,
-      90.406634
-    ],
+    "latlng": [23.725006, 90.406634],
     "scalerank": 2
   },
   {
@@ -845,10 +635,7 @@
     "countryCca3": "PAK",
     "countryName": "Pakistan",
     "countryFlag": "flags/PK.svg",
-    "latlng": [
-      24.871938,
-      66.988063
-    ],
+    "latlng": [24.871938, 66.988063],
     "scalerank": 2
   },
   {
@@ -857,10 +644,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      23.124723,
-      113.261785
-    ],
+    "latlng": [23.124723, 113.261785],
     "scalerank": 2
   },
   {
@@ -869,10 +653,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      22.548097,
-      114.061154
-    ],
+    "latlng": [22.548097, 114.061154],
     "scalerank": 2
   },
   {
@@ -881,10 +662,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      30.581977,
-      114.268071
-    ],
+    "latlng": [30.581977, 114.268071],
     "scalerank": 2
   },
   {
@@ -893,10 +671,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      39.082772,
-      117.196607
-    ],
+    "latlng": [39.082772, 117.196607],
     "scalerank": 2
   },
   {
@@ -905,10 +680,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      13.091934,
-      80.278053
-    ],
+    "latlng": [13.091934, 80.278053],
     "scalerank": 2
   },
   {
@@ -917,10 +689,7 @@
     "countryCca3": "PAK",
     "countryName": "Pakistan",
     "countryFlag": "flags/PK.svg",
-    "latlng": [
-      31.561917,
-      74.348079
-    ],
+    "latlng": [31.561917, 74.348079],
     "scalerank": 2
   },
   {
@@ -929,10 +698,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      29.566923,
-      106.593036
-    ],
+    "latlng": [29.566923, 106.593036],
     "scalerank": 2
   },
   {
@@ -941,10 +707,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      17.401929,
-      78.478008
-    ],
+    "latlng": [17.401929, 78.478008],
     "scalerank": 2
   },
   {
@@ -953,10 +716,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      39.945942,
-      -75.179841
-    ],
+    "latlng": [39.945942, -75.179841],
     "scalerank": 2
   },
   {
@@ -965,10 +725,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      23.031999,
-      72.578058
-    ],
+    "latlng": [23.031999, 72.578058],
     "scalerank": 2
   },
   {
@@ -977,10 +734,7 @@
     "countryCca3": "VNM",
     "countryName": "Vietnam",
     "countryFlag": "flags/VN.svg",
-    "latlng": [
-      10.762125,
-      106.702985
-    ],
+    "latlng": [10.762125, 106.702985],
     "scalerank": 2
   },
   {
@@ -989,10 +743,7 @@
     "countryCca3": "AGO",
     "countryName": "Angola",
     "countryFlag": "flags/AO.svg",
-    "latlng": [
-      -8.83634,
-      13.232481
-    ],
+    "latlng": [-8.83634, 13.232481],
     "scalerank": 2
   },
   {
@@ -1001,10 +752,7 @@
     "countryCca3": "ESP",
     "countryName": "Spain",
     "countryFlag": "flags/ES.svg",
-    "latlng": [
-      41.385245,
-      2.181424
-    ],
+    "latlng": [41.385245, 2.181424],
     "scalerank": 2
   },
   {
@@ -1013,22 +761,16 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      32.771958,
-      -96.794687
-    ],
+    "latlng": [32.771958, -96.794687],
     "scalerank": 2
   },
   {
-    "id": "CHN-shenyeng",
-    "name": "Shenyeng",
+    "id": "CHN-shenyang",
+    "name": "Shenyang",
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      41.806925,
-      123.448028
-    ],
+    "latlng": [41.806925, 123.448028],
     "scalerank": 2
   },
   {
@@ -1037,10 +779,7 @@
     "countryCca3": "SDN",
     "countryName": "Sudan",
     "countryFlag": "flags/SD.svg",
-    "latlng": [
-      15.590024,
-      32.532233
-    ],
+    "latlng": [15.590024, 32.532233],
     "scalerank": 2
   },
   {
@@ -1049,22 +788,16 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      18.516394,
-      73.851892
-    ],
+    "latlng": [18.516394, 73.851892],
     "scalerank": 2
   },
   {
     "id": "RUS-st-petersburg",
-    "name": "St.  Petersburg",
+    "name": "St. Petersburg",
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      59.94096,
-      30.314074
-    ],
+    "latlng": [59.94096, 30.314074],
     "scalerank": 2
   },
   {
@@ -1073,10 +806,7 @@
     "countryCca3": "BGD",
     "countryName": "Bangladesh",
     "countryFlag": "flags/BD.svg",
-    "latlng": [
-      22.331938,
-      91.798022
-    ],
+    "latlng": [22.331938, 91.798022],
     "scalerank": 2
   },
   {
@@ -1085,10 +815,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      23.021537,
-      113.750474
-    ],
+    "latlng": [23.021537, 113.750474],
     "scalerank": 2
   },
   {
@@ -1097,10 +824,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      42.331906,
-      -71.07196
-    ],
+    "latlng": [42.331906, -71.07196],
     "scalerank": 2
   },
   {
@@ -1109,10 +833,7 @@
     "countryCca3": "VNM",
     "countryName": "Vietnam",
     "countryFlag": "flags/VN.svg",
-    "latlng": [
-      21.035273,
-      105.848068
-    ],
+    "latlng": [21.035273, 105.848068],
     "scalerank": 2
   },
   {
@@ -1121,10 +842,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      20.671962,
-      -103.33198
-    ],
+    "latlng": [20.671962, -103.33198],
     "scalerank": 2
   },
   {
@@ -1133,10 +851,7 @@
     "countryCca3": "EGY",
     "countryName": "Egypt",
     "countryFlag": "flags/EG.svg",
-    "latlng": [
-      31.201965,
-      29.94805
-    ],
+    "latlng": [31.201965, 29.94805],
     "scalerank": 2
   },
   {
@@ -1145,10 +860,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      42.333558,
-      -83.051334
-    ],
+    "latlng": [42.333558, -83.051334],
     "scalerank": 2
   },
   {
@@ -1157,10 +869,7 @@
     "countryCca3": "MMR",
     "countryName": "Myanmar",
     "countryFlag": "flags/MM.svg",
-    "latlng": [
-      16.7853,
-      96.164732
-    ],
+    "latlng": [16.7853, 96.164732],
     "scalerank": 2
   },
   {
@@ -1169,10 +878,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      34.276971,
-      108.89305
-    ],
+    "latlng": [34.276971, 108.89305],
     "scalerank": 2
   },
   {
@@ -1181,10 +887,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -30.048069,
-      -51.201958
-    ],
+    "latlng": [-30.048069, -51.201958],
     "scalerank": 2
   },
   {
@@ -1193,10 +896,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      21.20193,
-      72.838094
-    ],
+    "latlng": [21.20193, 72.838094],
     "scalerank": 2
   },
   {
@@ -1205,10 +905,7 @@
     "countryCca3": "CIV",
     "countryName": "Ivory Coast",
     "countryFlag": "flags/CI.svg",
-    "latlng": [
-      5.323126,
-      -4.020207
-    ],
+    "latlng": [5.323126, -4.020207],
     "scalerank": 2
   },
   {
@@ -1217,10 +914,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -15.781394,
-      -47.917998
-    ],
+    "latlng": [-15.781394, -47.917998],
     "scalerank": 2
   },
   {
@@ -1229,10 +923,7 @@
     "countryCca3": "TUR",
     "countryName": "Turkey",
     "countryFlag": "flags/TR.svg",
-    "latlng": [
-      39.929184,
-      32.862446
-    ],
+    "latlng": [39.929184, 32.862446],
     "scalerank": 2
   },
   {
@@ -1241,10 +932,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      32.051965,
-      118.778029
-    ],
+    "latlng": [32.051965, 118.778029],
     "scalerank": 2
   },
   {
@@ -1253,10 +941,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      45.501945,
-      -73.585243
-    ],
+    "latlng": [45.501945, -73.585243],
     "scalerank": 2
   },
   {
@@ -1265,10 +950,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      26.581989,
-      106.718093
-    ],
+    "latlng": [26.581989, 106.718093],
     "scalerank": 2
   },
   {
@@ -1277,10 +959,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -8.060532,
-      -34.908766
-    ],
+    "latlng": [-8.060532, -34.908766],
     "scalerank": 2
   },
   {
@@ -1289,10 +968,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      45.75193,
-      126.648039
-    ],
+    "latlng": [45.75193, 126.648039],
     "scalerank": 2
   },
   {
@@ -1301,10 +977,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -3.748072,
-      -38.581927
-    ],
+    "latlng": [-3.748072, -38.581927],
     "scalerank": 2
   },
   {
@@ -1313,10 +986,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      33.448322,
-      -112.067365
-    ],
+    "latlng": [33.448322, -112.067365],
     "scalerank": 2
   },
   {
@@ -1325,10 +995,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -12.968026,
-      -38.481933
-    ],
+    "latlng": [-12.968026, -38.481933],
     "scalerank": 2
   },
   {
@@ -1337,10 +1004,7 @@
     "countryCca3": "DZA",
     "countryName": "Algeria",
     "countryFlag": "flags/DZ.svg",
-    "latlng": [
-      36.765011,
-      3.048607
-    ],
+    "latlng": [36.765011, 3.048607],
     "scalerank": 2
   },
   {
@@ -1349,10 +1013,7 @@
     "countryCca3": "PRK",
     "countryName": "North Korea",
     "countryFlag": "flags/KP.svg",
-    "latlng": [
-      39.021385,
-      125.752745
-    ],
+    "latlng": [39.021385, 125.752745],
     "scalerank": 2
   },
   {
@@ -1361,10 +1022,7 @@
     "countryCca3": "COL",
     "countryName": "Colombia",
     "countryFlag": "flags/CO.svg",
-    "latlng": [
-      6.276949,
-      -75.576956
-    ],
+    "latlng": [6.276949, -75.576956],
     "scalerank": 2
   },
   {
@@ -1373,10 +1031,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      43.866954,
-      125.338042
-    ],
+    "latlng": [43.866954, 125.338042],
     "scalerank": 2
   },
   {
@@ -1385,10 +1040,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      26.461945,
-      80.31805
-    ],
+    "latlng": [26.461945, 80.31805],
     "scalerank": 2
   },
   {
@@ -1397,10 +1049,7 @@
     "countryCca3": "NGA",
     "countryName": "Nigeria",
     "countryFlag": "flags/NG.svg",
-    "latlng": [
-      12.001923,
-      8.518092
-    ],
+    "latlng": [12.001923, 8.518092],
     "scalerank": 2
   },
   {
@@ -1409,10 +1058,7 @@
     "countryCca3": "ISR",
     "countryName": "Israel",
     "countryFlag": "flags/IL.svg",
-    "latlng": [
-      32.081937,
-      34.768066
-    ],
+    "latlng": [32.081937, 34.768066],
     "scalerank": 2
   },
   {
@@ -1421,10 +1067,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -25.418067,
-      -49.321944
-    ],
+    "latlng": [-25.418067, -49.321944],
     "scalerank": 2
   },
   {
@@ -1433,10 +1076,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      47.600423,
-      -122.315322
-    ],
+    "latlng": [47.600423, -122.315322],
     "scalerank": 2
   },
   {
@@ -1445,10 +1085,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      36.821365,
-      117.99646
-    ],
+    "latlng": [36.821365, 117.99646],
     "scalerank": 2
   },
   {
@@ -1457,10 +1094,7 @@
     "countryCca3": "SAU",
     "countryName": "Saudi Arabia",
     "countryFlag": "flags/SA.svg",
-    "latlng": [
-      21.518835,
-      39.217252
-    ],
+    "latlng": [21.518835, 39.217252],
     "scalerank": 2
   },
   {
@@ -1469,10 +1103,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      30.25192,
-      120.168073
-    ],
+    "latlng": [30.25192, 120.168073],
     "scalerank": 2
   },
   {
@@ -1481,10 +1112,7 @@
     "countryCca3": "ITA",
     "countryName": "Italy",
     "countryFlag": "flags/IT.svg",
-    "latlng": [
-      45.471921,
-      9.203063
-    ],
+    "latlng": [45.471921, 9.203063],
     "scalerank": 2
   },
   {
@@ -1493,10 +1121,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      25.042859,
-      102.69744
-    ],
+    "latlng": [25.042859, 102.69744],
     "scalerank": 2
   },
   {
@@ -1505,10 +1130,7 @@
     "countryCca3": "TZA",
     "countryName": "Tanzania",
     "countryFlag": "flags/TZ.svg",
-    "latlng": [
-      -6.798067,
-      39.266396
-    ],
+    "latlng": [-6.798067, 39.266396],
     "scalerank": 2
   },
   {
@@ -1517,10 +1139,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      26.923079,
-      75.808042
-    ],
+    "latlng": [26.923079, 75.808042],
     "scalerank": 2
   },
   {
@@ -1529,10 +1148,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      32.718914,
-      -117.150881
-    ],
+    "latlng": [32.718914, -117.150881],
     "scalerank": 2
   },
   {
@@ -1541,10 +1157,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      37.876958,
-      112.543112
-    ],
+    "latlng": [37.876958, 112.543112],
     "scalerank": 2
   },
   {
@@ -1553,10 +1166,7 @@
     "countryCca3": "DEU",
     "countryName": "Germany",
     "countryFlag": "flags/DE.svg",
-    "latlng": [
-      50.099977,
-      8.675015
-    ],
+    "latlng": [50.099977, 8.675015],
     "scalerank": 2
   },
   {
@@ -1565,10 +1175,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -7.24729,
-      112.748887
-    ],
+    "latlng": [-7.24729, 112.748887],
     "scalerank": 2
   },
   {
@@ -1577,10 +1184,7 @@
     "countryCca3": "PRT",
     "countryName": "Portugal",
     "countryFlag": "flags/PT.svg",
-    "latlng": [
-      38.724669,
-      -9.146812
-    ],
+    "latlng": [38.724669, -9.146812],
     "scalerank": 2
   },
   {
@@ -1589,10 +1193,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      36.676928,
-      116.993073
-    ],
+    "latlng": [36.676928, 116.993073],
     "scalerank": 2
   },
   {
@@ -1601,10 +1202,7 @@
     "countryCca3": "SYR",
     "countryName": "Syria",
     "countryFlag": "flags/SY.svg",
-    "latlng": [
-      36.231917,
-      37.168074
-    ],
+    "latlng": [36.231917, 37.168074],
     "scalerank": 2
   },
   {
@@ -1613,10 +1211,7 @@
     "countryCca3": "ZAF",
     "countryName": "South Africa",
     "countryFlag": "flags/ZA.svg",
-    "latlng": [
-      -29.860662,
-      31.010944
-    ],
+    "latlng": [-29.860662, 31.010944],
     "scalerank": 2
   },
   {
@@ -1625,10 +1220,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      34.756942,
-      113.663147
-    ],
+    "latlng": [34.756942, 113.663147],
     "scalerank": 2
   },
   {
@@ -1637,10 +1229,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      44.981925,
-      -93.253732
-    ],
+    "latlng": [44.981925, -93.253732],
     "scalerank": 2
   },
   {
@@ -1649,10 +1238,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      26.081942,
-      119.2981
-    ],
+    "latlng": [26.081942, 119.2981],
     "scalerank": 2
   },
   {
@@ -1661,10 +1247,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      28.201916,
-      112.968047
-    ],
+    "latlng": [28.201916, 112.968047],
     "scalerank": 2
   },
   {
@@ -1673,10 +1256,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      36.057974,
-      103.790054
-    ],
+    "latlng": [36.057974, 103.790054],
     "scalerank": 2
   },
   {
@@ -1685,10 +1265,7 @@
     "countryCca3": "JPN",
     "countryName": "Japan",
     "countryFlag": "flags/JP.svg",
-    "latlng": [
-      43.076925,
-      141.338099
-    ],
+    "latlng": [43.076925, 141.338099],
     "scalerank": 2
   },
   {
@@ -1697,10 +1274,7 @@
     "countryCca3": "ECU",
     "countryName": "Ecuador",
     "countryFlag": "flags/EC.svg",
-    "latlng": [
-      -2.218088,
-      -79.921988
-    ],
+    "latlng": [-2.218088, -79.921988],
     "scalerank": 2
   },
   {
@@ -1709,10 +1283,7 @@
     "countryCca3": "IRN",
     "countryName": "Iran",
     "countryFlag": "flags/IR.svg",
-    "latlng": [
-      36.271966,
-      59.568051
-    ],
+    "latlng": [36.271966, 59.568051],
     "scalerank": 2
   },
   {
@@ -1721,10 +1292,7 @@
     "countryCca3": "SYR",
     "countryName": "Syria",
     "countryFlag": "flags/SY.svg",
-    "latlng": [
-      33.50198,
-      36.29805
-    ],
+    "latlng": [33.50198, 36.29805],
     "scalerank": 2
   },
   {
@@ -1733,10 +1301,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      21.171906,
-      79.088048
-    ],
+    "latlng": [21.171906, 79.088048],
     "scalerank": 2
   },
   {
@@ -1745,10 +1310,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -6.948083,
-      107.568067
-    ],
+    "latlng": [-6.948083, 107.568067],
     "scalerank": 2
   },
   {
@@ -1757,10 +1319,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      28.681938,
-      115.87805
-    ],
+    "latlng": [28.681938, 115.87805],
     "scalerank": 2
   },
   {
@@ -1769,10 +1328,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      27.948934,
-      -82.460567
-    ],
+    "latlng": [27.948934, -82.460567],
     "scalerank": 2
   },
   {
@@ -1781,10 +1337,7 @@
     "countryCca3": "COL",
     "countryName": "Colombia",
     "countryFlag": "flags/CO.svg",
-    "latlng": [
-      3.401905,
-      -76.501912
-    ],
+    "latlng": [3.401905, -76.501912],
     "scalerank": 2
   },
   {
@@ -1793,10 +1346,7 @@
     "countryCca3": "ITA",
     "countryName": "Italy",
     "countryFlag": "flags/IT.svg",
-    "latlng": [
-      40.841971,
-      14.243066
-    ],
+    "latlng": [40.841971, 14.243066],
     "scalerank": 2
   },
   {
@@ -1805,10 +1355,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      38.636964,
-      -90.241926
-    ],
+    "latlng": [38.636964, -90.241926],
     "scalerank": 2
   },
   {
@@ -1817,10 +1364,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      19.032594,
-      -98.203737
-    ],
+    "latlng": [19.032594, -98.203737],
     "scalerank": 2
   },
   {
@@ -1829,10 +1373,7 @@
     "countryCca3": "LBY",
     "countryName": "Libya",
     "countryFlag": "flags/LY.svg",
-    "latlng": [
-      32.8925,
-      13.180012
-    ],
+    "latlng": [32.8925, 13.180012],
     "scalerank": 2
   },
   {
@@ -1841,10 +1382,7 @@
     "countryCca3": "CUB",
     "countryName": "Cuba",
     "countryFlag": "flags/CU.svg",
-    "latlng": [
-      23.133905,
-      -82.366128
-    ],
+    "latlng": [23.133905, -82.366128],
     "scalerank": 2
   },
   {
@@ -1853,10 +1391,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      22.821934,
-      108.318099
-    ],
+    "latlng": [22.821934, 108.318099],
     "scalerank": 2
   },
   {
@@ -1865,10 +1400,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -1.448057,
-      -48.481969
-    ],
+    "latlng": [-1.448057, -48.481969],
     "scalerank": 2
   },
   {
@@ -1877,10 +1409,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      25.626905,
-      85.128093
-    ],
+    "latlng": [25.626905, 85.128093],
     "scalerank": 2
   },
   {
@@ -1889,10 +1418,7 @@
     "countryCca3": "DOM",
     "countryName": "Dominican Republic",
     "countryFlag": "flags/DO.svg",
-    "latlng": [
-      18.470745,
-      -69.929742
-    ],
+    "latlng": [18.470745, -69.929742],
     "scalerank": 2
   },
   {
@@ -1901,10 +1427,7 @@
     "countryCca3": "GHA",
     "countryName": "Ghana",
     "countryFlag": "flags/GH.svg",
-    "latlng": [
-      5.55198,
-      -0.218662
-    ],
+    "latlng": [5.55198, -0.218662],
     "scalerank": 2
   },
   {
@@ -1913,10 +1436,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      3.58192,
-      98.648094
-    ],
+    "latlng": [3.58192, 98.648094],
     "scalerank": 2
   },
   {
@@ -1925,10 +1445,7 @@
     "countryCca3": "VEN",
     "countryName": "Venezuela",
     "countryFlag": "flags/VE.svg",
-    "latlng": [
-      10.731923,
-      -71.661924
-    ],
+    "latlng": [10.731923, -71.661924],
     "scalerank": 2
   },
   {
@@ -1937,10 +1454,7 @@
     "countryCca3": "KWT",
     "countryName": "Kuwait",
     "countryFlag": "flags/KW.svg",
-    "latlng": [
-      29.371664,
-      47.976355
-    ],
+    "latlng": [29.371664, 47.976355],
     "scalerank": 2
   },
   {
@@ -1949,10 +1463,7 @@
     "countryCca3": "JPN",
     "countryName": "Japan",
     "countryFlag": "flags/JP.svg",
-    "latlng": [
-      34.389781,
-      132.440967
-    ],
+    "latlng": [34.389781, 132.440967],
     "scalerank": 2
   },
   {
@@ -1961,10 +1472,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      40.654153,
-      109.820074
-    ],
+    "latlng": [40.654153, 109.820074],
     "scalerank": 2
   },
   {
@@ -1973,10 +1481,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -16.718081,
-      -49.301971
-    ],
+    "latlng": [-16.718081, -49.301971],
     "scalerank": 2
   },
   {
@@ -1985,10 +1490,7 @@
     "countryCca3": "YEM",
     "countryName": "Yemen",
     "countryFlag": "flags/YE.svg",
-    "latlng": [
-      15.356679,
-      44.204648
-    ],
+    "latlng": [15.356679, 44.204648],
     "scalerank": 2
   },
   {
@@ -1997,10 +1499,7 @@
     "countryCca3": "ROU",
     "countryName": "Romania",
     "countryFlag": "flags/RO.svg",
-    "latlng": [
-      44.435318,
-      26.098001
-    ],
+    "latlng": [44.435318, 26.098001],
     "scalerank": 2
   },
   {
@@ -2009,10 +1508,7 @@
     "countryCca3": "DEU",
     "countryName": "Germany",
     "countryFlag": "flags/DE.svg",
-    "latlng": [
-      53.551971,
-      9.998053
-    ],
+    "latlng": [53.551971, 9.998053],
     "scalerank": 2
   },
   {
@@ -2021,10 +1517,7 @@
     "countryCca3": "BEL",
     "countryName": "Belgium",
     "countryFlag": "flags/BE.svg",
-    "latlng": [
-      50.835263,
-      4.331371
-    ],
+    "latlng": [50.835263, 4.331371],
     "scalerank": 2
   },
   {
@@ -2033,10 +1526,7 @@
     "countryCca3": "POL",
     "countryName": "Poland",
     "countryFlag": "flags/PL.svg",
-    "latlng": [
-      52.230872,
-      21.005347
-    ],
+    "latlng": [52.230872, 21.005347],
     "scalerank": 2
   },
   {
@@ -2045,10 +1535,7 @@
     "countryCca3": "HUN",
     "countryName": "Hungary",
     "countryFlag": "flags/HU.svg",
-    "latlng": [
-      47.501952,
-      19.081375
-    ],
+    "latlng": [47.501952, 19.081375],
     "scalerank": 2
   },
   {
@@ -2057,10 +1544,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -31.953069,
-      115.838053
-    ],
+    "latlng": [-31.953069, 115.838053],
     "scalerank": 2
   },
   {
@@ -2069,10 +1553,7 @@
     "countryCca3": "MYS",
     "countryName": "Malaysia",
     "countryFlag": "flags/MY.svg",
-    "latlng": [
-      3.139797,
-      101.688699
-    ],
+    "latlng": [3.139797, 101.688699],
     "scalerank": 2
   },
   {
@@ -2081,10 +1562,7 @@
     "countryCca3": "SAU",
     "countryName": "Saudi Arabia",
     "countryFlag": "flags/SA.svg",
-    "latlng": [
-      21.431967,
-      39.818094
-    ],
+    "latlng": [21.431967, 39.818094],
     "scalerank": 2
   },
   {
@@ -2093,10 +1571,7 @@
     "countryCca3": "DEU",
     "countryName": "Germany",
     "countryFlag": "flags/DE.svg",
-    "latlng": [
-      48.131888,
-      11.573048
-    ],
+    "latlng": [48.131888, 11.573048],
     "scalerank": 2
   },
   {
@@ -2105,10 +1580,7 @@
     "countryCca3": "CZE",
     "countryName": "Czechia",
     "countryFlag": "flags/CZ.svg",
-    "latlng": [
-      50.086967,
-      14.422939
-    ],
+    "latlng": [50.086967, 14.422939],
     "scalerank": 2
   },
   {
@@ -2117,10 +1589,7 @@
     "countryCca3": "FIN",
     "countryName": "Finland",
     "countryFlag": "flags/FI.svg",
-    "latlng": [
-      60.163804,
-      24.932457
-    ],
+    "latlng": [60.163804, 24.932457],
     "scalerank": 2
   },
   {
@@ -2129,10 +1598,7 @@
     "countryCca3": "CHE",
     "countryName": "Switzerland",
     "countryFlag": "flags/CH.svg",
-    "latlng": [
-      47.381934,
-      8.548064
-    ],
+    "latlng": [47.381934, 8.548064],
     "scalerank": 2
   },
   {
@@ -2141,10 +1607,7 @@
     "countryCca3": "DNK",
     "countryName": "Denmark",
     "countryFlag": "flags/DK.svg",
-    "latlng": [
-      55.68051,
-      12.56154
-    ],
+    "latlng": [55.68051, 12.56154],
     "scalerank": 2
   },
   {
@@ -2153,10 +1616,7 @@
     "countryCca3": "IRL",
     "countryName": "Ireland",
     "countryFlag": "flags/IE.svg",
-    "latlng": [
-      53.346731,
-      -6.25698
-    ],
+    "latlng": [53.346731, -6.25698],
     "scalerank": 2
   },
   {
@@ -2165,10 +1625,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      53.551971,
-      -113.501928
-    ],
+    "latlng": [53.551971, -113.501928],
     "scalerank": 2
   },
   {
@@ -2177,10 +1634,7 @@
     "countryCca3": "LBR",
     "countryName": "Liberia",
     "countryFlag": "flags/LR.svg",
-    "latlng": [
-      6.314582,
-      -10.79966
-    ],
+    "latlng": [6.314582, -10.79966],
     "scalerank": 2
   },
   {
@@ -2189,10 +1643,7 @@
     "countryCca3": "NOR",
     "countryName": "Norway",
     "countryFlag": "flags/NO.svg",
-    "latlng": [
-      59.918636,
-      10.748033
-    ],
+    "latlng": [59.918636, 10.748033],
     "scalerank": 2
   },
   {
@@ -2201,10 +1652,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      21.303429,
-      -157.858301
-    ],
+    "latlng": [21.303429, -157.858301],
     "scalerank": 2
   },
   {
@@ -2213,10 +1661,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      29.968908,
-      -90.088368
-    ],
+    "latlng": [29.968908, -90.088368],
     "scalerank": 2
   },
   {
@@ -2225,10 +1670,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      61.214004,
-      -149.887446
-    ],
+    "latlng": [61.214004, -149.887446],
     "scalerank": 2
   },
   {
@@ -2237,10 +1679,7 @@
     "countryCca3": "TWN",
     "countryName": "Taiwan",
     "countryFlag": "flags/TW.svg",
-    "latlng": [
-      22.633307,
-      120.266602
-    ],
+    "latlng": [22.633307, 120.266602],
     "scalerank": 3
   },
   {
@@ -2249,10 +1688,7 @@
     "countryCca3": "PRI",
     "countryName": "Puerto Rico",
     "countryFlag": "flags/PR.svg",
-    "latlng": [
-      18.440023,
-      -66.129979
-    ],
+    "latlng": [18.440023, -66.129979],
     "scalerank": 3
   },
   {
@@ -2261,10 +1697,7 @@
     "countryCca3": "TUN",
     "countryName": "Tunisia",
     "countryFlag": "flags/TN.svg",
-    "latlng": [
-      36.802778,
-      10.179678
-    ],
+    "latlng": [36.802778, 10.179678],
     "scalerank": 3
   },
   {
@@ -2273,10 +1706,7 @@
     "countryCca3": "AZE",
     "countryName": "Azerbaijan",
     "countryFlag": "flags/AZ.svg",
-    "latlng": [
-      40.397218,
-      49.860271
-    ],
+    "latlng": [40.397218, 49.860271],
     "scalerank": 3
   },
   {
@@ -2285,10 +1715,7 @@
     "countryCca3": "BOL",
     "countryName": "Bolivia",
     "countryFlag": "flags/BO.svg",
-    "latlng": [
-      -17.751972,
-      -63.227942
-    ],
+    "latlng": [-17.751972, -63.227942],
     "scalerank": 3
   },
   {
@@ -2297,10 +1724,7 @@
     "countryCca3": "HTI",
     "countryName": "Haiti",
     "countryFlag": "flags/HT.svg",
-    "latlng": [
-      18.54297,
-      -72.33798
-    ],
+    "latlng": [18.54297, -72.33798],
     "scalerank": 3
   },
   {
@@ -2309,10 +1733,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      41.471933,
-      -81.696944
-    ],
+    "latlng": [41.471933, -81.696944],
     "scalerank": 3
   },
   {
@@ -2321,10 +1742,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      45.52197,
-      -122.681936
-    ],
+    "latlng": [45.52197, -122.681936],
     "scalerank": 3
   },
   {
@@ -2333,10 +1751,7 @@
     "countryCca3": "PRY",
     "countryName": "Paraguay",
     "countryFlag": "flags/PY.svg",
-    "latlng": [
-      -25.290671,
-      -57.625834
-    ],
+    "latlng": [-25.290671, -57.625834],
     "scalerank": 3
   },
   {
@@ -2345,10 +1760,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -27.453085,
-      153.033147
-    ],
+    "latlng": [-27.453085, 153.033147],
     "scalerank": 3
   },
   {
@@ -2357,10 +1769,7 @@
     "countryCca3": "LBN",
     "countryName": "Lebanon",
     "countryFlag": "flags/LB.svg",
-    "latlng": [
-      33.873921,
-      35.507762
-    ],
+    "latlng": [33.873921, 35.507762],
     "scalerank": 3
   },
   {
@@ -2369,10 +1778,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      40.431945,
-      -80.001931
-    ],
+    "latlng": [40.431945, -80.001931],
     "scalerank": 3
   },
   {
@@ -2381,10 +1787,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      36.164763,
-      -115.151362
-    ],
+    "latlng": [36.164763, -115.151362],
     "scalerank": 3
   },
   {
@@ -2393,10 +1796,7 @@
     "countryCca3": "BLR",
     "countryName": "Belarus",
     "countryFlag": "flags/BY.svg",
-    "latlng": [
-      53.901923,
-      27.564681
-    ],
+    "latlng": [53.901923, 27.564681],
     "scalerank": 3
   },
   {
@@ -2405,10 +1805,7 @@
     "countryCca3": "VEN",
     "countryName": "Venezuela",
     "countryFlag": "flags/VE.svg",
-    "latlng": [
-      10.231927,
-      -67.981967
-    ],
+    "latlng": [10.231927, -67.981967],
     "scalerank": 3
   },
   {
@@ -2417,10 +1814,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -3.098086,
-      -60.001963
-    ],
+    "latlng": [-3.098086, -60.001963],
     "scalerank": 3
   },
   {
@@ -2429,10 +1823,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -2.978093,
-      104.748084
-    ],
+    "latlng": [-2.978093, 104.748084],
     "scalerank": 3
   },
   {
@@ -2441,10 +1832,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      23.251934,
-      77.408047
-    ],
+    "latlng": [23.251934, 77.408047],
     "scalerank": 3
   },
   {
@@ -2453,10 +1841,7 @@
     "countryCca3": "MAR",
     "countryName": "Morocco",
     "countryFlag": "flags/MA.svg",
-    "latlng": [
-      34.025307,
-      -6.836408
-    ],
+    "latlng": [34.025307, -6.836408],
     "scalerank": 3
   },
   {
@@ -2465,10 +1850,7 @@
     "countryCca3": "ECU",
     "countryName": "Ecuador",
     "countryFlag": "flags/EC.svg",
-    "latlng": [
-      -0.213042,
-      -78.501997
-    ],
+    "latlng": [-0.213042, -78.501997],
     "scalerank": 3
   },
   {
@@ -2477,10 +1859,7 @@
     "countryCca3": "MDG",
     "countryName": "Madagascar",
     "countryFlag": "flags/MG.svg",
-    "latlng": [
-      -18.914691,
-      47.514678
-    ],
+    "latlng": [-18.914691, 47.514678],
     "scalerank": 3
   },
   {
@@ -2489,10 +1868,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      11.001906,
-      76.948075
-    ],
+    "latlng": [11.001906, 76.948075],
     "scalerank": 3
   },
   {
@@ -2501,10 +1877,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      37.330943,
-      -121.888179
-    ],
+    "latlng": [37.330943, -121.888179],
     "scalerank": 3
   },
   {
@@ -2513,10 +1886,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      47.346923,
-      123.988046
-    ],
+    "latlng": [47.346923, 123.988046],
     "scalerank": 3
   },
   {
@@ -2525,10 +1895,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      39.163831,
-      -84.458868
-    ],
+    "latlng": [39.163831, -84.458868],
     "scalerank": 3
   },
   {
@@ -2537,10 +1904,7 @@
     "countryCca3": "IRN",
     "countryName": "Iran",
     "countryFlag": "flags/IR.svg",
-    "latlng": [
-      32.701951,
-      51.698092
-    ],
+    "latlng": [32.701951, 51.698092],
     "scalerank": 3
   },
   {
@@ -2549,10 +1913,7 @@
     "countryCca3": "CMR",
     "countryName": "Cameroon",
     "countryFlag": "flags/CM.svg",
-    "latlng": [
-      3.868647,
-      11.514705
-    ],
+    "latlng": [3.868647, 11.514705],
     "scalerank": 3
   },
   {
@@ -2561,10 +1922,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      38.576967,
-      -121.471984
-    ],
+    "latlng": [38.576967, -121.471984],
     "scalerank": 3
   },
   {
@@ -2573,10 +1931,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      23.371952,
-      116.66808
-    ],
+    "latlng": [23.371952, 116.66808],
     "scalerank": 3
   },
   {
@@ -2585,10 +1940,7 @@
     "countryCca3": "BOL",
     "countryName": "Bolivia",
     "countryFlag": "flags/BO.svg",
-    "latlng": [
-      -16.496028,
-      -68.151931
-    ],
+    "latlng": [-16.496028, -68.151931],
     "scalerank": 3
   },
   {
@@ -2597,10 +1949,7 @@
     "countryCca3": "NGA",
     "countryName": "Nigeria",
     "countryFlag": "flags/NG.svg",
-    "latlng": [
-      9.05462,
-      7.489505
-    ],
+    "latlng": [9.05462, 7.489505],
     "scalerank": 3
   },
   {
@@ -2609,10 +1958,7 @@
     "countryCca3": "ZWE",
     "countryName": "Zimbabwe",
     "countryFlag": "flags/ZW.svg",
-    "latlng": [
-      -17.815844,
-      31.042764
-    ],
+    "latlng": [-17.815844, 31.042764],
     "scalerank": 3
   },
   {
@@ -2621,10 +1967,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      32.501963,
-      -117.081942
-    ],
+    "latlng": [32.501963, -117.081942],
     "scalerank": 3
   },
   {
@@ -2633,10 +1976,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      17.682903,
-      83.219848
-    ],
+    "latlng": [17.682903, 83.219848],
     "scalerank": 3
   },
   {
@@ -2645,10 +1985,7 @@
     "countryCca3": "PAK",
     "countryName": "Pakistan",
     "countryFlag": "flags/PK.svg",
-    "latlng": [
-      30.201923,
-      71.453062
-    ],
+    "latlng": [30.201923, 71.453062],
     "scalerank": 3
   },
   {
@@ -2657,10 +1994,7 @@
     "countryCca3": "URY",
     "countryName": "Uruguay",
     "countryFlag": "flags/UY.svg",
-    "latlng": [
-      -34.905376,
-      -56.186823
-    ],
+    "latlng": [-34.905376, -56.186823],
     "scalerank": 3
   },
   {
@@ -2669,10 +2003,7 @@
     "countryCca3": "MLI",
     "countryName": "Mali",
     "countryFlag": "flags/ML.svg",
-    "latlng": [
-      12.65196,
-      -8.001985
-    ],
+    "latlng": [12.65196, -8.001985],
     "scalerank": 3
   },
   {
@@ -2681,10 +2012,7 @@
     "countryCca3": "GIN",
     "countryName": "Guinea",
     "countryFlag": "flags/GN.svg",
-    "latlng": [
-      9.533469,
-      -13.682181
-    ],
+    "latlng": [9.533469, -13.682181],
     "scalerank": 3
   },
   {
@@ -2693,10 +2021,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      29.419848,
-      -98.492693
-    ],
+    "latlng": [29.419848, -98.492693],
     "scalerank": 3
   },
   {
@@ -2705,10 +2030,7 @@
     "countryCca3": "KHM",
     "countryName": "Cambodia",
     "countryFlag": "flags/KH.svg",
-    "latlng": [
-      11.551976,
-      104.914689
-    ],
+    "latlng": [11.551976, 104.914689],
     "scalerank": 3
   },
   {
@@ -2717,10 +2039,7 @@
     "countryCca3": "PAK",
     "countryName": "Pakistan",
     "countryFlag": "flags/PK.svg",
-    "latlng": [
-      25.381933,
-      68.373043
-    ],
+    "latlng": [25.381933, 68.373043],
     "scalerank": 3
   },
   {
@@ -2729,10 +2048,7 @@
     "countryCca3": "TGO",
     "countryName": "Togo",
     "countryFlag": "flags/TG.svg",
-    "latlng": [
-      6.133883,
-      1.220811
-    ],
+    "latlng": [6.133883, 1.220811],
     "scalerank": 3
   },
   {
@@ -2741,10 +2057,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -31.398012,
-      -64.18424
-    ],
+    "latlng": [-31.398012, -64.18424],
     "scalerank": 3
   },
   {
@@ -2753,10 +2066,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      32.63193,
-      116.978035
-    ],
+    "latlng": [32.63193, 116.978035],
     "scalerank": 3
   },
   {
@@ -2765,10 +2075,7 @@
     "countryCca3": "MOZ",
     "countryName": "Mozambique",
     "countryFlag": "flags/MZ.svg",
-    "latlng": [
-      -25.953332,
-      32.587217
-    ],
+    "latlng": [-25.953332, 32.587217],
     "scalerank": 3
   },
   {
@@ -2777,10 +2084,7 @@
     "countryCca3": "SLV",
     "countryName": "El Salvador",
     "countryFlag": "flags/SV.svg",
-    "latlng": [
-      13.70328,
-      -89.215576
-    ],
+    "latlng": [13.70328, -89.215576],
     "scalerank": 3
   },
   {
@@ -2789,10 +2093,7 @@
     "countryCca3": "FRA",
     "countryName": "France",
     "countryFlag": "flags/FR.svg",
-    "latlng": [
-      45.771954,
-      4.828085
-    ],
+    "latlng": [45.771954, 4.828085],
     "scalerank": 3
   },
   {
@@ -2801,10 +2102,7 @@
     "countryCca3": "UGA",
     "countryName": "Uganda",
     "countryFlag": "flags/UG.svg",
-    "latlng": [
-      0.318605,
-      32.581378
-    ],
+    "latlng": [0.318605, 32.581378],
     "scalerank": 3
   },
   {
@@ -2813,10 +2111,7 @@
     "countryCca3": "PHL",
     "countryName": "Philippines",
     "countryFlag": "flags/PH.svg",
-    "latlng": [
-      7.111963,
-      125.62805
-    ],
+    "latlng": [7.111963, 125.62805],
     "scalerank": 3
   },
   {
@@ -2825,10 +2120,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -6.964672,
-      110.418074
-    ],
+    "latlng": [-6.964672, 110.418074],
     "scalerank": 3
   },
   {
@@ -2837,10 +2129,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      55.031906,
-      82.958096
-    ],
+    "latlng": [55.031906, 82.958096],
     "scalerank": 3
   },
   {
@@ -2849,10 +2138,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      43.029608,
-      -87.916673
-    ],
+    "latlng": [43.029608, -87.916673],
     "scalerank": 3
   },
   {
@@ -2861,10 +2147,7 @@
     "countryCca3": "COG",
     "countryName": "Republic of the Congo",
     "countryFlag": "flags/CG.svg",
-    "latlng": [
-      -4.25724,
-      15.282744
-    ],
+    "latlng": [-4.25724, 15.282744],
     "scalerank": 3
   },
   {
@@ -2873,10 +2156,7 @@
     "countryCca3": "COD",
     "countryName": "DR Congo",
     "countryFlag": "flags/CD.svg",
-    "latlng": [
-      -11.678079,
-      27.478072
-    ],
+    "latlng": [-11.678079, 27.478072],
     "scalerank": 3
   },
   {
@@ -2885,10 +2165,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      25.331936,
-      82.998094
-    ],
+    "latlng": [25.331936, 82.998094],
     "scalerank": 3
   },
   {
@@ -2897,10 +2174,7 @@
     "countryCca3": "ZAF",
     "countryName": "South Africa",
     "countryFlag": "flags/ZA.svg",
-    "latlng": [
-      -25.704975,
-      28.227483
-    ],
+    "latlng": [-25.704975, 28.227483],
     "scalerank": 3
   },
   {
@@ -2909,10 +2183,7 @@
     "countryCca3": "ZMB",
     "countryName": "Zambia",
     "countryFlag": "flags/ZM.svg",
-    "latlng": [
-      -15.414698,
-      28.281382
-    ],
+    "latlng": [-15.414698, 28.281382],
     "scalerank": 3
   },
   {
@@ -2921,10 +2192,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      23.685279,
-      86.981387
-    ],
+    "latlng": [23.685279, 86.981387],
     "scalerank": 3
   },
   {
@@ -2933,10 +2201,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      56.851976,
-      60.598014
-    ],
+    "latlng": [56.851976, 60.598014],
     "scalerank": 3
   },
   {
@@ -2945,10 +2210,7 @@
     "countryCca3": "PAK",
     "countryName": "Pakistan",
     "countryFlag": "flags/PK.svg",
-    "latlng": [
-      34.006962,
-      71.533057
-    ],
+    "latlng": [34.006962, 71.533057],
     "scalerank": 3
   },
   {
@@ -2957,10 +2219,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      22.789481,
-      86.195573
-    ],
+    "latlng": [22.789481, 86.195573],
     "scalerank": 3
   },
   {
@@ -2969,10 +2228,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      9.921972,
-      78.118081
-    ],
+    "latlng": [9.921972, 78.118081],
     "scalerank": 3
   },
   {
@@ -2981,10 +2237,7 @@
     "countryCca3": "CRI",
     "countryName": "Costa Rica",
     "countryFlag": "flags/CR.svg",
-    "latlng": [
-      9.930371,
-      -84.078814
-    ],
+    "latlng": [9.930371, -84.078814],
     "scalerank": 3
   },
   {
@@ -2993,10 +2246,7 @@
     "countryCca3": "PAN",
     "countryName": "Panama",
     "countryFlag": "flags/PA.svg",
-    "latlng": [
-      8.969963,
-      -79.534983
-    ],
+    "latlng": [8.969963, -79.534983],
     "scalerank": 3
   },
   {
@@ -3005,10 +2255,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      56.334953,
-      43.998148
-    ],
+    "latlng": [56.334953, 43.998148],
     "scalerank": 3
   },
   {
@@ -3017,10 +2264,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -5.138013,
-      119.430082
-    ],
+    "latlng": [-5.138013, 119.430082],
     "scalerank": 3
   },
   {
@@ -3029,10 +2273,7 @@
     "countryCca3": "IRN",
     "countryName": "Iran",
     "countryFlag": "flags/IR.svg",
-    "latlng": [
-      29.631906,
-      52.568065
-    ],
+    "latlng": [29.631906, 52.568065],
     "scalerank": 3
   },
   {
@@ -3041,10 +2282,7 @@
     "countryCca3": "ESP",
     "countryName": "Spain",
     "countryFlag": "flags/ES.svg",
-    "latlng": [
-      37.405015,
-      -5.980007
-    ],
+    "latlng": [37.405015, -5.980007],
     "scalerank": 3
   },
   {
@@ -3053,10 +2291,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      31.641938,
-      74.868047
-    ],
+    "latlng": [31.641938, 74.868047],
     "scalerank": 3
   },
   {
@@ -3065,10 +2300,7 @@
     "countryCca3": "KAZ",
     "countryName": "Kazakhstan",
     "countryFlag": "flags/KZ.svg",
-    "latlng": [
-      43.326936,
-      76.91309
-    ],
+    "latlng": [43.326936, 76.91309],
     "scalerank": 3
   },
   {
@@ -3077,22 +2309,16 @@
     "countryCca3": "BGR",
     "countryName": "Bulgaria",
     "countryFlag": "flags/BG.svg",
-    "latlng": [
-      42.685295,
-      23.314708
-    ],
+    "latlng": [42.685295, 23.314708],
     "scalerank": 3
   },
   {
-    "id": "LBY-banghazi",
-    "name": "Banghazi",
+    "id": "LBY-benghazi",
+    "name": "Benghazi",
     "countryCca3": "LBY",
     "countryName": "Libya",
     "countryFlag": "flags/LY.svg",
-    "latlng": [
-      32.118679,
-      20.064777
-    ],
+    "latlng": [32.118679, 20.064777],
     "scalerank": 3
   },
   {
@@ -3101,10 +2327,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      35.772696,
-      -78.647035
-    ],
+    "latlng": [35.772696, -78.647035],
     "scalerank": 3
   },
   {
@@ -3113,10 +2336,7 @@
     "countryCca3": "GBR",
     "countryName": "United Kingdom",
     "countryFlag": "flags/GB.svg",
-    "latlng": [
-      55.86227,
-      -4.239101
-    ],
+    "latlng": [55.86227, -4.239101],
     "scalerank": 3
   },
   {
@@ -3125,10 +2345,7 @@
     "countryCca3": "BFA",
     "countryName": "Burkina Faso",
     "countryFlag": "flags/BF.svg",
-    "latlng": [
-      12.372262,
-      -1.52667
-    ],
+    "latlng": [12.372262, -1.52667],
     "scalerank": 3
   },
   {
@@ -3137,10 +2354,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      45.418643,
-      -75.701961
-    ],
+    "latlng": [45.418643, -75.701961],
     "scalerank": 3
   },
   {
@@ -3149,10 +2363,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -34.933042,
-      138.598059
-    ],
+    "latlng": [-34.933042, 138.598059],
     "scalerank": 3
   },
   {
@@ -3161,10 +2372,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      53.196953,
-      50.149349
-    ],
+    "latlng": [53.196953, 50.149349],
     "scalerank": 3
   },
   {
@@ -3173,10 +2381,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      55.751888,
-      49.124399
-    ],
+    "latlng": [55.751888, 49.124399],
     "scalerank": 3
   },
   {
@@ -3185,10 +2390,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      51.084938,
-      -114.081944
-    ],
+    "latlng": [51.084938, -114.081944],
     "scalerank": 3
   },
   {
@@ -3197,10 +2399,7 @@
     "countryCca3": "ARM",
     "countryName": "Armenia",
     "countryFlag": "flags/AM.svg",
-    "latlng": [
-      40.183097,
-      44.511606
-    ],
+    "latlng": [40.183097, 44.511606],
     "scalerank": 3
   },
   {
@@ -3209,10 +2408,7 @@
     "countryCca3": "SOM",
     "countryName": "Somalia",
     "countryFlag": "flags/SO.svg",
-    "latlng": [
-      2.068627,
-      45.364732
-    ],
+    "latlng": [2.068627, 45.364732],
     "scalerank": 3
   },
   {
@@ -3221,10 +2417,7 @@
     "countryCca3": "GEO",
     "countryName": "Georgia",
     "countryFlag": "flags/GE.svg",
-    "latlng": [
-      41.726956,
-      44.78885
-    ],
+    "latlng": [41.726956, 44.78885],
     "scalerank": 3
   },
   {
@@ -3233,10 +2426,7 @@
     "countryCca3": "AGO",
     "countryName": "Angola",
     "countryFlag": "flags/AO.svg",
-    "latlng": [
-      -12.74804,
-      15.758064
-    ],
+    "latlng": [-12.74804, 15.758064],
     "scalerank": 3
   },
   {
@@ -3245,10 +2435,7 @@
     "countryCca3": "SRB",
     "countryName": "Serbia",
     "countryFlag": "flags/RS.svg",
-    "latlng": [
-      44.820591,
-      20.466045
-    ],
+    "latlng": [44.820591, 20.466045],
     "scalerank": 3
   },
   {
@@ -3257,10 +2444,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      21.211262,
-      81.372213
-    ],
+    "latlng": [21.211262, 81.372213],
     "scalerank": 3
   },
   {
@@ -3269,10 +2453,7 @@
     "countryCca3": "TJK",
     "countryName": "Tajikistan",
     "countryFlag": "flags/TJ.svg",
-    "latlng": [
-      38.560035,
-      68.773879
-    ],
+    "latlng": [38.560035, 68.773879],
     "scalerank": 3
   },
   {
@@ -3281,10 +2462,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      35.144701,
-      -90.028777
-    ],
+    "latlng": [35.144701, -90.028777],
     "scalerank": 3
   },
   {
@@ -3293,10 +2471,7 @@
     "countryCca3": "JOR",
     "countryName": "Jordan",
     "countryFlag": "flags/JO.svg",
-    "latlng": [
-      31.951971,
-      35.931354
-    ],
+    "latlng": [31.951971, 35.931354],
     "scalerank": 3
   },
   {
@@ -3305,10 +2480,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      36.621944,
-      101.768059
-    ],
+    "latlng": [36.621944, 101.768059],
     "scalerank": 3
   },
   {
@@ -3317,10 +2489,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      36.849959,
-      -76.280006
-    ],
+    "latlng": [36.849959, -76.280006],
     "scalerank": 3
   },
   {
@@ -3329,10 +2498,7 @@
     "countryCca3": "ISR",
     "countryName": "Israel",
     "countryFlag": "flags/IL.svg",
-    "latlng": [
-      31.778408,
-      35.206626
-    ],
+    "latlng": [31.778408, 35.206626],
     "scalerank": 3
   },
   {
@@ -3341,10 +2507,7 @@
     "countryCca3": "GTM",
     "countryName": "Guatemala",
     "countryFlag": "flags/GT.svg",
-    "latlng": [
-      14.623081,
-      -90.528911
-    ],
+    "latlng": [14.623081, -90.528911],
     "scalerank": 3
   },
   {
@@ -3353,10 +2516,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -27.578039,
-      -48.521966
-    ],
+    "latlng": [-27.578039, -48.521966],
     "scalerank": 3
   },
   {
@@ -3365,10 +2525,7 @@
     "countryCca3": "ZAF",
     "countryName": "South Africa",
     "countryFlag": "flags/ZA.svg",
-    "latlng": [
-      -33.968088,
-      25.598083
-    ],
+    "latlng": [-33.968088, 25.598083],
     "scalerank": 3
   },
   {
@@ -3377,10 +2534,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      54.791921,
-      56.038085
-    ],
+    "latlng": [54.791921, 56.038085],
     "scalerank": 3
   },
   {
@@ -3389,10 +2543,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      42.881924,
-      -78.881948
-    ],
+    "latlng": [42.881924, -78.881948],
     "scalerank": 3
   },
   {
@@ -3401,10 +2552,7 @@
     "countryCca3": "MAR",
     "countryName": "Morocco",
     "countryFlag": "flags/MA.svg",
-    "latlng": [
-      34.056545,
-      -5.002323
-    ],
+    "latlng": [34.056545, -5.002323],
     "scalerank": 3
   },
   {
@@ -3413,10 +2561,7 @@
     "countryCca3": "YEM",
     "countryName": "Yemen",
     "countryFlag": "flags/YE.svg",
-    "latlng": [
-      12.779723,
-      45.00949
-    ],
+    "latlng": [12.779723, 45.00949],
     "scalerank": 3
   },
   {
@@ -3425,10 +2570,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      58.001906,
-      56.248047
-    ],
+    "latlng": [58.001906, 56.248047],
     "scalerank": 3
   },
   {
@@ -3437,10 +2579,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      38.46992,
-      106.271092
-    ],
+    "latlng": [38.46992, 106.271092],
     "scalerank": 3
   },
   {
@@ -3449,10 +2588,7 @@
     "countryCca3": "TCD",
     "countryName": "Chad",
     "countryFlag": "flags/TD.svg",
-    "latlng": [
-      12.115042,
-      15.047202
-    ],
+    "latlng": [12.115042, 15.047202],
     "scalerank": 3
   },
   {
@@ -3461,10 +2597,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      25.281939,
-      110.278082
-    ],
+    "latlng": [25.281939, 110.278082],
     "scalerank": 3
   },
   {
@@ -3473,10 +2606,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      48.711956,
-      44.498015
-    ],
+    "latlng": [48.711956, 44.498015],
     "scalerank": 3
   },
   {
@@ -3485,10 +2615,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      40.776962,
-      -111.931998
-    ],
+    "latlng": [40.776962, -111.931998],
     "scalerank": 3
   },
   {
@@ -3497,10 +2624,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      20.968585,
-      -89.618579
-    ],
+    "latlng": [20.968585, -89.618579],
     "scalerank": 3
   },
   {
@@ -3509,10 +2633,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      27.621951,
-      113.848097
-    ],
+    "latlng": [27.621951, 113.848097],
     "scalerank": 3
   },
   {
@@ -3521,10 +2642,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      11.252382,
-      75.768044
-    ],
+    "latlng": [11.252382, 75.768044],
     "scalerank": 3
   },
   {
@@ -3533,10 +2651,7 @@
     "countryCca3": "HND",
     "countryName": "Honduras",
     "countryFlag": "flags/HN.svg",
-    "latlng": [
-      14.103991,
-      -87.219475
-    ],
+    "latlng": [14.103991, -87.219475],
     "scalerank": 3
   },
   {
@@ -3545,10 +2660,7 @@
     "countryCca3": "JAM",
     "countryName": "Jamaica",
     "countryFlag": "flags/JM.svg",
-    "latlng": [
-      17.977077,
-      -76.767434
-    ],
+    "latlng": [17.977077, -76.767434],
     "scalerank": 3
   },
   {
@@ -3557,10 +2669,7 @@
     "countryCca3": "MMR",
     "countryName": "Myanmar",
     "countryFlag": "flags/MM.svg",
-    "latlng": [
-      19.768503,
-      96.116673
-    ],
+    "latlng": [19.768503, 96.116673],
     "scalerank": 3
   },
   {
@@ -3569,10 +2678,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      56.015929,
-      92.864055
-    ],
+    "latlng": [56.015929, 92.864055],
     "scalerank": 3
   },
   {
@@ -3581,10 +2687,7 @@
     "countryCca3": "NIC",
     "countryName": "Nicaragua",
     "countryFlag": "flags/NI.svg",
-    "latlng": [
-      12.154962,
-      -86.270437
-    ],
+    "latlng": [12.154962, -86.270437],
     "scalerank": 3
   },
   {
@@ -3593,10 +2696,7 @@
     "countryCca3": "NER",
     "countryName": "Niger",
     "countryFlag": "flags/NE.svg",
-    "latlng": [
-      13.518652,
-      2.11471
-    ],
+    "latlng": [13.518652, 2.11471],
     "scalerank": 3
   },
   {
@@ -3605,10 +2705,7 @@
     "countryCca3": "ALB",
     "countryName": "Albania",
     "countryFlag": "flags/AL.svg",
-    "latlng": [
-      41.327541,
-      19.818883
-    ],
+    "latlng": [41.327541, 19.818883],
     "scalerank": 3
   },
   {
@@ -3617,10 +2714,7 @@
     "countryCca3": "NPL",
     "countryName": "Nepal",
     "countryFlag": "flags/NP.svg",
-    "latlng": [
-      27.718638,
-      85.314696
-    ],
+    "latlng": [27.718638, 85.314696],
     "scalerank": 3
   },
   {
@@ -3629,10 +2723,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -32.881384,
-      -68.818557
-    ],
+    "latlng": [-32.881384, -68.818557],
     "scalerank": 3
   },
   {
@@ -3641,10 +2732,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -36.830014,
-      -73.050022
-    ],
+    "latlng": [-36.830014, -73.050022],
     "scalerank": 3
   },
   {
@@ -3653,10 +2741,7 @@
     "countryCca3": "COL",
     "countryName": "Colombia",
     "countryFlag": "flags/CO.svg",
-    "latlng": [
-      10.401684,
-      -75.516339
-    ],
+    "latlng": [10.401684, -75.516339],
     "scalerank": 3
   },
   {
@@ -3665,10 +2750,7 @@
     "countryCca3": "MNG",
     "countryName": "Mongolia",
     "countryFlag": "flags/MN.svg",
-    "latlng": [
-      47.918619,
-      106.91467
-    ],
+    "latlng": [47.918619, 106.91467],
     "scalerank": 3
   },
   {
@@ -3677,10 +2759,7 @@
     "countryCca3": "KEN",
     "countryName": "Kenya",
     "countryFlag": "flags/KE.svg",
-    "latlng": [
-      -4.03808,
-      39.687972
-    ],
+    "latlng": [-4.03808, 39.687972],
     "scalerank": 3
   },
   {
@@ -3689,10 +2768,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      41.240001,
-      -96.00999
-    ],
+    "latlng": [41.240001, -96.00999],
     "scalerank": 3
   },
   {
@@ -3701,10 +2777,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      36.17192,
-      -86.781931
-    ],
+    "latlng": [36.17192, -86.781931],
     "scalerank": 3
   },
   {
@@ -3713,10 +2786,7 @@
     "countryCca3": "MAR",
     "countryName": "Morocco",
     "countryFlag": "flags/MA.svg",
-    "latlng": [
-      31.631939,
-      -8.001933
-    ],
+    "latlng": [31.631939, -8.001933],
     "scalerank": 3
   },
   {
@@ -3725,10 +2795,7 @@
     "countryCca3": "ITA",
     "countryName": "Italy",
     "countryFlag": "flags/IT.svg",
-    "latlng": [
-      38.126969,
-      13.348081
-    ],
+    "latlng": [38.126969, 13.348081],
     "scalerank": 3
   },
   {
@@ -3737,10 +2804,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      22.30002,
-      -97.870006
-    ],
+    "latlng": [22.30002, -97.870006],
     "scalerank": 3
   },
   {
@@ -3749,10 +2813,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -0.958061,
-      100.358068
-    ],
+    "latlng": [-0.958061, 100.358068],
     "scalerank": 3
   },
   {
@@ -3761,10 +2822,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -33.047739,
-      -71.617026
-    ],
+    "latlng": [-33.047739, -71.617026],
     "scalerank": 3
   },
   {
@@ -3773,10 +2831,7 @@
     "countryCca3": "IND",
     "countryName": "India",
     "countryFlag": "flags/IN.svg",
-    "latlng": [
-      20.272374,
-      85.825414
-    ],
+    "latlng": [20.272374, 85.825414],
     "scalerank": 3
   },
   {
@@ -3785,10 +2840,7 @@
     "countryCca3": "KGZ",
     "countryName": "Kyrgyzstan",
     "countryFlag": "flags/KG.svg",
-    "latlng": [
-      42.875025,
-      74.583258
-    ],
+    "latlng": [42.875025, 74.583258],
     "scalerank": 3
   },
   {
@@ -3797,10 +2849,7 @@
     "countryCca3": "CAF",
     "countryName": "Central African Republic",
     "countryFlag": "flags/CF.svg",
-    "latlng": [
-      4.366644,
-      18.558288
-    ],
+    "latlng": [4.366644, 18.558288],
     "scalerank": 3
   },
   {
@@ -3809,10 +2858,7 @@
     "countryCca3": "GRC",
     "countryName": "Greece",
     "countryFlag": "flags/GR.svg",
-    "latlng": [
-      40.698052,
-      22.883055
-    ],
+    "latlng": [40.698052, 22.883055],
     "scalerank": 3
   },
   {
@@ -3821,10 +2867,7 @@
     "countryCca3": "SLE",
     "countryName": "Sierra Leone",
     "countryFlag": "flags/SL.svg",
-    "latlng": [
-      8.471957,
-      -13.236162
-    ],
+    "latlng": [8.471957, -13.236162],
     "scalerank": 3
   },
   {
@@ -3833,10 +2876,7 @@
     "countryCca3": "PHL",
     "countryName": "Philippines",
     "countryFlag": "flags/PH.svg",
-    "latlng": [
-      10.321922,
-      123.898129
-    ],
+    "latlng": [10.321922, 123.898129],
     "scalerank": 3
   },
   {
@@ -3845,10 +2885,7 @@
     "countryCca3": "ESP",
     "countryName": "Spain",
     "countryFlag": "flags/ES.svg",
-    "latlng": [
-      39.486963,
-      -0.401958
-    ],
+    "latlng": [39.486963, -0.401958],
     "scalerank": 3
   },
   {
@@ -3857,10 +2894,7 @@
     "countryCca3": "DZA",
     "countryName": "Algeria",
     "countryFlag": "flags/DZ.svg",
-    "latlng": [
-      35.711948,
-      -0.621919
-    ],
+    "latlng": [35.711948, -0.621919],
     "scalerank": 3
   },
   {
@@ -3869,10 +2903,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      28.646927,
-      -106.086928
-    ],
+    "latlng": [28.646927, -106.086928],
     "scalerank": 3
   },
   {
@@ -3881,10 +2912,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      35.471989,
-      -97.520629
-    ],
+    "latlng": [35.471989, -97.520629],
     "scalerank": 3
   },
   {
@@ -3893,10 +2921,7 @@
     "countryCca3": "PAK",
     "countryName": "Pakistan",
     "countryFlag": "flags/PK.svg",
-    "latlng": [
-      33.689368,
-      73.08063
-    ],
+    "latlng": [33.689368, 73.08063],
     "scalerank": 3
   },
   {
@@ -3905,10 +2930,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -20.448086,
-      -54.618571
-    ],
+    "latlng": [-20.448086, -54.618571],
     "scalerank": 3
   },
   {
@@ -3917,10 +2939,7 @@
     "countryCca3": "PER",
     "countryName": "Peru",
     "countryFlag": "flags/PE.svg",
-    "latlng": [
-      -8.120035,
-      -79.019968
-    ],
+    "latlng": [-8.120035, -79.019968],
     "scalerank": 3
   },
   {
@@ -3929,10 +2948,7 @@
     "countryCca3": "BEN",
     "countryName": "Benin",
     "countryFlag": "flags/BJ.svg",
-    "latlng": [
-      6.36298,
-      2.404355
-    ],
+    "latlng": [6.36298, 2.404355],
     "scalerank": 3
   },
   {
@@ -3941,10 +2957,7 @@
     "countryCca3": "LAO",
     "countryName": "Laos",
     "countryFlag": "flags/LA.svg",
-    "latlng": [
-      17.966693,
-      102.59998
-    ],
+    "latlng": [17.966693, 102.59998],
     "scalerank": 3
   },
   {
@@ -3953,10 +2966,7 @@
     "countryCca3": "VEN",
     "countryName": "Venezuela",
     "countryFlag": "flags/VE.svg",
-    "latlng": [
-      8.370017,
-      -62.619987
-    ],
+    "latlng": [8.370017, -62.619987],
     "scalerank": 3
   },
   {
@@ -3965,10 +2975,7 @@
     "countryCca3": "LVA",
     "countryName": "Latvia",
     "countryFlag": "flags/LV.svg",
-    "latlng": [
-      56.950024,
-      24.099965
-    ],
+    "latlng": [56.950024, 24.099965],
     "scalerank": 3
   },
   {
@@ -3977,10 +2984,7 @@
     "countryCca3": "MRT",
     "countryName": "Mauritania",
     "countryFlag": "flags/MR.svg",
-    "latlng": [
-      18.086427,
-      -15.97534
-    ],
+    "latlng": [18.086427, -15.97534],
     "scalerank": 3
   },
   {
@@ -3989,10 +2993,7 @@
     "countryCca3": "OMN",
     "countryName": "Oman",
     "countryFlag": "flags/OM.svg",
-    "latlng": [
-      23.585179,
-      58.378311
-    ],
+    "latlng": [23.585179, 58.378311],
     "scalerank": 3
   },
   {
@@ -4001,10 +3002,7 @@
     "countryCca3": "NGA",
     "countryName": "Nigeria",
     "countryFlag": "flags/NG.svg",
-    "latlng": [
-      13.060016,
-      5.240031
-    ],
+    "latlng": [13.060016, 5.240031],
     "scalerank": 3
   },
   {
@@ -4013,10 +3011,7 @@
     "countryCca3": "TKM",
     "countryName": "Turkmenistan",
     "countryFlag": "flags/TM.svg",
-    "latlng": [
-      37.949995,
-      58.383299
-    ],
+    "latlng": [37.949995, 58.383299],
     "scalerank": 3
   },
   {
@@ -4025,10 +3020,7 @@
     "countryCca3": "HRV",
     "countryName": "Croatia",
     "countryFlag": "flags/HR.svg",
-    "latlng": [
-      45.800007,
-      15.999995
-    ],
+    "latlng": [45.800007, 15.999995],
     "scalerank": 3
   },
   {
@@ -4037,10 +3029,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      16.849991,
-      -99.915979
-    ],
+    "latlng": [16.849991, -99.915979],
     "scalerank": 3
   },
   {
@@ -4049,10 +3038,7 @@
     "countryCca3": "AFG",
     "countryName": "Afghanistan",
     "countryFlag": "flags/AF.svg",
-    "latlng": [
-      31.61002,
-      65.694946
-    ],
+    "latlng": [31.61002, 65.694946],
     "scalerank": 3
   },
   {
@@ -4061,10 +3047,7 @@
     "countryCca3": "UZB",
     "countryName": "Uzbekistan",
     "countryFlag": "flags/UZ.svg",
-    "latlng": [
-      39.670019,
-      66.944999
-    ],
+    "latlng": [39.670019, 66.944999],
     "scalerank": 3
   },
   {
@@ -4073,10 +3056,7 @@
     "countryCca3": "ZWE",
     "countryName": "Zimbabwe",
     "countryFlag": "flags/ZW.svg",
-    "latlng": [
-      -20.169998,
-      28.580002
-    ],
+    "latlng": [-20.169998, 28.580002],
     "scalerank": 3
   },
   {
@@ -4085,10 +3065,7 @@
     "countryCca3": "BIH",
     "countryName": "Bosnia and Herzegovina",
     "countryFlag": "flags/BA.svg",
-    "latlng": [
-      43.850022,
-      18.383002
-    ],
+    "latlng": [43.850022, 18.383002],
     "scalerank": 3
   },
   {
@@ -4097,10 +3074,7 @@
     "countryCca3": "NGA",
     "countryName": "Nigeria",
     "countryFlag": "flags/NG.svg",
-    "latlng": [
-      6.450031,
-      7.499997
-    ],
+    "latlng": [6.450031, 7.499997],
     "scalerank": 3
   },
   {
@@ -4109,10 +3083,7 @@
     "countryCca3": "MDA",
     "countryName": "Moldova",
     "countryFlag": "flags/MD.svg",
-    "latlng": [
-      47.005024,
-      28.857711
-    ],
+    "latlng": [47.005024, 28.857711],
     "scalerank": 3
   },
   {
@@ -4121,10 +3092,7 @@
     "countryCca3": "MWI",
     "countryName": "Malawi",
     "countryFlag": "flags/MW.svg",
-    "latlng": [
-      -13.983295,
-      33.783302
-    ],
+    "latlng": [-13.983295, 33.783302],
     "scalerank": 3
   },
   {
@@ -4133,10 +3101,7 @@
     "countryCca3": "COD",
     "countryName": "DR Congo",
     "countryFlag": "flags/CD.svg",
-    "latlng": [
-      -5.030043,
-      18.850002
-    ],
+    "latlng": [-5.030043, 18.850002],
     "scalerank": 3
   },
   {
@@ -4145,10 +3110,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      49.882987,
-      -97.165992
-    ],
+    "latlng": [49.882987, -97.165992],
     "scalerank": 3
   },
   {
@@ -4157,10 +3119,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      46.839969,
-      -71.24561
-    ],
+    "latlng": [46.839969, -71.24561],
     "scalerank": 3
   },
   {
@@ -4169,10 +3128,7 @@
     "countryCca3": "ERI",
     "countryName": "Eritrea",
     "countryFlag": "flags/ER.svg",
-    "latlng": [
-      15.333339,
-      38.933324
-    ],
+    "latlng": [15.333339, 38.933324],
     "scalerank": 3
   },
   {
@@ -4181,10 +3137,7 @@
     "countryCca3": "EGY",
     "countryName": "Egypt",
     "countryFlag": "flags/EG.svg",
-    "latlng": [
-      25.700019,
-      32.650038
-    ],
+    "latlng": [25.700019, 32.650038],
     "scalerank": 3
   },
   {
@@ -4193,10 +3146,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      -3.329992,
-      114.580076
-    ],
+    "latlng": [-3.329992, 114.580076],
     "scalerank": 3
   },
   {
@@ -4205,10 +3155,7 @@
     "countryCca3": "ARE",
     "countryName": "United Arab Emirates",
     "countryFlag": "flags/AE.svg",
-    "latlng": [
-      24.466684,
-      54.366593
-    ],
+    "latlng": [24.466684, 54.366593],
     "scalerank": 3
   },
   {
@@ -4217,10 +3164,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      53.354998,
-      83.745007
-    ],
+    "latlng": [53.354998, 83.745007],
     "scalerank": 3
   },
   {
@@ -4229,10 +3173,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      43.130015,
-      131.910026
-    ],
+    "latlng": [43.130015, 131.910026],
     "scalerank": 3
   },
   {
@@ -4241,10 +3182,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      52.284604,
-      104.283869
-    ],
+    "latlng": [52.284604, 104.283869],
     "scalerank": 3
   },
   {
@@ -4253,10 +3191,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      42.826984,
-      93.515005
-    ],
+    "latlng": [42.826984, 93.515005],
     "scalerank": 3
   },
   {
@@ -4265,10 +3200,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      19.177342,
-      -96.159981
-    ],
+    "latlng": [19.177342, -96.159981],
     "scalerank": 3
   },
   {
@@ -4277,10 +3209,7 @@
     "countryCca3": "GAB",
     "countryName": "Gabon",
     "countryFlag": "flags/GA.svg",
-    "latlng": [
-      0.385389,
-      9.457965
-    ],
+    "latlng": [0.385389, 9.457965],
     "scalerank": 3
   },
   {
@@ -4289,10 +3218,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -38.00002,
-      -57.579984
-    ],
+    "latlng": [-38.00002, -57.579984],
     "scalerank": 3
   },
   {
@@ -4301,10 +3227,7 @@
     "countryCca3": "LTU",
     "countryName": "Lithuania",
     "countryFlag": "flags/LT.svg",
-    "latlng": [
-      54.683366,
-      25.316635
-    ],
+    "latlng": [54.683366, 25.316635],
     "scalerank": 3
   },
   {
@@ -4313,10 +3236,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      21.16996,
-      -86.830008
-    ],
+    "latlng": [21.16996, -86.830008],
     "scalerank": 3
   },
   {
@@ -4325,10 +3245,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -32.929508,
-      151.770249
-    ],
+    "latlng": [-32.929508, 151.770249],
     "scalerank": 3
   },
   {
@@ -4337,10 +3254,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      56.494987,
-      84.975009
-    ],
+    "latlng": [56.494987, 84.975009],
     "scalerank": 3
   },
   {
@@ -4349,10 +3263,7 @@
     "countryCca3": "MOZ",
     "countryName": "Mozambique",
     "countryFlag": "flags/MZ.svg",
-    "latlng": [
-      -19.820045,
-      34.870006
-    ],
+    "latlng": [-19.820045, 34.870006],
     "scalerank": 3
   },
   {
@@ -4361,10 +3272,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      39.476336,
-      75.969926
-    ],
+    "latlng": [39.476336, 75.969926],
     "scalerank": 3
   },
   {
@@ -4373,10 +3281,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      0.033007,
-      -51.050021
-    ],
+    "latlng": [0.033007, -51.050021],
     "scalerank": 3
   },
   {
@@ -4385,10 +3290,7 @@
     "countryCca3": "SDN",
     "countryName": "Sudan",
     "countryFlag": "flags/SD.svg",
-    "latlng": [
-      19.615791,
-      37.216426
-    ],
+    "latlng": [19.615791, 37.216426],
     "scalerank": 3
   },
   {
@@ -4397,10 +3299,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -12.250016,
-      -38.970009
-    ],
+    "latlng": [-12.250016, -38.970009],
     "scalerank": 3
   },
   {
@@ -4409,10 +3308,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      16.749997,
-      -93.15001
-    ],
+    "latlng": [16.749997, -93.15001],
     "scalerank": 3
   },
   {
@@ -4421,10 +3317,7 @@
     "countryCca3": "ZAF",
     "countryName": "South Africa",
     "countryFlag": "flags/ZA.svg",
-    "latlng": [
-      -29.119994,
-      26.229913
-    ],
+    "latlng": [-29.119994, 26.229913],
     "scalerank": 3
   },
   {
@@ -4433,10 +3326,7 @@
     "countryCca3": "KAZ",
     "countryName": "Kazakhstan",
     "countryFlag": "flags/KZ.svg",
-    "latlng": [
-      49.884977,
-      73.11501
-    ],
+    "latlng": [49.884977, 73.11501],
     "scalerank": 3
   },
   {
@@ -4445,10 +3335,7 @@
     "countryCca3": "VEN",
     "countryName": "Venezuela",
     "countryFlag": "flags/VE.svg",
-    "latlng": [
-      7.770003,
-      -72.249967
-    ],
+    "latlng": [7.770003, -72.249967],
     "scalerank": 3
   },
   {
@@ -4457,10 +3344,7 @@
     "countryCca3": "JPN",
     "countryName": "Japan",
     "countryFlag": "flags/JP.svg",
-    "latlng": [
-      32.764988,
-      129.885033
-    ],
+    "latlng": [32.764988, 129.885033],
     "scalerank": 3
   },
   {
@@ -4469,10 +3353,7 @@
     "countryCca3": "COD",
     "countryName": "DR Congo",
     "countryFlag": "flags/CD.svg",
-    "latlng": [
-      -10.716724,
-      25.47244
-    ],
+    "latlng": [-10.716724, 25.47244],
     "scalerank": 3
   },
   {
@@ -4481,10 +3362,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      37.099711,
-      79.926945
-    ],
+    "latlng": [37.099711, 79.926945],
     "scalerank": 3
   },
   {
@@ -4493,10 +3371,7 @@
     "countryCca3": "TZA",
     "countryName": "Tanzania",
     "countryFlag": "flags/TZ.svg",
-    "latlng": [
-      -6.16,
-      39.200026
-    ],
+    "latlng": [-6.16, 39.200026],
     "scalerank": 3
   },
   {
@@ -4505,10 +3380,7 @@
     "countryCca3": "GNB",
     "countryName": "Guinea-Bissau",
     "countryFlag": "flags/GW.svg",
-    "latlng": [
-      11.865024,
-      -15.598361
-    ],
+    "latlng": [11.865024, -15.598361],
     "scalerank": 3
   },
   {
@@ -4517,10 +3389,7 @@
     "countryCca3": "SDN",
     "countryName": "Sudan",
     "countryFlag": "flags/SD.svg",
-    "latlng": [
-      15.459972,
-      36.390016
-    ],
+    "latlng": [15.459972, 36.390016],
     "scalerank": 3
   },
   {
@@ -4529,10 +3398,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      61.259942,
-      73.425017
-    ],
+    "latlng": [61.259942, 73.425017],
     "scalerank": 3
   },
   {
@@ -4541,10 +3407,7 @@
     "countryCca3": "EST",
     "countryName": "Estonia",
     "countryFlag": "flags/EE.svg",
-    "latlng": [
-      59.433877,
-      24.728041
-    ],
+    "latlng": [59.433877, 24.728041],
     "scalerank": 3
   },
   {
@@ -4553,10 +3416,7 @@
     "countryCca3": "NZL",
     "countryName": "New Zealand",
     "countryFlag": "flags/NZ.svg",
-    "latlng": [
-      -41.292068,
-      174.777201
-    ],
+    "latlng": [-41.292068, 174.777201],
     "scalerank": 3
   },
   {
@@ -4565,10 +3425,7 @@
     "countryCca3": "SDN",
     "countryName": "Sudan",
     "countryFlag": "flags/SD.svg",
-    "latlng": [
-      12.059973,
-      24.889995
-    ],
+    "latlng": [12.059973, 24.889995],
     "scalerank": 3
   },
   {
@@ -4577,10 +3434,7 @@
     "countryCca3": "PHL",
     "countryName": "Philippines",
     "countryFlag": "flags/PH.svg",
-    "latlng": [
-      10.705043,
-      122.545016
-    ],
+    "latlng": [10.705043, 122.545016],
     "scalerank": 3
   },
   {
@@ -4589,10 +3443,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      41.57998,
-      -93.619981
-    ],
+    "latlng": [41.57998, -93.619981],
     "scalerank": 3
   },
   {
@@ -4601,10 +3452,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      44.603925,
-      33.524395
-    ],
+    "latlng": [44.603925, 33.524395],
     "scalerank": 3
   },
   {
@@ -4613,10 +3461,7 @@
     "countryCca3": "MLT",
     "countryName": "Malta",
     "countryFlag": "flags/MT.svg",
-    "latlng": [
-      35.899732,
-      14.514711
-    ],
+    "latlng": [35.899732, 14.514711],
     "scalerank": 3
   },
   {
@@ -4625,10 +3470,7 @@
     "countryCca3": "MEX",
     "countryName": "Mexico",
     "countryFlag": "flags/MX.svg",
-    "latlng": [
-      23.221101,
-      -106.420001
-    ],
+    "latlng": [23.221101, -106.420001],
     "scalerank": 3
   },
   {
@@ -4637,10 +3479,7 @@
     "countryCca3": "NZL",
     "countryName": "New Zealand",
     "countryFlag": "flags/NZ.svg",
-    "latlng": [
-      -43.535022,
-      172.630023
-    ],
+    "latlng": [-43.535022, 172.630023],
     "scalerank": 3
   },
   {
@@ -4649,10 +3488,7 @@
     "countryCca3": "LSO",
     "countryName": "Lesotho",
     "countryFlag": "flags/LS.svg",
-    "latlng": [
-      -29.316674,
-      27.483273
-    ],
+    "latlng": [-29.316674, 27.483273],
     "scalerank": 3
   },
   {
@@ -4661,10 +3497,7 @@
     "countryCca3": "PER",
     "countryName": "Peru",
     "countryFlag": "flags/PE.svg",
-    "latlng": [
-      -13.525028,
-      -71.972155
-    ],
+    "latlng": [-13.525028, -71.972155],
     "scalerank": 3
   },
   {
@@ -4673,10 +3506,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      44.650025,
-      -63.600004
-    ],
+    "latlng": [44.650025, -63.600004],
     "scalerank": 3
   },
   {
@@ -4685,10 +3515,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -27.357832,
-      -55.885107
-    ],
+    "latlng": [-27.357832, -55.885107],
     "scalerank": 3
   },
   {
@@ -4697,10 +3524,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      64.574959,
-      40.545008
-    ],
+    "latlng": [64.574959, 40.545008],
     "scalerank": 3
   },
   {
@@ -4709,10 +3533,7 @@
     "countryCca3": "KAZ",
     "countryName": "Kazakhstan",
     "countryFlag": "flags/KZ.svg",
-    "latlng": [
-      51.181125,
-      71.427774
-    ],
+    "latlng": [51.181125, 71.427774],
     "scalerank": 3
   },
   {
@@ -4721,10 +3542,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      43.60859,
-      -116.22749
-    ],
+    "latlng": [43.60859, -116.22749],
     "scalerank": 3
   },
   {
@@ -4733,10 +3551,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -35.283029,
-      149.129026
-    ],
+    "latlng": [-35.283029, 149.129026],
     "scalerank": 3
   },
   {
@@ -4745,10 +3560,7 @@
     "countryCca3": "CMR",
     "countryName": "Cameroon",
     "countryFlag": "flags/CM.svg",
-    "latlng": [
-      10.595566,
-      14.324696
-    ],
+    "latlng": [10.595566, 14.324696],
     "scalerank": 3
   },
   {
@@ -4757,10 +3569,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      68.969988,
-      33.100036
-    ],
+    "latlng": [68.969988, 33.100036],
     "scalerank": 3
   },
   {
@@ -4769,10 +3578,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -23.649992,
-      -70.400003
-    ],
+    "latlng": [-23.649992, -70.400003],
     "scalerank": 3
   },
   {
@@ -4781,10 +3587,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      52.055025,
-      113.465002
-    ],
+    "latlng": [52.055025, 113.465002],
     "scalerank": 3
   },
   {
@@ -4793,10 +3596,7 @@
     "countryCca3": "BRN",
     "countryName": "Brunei",
     "countryFlag": "flags/BN.svg",
-    "latlng": [
-      4.883331,
-      114.933284
-    ],
+    "latlng": [4.883331, 114.933284],
     "scalerank": 3
   },
   {
@@ -4805,10 +3605,7 @@
     "countryCca3": "TZA",
     "countryName": "Tanzania",
     "countryFlag": "flags/TZ.svg",
-    "latlng": [
-      -8.890014,
-      33.430042
-    ],
+    "latlng": [-8.890014, 33.430042],
     "scalerank": 3
   },
   {
@@ -4817,10 +3614,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      48.433283,
-      -123.350001
-    ],
+    "latlng": [48.433283, -123.350001],
     "scalerank": 3
   },
   {
@@ -4829,10 +3623,7 @@
     "countryCca3": "PNG",
     "countryName": "Papua New Guinea",
     "countryFlag": "flags/PG.svg",
-    "latlng": [
-      -9.464708,
-      147.192504
-    ],
+    "latlng": [-9.464708, 147.192504],
     "scalerank": 3
   },
   {
@@ -4841,10 +3632,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -38.740027,
-      -62.265021
-    ],
+    "latlng": [-38.740027, -62.265021],
     "scalerank": 3
   },
   {
@@ -4853,10 +3641,7 @@
     "countryCca3": "PER",
     "countryName": "Peru",
     "countryFlag": "flags/PE.svg",
-    "latlng": [
-      -18.000001,
-      -70.250012
-    ],
+    "latlng": [-18.000001, -70.250012],
     "scalerank": 3
   },
   {
@@ -4865,10 +3650,7 @@
     "countryCca3": "PER",
     "countryName": "Peru",
     "countryFlag": "flags/PE.svg",
-    "latlng": [
-      -14.067993,
-      -75.725492
-    ],
+    "latlng": [-14.067993, -75.725492],
     "scalerank": 3
   },
   {
@@ -4877,10 +3659,7 @@
     "countryCca3": "NAM",
     "countryName": "Namibia",
     "countryFlag": "flags/NA.svg",
-    "latlng": [
-      -22.570006,
-      17.083546
-    ],
+    "latlng": [-22.570006, 17.083546],
     "scalerank": 3
   },
   {
@@ -4889,10 +3668,7 @@
     "countryCca3": "GUY",
     "countryName": "Guyana",
     "countryFlag": "flags/GY.svg",
-    "latlng": [
-      6.801974,
-      -58.167029
-    ],
+    "latlng": [6.801974, -58.167029],
     "scalerank": 3
   },
   {
@@ -4901,10 +3677,7 @@
     "countryCca3": "SUR",
     "countryName": "Suriname",
     "countryFlag": "flags/SR.svg",
-    "latlng": [
-      5.83503,
-      -55.167031
-    ],
+    "latlng": [5.83503, -55.167031],
     "scalerank": 3
   },
   {
@@ -4913,10 +3686,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      32.298815,
-      -90.184997
-    ],
+    "latlng": [32.298815, -90.184997],
     "scalerank": 3
   },
   {
@@ -4925,10 +3695,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      56.156997,
-      101.615027
-    ],
+    "latlng": [56.156997, 101.615027],
     "scalerank": 3
   },
   {
@@ -4937,10 +3704,7 @@
     "countryCca3": "COD",
     "countryName": "DR Congo",
     "countryFlag": "flags/CD.svg",
-    "latlng": [
-      -5.81661,
-      13.450021
-    ],
+    "latlng": [-5.81661, 13.450021],
     "scalerank": 3
   },
   {
@@ -4949,10 +3713,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      62.034959,
-      129.735016
-    ],
+    "latlng": [62.034959, 129.735016],
     "scalerank": 3
   },
   {
@@ -4961,10 +3722,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      2.816093,
-      -60.665998
-    ],
+    "latlng": [2.816093, -60.665998],
     "scalerank": 3
   },
   {
@@ -4973,10 +3731,7 @@
     "countryCca3": "TLS",
     "countryName": "Timor-Leste",
     "countryFlag": "flags/TL.svg",
-    "latlng": [
-      -8.559388,
-      125.579456
-    ],
+    "latlng": [-8.559388, 125.579456],
     "scalerank": 3
   },
   {
@@ -4985,10 +3740,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -2.433251,
-      -54.699979
-    ],
+    "latlng": [-2.433251, -54.699979],
     "scalerank": 3
   },
   {
@@ -4997,10 +3749,7 @@
     "countryCca3": "NER",
     "countryName": "Niger",
     "countryFlag": "flags/NE.svg",
-    "latlng": [
-      13.799996,
-      8.983317
-    ],
+    "latlng": [13.799996, 8.983317],
     "scalerank": 3
   },
   {
@@ -5009,10 +3758,7 @@
     "countryCca3": "BHS",
     "countryName": "Bahamas",
     "countryFlag": "flags/BS.svg",
-    "latlng": [
-      25.08339,
-      -77.350044
-    ],
+    "latlng": [25.08339, -77.350044],
     "scalerank": 3
   },
   {
@@ -5021,10 +3767,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -20.249993,
-      -70.129968
-    ],
+    "latlng": [-20.249993, -70.129968],
     "scalerank": 3
   },
   {
@@ -5033,10 +3776,7 @@
     "countryCca3": "BOL",
     "countryName": "Bolivia",
     "countryFlag": "flags/BO.svg",
-    "latlng": [
-      -19.040971,
-      -65.259516
-    ],
+    "latlng": [-19.040971, -65.259516],
     "scalerank": 3
   },
   {
@@ -5045,10 +3785,7 @@
     "countryCca3": "MOZ",
     "countryName": "Mozambique",
     "countryFlag": "flags/MZ.svg",
-    "latlng": [
-      -14.518611,
-      40.715024
-    ],
+    "latlng": [-14.518611, 40.715024],
     "scalerank": 3
   },
   {
@@ -5057,10 +3794,7 @@
     "countryCca3": "CYP",
     "countryName": "Cyprus",
     "countryFlag": "flags/CY.svg",
-    "latlng": [
-      35.166677,
-      33.366635
-    ],
+    "latlng": [35.166677, 33.366635],
     "scalerank": 3
   },
   {
@@ -5069,10 +3803,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      29.645024,
-      91.10001
-    ],
+    "latlng": [29.645024, 91.10001],
     "scalerank": 3
   },
   {
@@ -5081,10 +3812,7 @@
     "countryCca3": "LKA",
     "countryName": "Sri Lanka",
     "countryFlag": "flags/LK.svg",
-    "latlng": [
-      6.931966,
-      79.857751
-    ],
+    "latlng": [6.931966, 79.857751],
     "scalerank": 3
   },
   {
@@ -5093,10 +3821,7 @@
     "countryCca3": "NOR",
     "countryName": "Norway",
     "countryFlag": "flags/NO.svg",
-    "latlng": [
-      60.391002,
-      5.324522
-    ],
+    "latlng": [60.391002, 5.324522],
     "scalerank": 3
   },
   {
@@ -5105,10 +3830,7 @@
     "countryCca3": "BWA",
     "countryName": "Botswana",
     "countryFlag": "flags/BW.svg",
-    "latlng": [
-      -24.646314,
-      25.911948
-    ],
+    "latlng": [-24.646314, 25.911948],
     "scalerank": 3
   },
   {
@@ -5117,10 +3839,7 @@
     "countryCca3": "CIV",
     "countryName": "Ivory Coast",
     "countryFlag": "flags/CI.svg",
-    "latlng": [
-      6.818381,
-      -5.275503
-    ],
+    "latlng": [6.818381, -5.275503],
     "scalerank": 3
   },
   {
@@ -5129,10 +3848,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      52.170031,
-      -106.669985
-    ],
+    "latlng": [52.170031, -106.669985],
     "scalerank": 3
   },
   {
@@ -5141,10 +3857,7 @@
     "countryCca3": "IDN",
     "countryName": "Indonesia",
     "countryFlag": "flags/ID.svg",
-    "latlng": [
-      3.300017,
-      117.633016
-    ],
+    "latlng": [3.300017, 117.633016],
     "scalerank": 3
   },
   {
@@ -5153,10 +3866,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      53.061992,
-      158.62302
-    ],
+    "latlng": [53.061992, 158.62302],
     "scalerank": 3
   },
   {
@@ -5165,10 +3875,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      50.450033,
-      -104.61701
-    ],
+    "latlng": [50.450033, -104.61701],
     "scalerank": 3
   },
   {
@@ -5177,10 +3884,7 @@
     "countryCca3": "FJI",
     "countryName": "Fiji",
     "countryFlag": "flags/FJ.svg",
-    "latlng": [
-      -18.133016,
-      178.441707
-    ],
+    "latlng": [-18.133016, 178.441707],
     "scalerank": 3
   },
   {
@@ -5189,10 +3893,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -41.469989,
-      -72.929978
-    ],
+    "latlng": [-41.469989, -72.929978],
     "scalerank": 3
   },
   {
@@ -5201,10 +3902,7 @@
     "countryCca3": "ISL",
     "countryName": "Iceland",
     "countryFlag": "flags/IS.svg",
-    "latlng": [
-      64.143459,
-      -21.936546
-    ],
+    "latlng": [64.143459, -21.936546],
     "scalerank": 3
   },
   {
@@ -5213,10 +3911,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -5.349972,
-      -49.115979
-    ],
+    "latlng": [-5.349972, -49.115979],
     "scalerank": 3
   },
   {
@@ -5225,10 +3920,7 @@
     "countryCca3": "COD",
     "countryName": "DR Congo",
     "countryFlag": "flags/CD.svg",
-    "latlng": [
-      2.189981,
-      22.459962
-    ],
+    "latlng": [2.189981, 22.459962],
     "scalerank": 3
   },
   {
@@ -5237,10 +3929,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -39.821651,
-      -73.233111
-    ],
+    "latlng": [-39.821651, -73.233111],
     "scalerank": 3
   },
   {
@@ -5249,10 +3938,7 @@
     "countryCca3": "TCD",
     "countryName": "Chad",
     "countryFlag": "flags/TD.svg",
-    "latlng": [
-      13.839994,
-      20.829984
-    ],
+    "latlng": [13.839994, 20.829984],
     "scalerank": 3
   },
   {
@@ -5261,10 +3947,7 @@
     "countryCca3": "ETH",
     "countryName": "Ethiopia",
     "countryFlag": "flags/ET.svg",
-    "latlng": [
-      12.610043,
-      37.460028
-    ],
+    "latlng": [12.610043, 37.460028],
     "scalerank": 3
   },
   {
@@ -5273,10 +3956,7 @@
     "countryCca3": "GNQ",
     "countryName": "Equatorial Guinea",
     "countryFlag": "flags/GQ.svg",
-    "latlng": [
-      3.750015,
-      8.783278
-    ],
+    "latlng": [3.750015, 8.783278],
     "scalerank": 3
   },
   {
@@ -5285,10 +3965,7 @@
     "countryCca3": "CHN",
     "countryName": "China",
     "countryFlag": "flags/CN.svg",
-    "latlng": [
-      39.82001,
-      98.299984
-    ],
+    "latlng": [39.82001, 98.299984],
     "scalerank": 3
   },
   {
@@ -5297,10 +3974,7 @@
     "countryCca3": "NOR",
     "countryName": "Norway",
     "countryFlag": "flags/NO.svg",
-    "latlng": [
-      63.416657,
-      10.416666
-    ],
+    "latlng": [63.416657, 10.416666],
     "scalerank": 3
   },
   {
@@ -5309,10 +3983,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -45.870031,
-      -67.499999
-    ],
+    "latlng": [-45.870031, -67.499999],
     "scalerank": 3
   },
   {
@@ -5321,10 +3992,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -19.24995,
-      146.769997
-    ],
+    "latlng": [-19.24995, 146.769997],
     "scalerank": 3
   },
   {
@@ -5333,10 +4001,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -4.833001,
-      -43.350026
-    ],
+    "latlng": [-4.833001, -43.350026],
     "scalerank": 3
   },
   {
@@ -5345,10 +4010,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      47.584988,
-      -52.681007
-    ],
+    "latlng": [47.584988, -52.681007],
     "scalerank": 3
   },
   {
@@ -5357,10 +4019,7 @@
     "countryCca3": "SSD",
     "countryName": "South Sudan",
     "countryFlag": "flags/SS.svg",
-    "latlng": [
-      7.699981,
-      27.98996
-    ],
+    "latlng": [7.699981, 27.98996],
     "scalerank": 3
   },
   {
@@ -5369,10 +4028,7 @@
     "countryCca3": "DZA",
     "countryName": "Algeria",
     "countryFlag": "flags/DZ.svg",
-    "latlng": [
-      32.489992,
-      3.669998
-    ],
+    "latlng": [32.489992, 3.669998],
     "scalerank": 3
   },
   {
@@ -5381,10 +4037,7 @@
     "countryCca3": "NER",
     "countryName": "Niger",
     "countryFlag": "flags/NE.svg",
-    "latlng": [
-      16.995873,
-      7.98281
-    ],
+    "latlng": [16.995873, 7.98281],
     "scalerank": 3
   },
   {
@@ -5393,10 +4046,7 @@
     "countryCca3": "CHL",
     "countryName": "Chile",
     "countryFlag": "flags/CL.svg",
-    "latlng": [
-      -53.164986,
-      -70.939996
-    ],
+    "latlng": [-53.164986, -70.939996],
     "scalerank": 3
   },
   {
@@ -5405,10 +4055,7 @@
     "countryCca3": "GAB",
     "countryName": "Gabon",
     "countryFlag": "flags/GA.svg",
-    "latlng": [
-      -0.720022,
-      8.780022
-    ],
+    "latlng": [-0.720022, 8.780022],
     "scalerank": 3
   },
   {
@@ -5417,10 +4064,7 @@
     "countryCca3": "CPV",
     "countryName": "Cape Verde",
     "countryFlag": "flags/CV.svg",
-    "latlng": [
-      14.916698,
-      -23.516689
-    ],
+    "latlng": [14.916698, -23.516689],
     "scalerank": 3
   },
   {
@@ -5429,10 +4073,7 @@
     "countryCca3": "MDV",
     "countryName": "Maldives",
     "countryFlag": "flags/MV.svg",
-    "latlng": [
-      4.172037,
-      73.508901
-    ],
+    "latlng": [4.172037, 73.508901],
     "scalerank": 3
   },
   {
@@ -5441,10 +4082,7 @@
     "countryCca3": "LBY",
     "countryName": "Libya",
     "countryFlag": "flags/LY.svg",
-    "latlng": [
-      27.033271,
-      14.43332
-    ],
+    "latlng": [27.033271, 14.43332],
     "scalerank": 3
   },
   {
@@ -5453,10 +4091,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      48.44615,
-      -89.274975
-    ],
+    "latlng": [48.44615, -89.274975],
     "scalerank": 3
   },
   {
@@ -5465,10 +4100,7 @@
     "countryCca3": "BTN",
     "countryName": "Bhutan",
     "countryFlag": "flags/BT.svg",
-    "latlng": [
-      27.472986,
-      89.639014
-    ],
+    "latlng": [27.472986, 89.639014],
     "scalerank": 3
   },
   {
@@ -5477,10 +4109,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      59.57498,
-      150.810009
-    ],
+    "latlng": [59.57498, 150.810009],
     "scalerank": 3
   },
   {
@@ -5489,10 +4118,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -12.425354,
-      130.850039
-    ],
+    "latlng": [-12.425354, 130.850039],
     "scalerank": 3
   },
   {
@@ -5501,10 +4127,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      35.686929,
-      -105.937239
-    ],
+    "latlng": [35.686929, -105.937239],
     "scalerank": 3
   },
   {
@@ -5513,10 +4136,7 @@
     "countryCca3": "STP",
     "countryName": "São Tomé and Príncipe",
     "countryFlag": "flags/ST.svg",
-    "latlng": [
-      0.337466,
-      6.72965
-    ],
+    "latlng": [0.337466, 6.72965],
     "scalerank": 3
   },
   {
@@ -5525,10 +4145,7 @@
     "countryCca3": "ARG",
     "countryName": "Argentina",
     "countryFlag": "flags/AR.svg",
-    "latlng": [
-      -51.633297,
-      -69.216587
-    ],
+    "latlng": [-51.633297, -69.216587],
     "scalerank": 3
   },
   {
@@ -5537,10 +4154,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -42.850009,
-      147.29503
-    ],
+    "latlng": [-42.850009, 147.29503],
     "scalerank": 3
   },
   {
@@ -5549,10 +4163,7 @@
     "countryCca3": "MNG",
     "countryName": "Mongolia",
     "countryFlag": "flags/MN.svg",
-    "latlng": [
-      49.053297,
-      104.118337
-    ],
+    "latlng": [49.053297, 104.118337],
     "scalerank": 3
   },
   {
@@ -5561,10 +4172,7 @@
     "countryCca3": "SLB",
     "countryName": "Solomon Islands",
     "countryFlag": "flags/SB.svg",
-    "latlng": [
-      -9.437994,
-      159.949766
-    ],
+    "latlng": [-9.437994, 159.949766],
     "scalerank": 3
   },
   {
@@ -5573,10 +4181,7 @@
     "countryCca3": "DZA",
     "countryName": "Algeria",
     "countryFlag": "flags/DZ.svg",
-    "latlng": [
-      22.785003,
-      5.522805
-    ],
+    "latlng": [22.785003, 5.522805],
     "scalerank": 3
   },
   {
@@ -5585,10 +4190,7 @@
     "countryCca3": "BOL",
     "countryName": "Bolivia",
     "countryFlag": "flags/BO.svg",
-    "latlng": [
-      -10.983013,
-      -66.100007
-    ],
+    "latlng": [-10.983013, -66.100007],
     "scalerank": 3
   },
   {
@@ -5597,10 +4199,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      41.140007,
-      -104.819711
-    ],
+    "latlng": [41.140007, -104.819711],
     "scalerank": 3
   },
   {
@@ -5609,10 +4208,7 @@
     "countryCca3": "MLI",
     "countryName": "Mali",
     "countryFlag": "flags/ML.svg",
-    "latlng": [
-      16.766585,
-      -3.016596
-    ],
+    "latlng": [16.766585, -3.016596],
     "scalerank": 3
   },
   {
@@ -5621,10 +4217,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -10.833307,
-      -61.967003
-    ],
+    "latlng": [-10.833307, -61.967003],
     "scalerank": 3
   },
   {
@@ -5633,10 +4226,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      46.808317,
-      -100.783316
-    ],
+    "latlng": [46.808317, -100.783316],
     "scalerank": 3
   },
   {
@@ -5645,10 +4235,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -12.716602,
-      -60.1166
-    ],
+    "latlng": [-12.716602, -60.1166],
     "scalerank": 3
   },
   {
@@ -5657,10 +4244,7 @@
     "countryCca3": "WSM",
     "countryName": "Samoa",
     "countryFlag": "flags/WS.svg",
-    "latlng": [
-      -13.835715,
-      -171.768599
-    ],
+    "latlng": [-13.835715, -171.768599],
     "scalerank": 3
   },
   {
@@ -5669,10 +4253,7 @@
     "countryCca3": "FRA",
     "countryName": "France",
     "countryFlag": "flags/FR.svg",
-    "latlng": [
-      4.932992,
-      -52.330021
-    ],
+    "latlng": [4.932992, -52.330021],
     "scalerank": 3
   },
   {
@@ -5681,10 +4262,7 @@
     "countryCca3": "COL",
     "countryName": "Colombia",
     "countryFlag": "flags/CO.svg",
-    "latlng": [
-      -4.201207,
-      -69.955261
-    ],
+    "latlng": [-4.201207, -69.955261],
     "scalerank": 3
   },
   {
@@ -5693,10 +4271,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      64.836984,
-      -147.710659
-    ],
+    "latlng": [64.836984, -147.710659],
     "scalerank": 3
   },
   {
@@ -5705,10 +4280,7 @@
     "countryCca3": "BRA",
     "countryName": "Brazil",
     "countryFlag": "flags/BR.svg",
-    "latlng": [
-      -7.629988,
-      -72.669968
-    ],
+    "latlng": [-7.629988, -72.669968],
     "scalerank": 3
   },
   {
@@ -5717,10 +4289,7 @@
     "countryCca3": "NOR",
     "countryName": "Norway",
     "countryFlag": "flags/NO.svg",
-    "latlng": [
-      69.635076,
-      18.992025
-    ],
+    "latlng": [69.635076, 18.992025],
     "scalerank": 3
   },
   {
@@ -5729,10 +4298,7 @@
     "countryCca3": "BMU",
     "countryName": "Bermuda",
     "countryFlag": "flags/BM.svg",
-    "latlng": [
-      32.29419,
-      -64.783937
-    ],
+    "latlng": [32.29419, -64.783937],
     "scalerank": 3
   },
   {
@@ -5741,10 +4307,7 @@
     "countryCca3": "MRT",
     "countryName": "Mauritania",
     "countryFlag": "flags/MR.svg",
-    "latlng": [
-      20.51664,
-      -13.049989
-    ],
+    "latlng": [20.51664, -13.049989],
     "scalerank": 3
   },
   {
@@ -5753,10 +4316,7 @@
     "countryCca3": "VUT",
     "countryName": "Vanuatu",
     "countryFlag": "flags/VU.svg",
-    "latlng": [
-      -17.73335,
-      168.316641
-    ],
+    "latlng": [-17.73335, 168.316641],
     "scalerank": 3
   },
   {
@@ -5765,10 +4325,7 @@
     "countryCca3": "TON",
     "countryName": "Tonga",
     "countryFlag": "flags/TO.svg",
-    "latlng": [
-      -21.138512,
-      -175.220564
-    ],
+    "latlng": [-21.138512, -175.220564],
     "scalerank": 3
   },
   {
@@ -5777,10 +4334,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      46.249282,
-      -63.131325
-    ],
+    "latlng": [46.249282, -63.131325],
     "scalerank": 3
   },
   {
@@ -5789,10 +4343,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      46.592749,
-      -112.035291
-    ],
+    "latlng": [46.592749, -112.035291],
     "scalerank": 3
   },
   {
@@ -5801,10 +4352,7 @@
     "countryCca3": "SYC",
     "countryName": "Seychelles",
     "countryFlag": "flags/SC.svg",
-    "latlng": [
-      -4.616632,
-      55.44999
-    ],
+    "latlng": [-4.616632, 55.44999],
     "scalerank": 3
   },
   {
@@ -5813,10 +4361,7 @@
     "countryCca3": "MLI",
     "countryName": "Mali",
     "countryFlag": "flags/ML.svg",
-    "latlng": [
-      13.89999,
-      -4.549991
-    ],
+    "latlng": [13.89999, -4.549991],
     "scalerank": 3
   },
   {
@@ -5825,10 +4370,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      58.303386,
-      -134.400712
-    ],
+    "latlng": [58.303386, -134.400712],
     "scalerank": 3
   },
   {
@@ -5837,10 +4379,7 @@
     "countryCca3": "AUS",
     "countryName": "Australia",
     "countryFlag": "flags/AU.svg",
-    "latlng": [
-      -23.700996,
-      133.880034
-    ],
+    "latlng": [-23.700996, 133.880034],
     "scalerank": 3
   },
   {
@@ -5849,10 +4388,7 @@
     "countryCca3": "SDN",
     "countryName": "Sudan",
     "countryFlag": "flags/SD.svg",
-    "latlng": [
-      19.166594,
-      30.483297
-    ],
+    "latlng": [19.166594, 30.483297],
     "scalerank": 3
   },
   {
@@ -5861,10 +4397,7 @@
     "countryCca3": "NAM",
     "countryName": "Namibia",
     "countryFlag": "flags/NA.svg",
-    "latlng": [
-      -19.566623,
-      18.116558
-    ],
+    "latlng": [-19.566623, 18.116558],
     "scalerank": 3
   },
   {
@@ -5873,10 +4406,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      60.716719,
-      -135.049984
-    ],
+    "latlng": [60.716719, -135.049984],
     "scalerank": 3
   },
   {
@@ -5885,10 +4415,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      62.442014,
-      -114.396981
-    ],
+    "latlng": [62.442014, -114.396981],
     "scalerank": 3
   },
   {
@@ -5897,10 +4424,7 @@
     "countryCca3": "BLZ",
     "countryName": "Belize",
     "countryFlag": "flags/BZ.svg",
-    "latlng": [
-      17.252033,
-      -88.767073
-    ],
+    "latlng": [17.252033, -88.767073],
     "scalerank": 3
   },
   {
@@ -5909,10 +4433,7 @@
     "countryCca3": "GRL",
     "countryName": "Greenland",
     "countryFlag": "flags/GL.svg",
-    "latlng": [
-      64.198281,
-      -51.732659
-    ],
+    "latlng": [64.198281, -51.732659],
     "scalerank": 3
   },
   {
@@ -5921,10 +4442,7 @@
     "countryCca3": "CAN",
     "countryName": "Canada",
     "countryFlag": "flags/CA.svg",
-    "latlng": [
-      54.31667,
-      -130.329988
-    ],
+    "latlng": [54.31667, -130.329988],
     "scalerank": 3
   },
   {
@@ -5933,10 +4451,7 @@
     "countryCca3": "USA",
     "countryName": "United States",
     "countryFlag": "flags/US.svg",
-    "latlng": [
-      44.368337,
-      -100.350552
-    ],
+    "latlng": [44.368337, -100.350552],
     "scalerank": 3
   },
   {
@@ -5945,10 +4460,7 @@
     "countryCca3": "AGO",
     "countryName": "Angola",
     "countryFlag": "flags/AO.svg",
-    "latlng": [
-      -14.666612,
-      17.699994
-    ],
+    "latlng": [-14.666612, 17.699994],
     "scalerank": 3
   },
   {
@@ -5957,10 +4469,7 @@
     "countryCca3": "CAF",
     "countryName": "Central African Republic",
     "countryFlag": "flags/CF.svg",
-    "latlng": [
-      5.399992,
-      26.500026
-    ],
+    "latlng": [5.399992, 26.500026],
     "scalerank": 3
   },
   {
@@ -5969,10 +4478,7 @@
     "countryCca3": "CAF",
     "countryName": "Central African Republic",
     "countryFlag": "flags/CF.svg",
-    "latlng": [
-      8.409137,
-      20.653044
-    ],
+    "latlng": [8.409137, 20.653044],
     "scalerank": 3
   },
   {
@@ -5981,10 +4487,7 @@
     "countryCca3": "RUS",
     "countryName": "Russia",
     "countryFlag": "flags/RU.svg",
-    "latlng": [
-      64.73699,
-      177.474996
-    ],
+    "latlng": [64.73699, 177.474996],
     "scalerank": 3
   }
 ]

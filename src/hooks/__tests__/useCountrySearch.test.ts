@@ -4,7 +4,12 @@ import { useCountrySearch } from '../useCountrySearch'
 import type { CountryData } from '../../lib/types'
 import { makeCountryData } from '../../test/countryFixtures'
 
-const c = (cca3: string, ccn3: string, common: string, capital: string[] = []): CountryData =>
+const makeSearchCountry = (
+  cca3: string,
+  ccn3: string,
+  common: string,
+  capital: string[] = [],
+): CountryData =>
   makeCountryData({
     cca3,
     ccn3,
@@ -14,10 +19,10 @@ const c = (cca3: string, ccn3: string, common: string, capital: string[] = []): 
   })
 
 const dataset: CountryData[] = [
-  c('FRA', '250', 'France', ['Paris']),
-  c('DEU', '276', 'Germany', ['Berlin']),
-  c('ESP', '724', 'Spain', ['Madrid']),
-  c('ITA', '380', 'Italy', ['Rome']),
+  makeSearchCountry('FRA', '250', 'France', ['Paris']),
+  makeSearchCountry('DEU', '276', 'Germany', ['Berlin']),
+  makeSearchCountry('ESP', '724', 'Spain', ['Madrid']),
+  makeSearchCountry('ITA', '380', 'Italy', ['Rome']),
 ]
 
 describe('useCountrySearch', () => {
@@ -50,7 +55,7 @@ describe('useCountrySearch', () => {
     expect(result.current.results.length).toBeGreaterThan(0)
   })
 
-  it('matches country names (common) above 0.4 threshold', () => {
+  it('matches country names (common)', () => {
     const { result, rerender } = renderHook(
       ({ query }: { query: string }) => useCountrySearch(dataset, query),
       { initialProps: { query: '' } },
@@ -88,7 +93,7 @@ describe('useCountrySearch', () => {
 
   it('caps results at 8', () => {
     const large: CountryData[] = Array.from({ length: 20 }, (_, i) =>
-      c(`C${i.toString().padStart(2, '0')}`, `${i}`, `Country${i}`),
+      makeSearchCountry(`C${i.toString().padStart(2, '0')}`, `${i}`, `Country${i}`),
     )
     const { result, rerender } = renderHook(
       ({ query }: { query: string }) => useCountrySearch(large, query),
@@ -141,5 +146,83 @@ describe('useCountrySearch', () => {
   it('is fresh (not stale) for the empty query', () => {
     const { result } = renderHook(() => useCountrySearch(dataset, ''))
     expect(result.current.isStale).toBe(false)
+  })
+
+  describe('search-noise regressions (C-9)', () => {
+    // Realistic slice around the reported noise: at the old 0.4 threshold,
+    // "franc" ranked Iran second ("ran" ⊂ "franc" is 2 errors in 5 chars —
+    // raw bitap score exactly 0.4). Fields mirror the real dataset so the
+    // official-name and capital keys exert their real influence.
+    const noiseDataset: CountryData[] = [
+      makeCountryData({
+        cca3: 'FRA',
+        ccn3: '250',
+        cca2: 'FR',
+        name: { common: 'France', official: 'French Republic' },
+        capital: ['Paris'],
+      }),
+      makeCountryData({
+        cca3: 'IRN',
+        ccn3: '364',
+        cca2: 'IR',
+        name: { common: 'Iran', official: 'Islamic Republic of Iran' },
+        capital: ['Tehran'],
+        region: 'Asia',
+        subregion: 'Southern Asia',
+      }),
+      makeCountryData({
+        cca3: 'DEU',
+        ccn3: '276',
+        cca2: 'DE',
+        name: { common: 'Germany', official: 'Federal Republic of Germany' },
+        capital: ['Berlin'],
+      }),
+      makeCountryData({
+        cca3: 'AND',
+        ccn3: '020',
+        cca2: 'AD',
+        name: { common: 'Andorra', official: 'Principality of Andorra' },
+        capital: ['Andorra la Vella'],
+        subregion: 'Southern Europe',
+      }),
+      makeCountryData({
+        cca3: 'LIE',
+        ccn3: '438',
+        cca2: 'LI',
+        name: { common: 'Liechtenstein', official: 'Principality of Liechtenstein' },
+        capital: ['Vaduz'],
+        subregion: 'Central Europe',
+      }),
+      makeCountryData({
+        cca3: 'MCO',
+        ccn3: '492',
+        cca2: 'MC',
+        name: { common: 'Monaco', official: 'Principality of Monaco' },
+        capital: ['Monaco'],
+      }),
+    ]
+
+    const searchFor = (query: string) => {
+      const { result, rerender } = renderHook(
+        ({ q }: { q: string }) => useCountrySearch(noiseDataset, q),
+        { initialProps: { q: '' } },
+      )
+      rerender({ q: query })
+      act(() => {
+        vi.advanceTimersByTime(150)
+      })
+      return result.current.results
+    }
+
+    it("'franc' puts France first and keeps Iran out of the top 3", () => {
+      const results = searchFor('franc')
+      expect(results[0]?.cca3).toBe('FRA')
+      expect(results.slice(0, 3).map((c) => c.cca3)).not.toContain('IRN')
+    })
+
+    it("typo forgiveness survives the tuning: 'Germani' finds Germany first", () => {
+      const results = searchFor('Germani')
+      expect(results[0]?.cca3).toBe('DEU')
+    })
   })
 })

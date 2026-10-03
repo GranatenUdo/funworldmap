@@ -91,13 +91,13 @@ test.describe('A11y + Contrast Pass', () => {
       expect(color).toContain(SAND_600_RGB)
     })
 
-    test('header wordmark uses ice-accessible in light mode', async ({ page }) => {
+    test('header wordmark uses ice on the invariant navy backdrop', async ({ page }) => {
       await page.addInitScript(() => window.localStorage.setItem('funworldmap-theme', 'light'))
       await page.goto('/')
       await ensureLauncherDismissed(page)
       const wordmark = page.getByTestId('header-wordmark')
       await expect(wordmark).toBeVisible()
-      expect(await computedColor(wordmark)).toContain(ICE_ACCESSIBLE_RGB)
+      expect(await computedColor(wordmark)).toContain(ICE_RGB)
     })
 
     test('header Play button uses ice-accessible in light mode', async ({ page }) => {

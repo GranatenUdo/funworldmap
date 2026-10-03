@@ -1,0 +1,146 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_plan",
+      "label": "Security Hardening + Reveal Camera + Tutorial Click Fix Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_gdelt_url_allowlist",
+      "label": "GDELT URL protocol allowlist",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": "scripts/news/gdelt-client.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Defense-in-depth at the ingestion boundary: article URLs from a third-party feed are filtered to an http/https allowlist during the build so a javascript: or data: URL can never reach a rendered anchor."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_test_seam_stripping",
+      "label": "VITE_TEST_HOOKS test-seam stripping from production",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A dedicated Vite mode (--mode e2e) sets VITE_TEST_HOOKS=1 so __funworldmap_* seams are tree-shaken out of the production bundle while Playwright keeps full introspection. Verified by grepping the built bundle for the seam names rather than trusting the flag."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_tutorial_first_attempt",
+      "label": "Tutorial dismisses on first attempt",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": "src/components/FirstSessionTutorial.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The first-session tutorial overlay was swallowing the player's opening click; a firstAttemptMade prop dismisses it on the first guess instead of requiring a separate dismissal interaction."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_reveal_camera_follow",
+      "label": "Per-frame reveal camera follows the line head",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": "src/game/GameController.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "fitBounds over-zoomed on long guess-to-target distances; replaced with a jumpTo to the wrong-guess centroid at t=0 plus a per-frame jumpTo to the current arc point inside the existing rAF loop, with a matching jumpTo for the reduced-motion path. The now-unused fitPadding helper was deleted in the same change."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_reveal_camera_follow",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_reveal_camera_follow",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_reduced_motion_reveal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_gdelt_url_allowlist",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_test_seam_stripping",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_tutorial_first_attempt",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_reveal_camera_follow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_gdelt_url_allowlist",
+      "target": "docs_superpowers_plans_archive_2026_04_24_gdelt_migration_gdelt_doc_api",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_gdelt_url_allowlist",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_news_feed_sanitise",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-hardening-and-reveal-fixes.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

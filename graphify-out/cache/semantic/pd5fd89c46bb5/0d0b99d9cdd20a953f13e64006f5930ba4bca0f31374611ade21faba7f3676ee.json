@@ -1,0 +1,270 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "label": "Phase 4 \u2014 Share Flow Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_buildsharetext",
+      "label": "buildShareText pure share-text builder",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": "src/game/daily/shareText.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Kept a pure function with no DOM and no browser API so the entire share-text format could be locked down with inline-snapshot unit tests (quintile buckets, streak line, MM-DD date, origin concatenation) instead of driven through a component."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "label": "DailyShareBlock share dispatch component",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": "src/components/DailyShareBlock.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Single presentational + dispatch component mounted in two places (GameOverOverlay and DailyRevealOverlay) rather than duplicated. Dispatch ladder is navigator.share -> clipboard text fallback -> explicit 'Copy link only' button; an AbortError from the native share sheet is treated as user cancellation and deliberately fires NO analytics event."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_quintile_emoji_strip",
+      "label": "Quintile emoji attempt strip",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Per-attempt score is bucketed into five emoji (>=90 green, >=70 yellow, >=50 orange, >=30 red, else black) and padded to exactly three squares so an incomplete run still renders a fixed-width strip."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_shared_schema",
+      "label": "daily_shared analytics schema (date, modesPlayed, method)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": "src/lib/analytics.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Schema was changed from {mode, method} to {date, modesPlayed, method} without a migration because no event had ever been fired with the prior shape. The descriptive method vocabulary (share-api / clipboard-text / clipboard-link) was kept over the spec's shorter names."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_toast_event",
+      "label": "funworldmap:toast CustomEvent",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Share feedback reuses the pre-existing window CustomEvent toast channel instead of introducing a new notification mechanism."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_deep_link_anchor",
+      "label": "#daily/<date> no-mode launcher anchor route",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A shared link lands a recipient on the launcher anchored to that date rather than starting a game, so they can play their own daily and re-share from the same block."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_clipboard_permissions",
+      "label": "Playwright clipboard-read/clipboard-write permissions",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": "playwright.config.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_puzzle_removal",
+      "label": "Daily puzzle removal (PR #97, 2026-05-30)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The entire daily-puzzle/retention feature these plans built was removed in PR #97; the plans carry a 2026-06-12 tombstone and are kept unmodified for history only \u2014 they must not be implemented from."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_buildsharetext",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_shared_schema",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_deep_link_anchor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_clipboard_permissions",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_puzzle_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_buildsharetext",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_buildsharetext",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_quintile_emoji_strip",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_toast_event",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_shared_schema",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_clipboard_permissions",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_deep_link_anchor",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_see_reveal_deep_link",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "daily_share_flow",
+      "label": "Daily share flow end-to-end",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_buildsharetext",
+        "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_quintile_emoji_strip",
+        "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+        "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_shared_schema",
+        "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_toast_event",
+        "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_deep_link_anchor"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-4-share-flow.md"
+    }
+  ]
+}

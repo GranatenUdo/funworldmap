@@ -118,7 +118,6 @@ function buildRichPositronStub(): Buffer {
     id,
     type: 'symbol',
     source: 'openmaptiles',
-    'source-layer': 'place',
     layout: {
       'text-field': '{name}',
       'text-font': ['Open Sans Regular'],
@@ -142,8 +141,8 @@ function buildRichPositronStub(): Buffer {
           maxzoom: 6,
         },
         openmaptiles: {
-          type: 'vector',
-          url: 'https://tiles.openfreemap.org/planet',
+          type: 'geojson',
+          data: {type:'FeatureCollection',features:[]},
         },
       },
       sprite: 'https://tiles.openfreemap.org/sprites/ofm_f384/ofm',
@@ -158,7 +157,6 @@ function buildRichPositronStub(): Buffer {
           id: 'water',
           type: 'fill',
           source: 'openmaptiles',
-          'source-layer': 'water',
           paint: { 'fill-color': '#a8c8f0' },
         },
         ...labelLayers,

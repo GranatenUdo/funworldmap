@@ -192,6 +192,18 @@ describe('useMapInstance', () => {
     clearSpy.mockRestore()
   })
 
+  it('can retry without arming a reload that would discard results', () => {
+    const spy = vi.spyOn(window, 'setTimeout')
+    const {result} = renderHook(() => {
+      const ref = useRef<HTMLDivElement | null>(document.getElementById('c') as HTMLDivElement)
+      return useMapInstance({containerRef:ref,onLoad:()=>Promise.resolve()})
+    },{wrapper:Wrapper})
+    const before = spy.mock.calls.filter(call => call[1] === 1000).length
+    result.current.retryWebGL(false)
+    expect(spy.mock.calls.filter(call => call[1] === 1000).length).toBe(before)
+    spy.mockRestore()
+  })
+
   it('passes clickTolerance: 8 to the MapLibre constructor', async () => {
     const maplibre = (await import('maplibre-gl')) as unknown as {
       __constructorArgs: Array<Record<string, unknown>>

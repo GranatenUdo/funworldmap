@@ -1,0 +1,413 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "label": "Screenshot A6 \u2014 Reduced Motion End State",
+      "file_type": "image",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-05-13",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_reduced_motion_contract",
+      "label": "prefers-reduced-motion: reduce Contract",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_animation_verification_report",
+      "label": "Animation Verification Report (2026-05-13 case A6)",
+      "file_type": "document",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_single_country_panel",
+      "label": "Single Country Panel (France, fully settled)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_panel_slide_in",
+      "label": "Panel Slide-In Animation (suppressed)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "label": "Round Reveal Banner \u2014 Wrong Answer Feedback",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_score_chip",
+      "label": "Itemized Score Chip (+78 points)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_hearts_lives",
+      "label": "Hearts Lives Indicator (2 of 3 remaining)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_continue_button",
+      "label": "Continue Button (advance round)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_end_game_control",
+      "label": "End Game Control",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_globe_view",
+      "label": "3D Globe Map View with Answer Marker",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_field_attribution",
+      "label": "Field-Level Attribution Info Icons",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_country_facts",
+      "label": "Country Facts Grid (capital, population, area, region, government, languages, currencies, timezones, borders)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_animation_state_seam",
+      "label": "data-animation-state Idle Signal",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_accessibility_rationale",
+      "label": "Rationale \u2014 Motion Sensitivity Accommodation Without Feature Loss",
+      "file_type": "rationale",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_playwright_capture",
+      "label": "Playwright Screenshot Capture Harness",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_reduced_motion_contract",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_animation_verification_report",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_single_country_panel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_globe_view",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_reduced_motion_contract",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_panel_slide_in",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_panel_slide_in",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_single_country_panel",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_single_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_country_facts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_country_facts",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_field_attribution",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_single_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_continue_button",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_score_chip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_hearts_lives",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_end_game_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_reduced_motion_contract",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_accessibility_rationale",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_reduced_motion_contract",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_playwright_capture",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_reduced_motion_contract",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_animation_state_seam",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_animation_state_seam",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_single_country_panel",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_accessibility_rationale",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_globe_view",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_single_country_panel",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_round_reveal",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_hearts_lives",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_accessibility_rationale",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_globe_view",
+      "target": "docs_testing_screenshots_2026_05_13_a6_reduced_motion_reduced_motion_contract",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": "docs/testing/screenshots/2026-05-13/a6-reduced-motion.png",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

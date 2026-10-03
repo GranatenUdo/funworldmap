@@ -1,0 +1,192 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_plan",
+      "label": "Game-flow bugfix Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_attempt_reducer_collapse",
+      "label": "recordAttempt/submitGuess collapse into one attempt action",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": "src/game/hooks/useGameSession.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The split between recordAttempt and submitGuess let callers dispatch half a state transition; collapsing to a single attempt action makes the reducer the sole owner of attempt sequencing and unblocks the resume, feedback and telemetry commits that follow."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_resume_persistence",
+      "label": "In-progress daily attempt resume persistence",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Refresh mid-daily used to be destructive \u2014 attempts were lost with no way to replay the once-per-day puzzle. Attempts are written per-attempt and read on both the immediate and deferred hash-bootstrap paths; forfeiting via Escape clears the resume record so quitting stays intentional."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_deep_link_telemetry_redesign",
+      "label": "deep_link_opened single fire-point redesign",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": "src/lib/analytics.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The event was fired from App.tsx, DailyRevealOverlay and useSelectedCountry, producing duplicates and inconsistent props; all fires were deleted in favour of one point in the GameController bootstrap, and free_started moved there too."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_done_button",
+      "label": "Done button + completeNow wiring",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": "src/game/shared/hud/HudShell.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Gives the player an explicit way to end a best-of-N run early instead of being forced to spend every attempt."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_bests_key_v2",
+      "label": "Personal-bests storage key v2 migration",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Bumping the key plus pruneOlderThan and gating the daily leak stopped daily scores contaminating free-play personal bests in already-shipped browsers."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_dailyround_pool_miss",
+      "label": "dailyRound returns null on pool miss",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A daily index entry naming a country absent from the bundled pool previously produced an undefined target mid-game; returning null lets the caller fall back cleanly."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_playing_flag_drop",
+      "label": "Drop the playing flag from HashState",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": "src/lib/hashState.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Removes a second, redundant source of truth for whether a game is in progress \u2014 session state already knows."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_attempt_reducer_collapse",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_resume_persistence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_deep_link_telemetry_redesign",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_attempt_reducer_collapse",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_resume_persistence",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_attempt_reducer_collapse",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_done_button",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_bests_key_v2",
+      "target": "docs_superpowers_plans_archive_2026_04_27_cross_component_state_and_game_over_fixes_pb_hidden_on_daily",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_playing_flag_drop",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_deep_link_telemetry_redesign",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_worker_blob_slot_mapping",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_dailyround_pool_miss",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_reveal_redirect_gate",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/plans/archive/2026-04-26-game-flow-bugfix.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

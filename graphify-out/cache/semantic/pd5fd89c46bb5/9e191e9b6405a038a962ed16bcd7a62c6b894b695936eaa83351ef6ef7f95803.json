@@ -1,0 +1,463 @@
+{
+  "nodes": [
+    {
+      "id": "docs_systems_map_rendering",
+      "label": "Map Rendering System",
+      "file_type": "document",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "MapLibre GL JS renders to a WebGL canvas with @vis.gl/react-maplibre providing React bindings; GPU-accelerated, vector, client-side-styled, no server-side rendering."
+    },
+    {
+      "id": "docs_systems_map_rendering_satellite_basemap",
+      "label": "Satellite + 3D terrain basemap (default)",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "App boots into satellite mode. EOX Sentinel-2 Cloudless raster tiles plus an AWS Terrain Tiles DEM drive 3D relief (setTerrain, exaggeration 1.5) with camera pitch 20\u00b0 (DEFAULT_PITCH, flattened to 0 under prefers-reduced-motion). Vector layers hide, borders render as a dark casing under a light line for contrast against imagery, and fill opacity drops so imagery shows through."
+    },
+    {
+      "id": "docs_systems_map_rendering_positron_basemap",
+      "label": "OpenFreeMap Positron vector basemap (toggle-off)",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Clean minimal light vector style whose layer colors are modified programmatically in dark mode. All tile URLs are single constants in lib/mapStyles.ts, so swapping providers (MapTiler, Stadia, any MapLibre-compatible source) is a one-line change."
+    },
+    {
+      "id": "docs_systems_map_rendering_satellite_toggle",
+      "label": "Satellite toggle (useSatelliteMode)",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Reacts to the satellite flag: toggles satellite-* layer visibility, adds/removes terrain, hides/shows vector base layers, re-tints borders, adjusts fill opacity. The choice is deliberately not persisted \u2014 every fresh visit starts in satellite mode, with persistence tracked as a roadmap deferral."
+    },
+    {
+      "id": "docs_systems_map_rendering_country_labels",
+      "label": "country-labels symbol layer (satellite-only)",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "App-owned name points built from bundled latlng centroids, rendered in Noto Sans Bold served by the positron style's existing glyphs endpoint so no font assets ship. applyBasemapLayerVisibility's explicit rule is visible iff satellite && not playing \u2014 labels are hidden during active play so game answers don't leak."
+    },
+    {
+      "id": "docs_systems_map_rendering_country_layers",
+      "label": "Country map layers (LAYER registry)",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Five core layers \u2014 country-fill (clickable/hover), country-borders-casing (satellite legibility), country-borders, country-dim (spotlight scrim), country-selected \u2014 plus hover, selection/compare highlight stacks, satellite raster, country-labels, country-compare-markers, and country-reveal-fill. The full registry of 18 ids is LAYER in src/lib/mapLayers.ts."
+    },
+    {
+      "id": "docs_systems_map_rendering_country_dim",
+      "label": "country-dim selection spotlight scrim",
+      "file_type": "rationale",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Dark 25% fill over every country except the selection (and both compare countries), sitting above base layers and below the hover/highlight stacks. Filter owned by useSelectionHighlight via spotlightDimFilter and matches nothing when no country is selected, so games never show it. Never hit-tested \u2014 every queryRenderedFeatures caller stays scoped to country-fill."
+    },
+    {
+      "id": "docs_systems_map_rendering_interaction_model",
+      "label": "Hover / click / deselect interaction model",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Hover sets feature-state { hover: true } on country-fill so the paint expression raises opacity and the cursor becomes a pointer; click extracts the feature id (ISO numeric) to drive selection; clicking empty ocean clears it. On touch there is no hover pre-feedback, tap maps directly to click, pinch/drag are native MapLibre, and there are deliberately no long-press gestures."
+    },
+    {
+      "id": "docs_systems_map_rendering_topojson_pipeline",
+      "label": "TopoJSON \u2192 GeoJSON boundary pipeline",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Natural Earth \u2192 world-atlas TopoJSON (~245KB gzipped) \u2192 bundled by Vite as an async chunk \u2192 converted at runtime by topojson-client.feature() \u2192 added to MapLibre as one GeoJSON source with multiple layers."
+    },
+    {
+      "id": "docs_systems_map_rendering_camera_animations",
+      "label": "Camera animations (flyTo)",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Selection flies the camera with duration 1400, or duration 0 under prefers-reduced-motion \u2014 the app checks the preference itself rather than relying on MapLibre's built-in handling."
+    },
+    {
+      "id": "docs_systems_map_rendering_flytocountry",
+      "label": "flyToCountry zoom derivation",
+      "file_type": "concept",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "zoom = clamp(11 \u2212 1.7\u00b7log10(areaKm\u00b2), 2, 12), and never zooms out below the user's current zoom (Math.max(map.getZoom(), computed), per the 2026-05-17 country-click-preserve-zoom spec). Large countries land on the clamp floor; only countries under ~100,000 km\u00b2 pull the camera in meaningfully. Also owns the [lat,lng]\u2192[lng,lat] swap."
+    },
+    {
+      "id": "docs_systems_map_rendering_dark_mode",
+      "label": "Dark mode via setPaintProperty",
+      "file_type": "rationale",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "applyMapTheme (src/lib/mapColors.ts) overrides a fixed set of basemap layers \u2014 background, water, waterway, park, building \u2014 and recolors every symbol layer's text and halo, non-destructively with no style reload. A CSS filter on .maplibregl-canvas was rejected because it would transform overlay layers too, making country fill/border/selection colors unpredictable. Fallback: if layer ids can't be identified the basemap stays light while UI chrome darkens \u2014 functional graceful degradation."
+    },
+    {
+      "id": "docs_systems_map_rendering_webgl_requirement",
+      "label": "WebGL requirement and fallback message",
+      "file_type": "rationale",
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "MapLibre prefers WebGL2 and falls back to WebGL1 (verified against maplibre-gl 5.23); the Map constructor throws only when no context can be created at all, which useMapInstance catches to show browser-upgrade guidance instead of a blank canvas. Rare \u2014 mainly enterprise browsers with GPU disabled or very old devices."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_satellite_basemap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_positron_basemap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_satellite_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_country_labels",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_country_layers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_interaction_model",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_topojson_pipeline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_camera_animations",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_dark_mode",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_map_rendering_webgl_requirement",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_country_layers",
+      "target": "docs_systems_map_rendering_country_dim",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_country_layers",
+      "target": "docs_systems_map_rendering_country_labels",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_camera_animations",
+      "target": "docs_systems_map_rendering_flytocountry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_satellite_toggle",
+      "target": "docs_systems_map_rendering_satellite_basemap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_satellite_toggle",
+      "target": "docs_roadmap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_satellite_basemap",
+      "target": "docs_systems_map_rendering_country_labels",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_interaction_model",
+      "target": "docs_systems_overview_country_click_flow",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering",
+      "target": "docs_systems_data_data_join",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_flytocountry",
+      "target": "docs_systems_data_coordinate_system",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_webgl_requirement",
+      "target": "docs_systems_overview_error_handling",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_dark_mode",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_country_dim",
+      "target": "docs_systems_ui_layout_compare",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_satellite_basemap",
+      "target": "docs_systems_overview_external_dependencies",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_positron_basemap",
+      "target": "docs_systems_overview_external_dependencies",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_satellite_toggle",
+      "target": "docs_systems_ui_layout_header",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_satellite_basemap",
+      "target": "docs_systems_accessibility_prefers_reduced_motion",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_country_labels",
+      "target": "docs_systems_overview_game_system",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_country_dim",
+      "target": "docs_systems_map_rendering_interaction_model",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_flytocountry",
+      "target": "docs_systems_ui_layout_flytocomparepair",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_systems_map_rendering_topojson_pipeline",
+      "target": "docs_systems_data_canonical_195_filter",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/systems/map-rendering.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

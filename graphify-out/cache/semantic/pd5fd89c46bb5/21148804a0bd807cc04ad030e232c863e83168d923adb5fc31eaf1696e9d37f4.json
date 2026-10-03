@@ -1,0 +1,117 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_spec",
+      "label": "Daily content on a data branch design (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: designed a daily-puzzle feature removed in PR #97. Kept for history."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_data_orphan_branch",
+      "label": "Orphan data branch for the generated daily index",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Components 1-2",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "137 of 417 commits on main (33%) were chore(daily) bot commits burying real history \u2014 the most visible blemish for a showcase repo. main holds only code; the index becomes a generated artifact. The branch still preserves per-date provenance and the GitHub 60-day scheduled-workflow keepalive, since a push to any branch resets the clock."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_no_prebuild_invariant",
+      "label": "No prebuild generation hook invariant",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Invariants / watch-outs",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "A prebuild: daily:generate hook would regenerate a fresh index over the one fetched from data, silently breaking provenance. Generation is wired only into predev and the Playwright webServer command \u2014 never the production build path. Related gotcha: npm pre<name> hooks match exact script names, so a build hook would not fire for build:e2e."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_reproducibility_waiver",
+      "label": "Reproducibility constraint waived",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Summary",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "The owner confirmed a past-but-still-in-window day's puzzle may change on regeneration (no meaningful userbase yet). That removes the need to preserve exact past picks, so the data branch is for provenance and keepalive, not correctness \u2014 which is what makes the whole design cheap."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_workflow_name_load_bearing",
+      "label": "Workflow name is load-bearing for the deploy chain",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Invariants / watch-outs",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "deploy.yml's workflow_run trigger matches on the literal name 'Daily puzzle index'; renaming daily-puzzle.yml's name: would silently break the deploy chain."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_spec",
+      "target": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_data_orphan_branch",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Components 1-2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_data_orphan_branch",
+      "target": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_no_prebuild_invariant",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Invariants",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_data_orphan_branch",
+      "target": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_reproducibility_waiver",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Summary",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_data_orphan_branch",
+      "target": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_workflow_name_load_bearing",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Invariants",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_spec",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md",
+      "source_location": "Tombstone 2026-06-12",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

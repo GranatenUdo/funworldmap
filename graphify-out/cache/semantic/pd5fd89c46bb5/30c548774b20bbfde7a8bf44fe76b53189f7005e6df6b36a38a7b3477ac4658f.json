@@ -1,0 +1,214 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_landing_state",
+      "label": "Launcher Landing State Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher",
+      "label": "Launcher Modal Landing State",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Centered modal card over a dimmed blurred map replacing the map-plus-hint-pill home view; z-index sits above the basemap loading overlay so mode cards are clickable while tiles still load."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_uselaunchervisibility",
+      "label": "useLauncherVisibility State Machine",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "visible = isBareRoot(hash) && !dismissed && session idle. Deliberately in-memory with no storage, so deep links bypass it for free and a fresh tab always re-shows it; the known cost is that browser Back does not undo a dismissal."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_mode_card",
+      "label": "LauncherModeCard",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Whole card is a single button with no nested interactive elements; personal best renders an em-dash placeholder at the same visual height when gamesPlayed is 0."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_playmenu_deletion",
+      "label": "PlayMenu Deletion",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The launcher becomes the single source of truth for mode picking, so the popover is removed rather than kept alongside; outside-click close is not needed for a modal."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_lastmode_module",
+      "label": "lastMode Module",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "LAST_MODE_KEY plus read/write helpers extracted out of PlayMenu so the launcher and the game-start flow share one definition instead of a floating string literal."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_focus_trap",
+      "label": "Launcher Inline Focus Trap",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "~20-line inline trap over three focusable elements; a focus-trap library is an explicit non-goal. aria-modal makes the rest of the DOM inert without aria-hidden."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_dismiss_paths",
+      "label": "Launcher Dismiss Paths",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Explicit link, first non-empty search change, mode-card click, and Escape dismiss; the backdrop deliberately absorbs clicks so a stray map click cannot dismiss. Each path defines its own focus-return target."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_dismisslauncher_helper",
+      "label": "dismissLauncher E2E Helper",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Introduces e2e/helpers.ts so the thirteen existing map-first specs migrate through one shared beforeEach rather than each open-coding the dismissal."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_landing_state",
+      "target": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_game_first_direction",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_playmenu_deletion",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_mode_picker_playmenu",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_lastmode_module",
+      "target": "docs_superpowers_specs_2026_04_19_city_guessing_mode_design_mode_picker_playmenu",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_uselaunchervisibility",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_mode_card",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_focus_trap",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_dismiss_paths",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_uselaunchervisibility",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_mode_card",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_personal_bests_persistence",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_dismisslauncher_helper",
+      "target": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_20_launcher_landing_state_design_launcher_focus_trap",
+      "target": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_gameoveroverlay_focus_management",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-20-launcher-landing-state-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

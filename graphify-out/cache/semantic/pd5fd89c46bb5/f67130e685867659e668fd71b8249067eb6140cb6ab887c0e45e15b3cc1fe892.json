@@ -1,0 +1,353 @@
+{
+  "nodes": [
+    {
+      "id": "docs_roadmap",
+      "label": "Roadmap \u2014 Deferred Work",
+      "file_type": "document",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Explicitly not a product backlog \u2014 a parking lot for ideas scoped out during brainstorming, each citing the spec that deferred it so the rationale stays recoverable. Items are only added when a spec intentionally defers them, never for unimplemented ideas nobody proposed."
+    },
+    {
+      "id": "docs_roadmap_flaky_on_free_ci_specs",
+      "label": "Flaky-on-free-CI specs (need GPU runner)",
+      "file_type": "rationale",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Ten specs in the chromium project's testIgnore flake on GitHub-hosted ubuntu-latest because cold-WebGL on SwiftShader/llvmpipe takes 30\u201390s for what is near-instant locally, so waitForMapLoaded and animation-state waits time out. PR #36 mitigations (Mesa/llvmpipe, new headless mode, 4-way sharding, 30s BASEMAP_LOAD_TIMEOUT_MS, fast-fail watchdog) reduced but did not eliminate them. Skip list: label-contrast, header-play-reopens-launcher, panel-focus, accessibility, axe-snapshot, reveal-animation, search, game-country-pinning, theme-and-responsive, source-tooltip-edge."
+    },
+    {
+      "id": "docs_roadmap_self_hosted_gpu_runner",
+      "label": "Self-hosted GPU runner (deferred)",
+      "file_type": "rationale",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The single chromium project runs --use-gl=angle --use-angle=default, which falls back to software rendering on shared Ubuntu runners with no real GPU. A real-GPU self-hosted runner is the prerequisite for putting the CI-skipped specs back into CI."
+    },
+    {
+      "id": "docs_roadmap_theme_bootstrap_timing_mobile_webkit",
+      "label": "Theme bootstrap timing failure on mobile-webkit",
+      "file_type": "rationale",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "All three theme-and-responsive.spec.ts failures are mobile-webkit only. Hypothesis: the inline bootstrap script in index.html reads localStorage 'funworldmap-theme' and matchMedia before React mounts, but WebKit may apply Playwright's colorScheme fixture AFTER the bootstrap runs, reversing the order the spec assumes. Acceptance: 10/10 on --project=mobile-webkit --repeat-each=10."
+    },
+    {
+      "id": "docs_roadmap_mobile_click_tolerance",
+      "label": "Mobile click-tolerance failures (clickTolerance: 8)",
+      "file_type": "rationale",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "mobile-tap.spec.ts 5px finger-roll and 12px drag cases fail on mobile-chromium and desktop-firefox-touch. Hypothesis: the tap-tolerance calculation in useMapInstance.ts may be viewport-blind or mis-handle devicePixelRatio, so 5\u201312px movements scale differently under mobile emulation \u2014 possibly a real bug rather than a flake."
+    },
+    {
+      "id": "docs_roadmap_firefox_map_loading_failure",
+      "label": "Map loading failure on desktop-firefox-touch",
+      "file_type": "rationale",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "mobile-smoke.spec.ts never sees data-map-loaded on Firefox only. Firefox uses a different WebGL2 driver stack (no ANGLE on Linux headless), so the GL context may not initialize at all \u2014 classified as a real rendering blocker, not a flake, and may need a dedicated Firefox code path."
+    },
+    {
+      "id": "docs_roadmap_lazy_sentry",
+      "label": "Lazy Sentry (deferred)",
+      "file_type": "rationale",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The static `import * as Sentry from '@sentry/react'` in main.tsx bundles Sentry regardless of whether a DSN is set; moving to a dynamic import() inside initSentry would let a DSN-less build drop the library entirely."
+    },
+    {
+      "id": "docs_roadmap_bundle_size_budgets_in_ci",
+      "label": "Bundle-size budgets in CI (done, PR #50)",
+      "file_type": "rationale",
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Struck through as Done 2026-05-14: scripts/bundle-budget/check.ts enforces budgets.json via npm run bundle:budget in CI. Motivated by the 2026-04-19 assessment, where the <700 KB target drifted silently with Sentry + cities.json."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_roadmap",
+      "target": "docs_roadmap_flaky_on_free_ci_specs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_roadmap_self_hosted_gpu_runner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_roadmap_theme_bootstrap_timing_mobile_webkit",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_roadmap_mobile_click_tolerance",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_roadmap_firefox_map_loading_failure",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_roadmap_lazy_sentry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_roadmap_bundle_size_budgets_in_ci",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_self_hosted_gpu_runner",
+      "target": "docs_roadmap_flaky_on_free_ci_specs",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_self_hosted_gpu_runner",
+      "target": "docs_systems_testing_webgl2_angle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_flaky_on_free_ci_specs",
+      "target": "docs_systems_testing_shared_helpers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_theme_bootstrap_timing_mobile_webkit",
+      "target": "docs_systems_ui_layout_theme_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_mobile_click_tolerance",
+      "target": "docs_systems_map_rendering_interaction_model",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_firefox_map_loading_failure",
+      "target": "docs_systems_map_rendering_webgl_requirement",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_firefox_map_loading_failure",
+      "target": "docs_systems_testing_dom_tier",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_lazy_sentry",
+      "target": "docs_systems_overview_bundle_size_budget",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap_bundle_size_budgets_in_ci",
+      "target": "docs_systems_build_bundle_budget",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_systems_analytics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_systems_map_rendering_satellite_toggle",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_systems_accessibility_wcag_aa",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_systems_search",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_systems_accessibility_prefers_reduced_motion",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_systems_map_rendering_dark_mode",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_purpose_country_pinning",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_purpose_city_guessing",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_roadmap",
+      "target": "docs_purpose_no_barriers",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/roadmap.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

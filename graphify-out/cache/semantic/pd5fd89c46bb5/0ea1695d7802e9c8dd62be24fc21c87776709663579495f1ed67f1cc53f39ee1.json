@@ -1,0 +1,226 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "label": "Remove the Daily \u2014 high scores as the retention hub",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "For city guessing a best-of-3 one-pin-per-day format does not fit a 10-round pinpoint game, and the daily UI (streak, calendar, reveal, share) reads as ceremony around a mechanic that does not reward it. Owner's call: drop the daily for both modes and let personal-best high scores drive return visits."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_a",
+      "label": "Phase A \u2014 remove the daily feature",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Phase A",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Two-phase split came out of the code audit: after Phase A the app is daily-free and the best-of-N machinery is dead-but-inert (attemptsPerRound is never > 1), so Phase B becomes a pure dead-code deletion behind its own test gate rather than a risky simultaneous change. daily_done_low_score_prompt is deliberately deferred to Phase B because removing its type early would break the build mid-phase."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_b",
+      "label": "Phase B \u2014 delete the dead best-of-N machinery",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Phase B",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Test-first reducer surgery: drop dailyDate, resume, completeNow, attemptsPerRound/attemptsRemaining/currentAttempts, deriveBest, the Done button and AttemptsIndicator. Highest-risk item in the change; isolated behind an already-shippable Phase A and gated on green free-play reducer/announcement tests plus a manual play loop."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_remove_daily_design_high_score_hub",
+      "label": "Launcher as free-play high-score hub",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "A1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Keeps the launcher shell (focus trap, data-animation-state, map-first visibility) and rewrites the mode card around usePersonalBests, with a 'No games yet \u2014 play your first' state instead of 'Best: 0'. Flagged observation: because cold load is map-first, the high-score hub sits behind a Play click; surfacing scores more prominently is deferred."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_remove_daily_design_legacy_storage_cleanup",
+      "label": "One-time legacy daily localStorage cleanup",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "A7",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Idempotent removeItem of the two inert daily keys inside try/catch (private-mode safe), mirroring the v1 self-clean already in personalBestsStore. Ensures a returning visitor with leftover keys sees no console errors from a missing /daily/index.json."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_remove_daily_design_leaf_first_deletion",
+      "label": "Leaf-first deletion with a grep completion gate",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Risks & mitigations",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Delete leaf modules first and let tsc/Vite surface every dangling reference, resolving top-down; a final grep sweep over src/scripts/.github/cloudflare-worker gates completion. Historical dated specs and plans are deliberately NOT rewritten \u2014 they stay as the record of what was built."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "target": "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Depends on / supersedes",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Depends on / supersedes",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "target": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Depends on / supersedes",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "target": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Depends on / supersedes",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_a",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Phase A",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_b",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Phase B",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_a",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_high_score_hub",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "A1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_a",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_legacy_storage_cleanup",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "A7",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_b",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_dailydate_field",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "useGameSession.ts: drop dailyDate",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_b",
+      "target": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_pre_finalize_write",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "drop recordDailyCompletion, clearResume, recordDailyResult",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_phase_b",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_persistent_marker",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "attemptsPerRound always 1; currentAttempts removed",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+      "target": "docs_superpowers_specs_2026_05_30_remove_daily_design_leaf_first_deletion",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "Risks & mitigations",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_remove_daily_design_high_score_hub",
+      "target": "docs_superpowers_specs_2026_05_17_ux_smoothening_design_map_first_posture",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md",
+      "source_location": "map-first visibility model preserved",
+      "weight": 1
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "daily_puzzle_feature_lifecycle",
+      "label": "Daily-puzzle feature lifecycle: build, polish, pipeline, removal",
+      "nodes": [
+        "docs_superpowers_specs_2026_05_18_daily_already_played_ux_design_spec",
+        "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_spec",
+        "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_spec",
+        "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_spec",
+        "docs_superpowers_specs_2026_05_30_remove_daily_design_spec",
+        "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_dailydate_field"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-remove-daily-design.md"
+    }
+  ]
+}

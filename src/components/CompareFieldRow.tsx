@@ -88,7 +88,7 @@ export function CompareFieldRow({ field, a, b, marker }: Props) {
         {label}
         <div
           data-testid={`compare-both-${field.key}`}
-          className="text-readout text-sm text-center text-sand-800 dark:text-dark-50 mt-0.5"
+          className="text-sm text-center text-sand-800 dark:text-dark-50 mt-0.5"
         >
           Both: {model.aText}
         </div>
@@ -100,8 +100,8 @@ export function CompareFieldRow({ field, a, b, marker }: Props) {
     <div data-testid={`compare-row-${field.key}`}>
       {label}
       <div className="grid grid-cols-2 gap-x-4 mt-0.5">
-        <div className="text-readout text-sm text-sand-800 dark:text-dark-50">{model.aText}</div>
-        <div className="text-readout text-sm text-sand-800 dark:text-dark-50">{model.bText}</div>
+        <div className="text-sm text-sand-800 dark:text-dark-50">{model.aText}</div>
+        <div className="text-sm text-sand-800 dark:text-dark-50">{model.bText}</div>
       </div>
     </div>
   )

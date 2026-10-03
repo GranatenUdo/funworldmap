@@ -1,5 +1,5 @@
 interface Props {
-  current: number  // 1-based
+  current: number // 1-based
   total: number
 }
 
@@ -13,8 +13,8 @@ export function RoundCounter({ current, total }: Props) {
     >
       <span>Round</span>
       <span className="text-sand-900 dark:text-dark-50">{current}</span>
-      <span className="text-sand-400 dark:text-dark-200">/</span>
-      <span className="text-sand-500 dark:text-dark-100">{total}</span>
+      <span className="text-sand-500 dark:text-dark-200">/</span>
+      <span className="text-sand-600 dark:text-dark-100">{total}</span>
     </div>
   )
 }

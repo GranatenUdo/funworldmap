@@ -36,6 +36,7 @@ export function SourceLinkList({ sources, markerBySource }: Props) {
             {markerBySource.has(key) && <sup className="mr-0.5">{markerBySource.get(key)}</sup>}
             {s.name}
           </a>
+          <span className="block text-xs opacity-80">Dataset updated {s.lastUpdated}</span>
         </span>
       ))}
     </>

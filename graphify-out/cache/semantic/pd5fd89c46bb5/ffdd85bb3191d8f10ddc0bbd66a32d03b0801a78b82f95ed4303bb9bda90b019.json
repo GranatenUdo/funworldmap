@@ -1,0 +1,80 @@
+{
+  "nodes": [
+    {
+      "id": "readme_architecture_stack",
+      "label": "Architecture stack (MapLibre, Fuse.js, Vite 8/React 19/TS/Tailwind 4)",
+      "file_type": "document",
+      "source_file": "README.md",
+      "source_location": "Architecture",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_sentry_error_reporting",
+      "label": "Optional Sentry error reporting via VITE_SENTRY_DSN",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": "Error reporting",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "readme_npm_scripts",
+      "label": "Development npm script surface",
+      "file_type": "concept",
+      "source_file": "README.md",
+      "source_location": "Development",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "product_canonical_195",
+      "target": "readme_architecture_stack",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "Architecture > Data",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_architecture_stack",
+      "target": "product_real_map_is_game_board",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "README.md",
+      "source_location": "Architecture",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_architecture_stack",
+      "target": "claude_fuse_order_ban",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "README.md",
+      "source_location": "Architecture > Search",
+      "weight": 1.0
+    },
+    {
+      "source": "readme_sentry_error_reporting",
+      "target": "_github_workflows_deploy_build_job",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "README.md",
+      "source_location": "Error reporting",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

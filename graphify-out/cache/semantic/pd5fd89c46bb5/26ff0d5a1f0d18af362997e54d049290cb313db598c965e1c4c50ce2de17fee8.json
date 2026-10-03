@@ -1,0 +1,109 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_review_fixes_batch_1_plan",
+      "label": "Review fixes batch 1 Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "line 1",
+      "rationale": "Five bug-tier review fixes that all ride existing seams (a CSS base rule, the useMapInteractions event registry, SearchBar's activeIndex, mapLayers layer definitions, the flyToCountry/useSelectedCountry chain) plus one new 10-line module. Game-mode camera code and useRevealMapEffects deliberately untouched.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_selectionorigin",
+      "label": "selectionOrigin (click vs auto) module",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Task 5",
+      "rationale": "A 10-line markClickOrigin/takeOrigin module carries the click-vs-auto mark across the URL-hash boundary, because the hash cannot encode provenance and the camera needs to behave differently for a user click than for a programmatic/deep-link selection.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_flytocountry_preserve_zoom",
+      "label": "flyToCountry retuned zoom + preserveZoom + panel-aware offset",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Task 4",
+      "rationale": "Retunes zoomFromArea, promotes zoom preservation to an explicit preserveZoom option driven by selection origin, and offsets the camera so the open panel does not cover the country.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_extrusion_maxzoom_cap",
+      "label": "Highlight extrusion maxzoom cap at z6",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Task 3",
+      "rationale": "maxzoom:6 on the three extrusion layers stops the highlight walls from dominating the view at close zoom.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_search_enter_commits_top_result",
+      "label": "Search: Enter commits the top result",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Task 2",
+      "rationale": "Auto-activating index 0 means Enter commits without a preceding ArrowDown, which also lets the e2e spec drop its ArrowDown-before-Enter dance while keeping arrow-key coverage.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_tooltip_overflow_fix",
+      "label": "Tooltip overflow + stale hover artifacts",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Task 1",
+      "rationale": "A .country-tooltip without top/left produced page scrollbars; hover artifacts survived camera movement until the hover-clearing helper was also registered on movestart.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_flytocountry_preserve_zoom",
+      "target": "docs_superpowers_plans_archive_2026_05_17_country_click_preserve_zoom_zoom_clamp",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Task 4 \u2014 rewrites flyToCountry.test.ts to new semantics",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_selectionorigin",
+      "target": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_flytocountry_preserve_zoom",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Task 5 \u2014 origin plumbing feeds preserveZoom",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_07_10_review_fixes_batch_1_selectionorigin",
+      "target": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0002_url_hash_single_source_of_truth",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-07-10-review-fixes-batch-1.md",
+      "source_location": "Architecture \u2014 carries the click-vs-auto mark across the URL-hash boundary",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

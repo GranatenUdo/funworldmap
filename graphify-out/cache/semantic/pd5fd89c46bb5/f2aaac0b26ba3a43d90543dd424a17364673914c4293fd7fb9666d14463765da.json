@@ -1,0 +1,194 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_satellite_default_and_game_modes",
+      "label": "Satellite Default + Game-Mode Framework Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_satellite_as_default",
+      "label": "Satellite as Default Basemap",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One-line default flip to EOX Sentinel-2 + AWS Terrain; no localStorage persistence of the toggle. Risk logged: EOX imagery is CC BY-NC-SA 4.0, which blocks future monetisation without a tile-source swap, and raster tiles cost more mobile bandwidth."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_game_mode_framework",
+      "label": "Game-Mode Framework",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Mode registry plus shared primitives designed so a future mode lands as a single folder with no framework refactor; GameMode carries no generic parameters \u2014 the id union grows instead."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_country_pinning_mode",
+      "label": "Country Pinning Mode",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Endless streak with 3 lives over the 194 independent countries; ocean clicks are no-ops so lives only deduct on a concrete wrong-country click."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hybrid_distance_scoring",
+      "label": "Hybrid Centroid-Distance Scoring",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Exact country = 100, otherwise round(100 * exp(-distanceKm / 3000)). Distance is measured centroid-to-centroid, not click pixel, because the game unit is countries; clicking an overseas territory therefore scores against the mainland centroid."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_session_state_machine",
+      "label": "Game Session State Machine",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "idle \u2192 playing \u2192 round-ended \u2192 playing/game-over, driven by a single reducer in useGameSession with no external state library."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hash_state_discriminated_union",
+      "label": "HashState Discriminated Union",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The old 23-line comma-splitting upper-casing parser would mangle #game/country-pinning, so it is rewritten rather than patched; all existing country hashes stay backward compatible."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_personal_bests_persistence",
+      "label": "usePersonalBests localStorage Persistence",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Best score/streak per mode with a graceful in-memory fallback for private-mode browsers; no accounts or server leaderboards, consistent with the no-backend principle. Mid-session state is deliberately not persisted."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_funworldmap_game_test_hook",
+      "label": "__funworldmap_game Test Seam",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Window global exposing setRound/getSession/endGame in parallel with __funworldmap_map, so Playwright can force deterministic rounds instead of driving the UI."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_satellite_default_and_game_modes",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_globe_terrain_navigation_modernization",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_satellite_as_default",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_satellite_linked_terrain",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_country_pinning_mode",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_game_mode_framework",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_country_pinning_mode",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hybrid_distance_scoring",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_game_mode_framework",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_session_state_machine",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_hash_state_discriminated_union",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_hash_format",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_personal_bests_persistence",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_game_mode_framework",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_funworldmap_game_test_hook",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_session_state_machine",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-satellite-default-and-game-modes-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

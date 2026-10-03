@@ -1,0 +1,476 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "label": "Screenshot a1-00-pre.png (Scenario A1, step 00, pre-state)",
+      "file_type": "image",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-05-13",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_scenario_a1_pre_state",
+      "label": "Scenario A1 Pre-Interaction Baseline Frame",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_animation_verification",
+      "label": "Animation Verification Report (Playwright captures, 2026-05-13)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_game_hud",
+      "label": "Game HUD Card (centered top overlay)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_lives_hearts",
+      "label": "Lives Indicator: three filled hearts (full life, zero mistakes)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_score_chip",
+      "label": "Score Chip showing 0 (pre-first-guess)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_end_game_control",
+      "label": "End Game Control (muted secondary action in HUD)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_round_prompt_france",
+      "label": "Round Prompt: France flag plus country name",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_how_to_play_coachmark",
+      "label": "How to Play Coach Mark (dark popover under HUD)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_got_it_dismiss",
+      "label": "\"Got it\" Dismiss Affordance",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_rules_three_strikes",
+      "label": "Rule: three wrong countries end the game",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_rules_ocean_clicks_dont_count",
+      "label": "Rule: ocean clicks don't count",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_pointer_only_guessing",
+      "label": "Pointer-Only Guessing Interaction (click the country on the map)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_globe_map",
+      "label": "3D Satellite Globe (globe projection, Africa/Europe framed, no country panel open)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_basemap_attribution",
+      "label": "Basemap Attribution Bar (AWS Terrain Tiles, Sentinel-2 cloudless by EOX)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_map_controls",
+      "label": "Map Control Cluster (zoom in/out, pitch/compass, projection toggle, bottom-right)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_header_bar",
+      "label": "Header Bar: funworldmap wordmark plus two top-right icon toggles",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_dark_hex_backdrop",
+      "label": "Dark Hex-Pattern Backdrop with Teal Accent Theme",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a1_00_pre_map_first_no_launcher",
+      "label": "Map-First State: launcher dismissed, game session already active",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_scenario_a1_pre_state",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_scenario_a1_pre_state",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_animation_verification",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_game_hud",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_lives_hearts",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_score_chip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_end_game_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_game_hud",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_round_prompt_france",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_how_to_play_coachmark",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_how_to_play_coachmark",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_got_it_dismiss",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_how_to_play_coachmark",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_rules_three_strikes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_how_to_play_coachmark",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_rules_ocean_clicks_dont_count",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_how_to_play_coachmark",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_pointer_only_guessing",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_rules_three_strikes",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_lives_hearts",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_pointer_only_guessing",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_globe_map",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_globe_map",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_globe_map",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_basemap_attribution",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_globe_map",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_map_controls",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_header_bar",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_dark_hex_backdrop",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_screenshot",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_map_first_no_launcher",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_score_chip",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_scenario_a1_pre_state",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_scenario_a1_pre_state",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_how_to_play_coachmark",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_animation_verification",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_game_hud",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_round_prompt_france",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_pointer_only_guessing",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_end_game_control",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_rules_three_strikes",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a1_00_pre_header_bar",
+      "target": "docs_testing_screenshots_2026_05_13_a1_00_pre_map_controls",
+      "relation": "semantically_similar_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": "docs/testing/screenshots/2026-05-13/a1-00-pre.png",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

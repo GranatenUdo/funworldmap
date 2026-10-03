@@ -72,13 +72,13 @@ test.describe('City Guessing game', () => {
     await openCityGuessing(page)
     await setRoundAndWait(page, 'FRA-paris', 'Paris')
     await clickAt(page, 0, 0) // Gulf of Guinea, ~5400 km from Paris
-    await expect(page.getByTestId('game-reveal')).toContainText('km off', { timeout: 10_000 })
+    await expect(page.getByTestId('round-result')).toContainText('km', { timeout: 10_000 })
     const score = await page.getByTestId('hud-score').innerText()
     expect(Number(score)).toBeGreaterThanOrEqual(0)
     expect(Number(score)).toBeLessThan(30)
   })
 
-  test('skip round scores 0 and advances', async ({ page }) => {
+  test('skip round scores 0 and waits for Next', async ({ page }) => {
     await openCityGuessing(page)
     await setRoundAndWait(page, 'FRA-paris', 'Paris')
     await skipViaHook(page)
@@ -114,6 +114,7 @@ test.describe('City Guessing game', () => {
     await setRoundAndWait(page, 'FRA-paris', 'Paris')
     await expect(page.getByTestId('city-skip')).toBeVisible()
     await page.getByTestId('city-skip').click()
+    await page.getByTestId('round-next').click()
     await expect
       .poll(
         async () =>
@@ -150,9 +151,19 @@ test.describe('City Guessing game', () => {
   test('End game opens game-over; Back to map exits cleanly and clears hash', async ({ page }) => {
     await page.goto('/#game/city-guessing/play')
     await waitForMapLoaded(page)
+
+    // Make the run non-trivial (score > 0) so End game routes through the
+    // C-4 confirm dialog — trivial runs (round 1, score 0) end without one.
+    await setRoundAndWait(page, 'FRA-paris', 'Paris')
+    await clickAt(page, 2.3522, 48.8566)
+    await expect(page.getByTestId('hud-score')).toHaveText('100', { timeout: 10_000 })
+
     await page.getByTestId('game-end').click()
-    // End game in free mode now routes through finishFree → game-over UI shows
+    // C-4 run-safety confirm, then finishFree → game-over UI shows
     // (Bug 3 fix); user must click Back to map to fully exit.
+    await expect(page.getByTestId('end-game-confirm')).toBeVisible()
+    await page.getByTestId('end-confirm').click()
+    await expect(page.getByTestId('end-game-confirm')).not.toBeAttached()
     await expect(page.getByTestId('game-over')).toBeVisible({ timeout: 5_000 })
     await page.getByTestId('game-over-back').click()
     await expect(page.getByTestId('game-hud')).toHaveCount(0)

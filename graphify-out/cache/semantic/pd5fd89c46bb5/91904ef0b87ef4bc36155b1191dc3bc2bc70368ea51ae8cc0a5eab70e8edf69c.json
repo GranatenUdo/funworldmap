@@ -1,0 +1,215 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_plan",
+      "label": "Country-Pinning Game Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_framework",
+      "label": "src/game framework: shared primitives plus per-mode folders",
+      "file_type": "concept",
+      "rationale": "Shared types/reducer/persistence/distance/HUD atoms live under src/game/shared so a second mode can be added without touching WorldMap; click interception stays in App.tsx rather than the map component.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_reducer",
+      "label": "useGameSession reducer (start / guess / advance / endGame)",
+      "file_type": "concept",
+      "rationale": "A reducer keeps score, lives, streak, used-set and round transitions in one place; the same actions are dispatched by real clicks and by e2e test seams.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_personal_bests",
+      "label": "usePersonalBests localStorage hook with in-memory fallback",
+      "file_type": "concept",
+      "rationale": "Reads and writes are wrapped in try/catch so private mode or quota errors degrade to in-memory only; a storage event listener keeps multiple tabs consistent.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_haversine",
+      "label": "haversineKm great-circle distance and centroidFromLatLng",
+      "file_type": "concept",
+      "rationale": "countries.json stores latlng as [lat, lng] while MapLibre expects [lng, lat]; an explicit swap helper prevents silent coordinate-order bugs.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_scoring",
+      "label": "Country-pinning hybrid exact + exponential-decay scoring",
+      "file_type": "concept",
+      "rationale": "Exact hit awards EXACT_POINTS=100 with no life lost; a miss awards round(100 * exp(-d/DECAY_KM)) with DECAY_KM=3000 and costs one life, so near-misses still feel rewarded.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_round_generator",
+      "label": "No-repeat round generator with injectable picker",
+      "file_type": "concept",
+      "rationale": "The random picker is a parameter so tests can pin the chosen index deterministically; when the used set covers the pool it resets rather than deadlocking.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hash_union",
+      "label": "HashState rewritten as a discriminated union (empty / country / game)",
+      "file_type": "concept",
+      "rationale": "#game/<modeId>[/play] must coexist with #FRA and #FRA,DEU; a tagged union makes each consumer handle exactly the shapes it cares about and leaves 'playing' as latent grammar for a future pre-game lobby.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_provider",
+      "label": "GameSessionProvider context and __funworldmap_game test seam",
+      "file_type": "concept",
+      "rationale": "One provider lets App.tsx (click branching) and GameController (HUD) read the same state; the window seam exposes getSession/endGame so e2e can drive game flows without clicking.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hud",
+      "label": "Shared HUD atoms (lives, score, streak) in a top-centre shell",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_18_satellite_default_plan",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_framework",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_framework",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_reducer",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_provider",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_reducer",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_scoring",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_haversine",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_round_generator",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_haversine",
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hash_union",
+      "target": "docs_superpowers_plans_archive_2026_04_16_polish_keyboard_compare_hash_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_personal_bests",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hud",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-18-country-pinning-game.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_roadmap",
+      "label": "Flagship continuation roadmap",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "An umbrella roadmap, not an implementation plan: each workstream is independently shippable and gets its own plan and PR. Sequencing is risk-ascending so the cheapest work lands first and the release tag captures the fully-polished state."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_a_adrs",
+      "label": "Workstream A \u2014 ADRs and doc reconcile",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream A",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Four ADRs backfilled (MapLibre WebGL2 basemap, URL-hash single source of truth, useGameSession reducer model, daily data branch). Because the ADR README calls historical backfill a poor reason, the README gains a note acknowledging the exception so guidance and directory contents stop contradicting each other."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_b_lazy_sentry",
+      "label": "Workstream B \u2014 lazy-load Sentry (deferred)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream B",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "DEFERRED 2026-05-30. A measurement-gate spike (alias-stub build: 483,527 B -> 477,746 B gzip) found Sentry's real main-chunk cost is ~5.8 KB gzip, not the estimated ~60 KB, because @sentry/react v10 tree-shakes with tracing and replay disabled. A hand-rolled error boundary plus a three-site restructure and lazier crash reporting is not justified by a ~1.2% reduction."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_measurement_gate",
+      "label": "Measurement gate before optimization effort",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream B step 0",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Measure the actual contribution first; if the real saving is materially below the estimate, descope or defer rather than spend L effort on an unverified payoff. The bundle-budget check fails closed on unaccounted assets, so any re-baseline must carry measurement evidence rather than loosening the check."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_c_code_quality",
+      "label": "Workstream C \u2014 lint warnings and App.tsx effect extraction",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream C",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "C1 clears 6 warnings (5x missing mapRef in useRevealMapEffects deps, 1x react-refresh export split), scoped disables only with justification, never a blanket disable. C2 extracts 2-3 self-contained effects (useFirstVisitHint, useAppKeyboardShortcuts, useAnnouncer) from the ~550 LOC AppInner; strictly behavior-preserving with the e2e a11y/keyboard/launcher specs as the regression net."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_e_dependency_prs",
+      "label": "Workstream E \u2014 resolve open dependabot PRs",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream E",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Surfaced during review, not in the original assessment: a perpetually-red vite-ecosystem bump is a visible blemish on a flagship repo's PR list. Each PR must end merged-green or closed with a one-line rationale."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_roadmap",
+      "target": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_data_orphan_branch",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Context \u2014 PR #93",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_roadmap",
+      "target": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_a_adrs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream A",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_roadmap",
+      "target": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_b_lazy_sentry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream B",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_measurement_gate",
+      "target": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_b_lazy_sentry",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream B step 0",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_roadmap",
+      "target": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_c_code_quality",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_roadmap",
+      "target": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_e_dependency_prs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "Workstream E",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_a_adrs",
+      "target": "docs_superpowers_specs_2026_05_29_daily_content_data_branch_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "ADR 0004 cross-links the spec/plan and PR #93",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_30_flagship_continuation_roadmap_design_workstream_c_code_quality",
+      "target": "docs_superpowers_specs_2026_05_17_camera_coherence_design_line_gradient_reveal",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md",
+      "source_location": "5x missing mapRef in useRevealMapEffects",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

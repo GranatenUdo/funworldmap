@@ -5,10 +5,11 @@ import { usePersonalBests } from '../game/shared/usePersonalBests'
 import type { ModeId } from '../game/shared/types'
 import { writeHash } from '../lib/hashState'
 import { track } from '../lib/analytics'
-import { installFocusTrap } from '../lib/focusTrap'
+import { useModalLayer } from '../hooks/useModalLayer'
 import { LauncherModeCard } from './LauncherModeCard'
 
 interface Props {
+  ready?: boolean
   onDismiss: () => void
 }
 
@@ -23,8 +24,9 @@ function focusSearchInput(): void {
   })
 }
 
-export function Launcher({ onDismiss }: Props) {
+export function Launcher({ onDismiss, ready = true }: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
+  useModalLayer(rootRef)
   const [animationState, setAnimationState] = useState<'entering' | 'idle'>('entering')
   // A16: "beat your best" presumes a best exists — gate on either mode having
   // a recorded game. Two static calls because hooks can't run in a loop.
@@ -46,12 +48,13 @@ export function Launcher({ onDismiss }: Props) {
 
   const startFree = useCallback(
     (id: ModeId) => {
+      if (!ready) return
       track('launcher_dismissed', { path: 'card' })
       writeLastMode(id)
       onDismiss()
       window.location.hash = writeHash({ kind: 'game', modeId: id })
     },
-    [onDismiss],
+    [onDismiss, ready],
   )
 
   // Flip data-animation-state to 'idle' once entry animations finish (or after a
@@ -108,12 +111,6 @@ export function Launcher({ onDismiss }: Props) {
     )?.focus()
   }, [])
 
-  useEffect(() => {
-    const root = rootRef.current
-    if (!root) return
-    return installFocusTrap(root)
-  }, [])
-
   return (
     <div
       ref={rootRef}
@@ -122,23 +119,23 @@ export function Launcher({ onDismiss }: Props) {
       aria-label="Choose how to play"
       data-testid="launcher"
       data-animation-state={animationState}
-      className="fixed inset-0 z-[210] flex items-center justify-center p-6"
+      className="launcher-shell fixed inset-0 z-[210] flex overflow-y-auto p-4 sm:p-8"
     >
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-black/55 dark:bg-[rgba(11,15,26,0.7)] backdrop-blur-[4px]"
+        className="fixed inset-0 bg-dark-500/35 backdrop-blur-[2px]"
         style={{ animation: 'launcher-backdrop-in 220ms ease-out' }}
         onClick={(e) => {
           if (e.target === e.currentTarget) dismissWithBackdrop()
         }}
       />
-      <div className="relative w-full max-w-2xl mx-auto">
+      <div className="launcher-content relative w-full max-w-3xl mx-auto my-auto">
         <button
           type="button"
           onClick={dismissWithCloseButton}
           data-testid="launcher-close"
           aria-label="Close"
-          className="absolute -top-2 right-0 w-9 h-9 rounded-full text-sand-50 dark:text-dark-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice/60 flex items-center justify-center"
+          className="absolute top-0 right-0 w-11 h-11 rounded-lg border border-white/15 text-sand-50 dark:text-dark-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice/60 flex items-center justify-center"
         >
           <svg
             className="w-5 h-5"
@@ -156,14 +153,16 @@ export function Launcher({ onDismiss }: Props) {
           className="text-center mb-6 pointer-events-none"
           style={{ animation: 'launcher-text-in 240ms ease-out 60ms both' }}
         >
-          <div className="text-2xl font-bold tracking-wide text-ice drop-shadow-sm">
-            funworldmap
-          </div>
-          <p
-            className="text-[13px] text-sand-50/90 dark:text-dark-100 mt-2"
-            data-testid="launcher-subtitle"
-          >
-            {hasPlayedAnyMode ? 'Pick a mode and beat your best' : 'Two quick geography games'}
+          <div className="text-sm font-bold tracking-wide text-ice uppercase">funworldmap</div>
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mt-5 tracking-tight">
+            How well do you
+            <br />
+            know your world?
+          </h1>
+          <p className="text-base text-sand-50 mt-4" data-testid="launcher-subtitle">
+            {hasPlayedAnyMode
+              ? 'Pick a mode and beat your best'
+              : 'Take a guess. Discover somewhere new.'}
           </p>
         </div>
 
@@ -173,9 +172,20 @@ export function Launcher({ onDismiss }: Props) {
               key={id}
               style={{ animation: `launcher-card-in 220ms ease-out ${120 + i * 60}ms both` }}
             >
-              <LauncherModeCard modeId={id} onPlay={() => startFree(id)} />
+              <LauncherModeCard preferred={id === (readLastMode() ?? MODE_IDS[0])} ready={ready} modeId={id} onPlay={() => startFree(id)} />
             </div>
           ))}
+        </div>
+        <div className="text-center mt-6">
+          <button className="explore-button" onClick={dismissWithCloseButton}>
+            Explore the map <span aria-hidden="true">→</span>
+          </button>
+          {!ready && (
+            <p role="status" className="text-sm text-sand-50 mt-3">
+              Getting the globe ready… You can explore while it loads.
+            </p>
+          )}
+          <p className="text-xs text-sand-50 mt-4">Free to play. No account. Just curiosity.</p>
         </div>
       </div>
     </div>

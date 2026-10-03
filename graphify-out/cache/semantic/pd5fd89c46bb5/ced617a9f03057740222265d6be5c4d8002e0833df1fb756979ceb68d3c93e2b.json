@@ -1,0 +1,91 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_note",
+      "label": "B1 glyph spike \u2014 Noto Sans Bold via the positron glyphs endpoint",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_noto_sans_bold_glyphs",
+      "label": "Noto Sans Bold glyphs from the positron endpoint (no self-hosted PBFs)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": "## Findings \u2192 Endpoint worked",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_label_visibility_rule",
+      "label": "Country-label visibility rule: visible iff satellite && !hideLabels",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": "## Findings \u2192 Game gating",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_collision_untested_at_scale",
+      "label": "Label collision behavior unproven at ~190-label scale (symbol-sort-key lever)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": "## Consequences for B1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_note",
+      "target": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_noto_sans_bold_glyphs",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_note",
+      "target": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_label_visibility_rule",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_note",
+      "target": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_collision_untested_at_scale",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": "## Consequences for B1",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_07_28_b1_glyph_spike_note",
+      "target": "docs_superpowers_plans_2026_07_27_workstream_a_quick_wins_ux_visual_program_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-07-28-b1-glyph-spike.md",
+      "source_location": "One-hour throwaway spike ahead of workstream B1",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

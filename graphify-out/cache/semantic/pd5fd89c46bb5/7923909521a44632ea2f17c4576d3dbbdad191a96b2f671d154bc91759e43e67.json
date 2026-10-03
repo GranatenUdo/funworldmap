@@ -1,0 +1,196 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_findings_and_voting_removal",
+      "label": "Findings Implementation & Voting Removal Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_voting_removal",
+      "label": "Voting Feature Silent Scrub",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "No deprecation marker or ADR; historical plans keep their voting mentions because rewriting them would be revisionist \u2014 only forward-looking docs are scrubbed."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_worldmap_refactor",
+      "label": "WorldMap.tsx Hook Refactor",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Splits a 786-LOC god component into useMapInstance/useMapInteractions/useSelectionHighlight/useMapTheme/useSatelliteMode plus pure lib modules; each map.on must have exactly one attaching hook and a matching map.off in its cleanup."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_usemap_context",
+      "label": "useMap Shared-Ref Context",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Returning refs from a memoized context is the mechanism that lets the map hooks split cleanly while surviving re-renders."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_countrypanel_split",
+      "label": "CountryPanel Router Split",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Splits follow the actual conditional shape (single vs compare) instead of context-izing; neither child receives more than 6 props."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_e2e_against_production_bundle",
+      "label": "E2E Against Production Bundle",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Playwright's webServer moves from vite dev to vite preview with a conditional base path so tests exercise what users get; landed before the large refactor so a refactor regression and a test flake stay distinguishable."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_adr_convention",
+      "label": "ADR Filing Convention",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Convention doc only \u2014 no speculative historical ADRs, because filing ADRs for decisions nobody is revisiting produces low-value retroactive docs."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_planning_convention",
+      "label": "Forward-Spec Planning Convention",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "plans/ holds forward specs written before code and specs/ holds design docs; retrospective documents belong in docs/systems or an ADR instead."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_panel_focus_management",
+      "label": "Panel Focus Management",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Capture activeElement with useRef + useLayoutEffect before the DOM mutates, restore on close, falling back to the search input."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_basemap_banner_retry",
+      "label": "BasemapBanner Retry + Dismiss",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Specific copy plus a Retry that re-runs probeBasemap; dismissal persists for the session via sessionStorage. Provider failover is deliberately deferred to its own spec."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_worldmap_refactor",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_usemap_context",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_e2e_against_production_bundle",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_worldmap_refactor",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_panel_focus_management",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_countrypanel_split",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_findings_and_voting_removal",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_voting_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_adr_convention",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_planning_convention",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_countrypanel_split",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_comparison_feature",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_worldmap_refactor",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_satellite_linked_terrain",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-17-findings-implementation-and-voting-removal-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

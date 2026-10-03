@@ -1,0 +1,192 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_deferred_cleanups",
+      "label": "Deferred Cleanups Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_layer_id_constants",
+      "label": "LAYER Id Constant Map",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Replaces 60+ string-literal layer ids so typos are caught at compile time; addHighlightStack deliberately keeps its internal ${prefix}-glow concatenation so the constants need not encode the suffix structure."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_setfog_dead_code",
+      "label": "setFog Dead-Code Removal",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "map.setFog is a Mapbox-only API that MapLibre never implemented; the code cast to never, called a non-existent method, and swallowed the TypeError \u2014 the fog properties were already being passed to setSky, so deleting the call changes nothing observable."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_stale_loaded_closure",
+      "label": "Stale loaded Closure \u2192 loadedRef",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The map error handler read a stale loaded===false because the init effect's deps omitted it; loadedRef and the loaded state must be written together, recorded as an explicit invariant comment."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_usecompareviewdimming",
+      "label": "useCompareViewDimming Hook",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Split out of useSelectionHighlight; must be called AFTER useMapTheme because both write country-borders line-opacity on theme change and the dimming hook has to win that race \u2014 call order is the highest-risk subtle bug, guarded by a dedicated e2e spec."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_cursor_consolidation",
+      "label": "Cursor Logic Consolidation",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The comparePickingMode cursor effect moves out of useSatelliteMode into useMapInteractions where the rest of the cursor logic already lives, leaving the satellite hook to cover only satellite/terrain."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_usemap_context_collapse",
+      "label": "useMap Context Partial Collapse",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "hoveredRef has a single reader so it becomes a local useRef; tooltipRef stays because it is genuinely shared between the instance and interactions hooks and a third useMapTooltip hook would be overkill."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_closebutton_fieldlabel",
+      "label": "Shared CloseButton + FieldLabel",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Eliminates the repeated inline X-SVG button and label-plus-SourceTooltip pattern across SingleCountryPanel and CountryColumn; the className prop fully replaces defaults rather than merging."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_deferred_cleanups",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_findings_and_voting_removal",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_layer_id_constants",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_worldmap_refactor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_setfog_dead_code",
+      "target": "docs_superpowers_specs_2026_04_16_globe_terrain_navigation_design_atmosphere_and_sky",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_usecompareviewdimming",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_compare_map_layers",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_usecompareviewdimming",
+      "target": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_layer_id_constants",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_cursor_consolidation",
+      "target": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_usemap_context_collapse",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_usemap_context_collapse",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_usemap_context",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_closebutton_fieldlabel",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_countrypanel_split",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_18_deferred_cleanups_design_stale_loaded_closure",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_worldmap_refactor",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-18-deferred-cleanups-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

@@ -1,0 +1,149 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "label": "Globe + Terrain + Navigation Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_globe_projection",
+      "label": "Globe projection via MapLibre setProjection",
+      "file_type": "concept",
+      "rationale": "Set after map load rather than in the constructor; MapLibre 5.x ships globe, terrain and sky natively so no extra dependency is needed.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_terrain_dem",
+      "label": "AWS Terrain Tiles DEM source (terrarium encoding)",
+      "file_type": "concept",
+      "rationale": "The DEM source is added at init but stays inactive until the satellite toggle enables setTerrain, so vector view keeps its flat performance profile and no API key is required.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_country_tooltip",
+      "label": "Country hover tooltip built from raw DOM",
+      "file_type": "concept",
+      "rationale": "Positioned by JS rather than React so a mousemove does not trigger a React re-render on every pointer event.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_reset_view_control",
+      "label": "ResetViewControl custom MapLibre IControl",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_navigation_constraints",
+      "label": "Navigation constraints and cursor affordances",
+      "file_type": "concept",
+      "rationale": "minZoom/maxZoom/maxPitch bound the camera, grab/grabbing/pointer cursors communicate drag state, and double-click zoom is disabled because it raced with the country click handler.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_atmosphere_sky",
+      "label": "Theme-aware atmosphere via setSky",
+      "file_type": "concept",
+      "rationale": "atmosphere-blend interpolates to 0 by zoom 7 so the halo is visible at globe scale and fades as the user zooms in; sky/horizon/fog colors swap with the resolved theme.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_globe_projection",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_terrain_dem",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_country_tooltip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_reset_view_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_navigation_constraints",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_globe_terrain_navigation_atmosphere_sky",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-globe-terrain-navigation.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

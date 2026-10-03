@@ -1,0 +1,145 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_17_camera_coherence_design_spec",
+      "label": "Camera coherence design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_camera_coherence_design_coherence_rule",
+      "label": "Camera coherence rule: preserve the user's view",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Summary",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "One rule consolidates four separate complaints: the user's view is preserved on every game lifecycle event (start, round advance, end); the reveal animation is the sole place the camera intentionally moves on its own."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_camera_coherence_design_initialcameraview_removal",
+      "label": "Remove vestigial initialCameraView mode property",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Item 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Per the project memory 'Remove obsolete code and tests', deleting code with no reader is the rule. Both modes effectively become 'preserve', so a field kept only to satisfy an old type contract is dead weight. Commit ordering matters: the reader must be deleted before the property or the typecheck breaks."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_camera_coherence_design_line_gradient_reveal",
+      "label": "line-gradient reveal animation with easeTo camera",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Item 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Per-frame setData triggers a source/tile rebuild 60x; jumpTo teleports with no interpolation so the hand-computed cubic ease only chose an arc index. Setting the line gradient is a paint update (no re-tiling) and easeTo lets MapLibre interpolate the camera, decoupling smoothness from JS frame jitter. Requires lineMetrics:true for ['line-progress']."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_camera_coherence_design_reveal_artifact_cleanup",
+      "label": "Clear reveal artifacts on round transition",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Item 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Cleanup must mirror setup: whatever the round-ended effect drew, it tears down when status leaves round-ended. clearRevealSources runs unconditionally (mode-neutral) because both country wrong-guesses and city reveals draw the marker+arc; the idle-clear effect stays as a defense-in-depth net."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_17_camera_coherence_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_camera_coherence_design_coherence_rule",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_camera_coherence_design_coherence_rule",
+      "target": "docs_superpowers_specs_2026_05_17_camera_coherence_design_initialcameraview_removal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Item 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_camera_coherence_design_coherence_rule",
+      "target": "docs_superpowers_specs_2026_05_17_camera_coherence_design_line_gradient_reveal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Item 3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_camera_coherence_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_camera_coherence_design_reveal_artifact_cleanup",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Item 4",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_camera_coherence_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": "Summary \u2014 after the preserve-zoom fix f82fd4d landed",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_camera_coherence_design_reveal_artifact_cleanup",
+      "target": "docs_superpowers_specs_2026_05_19_daily_city_feedback_design_persistent_marker",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "camera_behavior_doctrine",
+      "label": "Camera behavior doctrine across the spec corpus",
+      "nodes": [
+        "docs_superpowers_specs_2026_05_17_camera_coherence_design_coherence_rule",
+        "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_zoom_clamp",
+        "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_origin_aware_camera",
+        "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_panel_aware_framing",
+        "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_compare_camera",
+        "docs_superpowers_specs_2026_07_26_ux_visual_program_design_round_start_camera_ease",
+        "docs_superpowers_specs_2026_07_26_ux_visual_program_design_landing_behavior",
+        "docs_superpowers_specs_2026_08_04_critique_remediation_design_breakpoint_recenter"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-05-17-camera-coherence-design.md"
+    }
+  ]
+}

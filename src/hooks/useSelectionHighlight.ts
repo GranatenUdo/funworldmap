@@ -9,6 +9,7 @@ import {
   spotlightDimFilter,
   applyCompareMarkers,
 } from '../lib/mapLayers'
+import { DESKTOP_MEDIA_QUERY } from '../lib/layoutConstants'
 import { useMap } from './useMap'
 import type { SelectionOrigin } from './useSelectedCountry'
 
@@ -63,6 +64,25 @@ export function useSelectionHighlight({
     if (selected)
       flyToCountry(map, selected, { preserveZoom: selectionOriginRef.current === 'click' })
   }, [selected, loaded, mapRef, selectionOriginRef])
+
+  // B-1 (2026-08-04): a fly's screen offset is computed for the layout at fly
+  // time, so crossing the desktop/mobile breakpoint afterwards (rotation,
+  // resize, DevTools emulation) strands the selection under the panel/sheet.
+  // Re-center instantly with the fresh offset via flyToCountry's recenter jump
+  // (single camera owner — no second fly site). The subscription's lifetime IS
+  // the gate: it exists only while a single country is selected outside
+  // compare — compare framing is flyToComparePair's job, and during games the
+  // selection is null (game hashes never resolve to a country; a non-game hash
+  // mid-game ends the game via useHashGameRouter). Plain resizes inside one
+  // breakpoint (mobile URL-bar drift) are accepted and left alone.
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !loaded || !selected || compareWith) return
+    const mql = window.matchMedia(DESKTOP_MEDIA_QUERY)
+    const recenter = () => flyToCountry(map, selected, { recenter: true })
+    mql.addEventListener('change', recenter)
+    return () => mql.removeEventListener('change', recenter)
+  }, [selected, compareWith, loaded, mapRef])
 
   useEffect(() => {
     const map = mapRef.current

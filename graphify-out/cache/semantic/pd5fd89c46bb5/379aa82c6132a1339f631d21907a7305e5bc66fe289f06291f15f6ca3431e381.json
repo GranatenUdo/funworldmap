@@ -1,0 +1,209 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_plan",
+      "label": "Phase 5a \u2014 A11y Axe Pass Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_axe_wcag2aa_audit",
+      "label": "axe-core WCAG 2 AA per-surface audit",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": "e2e/accessibility.spec.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One AxeBuilder test per retention surface, extending the existing accessibility spec rather than forking a new e2e/a11y/ directory, so the established exclusion conventions stay in one place."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_per_surface_descope",
+      "label": "Per-surface descope rule (>1 day restyle)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "If a single surface needs more than a working day of restyle, disableRules is applied to THAT surface's test only, with a code comment and a roadmap entry naming the rule ID. The rule exists to bound open-ended iteration on violations whose real fix is a design-level palette change."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_maplibre_canvas_exclusion",
+      "label": "MapLibre canvas + loading-splash axe exclusions",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The WebGL canvas is inherently opaque to axe's color-contrast probe, and the ephemeral z-[200] splash is aria-hidden + pointer-events-none but still scanned; both exclusions are justified rather than blanket rule suppression."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_retention_surface_inventory",
+      "label": "Retention surface inventory (7 audited surfaces)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_gameover_contrast_backlog",
+      "label": "GameOverOverlay warm-accent contrast backlog",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The surface with known pre-existing WCAG 2 AA violations deferred from the 2026-04-19 remediation; flagged as the most likely to hit the one-day descope threshold because the warm-accent palette fails contrast broadly."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_include_scoping",
+      "label": "AxeBuilder .include() subtree scoping",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "For a component nested inside an already-audited surface, scoping axe to the block's subtree with .include() avoids re-reporting the surrounding surface's violations as noise."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_axe_wcag2aa_audit",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_retention_surface_inventory",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_axe_wcag2aa_audit",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_per_surface_descope",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_axe_wcag2aa_audit",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_maplibre_canvas_exclusion",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_axe_wcag2aa_audit",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_include_scoping",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_per_surface_descope",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_gameover_contrast_backlog",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_retention_surface_inventory",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_dailyshareblock",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_retention_surface_inventory",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_launcherstreakpill",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_retention_surface_inventory",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_retention_surface_inventory",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_milestoneoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_retention_surface_inventory",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_maplibre_canvas_exclusion",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_dark_mode_label_contrast",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5a-a11y-axe-pass.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

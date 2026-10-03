@@ -1,0 +1,85 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_remove_daily_remove_daily_plan",
+      "label": "Remove the Daily Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-remove-daily.md",
+      "source_location": "line 1",
+      "rationale": "Delete the daily-puzzle feature everywhere and reframe the launcher as a free-play hub whose hook is per-mode personal-best high scores. Two phases so the app is shippable after Phase A; Phase B then deletes the now-unreachable best-of-N machinery test-first.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_remove_daily_free_play_high_score_hub",
+      "label": "Launcher as free-play high-score hub",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-remove-daily.md",
+      "source_location": "Task A2",
+      "rationale": "With the daily gone the launcher needs a different hook; per-mode personal bests replace the daily calendar/streak as the retention surface, and header, visibility rules, and telemetry all move with it in one task so no intermediate commit ships a launcher with nothing to show.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_remove_daily_best_of_n_machinery_deletion",
+      "label": "Best-of-N machinery deletion (Phase B)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-remove-daily.md",
+      "source_location": "Phase B",
+      "rationale": "Deferred to its own phase because after Phase A the best-of-N reducer capability is present but unreachable \u2014 safe to ship, and deleting it test-first keeps the reducer's regression net meaningful. Task order guarantees typecheck and the unit suite stay green after every commit: readers of a symbol are removed before the symbol, and each telemetry event type dies in the same commit as its last call site.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_remove_daily_legacy_storage_cleanup",
+      "label": "One-time legacy daily-storage cleanup",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-remove-daily.md",
+      "source_location": "Task A1",
+      "rationale": "Existing users carry daily history, resume blobs, and streak keys in localStorage; a one-time cleanup runs first so no later task has to reason about orphaned keys, and returning users are not left with unreadable state.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_remove_daily_remove_daily_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_remove_daily_best_of_n_machinery_deletion",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-remove-daily.md",
+      "source_location": "Phase B",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_remove_daily_best_of_n_machinery_deletion",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usedailyresumepersistence",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-remove-daily.md",
+      "source_location": "Task A4 \u2014 delete the orphaned daily source, components, hooks",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_remove_daily_free_play_high_score_hub",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_header_cta_pill",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-remove-daily.md",
+      "source_location": "Task A2 \u2014 Launcher, Header, visibility, telemetry",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

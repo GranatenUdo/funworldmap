@@ -1,0 +1,618 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "label": "Screenshot A3-03: City Round Ended (2026-05-13)",
+      "file_type": "image",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": "2026-05-13",
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_round_ended_state",
+      "label": "round-ended Game State (City Mode Reveal)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_target_marker",
+      "label": "Target Reveal Marker (orange dot with white ring, on Iraq)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dashed_arc",
+      "label": "Faint Dashed Great-Circle Arc (guess-to-answer connector)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_faint_arc_finding",
+      "label": "Finding: Reveal Arc Renders Barely Visible at This Camera",
+      "file_type": "rationale",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "label": "Round-Result HUD Card (light panel floating over dark map)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_round_counter",
+      "label": "Round Counter 'Round 2 / 10'",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_score_badge",
+      "label": "Circular Score Badge showing 0",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_end_game_control",
+      "label": "'End game' Control (top-right of HUD card)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_distance_copy",
+      "label": "Distance Feedback Copy: '5932 km off. +0 points. Baghdad was over there.'",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_zero_score_outcome",
+      "label": "Zero-Point Outcome (far miss, running score still 0)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_baghdad_prompt",
+      "label": "City Prompt Identity: Iraq Flag + 'Baghdad' / 'Iraq'",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_city_guessing_mode",
+      "label": "City-Guessing Game Mode",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_globe_projection",
+      "label": "3D Globe Projection with Satellite Imagery Basemap",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_basemap_attribution",
+      "label": "Basemap Attribution Bar (AWS Terrain Tiles, Sentinel-2 cloudless by EOX)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_map_controls",
+      "label": "Map Controls Cluster (compass, zoom +/-, pitch) bottom-right",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_header_toggle_pair",
+      "label": "Header Toggle Pair (active teal globe button + inactive screen button)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dark_chrome_light_card",
+      "label": "Design Decision: Light HUD Card over Dark Hex-Pattern Chrome",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_brand_wordmark",
+      "label": "'funworldmap' Teal Wordmark (top-left)",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_missing_guess_marker",
+      "label": "No Distinct Player-Guess Marker Visible at Arc's Far End",
+      "file_type": "concept",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_animation_verification_report",
+      "label": "Animation-Verification Screenshot Report (2026-05-13, sequence A3)",
+      "file_type": "document",
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_round_ended_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_target_marker",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dashed_arc",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_round_counter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_score_badge",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_end_game_control",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_distance_copy",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_baghdad_prompt",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_globe_projection",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_basemap_attribution",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_map_controls",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_header_toggle_pair",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_brand_wordmark",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dark_chrome_light_card",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_animation_verification_report",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_faint_arc_finding",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_faint_arc_finding",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dashed_arc",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_round_counter",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_score_badge",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_end_game_control",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_distance_copy",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_baghdad_prompt",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_target_marker",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_round_ended_state",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dashed_arc",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_target_marker",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dashed_arc",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_distance_copy",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_target_marker",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_baghdad_prompt",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_zero_score_outcome",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_distance_copy",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_zero_score_outcome",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_score_badge",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_baghdad_prompt",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_city_guessing_mode",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_round_ended_state",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_city_guessing_mode",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_globe_projection",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_basemap_attribution",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_globe_projection",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_faint_arc_finding",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_header_toggle_pair",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_globe_projection",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_missing_guess_marker",
+      "relation": "references",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.25,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_missing_guess_marker",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dashed_arc",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.3,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_map_controls",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_globe_projection",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_dark_chrome_light_card",
+      "target": "docs_testing_screenshots_2026_05_13_a3_03_round_ended_result_card",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/testing/screenshots/2026-05-13/a3-03-round-ended.png",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

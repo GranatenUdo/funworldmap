@@ -1,133 +1,203 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import type { GameSession, PersonalBest } from '../types'
-import { formatPersonalBest } from '../formatPersonalBest'
+import type { ResultReceipt } from '../personalBestsStore'
+import { summarizeRounds } from '../summarizeRounds'
+import { useModalLayer } from '../../../hooks/useModalLayer'
+import type { ReactNode } from 'react'
 
 interface Props {
   session: GameSession
   personalBest: PersonalBest
   beatPersonalBest: boolean
+  receipt?: ResultReceipt | null
+  mapReady?: boolean
+  onRetryMap?: () => void
   onPlayAgain: () => void
   onBackToMap: () => void
-}
-
-function describeGameEnd(session: GameSession): string {
-  if (session.endedEarly) return 'Game ended early.'
-  if (session.maxRounds === null) return 'Three wrong guesses.'
-  return `${session.maxRounds} rounds complete.`
+  onChooseGame?: () => void
+  reviewIndex?: number | null
+  onReview?: (index: number | null) => void
+  children?: ReactNode
 }
 
 export function GameOverOverlay({
   session,
   personalBest,
-  beatPersonalBest,
+  receipt,
+  mapReady = true,
+  onRetryMap,
   onPlayAgain,
   onBackToMap,
+  onChooseGame,
+  reviewIndex = null,
+  onReview,
+  children,
 }: Props) {
-  // Freeze at first paint — record() updates the store synchronously after
-  // game-over, which would otherwise flip "New personal best!" to "Best: N pts".
-  const [stableBeatPB] = useState(beatPersonalBest)
-  const previousFocusRef = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    previousFocusRef.current = document.activeElement as HTMLElement | null
-    const target =
-      document.querySelector<HTMLButtonElement>('[data-testid="game-over-play-again"]') ??
-      document.querySelector<HTMLButtonElement>('[data-testid="game-over-back"]')
-    target?.focus({ preventScroll: true })
-    return () => {
-      const target = previousFocusRef.current
-      const canRestore =
-        target &&
-        target !== document.body &&
-        document.body.contains(target) &&
-        typeof target.focus === 'function'
-      if (canRestore) {
-        target.focus({ preventScroll: true })
-      } else {
-        document.querySelector<HTMLElement>('[role="application"]')?.focus({ preventScroll: true })
-      }
-    }
-  }, [])
-
+  const root = useRef<HTMLDivElement>(null)
+  const reviewing = reviewIndex !== null
+  useModalLayer(root, !reviewing)
+  const summary = summarizeRounds(session.completedRounds)
+  const country = session.modeId === 'country-pinning'
   return (
     <div
-      // items-end (mobile, no sm: match): the card anchors to the bottom
-      // edge, same as the compare sheet's footer — px-4/pt-4 keep the other
-      // three sides at the original p-4 (1rem), pb adds env(safe-area-
-      // inset-bottom) on top so the card clears the home indicator on
-      // notched iPhones instead of sitting flush under it (sm:items-center
-      // never touches the bottom edge, so the extra inset is a no-op there).
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center px-4 pt-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] bg-black/30 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
+      ref={root}
+      className={reviewing ? 'review-panel' : 'results-backdrop safe-results'}
+      role={reviewing ? 'region' : 'dialog'}
+      aria-modal={reviewing ? undefined : true}
       aria-labelledby="game-over-title"
       data-testid="game-over"
     >
-      <div className="w-full max-w-sm rounded-2xl bg-sand-50 dark:bg-dark-400 border border-sand-300/50 dark:border-dark-200/30 shadow-2xl p-6">
-        <h2
-          id="game-over-title"
-          data-testid="game-over-title"
-          className="text-display text-xl text-sand-900 dark:text-dark-50 mb-1"
-        >
-          Game over
+      <div className="results-card">
+        <p className="eyebrow">{reviewing ? 'Keep exploring' : 'Your world, a little bigger'}</p>
+        <h2 id="game-over-title" data-testid="game-over-title" className="text-3xl font-bold mt-2">
+          {reviewing ? 'Review your answers' : 'Game over'}
         </h2>
-        <p className="text-sm text-sand-600 dark:text-dark-100 mb-4">{describeGameEnd(session)}</p>
-
-        <dl
-          className={`grid ${
-            session.maxRounds === null ? 'grid-cols-2' : 'grid-cols-1'
-          } gap-3 mb-6`}
-        >
-          <div>
-            <dt className="text-xs uppercase text-sand-600 dark:text-dark-100">Score</dt>
-            <dd
-              className="text-readout text-2xl font-bold text-sand-900 dark:text-dark-50"
-              data-testid="game-over-score"
-            >
-              {session.score}
-            </dd>
+        <p className="text-sm mt-2">
+          {session.endedEarly
+            ? 'Game ended early.'
+            : country
+              ? 'Three wrong guesses.'
+              : '10 rounds complete.'}
+        </p>
+        {!mapReady && (
+          <div className="map-recovery" role="status">
+            <p>The map is unavailable. Your results are still here.</p>
+            {onRetryMap && (
+              <button className="game-secondary mt-2" onClick={onRetryMap}>
+                Retry map
+              </button>
+            )}
           </div>
-          {session.maxRounds === null && (
-            <div>
-              <dt className="text-xs uppercase text-sand-600 dark:text-dark-100">Longest streak</dt>
-              <dd
-                className="text-readout text-2xl font-bold text-sand-900 dark:text-dark-50"
-                data-testid="game-over-best-streak"
-              >
-                {session.bestStreak}
-              </dd>
+        )}
+        {!reviewing && (
+          <>
+            <div className="score-hero">
+              <span data-testid="game-over-score">{session.score}</span>
+              <span>points</span>
             </div>
-          )}
-        </dl>
-
-        <div className="text-xs text-sand-600 dark:text-dark-100 mb-5" data-testid="game-over-pb">
-          {stableBeatPB ? (
-            <span className="font-semibold text-ice-accessible dark:text-ice">
-              New personal best!
-            </span>
-          ) : (
-            <>Best: {formatPersonalBest(personalBest, session.modeId)}</>
-          )}
-        </div>
-
-        <div className="flex gap-2">
+            <dl className="results-stats">
+              <div>
+                <dt>Answered</dt>
+                <dd>
+                  {summary.answered}
+                  {country ? ` · ${summary.correct} correct` : ''}
+                </dd>
+              </div>
+              {country ? (
+                <>
+                  <div>
+                    <dt>Accuracy</dt>
+                    <dd>
+                      {summary.accuracy === null ? 'No guesses made' : `${summary.accuracy}%`}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Longest streak</dt>
+                    <dd data-testid="game-over-best-streak">{session.bestStreak}</dd>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <dt>Skipped</dt>
+                    <dd>{summary.skipped}</dd>
+                  </div>
+                  <div>
+                    <dt>Average distance</dt>
+                    <dd>
+                      {summary.averageDistance === null
+                        ? 'No guesses made'
+                        : `${Math.round(summary.averageDistance).toLocaleString()} km`}
+                    </dd>
+                  </div>
+                </>
+              )}
+            </dl>
+            <p className="text-sm my-4" data-testid="game-over-pb">
+              {receipt?.firstResult
+                ? 'Your first result!'
+                : receipt?.newBest
+                  ? 'New personal best!'
+                  : `Best: ${personalBest.bestScore} pts`}{' '}
+              {receipt
+                ? receipt.saved
+                  ? 'Saved in this browser.'
+                  : 'Could not save in this browser; this result is available until you leave.'
+                : 'Recording this result…'}
+            </p>
+          </>
+        )}
+        {reviewing && (
+          <>
+            <button className="game-secondary mt-3" onClick={() => onReview?.(null)}>
+              Back to results
+            </button>
+            <label className="block text-sm mt-4" htmlFor="review-round">
+              Choose a round
+            </label>
+            <select
+              id="review-round"
+              className="review-select"
+              value={reviewIndex}
+              onChange={(e) => onReview?.(Number(e.target.value))}
+            >
+              {session.completedRounds.map((record, index) => (
+                <option key={index} value={index}>
+                  Round {index + 1}: {record.round.targetName} · {record.outcome.pointsEarned} pts
+                </option>
+              ))}
+            </select>
+            {children}
+            <div className="flex gap-2 mt-3">
+              <button
+                className="game-secondary flex-1"
+                disabled={reviewIndex === 0}
+                onClick={() => onReview?.(reviewIndex - 1)}
+              >
+                Previous
+              </button>
+              <button
+                className="game-secondary flex-1"
+                disabled={reviewIndex === session.completedRounds.length - 1}
+                onClick={() => onReview?.(reviewIndex + 1)}
+              >
+                Next answer
+              </button>
+            </div>
+          </>
+        )}
+        {!reviewing && session.completedRounds.length > 0 && onReview && (
           <button
-            type="button"
-            onClick={onPlayAgain}
-            className="flex-1 px-4 py-2 rounded-xl bg-ice-accessible text-white font-medium hover:bg-ice-dim focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-accessible/50"
+            className="game-secondary w-full mb-3"
+            disabled={!mapReady}
+            onClick={() => onReview(0)}
+          >
+            Review answers on the map
+          </button>
+        )}
+        <div className="flex flex-wrap gap-2 mt-4">
+          <button
+            className="game-primary flex-1"
+            data-autofocus
+            disabled={!mapReady}
             data-testid="game-over-play-again"
+            onClick={onPlayAgain}
           >
             Play again
           </button>
           <button
-            type="button"
-            onClick={onBackToMap}
-            className="flex-1 px-4 py-2 rounded-xl bg-sand-200 dark:bg-dark-300 text-sand-900 dark:text-dark-50 font-medium hover:bg-sand-300 dark:hover:bg-dark-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-ice/50"
+            className="game-secondary flex-1"
             data-testid="game-over-back"
+            onClick={onBackToMap}
           >
-            Back to map
+            Explore the map
           </button>
         </div>
+        {onChooseGame && (
+          <button className="game-text w-full mt-2" onClick={onChooseGame}>
+            Choose another game
+          </button>
+        )}
       </div>
     </div>
   )

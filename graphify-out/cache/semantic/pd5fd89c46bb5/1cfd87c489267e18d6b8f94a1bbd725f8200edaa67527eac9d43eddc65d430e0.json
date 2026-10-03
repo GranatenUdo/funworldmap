@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    {
+      "id": "_github_pull_request_template_test_plan",
+      "label": "PR template test-plan checklist",
+      "file_type": "document",
+      "source_file": ".github/pull_request_template.md",
+      "source_location": "Test plan",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [],
+  "hyperedges": []
+}

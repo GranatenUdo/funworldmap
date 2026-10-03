@@ -1,14 +1,16 @@
 # funworldmap
 
-> **[Live demo →](https://funworldmap.com)** · Interactive political world map with country-pinning and city-guessing games.
+> **[Live demo →](https://funworldmap.com)** · Play geography on the real world — country-pinning and city-guessing games on an interactive political world map.
 
 ![funworldmap launcher](docs/assets/hero.png)
 
 [![CI](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml/badge.svg)](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Free, interactive political world map. Explore countries, borders, and geopolitical facts through a map-first interface — and beat your personal best in two geography game modes.
+Free geography games on a real political world map. Beat your personal best in two game modes — then explore countries, borders, and geopolitical facts through the same map-first interface.
 
+- **Country Pinning** — click the right country; three lives, unlimited rounds, personal-best tracked
+- **City Guessing** — pin where the city is; 10 rounds, distance-scored, personal-best tracked
 - 195 sovereign states (193 UN members + Vatican + Palestine), with data from REST Countries and CIA World Factbook archive
 - Fuzzy search by name, capital, region, or country code
 - Per-field source attribution (every data point shows where it came from)
@@ -16,8 +18,6 @@ Free, interactive political world map. Explore countries, borders, and geopoliti
 - Light/dark/system theme with basemap adaptation
 - WCAG AA accessible: keyboard navigation, screen reader support, skip links
 - Client-side SPA — deployable to any static host; no application backend required to run it (an optional, cookieless analytics Worker records anonymous usage counts — see [docs/systems/analytics.md](docs/systems/analytics.md))
-- **Country Pinning** — click the right country; three lives, unlimited rounds, personal-best tracked
-- **City Guessing** — pin where the city is; 10 rounds, distance-scored, personal-best tracked
 
 ## Development
 

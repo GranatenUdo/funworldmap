@@ -9,9 +9,7 @@ import type { GameSession, GuessInput, ModeGuessResult, ModeId, RoundSpec } from
  */
 type Action =
   | { type: 'start'; modeId: ModeId; firstRound: RoundSpec; maxRounds: number | null }
-  // `input` is the guess that produced `result`; the reducer only consumes
-  // `result`, but the action carries `input` as its event record (kept for
-  // analytics/replay seams — it is intentionally not stored in session state).
+  // Store the accepted guess and its outcome together for current-run review.
   | { type: 'attempt'; input: GuessInput; result: ModeGuessResult }
   | { type: 'advance'; nextRound: RoundSpec }
   | { type: 'overrideRound'; round: RoundSpec }
@@ -33,6 +31,7 @@ const EMPTY: GameSession = {
   lastOutcome: null,
   endedEarly: false,
   used: new Set(),
+  completedRounds: [],
 }
 
 function roundKey(round: RoundSpec): string {
@@ -65,6 +64,7 @@ function reducer(state: GameSession, action: Action): GameSession {
         score: state.score + action.result.pointsEarned,
         streak: nextStreak,
         bestStreak: Math.max(state.bestStreak, nextStreak),
+        completedRounds: [...state.completedRounds, { round: state.currentRound, input: action.input, outcome: { ...action.result, endsGame } }],
         lastOutcome: {
           pointsEarned: action.result.pointsEarned,
           livesDelta: action.result.livesDelta,
@@ -75,7 +75,7 @@ function reducer(state: GameSession, action: Action): GameSession {
     }
 
     case 'advance': {
-      if (state.status !== 'round-ended') return state
+      if (state.status !== 'round-ended' || state.lastOutcome?.endsGame) return state
       return {
         ...state,
         status: 'playing',

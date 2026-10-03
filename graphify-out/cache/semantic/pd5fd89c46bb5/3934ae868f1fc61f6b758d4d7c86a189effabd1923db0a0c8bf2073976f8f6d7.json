@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_05_05_flake_watch_note",
+      "label": "Flake-watch tracking \u2014 PR #36",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_flake_watch_option_a_mesa_llvmpipe",
+      "label": "Option A \u2014 Mesa/llvmpipe install + Playwright new headless",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": "## Pivot: Option A",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_flake_watch_option_b_sharding",
+      "label": "Option B \u2014 4-way chromium sharding",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": "## Pivot: Option B (4-way sharding)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_flake_watch_option_d_lite_testignore",
+      "label": "Option D-lite \u2014 CI testIgnore list of 13 local-only specs",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": "## Pivot: Option D-lite",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_05_flake_watch_cold_webgl_penalty",
+      "label": "Cold-WebGL penalty on GPU-less free runners",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": "### Run 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_05_05_flake_watch_note",
+      "target": "docs_superpowers_notes_2026_05_05_flake_watch_option_a_mesa_llvmpipe",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_flake_watch_note",
+      "target": "docs_superpowers_notes_2026_05_05_flake_watch_option_b_sharding",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_flake_watch_note",
+      "target": "docs_superpowers_notes_2026_05_05_flake_watch_option_d_lite_testignore",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_flake_watch_cold_webgl_penalty",
+      "target": "docs_superpowers_notes_2026_05_05_flake_watch_option_d_lite_testignore",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": "## Pivot: Option D-lite",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_flake_watch_option_a_mesa_llvmpipe",
+      "target": "docs_superpowers_notes_2026_05_05_flake_watch_option_b_sharding",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_05_flake_watch_note",
+      "target": "docs_superpowers_notes_2026_04_28_flake_regression_analysis_angle_ci_consolidation",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "ci_flake_suppression_mechanisms",
+      "label": "CI flake suppression mechanisms on GPU-less runners",
+      "nodes": [
+        "docs_superpowers_notes_2026_05_05_flake_watch_option_d_lite_testignore",
+        "docs_superpowers_notes_2026_05_05_flake_watch_option_b_sharding",
+        "docs_superpowers_notes_2026_05_15_quarantine_triage_test_fixme_quarantine",
+        "docs_superpowers_notes_2026_05_04_bug_31_diagnosis_reduced_motion_opt_in",
+        "docs_superpowers_notes_2026_05_15_quarantine_triage_no_gpu_runner_constraint"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/notes/2026-05-05-flake-watch.md"
+    }
+  ]
+}

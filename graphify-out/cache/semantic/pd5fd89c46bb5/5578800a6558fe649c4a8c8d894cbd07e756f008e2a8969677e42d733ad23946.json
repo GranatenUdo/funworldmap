@@ -1,0 +1,106 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_plan",
+      "label": "e2e Timing Sweep Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_waitfortimeout_antipattern",
+      "label": "waitForTimeout(N) anti-pattern",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Sleeping a magic number of milliseconds is wallclock-non-deterministic on shared CI runners; it passes locally and flakes in CI. Identified as the direct cause of seven known flakes and swept out of eight spec files."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_state_based_wait_patterns",
+      "label": "Five state-based wait replacement patterns",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Codifying a small closed set of replacements (auto-retrying assertion, not.toBeAttached, expect.poll on a seam, etc.) meant every sleep site had a named target rather than a bespoke rewrite."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_ci_aware_timing_defaults",
+      "label": "CI-aware per-project timing defaults",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": "playwright.config.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "GPU-dependent projects get a generous budget under CI (120s test, 15s assertion polling, 20s action) while local runs stay tight, so a slow runner does not manifest as a fake failure and a local regression is still caught quickly."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_three_green_runs_gate",
+      "label": "Three-consecutive-green CI gate",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A single green run cannot distinguish a fixed flake from a lucky one, so the deflake work is only declared done after repeated consecutive green runs."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_waitfortimeout_antipattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_ci_aware_timing_defaults",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_waitfortimeout_antipattern",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_state_based_wait_patterns",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_three_green_runs_gate",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-25-e2e-timing-sweep.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

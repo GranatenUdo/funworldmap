@@ -15,6 +15,7 @@ export function nextRound(
     kind: 'city-guessing',
     targetId: picked.id,
     targetName: picked.name,
+    targetCountryCca3: picked.countryCca3,
     targetCountryName: picked.countryName,
     targetCountryFlag: picked.countryFlag,
     targetCentroid: [picked.latlng[1], picked.latlng[0]],   // [lat,lng] → [lng,lat]

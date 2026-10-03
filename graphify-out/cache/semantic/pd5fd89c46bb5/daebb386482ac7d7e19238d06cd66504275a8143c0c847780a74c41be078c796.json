@@ -1,0 +1,148 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_05_flake_triage_plan",
+      "label": "Chromium e2e flake triage Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_05_flake_triage_evidence_driven_fixes",
+      "label": "Evidence-driven flake fixing (no blanket timeout bumps)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Residual flakes are resolved by pulling CI traces and naming a root cause per failure, because blanket timeout increases and test rewrites both violate the repository's e2e rules and hide the assumption the test is actually making."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_05_flake_triage_dismisslauncher_wait",
+      "label": "dismissLauncher waitForTimeout replaced with Header-attached wait",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": "e2e/helpers.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The project's last remaining sleep lived in a shared helper, so one fix removed the pattern from every spec that called it."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_05_flake_triage_tile_stub_investigation",
+      "label": "routeMapTilesRich vs live basemap request investigation",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": "e2e/helpers.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Before choosing between dropping and extending the rich tile stub, the plan requires establishing what the stub actually fulfils versus what the light-theme positron basemap requests at runtime \u2014 the fix branches on that evidence rather than being pre-committed."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_05_flake_triage_panel_focus_hypotheses",
+      "label": "panel-focus flake \u2014 three competing hypotheses",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Stale closure in the effect, mount-time race, or genuine CI slowness lead to different fixes (component-side vs test-side), so the CI trace is pulled to discriminate before any code changes."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_05_flake_triage_five_green_watch",
+      "label": "Five-consecutive-green CI watch as the done gate",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "An observational phase with a run log; flake work is not declared complete on a single pass because intermittent failures are by definition survivable once."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_05_flake_triage_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_05_flake_triage_evidence_driven_fixes",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_05_flake_triage_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_02_e2e_flake_elimination_plan",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_05_flake_triage_dismisslauncher_wait",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_waitfortimeout_antipattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_05_flake_triage_evidence_driven_fixes",
+      "target": "docs_superpowers_plans_archive_2026_05_05_flake_triage_tile_stub_investigation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_05_flake_triage_evidence_driven_fixes",
+      "target": "docs_superpowers_plans_archive_2026_05_05_flake_triage_panel_focus_hypotheses",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_05_flake_triage_five_green_watch",
+      "target": "docs_superpowers_plans_archive_2026_04_25_e2e_timing_sweep_three_green_runs_gate",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_05_flake_triage_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-05-flake-triage.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

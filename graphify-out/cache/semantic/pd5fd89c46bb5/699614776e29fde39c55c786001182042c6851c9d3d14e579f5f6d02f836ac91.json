@@ -1,0 +1,453 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "label": "Critique remediation batch design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Scoped by the owner to 'everything' from a dual-agent design critique (baseline 30/40), then revised the same day after a four-agent code investigation falsified several critique premises."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_falsified_premises",
+      "label": "Premises falsified by code investigation",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Premises falsified by investigation",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Recorded so the critique trail stays honest. Four observations were disproven at HEAD: no sub-300ms city advance exists (the only timer floors at 1800/2000ms); correct country guesses already get a fill pulse, target panel and a 3000ms skippable hold; the game-over scrim only pre-empts the reveal on user-initiated skips; and cold-load mobile deep links do NOT apply the desktop offset. The real defect behind the fourth was different \u2014 the offset is never re-applied when the viewport changes afterwards."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_itemized_score_chip",
+      "label": "A-1 \u2014 itemized +N score chip",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package A",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Answers the legibility complaint that more wallclock would not fix: the missing beat in both modes was an itemized points readout, not a longer hold. Signal-colored value in the readout face, no emoji, data-animation-state exposed, reduced-motion shows it statically for the same duration."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_hearts_encode_life",
+      "label": "A-2 \u2014 hearts encode life, not loss",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package A",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Amends E4's 'hearts render neutral starlight and turn signal when lost', justified by critique evidence that three grey hearts at start read as empty. Signal still means live game state \u2014 it now points at what remains rather than what was lost. The unit-test pin and DESIGN.md doctrine move in the same change."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_breakpoint_recenter",
+      "label": "B-1 \u2014 re-apply the camera offset on breakpoint change",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package B",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "panelScreenOffset() is evaluated once per fly, so rotating or resizing across the 1024px boundary stranded the country off-screen. Re-centers via the existing flyToCountry with preserveZoom and duration 0 \u2014 a jump, not an autonomous animation, keeping the camera-coherence rule intact. Plain resizes inside one breakpoint (URL-bar collapse) drift only tens of px and are deliberately left alone."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_tap_assist",
+      "label": "B-2 \u2014 micro-target tap assist on coarse pointers",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package B",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "A plain map.on('click') handler because the delegated layer listener cannot widen its hit test. Gated via matchMedia rather than originalEvent, because synthetic seam clicks carry no originalEvent. Growing bbox re-queries (\u00b12/\u00b14/\u00b18px) submit the first hit; a genuinely empty \u00b18px bbox is an ocean miss. Idle-mode and fine-pointer behavior stay unchanged so the e2e exact-point ocean-click preconditions still hold."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_run_safety_confirm",
+      "label": "C-4 \u2014 run-safety end-game confirm",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "finishFree-bound actions route through a focus-trapped confirm whose safe action ('Keep playing') is primary and initially focused, and where Escape inside the dialog keeps playing. Trivial runs (round 1, score 0) skip the dialog entirely. The useEscapeExit contract and its unit pins are unchanged \u2014 only the controller's callback changes \u2014 and country round-ended Escape-as-advance stays untouched."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_ocean_click_feedback",
+      "label": "C-5 \u2014 ocean-click feedback line",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "The tap-assist miss branch announces 'Ocean \u2014 pick a country' as a transient role=status line in the HUD: screen-reader announced and auto-clearing, deliberately not a toast, to avoid spam. Applies on fine pointers too, where the miss is an exact-point miss."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_contrast_sweep",
+      "label": "C-1 \u2014 measured light-mode contrast sweep",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "A minimal measured edit set (light classes only, dark variants untouched) lifting 3.4-3.6:1 text to 4.9-5.75:1, distinguishing the 3:1 non-text floor for icons from the 4.5:1 floor for text glyphs. Icon-only uses that already pass 3:1 are deliberately untouched."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_pointer_only_ruling",
+      "label": "Games are pointer-only (owner ruling)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Context / Non-goals",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Two standing rulings recorded in PRODUCT.md on 2026-08-04: guessing is spatial by definition (typed guessing is never a guess input), and the games are deliberately pointer-only for now \u2014 keyboard playability of the guess action was considered and cut, and is suppressed in future critiques via the critique ignore list."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_reopenable_help",
+      "label": "C-6 \u2014 re-openable how-to-play",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "FirstSessionTutorial becomes controllable so a '?' fitted button in the HUD can re-open it; first-session auto-show behavior is unchanged."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_personal_best_badge",
+      "label": "C-7 \u2014 personal-best moment as a signal badge",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "'New personal best!' was styled ice, which violates the two-accent rule \u2014 game state gets signal. Rendered as a signal-family badge with a fade-up."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_08_04_critique_remediation_design_search_noise",
+      "label": "C-9 \u2014 search ranking noise",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Fuse options tuned so 'franc' no longer ranks Iran second, with a regression case added to the search unit tests and typo forgiveness explicitly preserved."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_falsified_premises",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Premises falsified by investigation",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_pointer_only_ruling",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Context / Non-goals",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_itemized_score_chip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package A",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_falsified_premises",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_itemized_score_chip",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "the legibility complaint is answered by A-1 rather than more wallclock",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_hearts_encode_life",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package A",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_hearts_encode_life",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_semantic_color_tokens",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "A-2 amends E4's hearts doctrine",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_breakpoint_recenter",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package B",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_breakpoint_recenter",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_panel_aware_framing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "B-1 \u2014 panelScreenOffset() is evaluated once per fly",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_breakpoint_recenter",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_origin_aware_camera",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "B-1 \u2014 re-centers via flyToCountry with preserveZoom: true",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_tap_assist",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package B",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_tap_assist",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_deselect_gate",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "B-2 follows the clickMap plain-handler precedent; ocean-click preconditions hold",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_tap_assist",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_touch_target_convention",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_run_safety_confirm",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_run_safety_confirm",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_finishfree",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "C-4 \u2014 finishFree-bound actions route through a confirm",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_run_safety_confirm",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_escape_records_run",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "C-4 \u2014 Escape while playing / city round-ended; country round-ended Escape-as-advance untouched",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_ocean_click_feedback",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_ocean_click_feedback",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_tap_assist",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "C-5 \u2014 B-2's miss branch announces",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_ocean_click_feedback",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_live_region_clear_timer",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_ocean_click_feedback",
+      "target": "docs_superpowers_specs_2026_04_27_game_flow_cascade_fixes_design_round_end_announcement_removal",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_contrast_sweep",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_reopenable_help",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_reopenable_help",
+      "target": "docs_superpowers_specs_2026_08_03_calibrated_fittings_rollout_design_fitting_recipe",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "C-6 \u2014 a '?' fitted button in the HUD shell",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_personal_best_badge",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_personal_best_badge",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_semantic_color_tokens",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "C-7 \u2014 the current ice styling violates the two-accent rule",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_08_04_critique_remediation_design_search_noise",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Package C",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_search_noise",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_search_enter_top_result",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Enter commits the top result, so top-result ranking quality is load-bearing",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_workstream_f",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Non-goals \u2014 streak flares, per-round recap, region filter (workstream F)",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_spec",
+      "target": "docs_superpowers_specs_2026_07_26_ux_visual_program_design_workstream_g",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": "Non-goals \u2014 mobile header layout / Play relocation (G4)",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_08_04_critique_remediation_design_falsified_premises",
+      "target": "docs_superpowers_specs_2026_05_20_daily_flow_polish_design_pre_finalize_write",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/specs/2026-08-04-critique-remediation-design.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

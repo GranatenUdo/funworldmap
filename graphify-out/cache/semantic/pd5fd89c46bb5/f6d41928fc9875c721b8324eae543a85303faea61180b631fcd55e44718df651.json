@@ -1,0 +1,140 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_plan",
+      "label": "Deflake e2e (chromium) Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_data_app_ready",
+      "label": "data-app-ready attribute on <main>",
+      "file_type": "rationale",
+      "rationale": "countries and cities are bundled and synchronous, so the value is true on first render \u2014 the real signal Playwright needs is that React has committed that render and the attribute is present in the DOM.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_wait_for_app_ready",
+      "label": "waitForAppReady(page) helper",
+      "file_type": "concept",
+      "rationale": "Replaces bare waitForTimeout(1000) in the beforeEach of search, satellite-default and launcher specs with an explicit readiness wait.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_trace_diagnosis",
+      "label": "Trace-first flake diagnosis before applying a fix",
+      "file_type": "rationale",
+      "rationale": "Ten trace-on runs at workers=2 are required before the fix so the diagnosis note can state whether the readiness race is sufficient, necessary-but-not-sufficient, or unreproducible locally \u2014 an escalation gate rather than a blind patch.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_expect_poll",
+      "target": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_data_app_ready",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_dismiss_helper",
+      "target": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_wait_for_app_ready",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_data_app_ready",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_wait_for_app_ready",
+      "target": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_data_app_ready",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_trace_diagnosis",
+      "target": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_data_app_ready",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_wait_for_app_ready",
+      "target": "docs_superpowers_plans_archive_2026_04_18_satellite_default_flip",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_wait_for_app_ready",
+      "target": "docs_superpowers_plans_archive_2026_04_20_launcher_landing_state_launcher",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "e2e_determinism_program",
+      "label": "Program of replacing wallclock waits with deterministic readiness signals",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_axe_deterministic_wait",
+        "docs_superpowers_plans_archive_2026_04_17_chromium_gpu_on_linux_expect_poll",
+        "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_data_app_ready",
+        "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_wait_for_app_ready",
+        "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_watchdog"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-deflake-chromium-e2e.md"
+    }
+  ]
+}

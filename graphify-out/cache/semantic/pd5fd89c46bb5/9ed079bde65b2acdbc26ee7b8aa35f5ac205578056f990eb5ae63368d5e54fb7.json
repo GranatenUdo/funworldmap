@@ -1,0 +1,174 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_e2e_timing_sweep",
+      "label": "E2E Timing Sweep Design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_waitfortimeout_antipattern",
+      "label": "waitForTimeout Anti-Pattern",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The seven known flakes are not seven independent bugs \u2014 they share one style: an arbitrary sleep followed by an assertion on default polling. On hardware GPU the sleeps are ample; on software ANGLE every operation is 3-5x slower and the budgets blow."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_ci_aware_timing_defaults",
+      "label": "Per-Project CI-Aware Timing Defaults",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Tight locally for fast fail feedback, generous in CI for the slow chromium-gpu project; slow defaults only cost time when something is genuinely broken because passing tests resolve on state arrival, not timeout expiry."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_state_based_wait_patterns",
+      "label": "State-Based Wait Replacement Patterns",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Five patterns covering assertion-with-timeout, per-iteration session-status sync, reduced-motion bypass, hash polling, and raising a safety-net fallback that was masquerading as the happy path. Every replacement preserves the original assertion's intent so no real bug is masked."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_reduced_motion_test_bypass",
+      "label": "Reduced-Motion Animation-Tax Bypass",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "A ten-round game costs 30-60s of pure animation under software ANGLE. Tests that verify game-flow termination rather than the animation itself emulate reduced motion, reusing the production reduced-motion branch for identical coverage at no animation budget \u2014 but this is deliberately not applied to specs that ARE about the animation."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_three_green_runs_gate",
+      "label": "Three Consecutive Green CI Runs Gate",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The acceptance bar is 'kill the seven known flakes', not 'every conceivable flake is dead'; a new out-of-scope flake is documented rather than treated as blocking."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_ci_aware_timing_defaults",
+      "target": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_waitfortimeout_antipattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_state_based_wait_patterns",
+      "target": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_waitfortimeout_antipattern",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_reduced_motion_test_bypass",
+      "target": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_state_based_wait_patterns",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_three_green_runs_gate",
+      "target": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_e2e_timing_sweep",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_reduced_motion_test_bypass",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_animated_reveal",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_ci_aware_timing_defaults",
+      "target": "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_playwright_mobile_projects",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_waitfortimeout_antipattern",
+      "target": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_chromium_e2e_deflake",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_state_based_wait_patterns",
+      "target": "docs_superpowers_specs_2026_04_18_satellite_default_and_game_modes_design_funworldmap_game_test_hook",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "e2e_flake_reduction_program",
+      "label": "E2E Flake-Reduction Program",
+      "nodes": [
+        "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_waitfortimeout_antipattern",
+        "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_ci_aware_timing_defaults",
+        "docs_superpowers_specs_2026_04_25_e2e_timing_sweep_design_state_based_wait_patterns",
+        "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_chromium_e2e_deflake",
+        "docs_superpowers_specs_2026_04_24_reveal_animation_and_mobile_tap_design_playwright_mobile_projects"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md"
+    }
+  ]
+}

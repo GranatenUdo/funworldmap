@@ -1,12 +1,14 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import type maplibregl from 'maplibre-gl'
 import type { GameSession, GameStatus } from '../../game/shared/types'
 import type { CountryData } from '../../lib/types'
+import { FINE_POINTER_MEDIA_QUERY } from '../../lib/layoutConstants'
 import { EMPTY_FILTER, LAYER } from '../../lib/mapLayers'
 import { takeOrigin } from '../../lib/selectionOrigin'
 import { makeCountryData } from '../../test/countryFixtures'
 import { createFakeMapRef } from '../../test/fakeMapRef'
+import { stubMatchMedia } from '../../test/matchMediaStub'
 
 // Stable refs (like MapProvider's useMemo'd refs) + a mutable session, so a
 // rerender that only changes session.status does NOT change any effect dep
@@ -36,6 +38,7 @@ const baseOptions = {
   byNumeric: new Map<string, CountryData>(),
   onSelect: () => {},
   onDeselect: () => {},
+  onGameOceanMiss: () => {},
   comparePickingMode: false,
 }
 
@@ -309,6 +312,146 @@ describe('useMapInteractions click-origin marking', () => {
     // flyToCountry (the only preserveZoom consumer) never runs, and
     // flyToComparePair always reframes the pair (A8 camera decision).
     expect(takeOrigin()).toBe('auto')
+  })
+})
+
+describe('useMapInteractions country-game tap assist (B-2) + ocean feedback (C-5)', () => {
+  let restoreMatchMedia: () => void
+
+  beforeEach(() => {
+    // Coarse pointer by default: FINE_POINTER_MEDIA_QUERY does not match.
+    // The assist gates via matchMedia, never e.originalEvent — synthetic seam
+    // clicks (map.fire) carry none.
+    restoreMatchMedia = stubMatchMedia(() => false)
+    takeOrigin() // reset any click-origin mark left by a previous test
+    window.location.hash = ''
+  })
+
+  afterEach(() => restoreMatchMedia())
+
+  function renderAssist(opts: { modeId?: GameSession['modeId']; status?: GameStatus } = {}) {
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = document.createElement('div')
+    h.session = {
+      modeId: opts.modeId ?? 'country-pinning',
+      status: opts.status ?? 'playing',
+    }
+    const country = makeCountryData() // FRA / ccn3 250
+    const onSelect = vi.fn()
+    const onDeselect = vi.fn()
+    const onGameOceanMiss = vi.fn()
+    renderHook(() =>
+      useMapInteractions({
+        ...baseOptions,
+        onSelect,
+        onDeselect,
+        onGameOceanMiss,
+        byNumeric: new Map([[country.ccn3, country]]),
+        loaded: true,
+      }),
+    )
+    return {
+      fake,
+      country,
+      onSelect,
+      onDeselect,
+      onGameOceanMiss,
+      qrf: fake.calls.queryRenderedFeatures,
+    }
+  }
+
+  it('does not run the assist when the exact point hits a country (no bbox queries, no second submit)', () => {
+    const { fake, onSelect, onGameOceanMiss, qrf } = renderAssist()
+    qrf.mockReturnValue([{ id: '250' }])
+
+    fake.fire('click', null, { point: { x: 100, y: 100 } })
+
+    // clickMap early-returns while playing, so the single query is the
+    // assist's exact-point probe. A hit means the DELEGATED clickCountry
+    // listener owns the submit — the assist must stand down.
+    expect(qrf).toHaveBeenCalledTimes(1)
+    expect(qrf.mock.calls[0][0]).toEqual({ x: 100, y: 100 })
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(onGameOceanMiss).not.toHaveBeenCalled()
+  })
+
+  it('grows the bbox on a coarse-pointer near miss and submits the found country once', () => {
+    const { fake, onSelect, onGameOceanMiss, qrf } = renderAssist()
+    qrf.mockImplementation((geometry: unknown) => {
+      if (!Array.isArray(geometry)) return [] // the exact-point probe misses
+      const [[x1]] = geometry as [number, number][]
+      const radius = 100 - x1
+      return radius >= 4 ? [{ id: '250' }] : [] // ±2 empty, ±4 hits
+    })
+
+    fake.fire('click', null, { point: { x: 100, y: 100 } })
+
+    expect(onSelect).toHaveBeenCalledTimes(1)
+    expect(onSelect).toHaveBeenCalledWith('FRA')
+    // exact probe + ±2 + ±4; the ±8 box is never queried after a hit
+    expect(qrf).toHaveBeenCalledTimes(3)
+    // bbox corners are ARRAYS — a plain {x, y} object would silently query
+    // the whole viewport
+    expect(qrf.mock.calls[1][0]).toEqual([
+      [98, 98],
+      [102, 102],
+    ])
+    expect(qrf.mock.calls[2][0]).toEqual([
+      [96, 96],
+      [104, 104],
+    ])
+    // every query stays layer-scoped (repo invariant)
+    expect(qrf.mock.calls[2][1]).toEqual({ layers: [LAYER.fill] })
+    expect(onGameOceanMiss).not.toHaveBeenCalled()
+    // the assist reuses clickCountry's resolution path — and a game guess
+    // never marks click origin
+    expect(takeOrigin()).toBe('auto')
+  })
+
+  it('reports an ocean miss when even the ±8px box is empty on a coarse pointer', () => {
+    const { fake, onSelect, onGameOceanMiss, qrf } = renderAssist()
+    qrf.mockReturnValue([])
+
+    fake.fire('click', null, { point: { x: 100, y: 100 } })
+
+    expect(qrf).toHaveBeenCalledTimes(4) // exact + ±2 + ±4 + ±8
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(onGameOceanMiss).toHaveBeenCalledTimes(1)
+  })
+
+  it('skips the bbox assist on fine pointers but still reports the exact-point ocean miss', () => {
+    restoreMatchMedia()
+    restoreMatchMedia = stubMatchMedia((query) => query === FINE_POINTER_MEDIA_QUERY)
+    const { fake, onSelect, onGameOceanMiss, qrf } = renderAssist()
+    qrf.mockReturnValue([])
+
+    fake.fire('click', null, { point: { x: 100, y: 100 } })
+
+    expect(qrf).toHaveBeenCalledTimes(1) // the exact-point probe only
+    expect(onSelect).not.toHaveBeenCalled()
+    expect(onGameOceanMiss).toHaveBeenCalledTimes(1)
+  })
+
+  it('is inert in idle mode — ocean clicks keep deselecting via clickMap, never the miss callback', () => {
+    const { fake, onDeselect, onGameOceanMiss, qrf } = renderAssist({ status: 'idle' })
+    qrf.mockReturnValue([])
+
+    fake.fire('click', null, { point: { x: 100, y: 100 } })
+
+    expect(onDeselect).toHaveBeenCalledTimes(1) // clickMap's contract, untouched
+    expect(onGameOceanMiss).not.toHaveBeenCalled()
+    expect(qrf).toHaveBeenCalledTimes(1) // clickMap's exact-point query only
+  })
+
+  it('is inert during city-guessing rounds (city clicks belong to useRevealMapEffects)', () => {
+    const { fake, onGameOceanMiss, qrf } = renderAssist({ modeId: 'city-guessing' })
+    qrf.mockReturnValue([])
+
+    fake.fire('click', null, { point: { x: 100, y: 100 } })
+
+    expect(qrf).not.toHaveBeenCalled() // clickMap early-returns while playing; assist is country-only
+    expect(onGameOceanMiss).not.toHaveBeenCalled()
   })
 })
 

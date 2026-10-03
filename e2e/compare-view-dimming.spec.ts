@@ -144,6 +144,8 @@ test.describe('compare picking mode cancel (A7)', () => {
     await page.getByRole('button', { name: 'Compare with another country' }).click()
     const banner = page.getByRole('status').filter({ hasText: 'Pick a country to compare with' })
     await expect(banner).toBeVisible()
+    // C-3b: entering picking mode hands focus to the picking tool.
+    await expect(page.getByTestId('search-input')).toBeFocused()
 
     // The touch-reachable exit: the banner's inline Cancel.
     await page.getByTestId('compare-picking-cancel').click()

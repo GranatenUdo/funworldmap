@@ -1,0 +1,266 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_plan",
+      "label": "Phase 5b \u2014 Launch Prep Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "label": "docs/systems/daily-puzzle.md system overview",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Single page covering lifecycle, storage shape, routing matrix, telemetry, operational notes and rollback, so support and launch work has one place to look instead of reading source."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_worker_blob_slot_mapping",
+      "label": "Cloudflare Worker blob/double slot mapping",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": "cloudflare-worker/index.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Analytics Engine writes fixed slots (index1/blob1 = event name, blob2..7 = mode/path/method/dateKind/outcome/cellKind, double1..6 = dateAge/scoreBucket/bestScoreBucket/attemptIndex/attemptsUsed/days). Every saved query depends on this mapping, so it is documented once in the queries README."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_modesplayed_worker_gap",
+      "label": "modesPlayed dropped at the Worker level",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The Phase 4 daily_shared event carries modesPlayed but the Worker has no blob slot for it, so dashboards break shares down by method only. Surfaced (not fixed) to keep the PR tight and deferred to the v1.1 roadmap."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_analytics_saved_queries",
+      "label": "Version-controlled Analytics Engine saved queries",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": "cloudflare-worker/queries/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Cloudflare exposes no dashboards-as-code API for Analytics Engine, so the .sql files plus a README are committed and the dashboard layout itself stays manual."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_keyboard_smoke_spec",
+      "label": "Automated keyboard-only smoke spec",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": "e2e/a11y-keyboard-smoke.spec.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The golden path (launcher, streak pill, history panel, calendar arrows, reveal) is automatable; the subjective question 'does Tab order match visual order' is not, so the manual pass stays on the launch checklist. Tests assert reachability within N presses rather than an exact Tab count."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_launch_checklist",
+      "label": "Human launch checklist + 72h monitor",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Everything requiring a browser-UI click (CF dashboard building, NVDA pass, Sentry alert rules, monitor configuration) is captured as a checklist inside the system doc for a human to execute post-merge, keeping the PR fully automatable."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_rollback_procedure",
+      "label": "Retention v1 rollback procedure",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Surfaces are purely client-side on GitHub Pages, so a git revert republishes automatically; the Worker rolls back separately via wrangler and is usually unnecessary because it accepts forward-compatible event shapes."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_timezone_rollover",
+      "label": "00:00 UTC daily rollover timezone lag",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Accepted known limitation for v1: users up to +14h east of UTC may see 'yesterday' past their local midnight; per-timezone rollover deferred to v1.1."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_14_day_baseline",
+      "label": "14-day analytics baseline launch gate",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Code lands immediately but the launch announcement and 72h monitor wait until 14 days of events have accumulated, so anomaly detection has something to compare against."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_analytics_saved_queries",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_keyboard_smoke_spec",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_analytics_saved_queries",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_worker_blob_slot_mapping",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_worker_blob_slot_mapping",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_modesplayed_worker_gap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_modesplayed_worker_gap",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_4_share_flow_daily_shared_schema",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_rollback_procedure",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_launch_checklist",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_timezone_rollover",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_launch_checklist",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_14_day_baseline",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_calendargrid",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_keyboard_smoke_spec",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_historypanel",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_keyboard_smoke_spec",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5a_a11y_axe_pass_axe_wcag2aa_audit",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-22-phase-5b-launch-prep.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

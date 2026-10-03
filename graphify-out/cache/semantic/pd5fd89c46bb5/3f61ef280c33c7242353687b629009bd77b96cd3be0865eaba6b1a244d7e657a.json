@@ -1,0 +1,128 @@
+{
+  "nodes": [
+    {
+      "id": "docs_testing_animation_verification_2026_05_13_reveal_dashed_line",
+      "label": "Reveal mechanic is a 65-vertex tessellated dashed centroid line",
+      "file_type": "concept",
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Top-level findings / A1",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_animation_verification_2026_05_13_a2_panel_amendment",
+      "label": "Correct guesses also open the country panel (A2 amendment)",
+      "file_type": "concept",
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Scenario A2",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_animation_verification_2026_05_13_state_signaled_capture",
+      "label": "State-signaled screenshot method (no wall-clock timestamps)",
+      "file_type": "rationale",
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Method",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_testing_animation_verification_2026_05_13_reduced_motion_fix",
+      "label": "A6 reduced-motion verification of the PR #41 flyTo gate",
+      "file_type": "concept",
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Scenario A6",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_testing_animation_verification_2026_05_13_reveal_dashed_line",
+      "target": "docs_testing_game_unhappy_paths_section_a_animations",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Amendments applied",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_animation_verification_2026_05_13_a2_panel_amendment",
+      "target": "docs_testing_game_unhappy_paths_section_a_animations",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Amendments applied",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_animation_verification_2026_05_13_a2_panel_amendment",
+      "target": "docs_testing_game_happy_paths_free_country_pinning",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Scenario A2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_animation_verification_2026_05_13_a2_panel_amendment",
+      "target": "docs_testing_game_unhappy_paths_e1_last_life",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Scenario A2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_animation_verification_2026_05_13_state_signaled_capture",
+      "target": "claude_data_animation_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Method",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_testing_animation_verification_2026_05_13_state_signaled_capture",
+      "target": "claude_waitfortimeout_ban",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/testing/animation-verification-2026-05-13.md",
+      "source_location": "Method",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "country_pinning_round_end_reveal_contract",
+      "label": "Country-pinning round-end reveal contract (panel opens on both outcomes)",
+      "nodes": [
+        "docs_testing_game_happy_paths_free_country_pinning",
+        "docs_testing_game_unhappy_paths_section_a_animations",
+        "docs_testing_game_unhappy_paths_e1_last_life",
+        "docs_testing_animation_verification_2026_05_13_a2_panel_amendment",
+        "docs_testing_animation_verification_2026_05_13_reveal_dashed_line",
+        "docs_testing_game_divergences_2026_05_11_wrong_guess_panel_flow"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/testing/animation-verification-2026-05-13.md"
+    }
+  ]
+}

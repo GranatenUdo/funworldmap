@@ -1,6 +1,7 @@
-import { useRef, useCallback } from 'react'
+import { useRef, useCallback, useEffect } from 'react'
 import type maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { useMap } from '../hooks/useMap'
 import { MapErrorOverlay } from './MapErrorOverlay'
 import { BasemapBanner } from './BasemapBanner'
 import { loadCountryGeojson } from '../lib/loadCountryGeojson'
@@ -38,6 +39,7 @@ interface Props {
   satellite: boolean
   onSelect: (cca3: string) => void
   onDeselect: () => void
+  onGameOceanMiss: () => void
 }
 
 export default function WorldMap({
@@ -50,7 +52,9 @@ export default function WorldMap({
   satellite,
   onSelect,
   onDeselect,
+  onGameOceanMiss,
 }: Props) {
+  const { retryRef } = useMap()
   const containerRef = useRef<HTMLDivElement | null>(null)
 
   const onLoad = useCallback(async (map: maplibregl.Map) => {
@@ -78,7 +82,22 @@ export default function WorldMap({
     onLoad,
   })
 
-  useMapInteractions({ loaded, byNumeric, onSelect, onDeselect, comparePickingMode })
+  useEffect(() => {
+    retryRef.current =
+      mapError === 'webgl-lost' ? () => retryWebGL(false) : () => window.location.reload()
+    return () => {
+      retryRef.current = null
+    }
+  }, [mapError, retryWebGL, retryRef])
+
+  useMapInteractions({
+    loaded,
+    byNumeric,
+    onSelect,
+    onDeselect,
+    onGameOceanMiss,
+    comparePickingMode,
+  })
   useSelectionHighlight({ loaded, selected, selectionOriginRef, compareWith })
   useMapTheme({ loaded, resolvedTheme })
   useSatelliteMode({ loaded, satellite })
@@ -87,7 +106,11 @@ export default function WorldMap({
 
   if (!supported) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-sand-100 dark:bg-dark-500 text-sand-700 dark:text-dark-50 p-8 text-center">
+      <div
+        data-map-error="unsupported"
+        role="alert"
+        className="h-screen w-screen flex items-center justify-center bg-sand-100 dark:bg-dark-500 text-sand-700 dark:text-dark-50 p-8 text-center"
+      >
         <div>
           <h1 className="text-2xl font-bold mb-4">WebGL Not Available</h1>
           <p>
@@ -119,7 +142,7 @@ export default function WorldMap({
       {mapError !== null && (
         <MapErrorOverlay
           reason={mapError}
-          onRetry={mapError === 'webgl-lost' ? retryWebGL : () => window.location.reload()}
+          onRetry={mapError === 'webgl-lost' ? () => retryWebGL() : () => window.location.reload()}
         />
       )}
     </div>

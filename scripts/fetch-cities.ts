@@ -17,7 +17,7 @@ const NE_URL =
 
 type NeFeature = {
   type: 'Feature'
-  geometry: { type: 'Point'; coordinates: [number, number] }   // [lng, lat]
+  geometry: { type: 'Point'; coordinates: [number, number] } // [lng, lat]
   properties: {
     name: string
     adm0_a3: string
@@ -36,10 +36,26 @@ type CountriesEntry = {
 function slug(name: string): string {
   return name
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')      // strip diacritics
+    .replace(/[\u0300-\u036f]/g, '') // strip diacritics
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
+}
+
+/**
+ * Natural Earth misspellings corrected in our dataset (C-10). Keyed by the
+ * raw NE `name` so regeneration re-applies the fixes; applied BEFORE slug()
+ * so the record ids stay consistent with the corrected names.
+ */
+const NAME_OVERRIDES: Record<string, string> = {
+  Banghazi: 'Benghazi', // standard English spelling (NE carries a transliteration variant)
+  Shenyeng: 'Shenyang', // NE typo for the Liaoning capital
+}
+
+/** Collapse NE's stray double spaces ("Washington,  D.C.", "St.  Petersburg"). */
+function cleanName(raw: string): string {
+  const collapsed = raw.replace(/\s+/g, ' ').trim()
+  return NAME_OVERRIDES[collapsed] ?? collapsed
 }
 
 async function main() {
@@ -50,7 +66,9 @@ async function main() {
   console.log(`Got ${fc.features.length} features`)
 
   const countriesRaw = await readFile(resolve(ROOT, 'src/data/countries.json'), 'utf-8')
-  const countriesJson = JSON.parse(countriesRaw) as { countries: CountriesEntry[] } | CountriesEntry[]
+  const countriesJson = JSON.parse(countriesRaw) as
+    | { countries: CountriesEntry[] }
+    | CountriesEntry[]
   const countries = Array.isArray(countriesJson) ? countriesJson : countriesJson.countries
   const byCca3 = new Map(countries.map((c) => [c.cca3, c]))
 
@@ -83,16 +101,17 @@ async function main() {
       skipped.push(`${p.name} (${p.adm0_a3} not in countries.json)`)
       continue
     }
-    const id = `${country.cca3}-${slug(p.name)}`
+    const name = cleanName(p.name)
+    const id = `${country.cca3}-${slug(name)}`
     if (ids.has(id)) {
-      collisions.push(`${p.name} → ${id}`)
+      collisions.push(`${name} → ${id}`)
       continue
     }
     ids.add(id)
     const [lng, lat] = f.geometry.coordinates
     records.push({
       id,
-      name: p.name,
+      name,
       countryCca3: country.cca3,
       countryName: country.name.common,
       countryFlag: country.flag,
@@ -114,11 +133,7 @@ async function main() {
   }
 
   console.log(`Writing ${records.length} cities to src/data/cities.json`)
-  await writeFile(
-    resolve(ROOT, 'src/data/cities.json'),
-    JSON.stringify(records, null, 2),
-    'utf-8',
-  )
+  await writeFile(resolve(ROOT, 'src/data/cities.json'), JSON.stringify(records, null, 2), 'utf-8')
   console.log('Done.')
 }
 

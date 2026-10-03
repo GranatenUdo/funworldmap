@@ -1,0 +1,231 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_plan",
+      "label": "Assessment Remediation Implementation Plan (2026-05-02)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endofround_round_ended",
+      "label": "endOfRound always returns 'round-ended'",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": "src/game/hooks/useGameSession.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The reducer returned 'game-over' directly whenever endsGame was true, but the whole reveal pipeline is gated on 'round-ended' \u2014 so every daily and every kill-shot free round skipped the reveal animation entirely. Making the transition uniform restores the reveal without adding a new session field, since endsGame already lives on lastOutcome."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_finalize_action",
+      "label": "finalize reducer action",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Moves round-ended to game-over only once the controller's reveal animation completes, so the animation owns the timing rather than the reducer."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_reveal_spoiler_protection",
+      "label": "Reveal spoiler protection for unplayed modes",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": "src/components/DailyRevealOverlay.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The reveal route showed today's answer for a mode the visitor had not yet played, spoiling their own puzzle; the headline is hidden for unplayed modes on the current date."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endedearly_flag",
+      "label": "endedEarly flag + accurate game-over copy",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Ending a run via Done produced the same copy as exhausting all attempts, misreporting what the player did."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_milestone_reset",
+      "label": "Reset lastMilestoneShown on streak break",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Without a reset, a user who broke a 30-day streak and rebuilt it would never see the 3/7/14 celebrations again, because the dedupe watermark stayed high."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_zero_toast_suppression",
+      "label": "+0 score toast suppression",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Celebrating a zero-point attempt with a score chip reads as mockery; the toast is suppressed when nothing was earned."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_attemptindex_one_based",
+      "label": "daily_attempted.attemptIndex made 1-based",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Code emitted 0-based indices while the telemetry documentation promised 1|2|3, so dashboards silently mislabelled attempts."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_round_start_announcement_gating",
+      "label": "Round-start announcement gated on round-key transition",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Re-announcing on every render rather than on an actual round change spammed screen readers."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endofround_round_ended",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endofround_round_ended",
+      "target": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_finalize_action",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_finalize_action",
+      "target": "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endofround_round_ended",
+      "target": "docs_superpowers_plans_archive_2026_04_26_game_flow_bugfix_attempt_reducer_collapse",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_reveal_spoiler_protection",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_dailyrevealoverlay",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_milestone_reset",
+      "target": "docs_superpowers_plans_archive_2026_04_22_retention_program_v1_phase_3_streak_calendar_pendingmilestone",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endedearly_flag",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_finishfree",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_attemptindex_one_based",
+      "target": "docs_superpowers_plans_archive_2026_04_22_phase_5b_launch_prep_daily_puzzle_system_doc",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_round_start_announcement_gating",
+      "target": "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_aria_live_clear",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_zero_toast_suppression",
+      "target": "docs_superpowers_plans_archive_2026_05_04_vision_audit_remediation_toast_zindex",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "reveal_pipeline_rework",
+      "label": "Reveal pipeline: geometry, camera, state transition and session identity",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endofround_round_ended",
+        "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_finalize_action",
+        "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_computerevealanimationplan",
+        "docs_superpowers_plans_archive_2026_04_25_hardening_and_reveal_fixes_reveal_camera_follow",
+        "docs_superpowers_plans_archive_2026_04_24_reveal_animation_and_mobile_tap_reduced_motion_reveal",
+        "docs_superpowers_plans_archive_2026_04_27_game_flow_cascade_and_polish_fixes_dailydate_session_field"
+      ],
+      "relation": "form",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-02-assessment-remediation.md"
+    }
+  ]
+}

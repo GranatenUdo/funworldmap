@@ -1,0 +1,238 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "label": "Vision-driven bug hunt (2026-05-04)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_vision_audit_methodology",
+      "label": "Vision + Playwright MCP audit methodology",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### D. What this audit method can NOT produce",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_launcher_initial_focus_bug",
+      "label": "Launcher initial focus lands on free-link instead of daily CTA",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "## Phase 1 verification results",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_source_tooltip_clipping",
+      "label": "Source-attribution tooltip clipped at panel left edge",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### H \u2014 Country panel",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_webgl_context_loss_unhandled",
+      "label": "WebGL context-loss shows no MapErrorOverlay",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### I \u2014 Map rendering",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_mobile_name_truncation",
+      "label": "Country name truncated to \"Fr\u2026\" in mobile bottom-sheet header",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### H \u2014 Country panel",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_launcher_backdrop_pointer_block",
+      "label": "Launcher backdrop blocks visible header chrome and does not dismiss on click",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### A4 / A5",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_share_no_feedback",
+      "label": "Share button gives no visible / a11y feedback",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### B \u2014 Daily country-pinning happy path",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_severity_rubric",
+      "label": "Severity rubric (blocker / major / minor / nit)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "Severity legend",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_critical_self_review",
+      "label": "Critical self-review calibration pass",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "## Critical review of this audit (revision)",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_label_contrast_claim",
+      "label": "Country label contrast claim (unmeasured, retracted pending measurement)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### A4 \u2014 Theme",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_severity_rubric",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_vision_audit_methodology",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_critical_self_review",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_vision_audit_methodology",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "## Critical review of this audit",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_critical_self_review",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_label_contrast_claim",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": "### A. Findings I overstated",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_source_tooltip_clipping",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_webgl_context_loss_unhandled",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_mobile_name_truncation",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_launcher_backdrop_pointer_block",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_launcher_initial_focus_bug",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_note",
+      "target": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_share_no_feedback",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_notes_2026_05_04_vision_bug_hunt_launcher_initial_focus_bug",
+      "target": "docs_superpowers_notes_2026_04_22_chromium_flake_diagnosis_launcher_focus_order_bug",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/notes/2026-05-04-vision-bug-hunt.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

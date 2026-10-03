@@ -16,15 +16,15 @@ test.describe('Satellite is the default basemap', () => {
     await routeMapTiles(page)
   })
 
-  test('toggle is pressed on first load', async ({ page }) => {
-    await page.goto('/')
+  test('toggle is active on first load', async ({ page }) => {
+    await gotoAndWaitForMap(page, '/')
     await waitForAppReady(page)
     await ensureLauncherDismissed(page)
 
-    // aria-pressed is driven by React state (satellite = useState(true))
-    // and does not require the MapLibre 'load' event.
+    // data-satellite-active is driven by React state (satellite =
+    // useState(true)) and does not require the MapLibre 'load' event.
     const toggle = page.getByTestId('satellite-toggle')
-    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
+    await expect(toggle).toHaveAttribute('data-satellite-active', 'true')
   })
 
   test('satellite raster layer is visible on first load', async ({ page }) => {
@@ -56,11 +56,11 @@ test.describe('Satellite is the default basemap', () => {
     await waitForAppReady(page)
     await ensureLauncherDismissed(page)
 
-    // Toggle click and aria-pressed check work on React state alone —
-    // no map-loaded synchronisation needed.
+    // Toggle click and data-satellite-active check work on React state
+    // alone — no map-loaded synchronisation needed.
     const toggle = page.getByTestId('satellite-toggle')
     await toggle.click()
-    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+    await expect(toggle).toHaveAttribute('data-satellite-active', 'false')
   })
 
   test('satellite toggle has hover title reflecting the click action', async ({ page }) => {

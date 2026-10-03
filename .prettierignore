@@ -5,3 +5,8 @@ package-lock.json
 # Dated historical artifacts (specs/plans/notes) — never reformat; tombstones
 # and link repairs must not churn historical bytes.
 docs/superpowers/
+
+# graphify knowledge-graph artifacts — machine-generated, tracked deliberately
+# (see 2b77f47). The lint-staged `*.{json,md}` glob would otherwise rewrite
+# graph.json / GRAPH_REPORT.md on every commit that stages them.
+graphify-out/

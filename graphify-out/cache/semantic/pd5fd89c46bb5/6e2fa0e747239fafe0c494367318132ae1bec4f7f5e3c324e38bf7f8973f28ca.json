@@ -1,0 +1,136 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_plan",
+      "label": "Country-Pinning Guess-Phase Fixes + Round-End UX Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "label": "SingleCountryPanel inGameRound prop",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": "src/components/SingleCountryPanel.tsx",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "One prop reuses the existing country panel as the round-end reveal surface \u2014 hiding Compare and Copy-link and swapping the close icon for a Continue text button \u2014 instead of building a second panel component."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_tooltip_gating",
+      "label": "Tooltip identity suppression during guess phase",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": "src/hooks/useMapInteractions.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The hover tooltip was leaking the country name during a country-pinning guess, making the game trivially winnable; the fix reads game state via useGameSessionContext and blanks the identity content only in that phase."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_guessbyname_deletion",
+      "label": "GuessByNameButton deletion",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Guess-by-name defeated the spatial premise of the game; the component and its render block were removed outright rather than hidden behind a flag."
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_round_end_continue",
+      "label": "Asymmetric round-end advance (correct auto, wrong continue-required)",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Replaces a fixed auto-advance with outcome-dependent pacing: a correct guess auto-advances after 3000ms and is skippable by key, a wrong guess sets no timer at all so the player can study the reveal and must press Continue or Escape."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_tooltip_gating",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_guessbyname_deletion",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_round_end_continue",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_round_end_continue",
+      "target": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_ingameround_prop",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_tooltip_gating",
+      "target": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_reveal_spoiler_protection",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_23_country_pinning_guess_fixes_and_ux_round_end_continue",
+      "target": "docs_superpowers_plans_archive_2026_05_02_assessment_remediation_endofround_round_ended",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-04-23-country-pinning-guess-fixes-and-ux.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

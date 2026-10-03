@@ -24,12 +24,16 @@ export function CountryColumnHeader({
           style={{ animation: 'fade-up 200ms ease-out' }}
         >
           <span className={`compare-badge compare-badge-${badgeColor} mt-1`}>{badgeLetter}</span>
-          <img
-            data-testid="country-flag"
-            src={country.flag}
-            alt={country.flagAlt || `Flag of ${country.name.common}`}
-            className="w-[56px] h-[38px] object-cover rounded-lg shadow-md shrink-0"
-          />
+          {/* Calibrated fittings (2026-08-03): ID-plate flags sit on the
+              corner-ticked .panel-flag-plate (index.css). */}
+          <span className="panel-flag-plate shrink-0">
+            <img
+              data-testid="country-flag"
+              src={country.flag}
+              alt={country.flagAlt || `Flag of ${country.name.common}`}
+              className="w-[56px] h-[38px] object-cover rounded-lg shadow-md block"
+            />
+          </span>
           <div className="min-w-0 pt-0.5">
             <h2 className="text-lg font-bold text-sand-900 dark:text-dark-50 truncate tracking-tight leading-tight">
               {country.name.common}

@@ -1,0 +1,180 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "label": "Fix CI Bugs and Tune CI Performance Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_github_actions_env_trap",
+      "label": "GITHUB_ACTIONS env trap breaks public/ file serving in e2e",
+      "file_type": "rationale",
+      "rationale": "On GitHub runners GITHUB_ACTIONS is always true, so Playwright's webServer inherits it and Vite serves public/ under /funworldmap/, making /robots.txt 404. Fix is an explicit env override on webServer, not a change to vite.config.ts, so the deployed base path stays correct.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_default_theme_system",
+      "label": "Default theme changed from dark to system",
+      "file_type": "concept",
+      "rationale": "A two-character default in getStoredTheme broke four theme e2e tests; 'system' resolves to dark under prefers-color-scheme: dark, so the dark-preference case still passes.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_country_flag_testid",
+      "label": "data-testid=country-flag to scope the panel flag locator",
+      "file_type": "concept",
+      "rationale": "locator('img') inside the panel matched 10 elements for Germany (desktop flag, mobile flag, 9 neighbour chips) and tripped Playwright strict mode; only one primary flag is visible per viewport, so a shared testid resolves uniquely.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_axe_deterministic_wait",
+      "label": "Wait on data-map-loaded (not a fixed timeout) before the axe scan",
+      "file_type": "rationale",
+      "rationale": "A 1s wallclock wait let axe scan a partially painted page on slow runners, producing transient contrast violations; waiting on the terminal data-map-loaded / data-map-error state makes the scan deterministic.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_ci_workers_two",
+      "label": "Raise Playwright CI workers from 1 to 2",
+      "file_type": "concept",
+      "rationale": "GitHub's standard Linux runner has 4 cores; serializing to 1 worker wasted 3. Two workers roughly halve e2e walltime at no extra billing since it is still one runner VM.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_vite_preview_webserver",
+      "label": "Use vite preview instead of vite dev as the e2e webServer in CI",
+      "file_type": "rationale",
+      "rationale": "Dev mode carries HMR, source maps and on-the-fly TS compilation that are dead weight in e2e; preview serves the same production bundle that ships, so tests exercise the deployed code path and start faster.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_github_actions_env_trap",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_vite_base_path",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_github_actions_env_trap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_default_theme_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_country_flag_testid",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_axe_deterministic_wait",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_ci_workers_two",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_vite_preview_webserver",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_axe_deterministic_wait",
+      "target": "docs_superpowers_plans_archive_2026_04_22_deflake_chromium_e2e_wait_for_app_ready",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_watchdog",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_axe_deterministic_wait",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-fix-ci-bugs-and-perf.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

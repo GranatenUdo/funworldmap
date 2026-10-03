@@ -14,11 +14,13 @@ interface Props {
   detail?: string
 }
 
+// Calibrated fittings (2026-08-03): hairline sand border, 8px radius,
+// transparent at rest with an ice tint on hover — no scale pop.
 const BUTTON_CLASSES = {
   panel:
-    'inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-full border border-ice-dim/20 dark:border-ice/15 bg-ice-dim/5 dark:bg-ice/5 text-ice-accessible dark:text-ice hover:bg-ice-dim/12 dark:hover:bg-ice/12 hover:scale-[1.03] active:scale-100 transition-all duration-150',
+    'inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs rounded-lg border border-sand-300/65 dark:border-dark-200/70 text-ice-accessible dark:text-ice hover:bg-ice-dim/8 dark:hover:bg-ice/8 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50',
   compare:
-    'inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-full border border-ice-dim/20 dark:border-ice/15 bg-ice-dim/5 dark:bg-ice/5 text-ice-accessible dark:text-ice hover:bg-ice-dim/12 dark:hover:bg-ice/12 transition-colors',
+    'inline-flex items-center gap-1 px-2 py-0.5 text-[11px] rounded-lg border border-sand-300/65 dark:border-dark-200/70 text-ice-accessible dark:text-ice hover:bg-ice-dim/8 dark:hover:bg-ice/8 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50',
 } as const
 
 /** A neighbouring-country chip. Codes with no canonical match (e.g. ESH, HKG,

@@ -1,0 +1,320 @@
+{
+  "nodes": [
+    {
+      "id": "claude_spec_first_workflow",
+      "label": "Spec/plan before code workflow",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Project documentation",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_e2e_flake_rules",
+      "label": "E2E rules for tests that don't flake on CI",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Writing e2e tests that don't flake on CI",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_waitfortimeout_ban",
+      "label": "Forbidden: page.waitForTimeout(N)",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_force_click_ban",
+      "label": "Forbidden: click({ force: true })",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_fuse_order_ban",
+      "label": "Forbidden: asserting Fuse.js result order with .first()",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_tab_focus_assertion_rule",
+      "label": "Forbidden: asserting focus after N Tab presses without intermediate checks",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_readiness_helpers",
+      "label": "e2e readiness helper catalog (e2e/helpers.ts)",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "Required patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_data_animation_state",
+      "label": "data-animation-state attribute contract",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns / Required patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_game_test_seams",
+      "label": "__funworldmap_game test seams over UI driving",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "Required patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_synthetic_map_clicks",
+      "label": "Synthetic map clicks via __funworldmap_map.fire",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "Required patterns",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_ci_flake_quarantine",
+      "label": "Quarantining a CI-only flake via conditional test.fixme",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Quarantining a CI-only flake",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_flake_regression_2026_04_28",
+      "label": "The 2026-04-28 chromium e2e flake regression",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "Reference: the 2026-04-28 flake regression",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_local_only_specs",
+      "label": "13 of 38 specs are local-only (CI coverage caveat)",
+      "file_type": "concept",
+      "source_file": "CLAUDE.md",
+      "source_location": "Quarantining a CI-only flake",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_when_in_doubt_ask",
+      "label": "When in doubt, ask \u2014 match action scope to the request",
+      "file_type": "rationale",
+      "source_file": "CLAUDE.md",
+      "source_location": "When in doubt",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "claude_flake_regression_2026_04_28",
+      "target": "claude_e2e_flake_rules",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Reference: the 2026-04-28 flake regression",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_e2e_flake_rules",
+      "target": "claude_waitfortimeout_ban",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_e2e_flake_rules",
+      "target": "claude_force_click_ban",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_e2e_flake_rules",
+      "target": "claude_fuse_order_ban",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_e2e_flake_rules",
+      "target": "claude_tab_focus_assertion_rule",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_waitfortimeout_ban",
+      "target": "claude_readiness_helpers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Required patterns",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_waitfortimeout_ban",
+      "target": "claude_data_animation_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Forbidden patterns",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_readiness_helpers",
+      "target": "claude_data_animation_state",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Required patterns > waitForAnimationIdle",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_synthetic_map_clicks",
+      "target": "docs_testing_game_happy_paths_ocean_click_invariant",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md",
+      "source_location": "Required patterns",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_ci_flake_quarantine",
+      "target": "docs_testing_playwright_matrix_quarantined_tests",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "CLAUDE.md",
+      "source_location": "Quarantining a CI-only flake",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_local_only_specs",
+      "target": "docs_testing_playwright_matrix_ci_testignore",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Quarantining a CI-only flake",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_e2e_flake_rules",
+      "target": "docs_testing_playwright_matrix_chromium_project",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "Before adding a new e2e test",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_spec_first_workflow",
+      "target": "docs_testing_game_happy_paths_free_country_pinning",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "CLAUDE.md",
+      "source_location": "Project documentation",
+      "weight": 1.0
+    },
+    {
+      "source": "claude_when_in_doubt_ask",
+      "target": "product_personal_bests",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "source_location": "When in doubt",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "e2e_flake_prevention_regime",
+      "label": "The e2e flake-prevention regime",
+      "nodes": [
+        "claude_waitfortimeout_ban",
+        "claude_force_click_ban",
+        "claude_readiness_helpers",
+        "claude_data_animation_state",
+        "claude_game_test_seams",
+        "claude_flake_regression_2026_04_28",
+        "docs_testing_playwright_matrix_global_reduced_motion",
+        "_github_workflows_ci_mesa_drivers"
+      ],
+      "relation": "participate_in",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "CLAUDE.md"
+    }
+  ]
+}

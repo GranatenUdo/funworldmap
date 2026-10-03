@@ -1,0 +1,159 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_retention_v1_finishing",
+      "label": "Retention v1 Finishing (Phases 4+5) Design (tombstoned)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Tombstoned 2026-06-12: the daily-puzzle/retention feature was removed in PR #97 (2026-05-30). Kept unmodified for history."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_chromium_e2e_deflake",
+      "label": "chromium E2E Deflake Prereq",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Stops normalising admin-merges. The earlier static-data-fetch-race hypothesis is explicitly wrong \u2014 countries.json and cities.json are bundled \u2014 so diagnosis from traces must come before any presumed fix, with a documented 3-day cap after which a tactical readiness-assertion fix is accepted and logged as not-root-cause."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_disjoint_project_testmatch",
+      "label": "Disjoint Playwright Project testMatch",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "chromium and chromium-gpu run different files, so a green chromium-gpu run does not validate the same tests as a red chromium run \u2014 the reason admin-merging on gpu-green was unsafe."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_dailyshareblock",
+      "label": "DailyShareBlock",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Mounted in both GameOverOverlay and DailyRevealOverlay so a share recipient can immediately re-share \u2014 that is the viral loop. Only mounts when at least one mode was played, and a cancelled native share sheet does not fire the event because it represents intent, not a button press."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_wcag_aa_axe_pass",
+      "label": "WCAG 2 AA Axe Pass",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "The previously-dropped GameOverOverlay axe test was not flaky \u2014 it surfaced real pre-existing contrast violations, so the job is fixing them, not re-stabilising infrastructure. Extends the existing accessibility spec rather than forking an a11y folder; per-surface descope is allowed but must be recorded in both the PR and the roadmap with the axe rule id."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_origin_based_share_url",
+      "label": "Origin-Based Share URL",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "buildShareText takes originUrl as a parameter so it stays pure and snapshot-testable, and runtime substitutes window.location.origin \u2014 so a missing custom domain never blocks the share flow."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_retention_v1_finishing",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_retention_program_v1",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_dailyshareblock",
+      "target": "docs_superpowers_specs_2026_04_21_retention_program_v1_design_share_text_artifact",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_dailyshareblock",
+      "target": "docs_superpowers_specs_2026_04_16_polish_keyboard_compare_design_toast_component",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_origin_based_share_url",
+      "target": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_dailyshareblock",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_disjoint_project_testmatch",
+      "target": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_chromium_e2e_deflake",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_wcag_aa_axe_pass",
+      "target": "docs_superpowers_specs_2026_04_19_assessment_remediation_design_gameoveroverlay_focus_management",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_wcag_aa_axe_pass",
+      "target": "docs_superpowers_specs_2026_04_20_a11y_contrast_pass_design_meta_color_contrast_bump",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_specs_2026_04_22_retention_v1_finishing_design_chromium_e2e_deflake",
+      "target": "docs_superpowers_specs_2026_04_17_findings_implementation_and_voting_removal_design_e2e_against_production_bundle",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/specs/2026-04-22-retention-v1-finishing-design.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

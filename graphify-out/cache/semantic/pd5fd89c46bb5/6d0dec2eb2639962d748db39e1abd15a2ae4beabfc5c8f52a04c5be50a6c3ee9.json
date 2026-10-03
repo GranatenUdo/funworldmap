@@ -1,0 +1,210 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_plan",
+      "label": "Production Readiness for 100k Monthly Uniques Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_watchdog",
+      "label": "Basemap load watchdog (BASEMAP_LOAD_TIMEOUT_MS)",
+      "file_type": "rationale",
+      "rationale": "If map.on('load') never fires the spinner spins forever with no explanation \u2014 the worst UX failure mode in the app. A 10s timer converts silent failure into an actionable retry affordance; the timer must be scheduled before the load handler, not inside it.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_error_overlay",
+      "label": "MapErrorOverlay with reason-specific copy and retry",
+      "file_type": "concept",
+      "rationale": "role=alert surfaces it to screen readers immediately; z-40 sits above the map but below any future modal; reasons are timeout / style / country-data.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_probe_basemap",
+      "label": "probeBasemap fetch probe with AbortController timeout",
+      "file_type": "concept",
+      "rationale": "Uses GET rather than HEAD because many tile providers do not implement HEAD on style endpoints; run before map init so the app can degrade knowingly.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_basemap_banner",
+      "label": "BasemapBanner degraded-mode notice",
+      "file_type": "rationale",
+      "rationale": "Real failover to a second provider needs a Stadia/MapTiler key and an ops decision; the shippable insurance is a non-blocking banner explaining the blank backdrop while bundled country polygons stay interactive. Suppressed when the full error overlay is showing to avoid double-messaging.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_init_sentry",
+      "label": "Env-gated Sentry init (VITE_SENTRY_DSN)",
+      "file_type": "concept",
+      "rationale": "No-op without a DSN so the repo stays runnable by forks and in dev; tracesSampleRate 0 keeps the free tier viable at launch scale.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_seo_metadata",
+      "label": "Open Graph / Twitter Card / preload / canonical head metadata",
+      "file_type": "concept",
+      "rationale": "OG and Twitter image and URL tags must be absolute because scrapers do not resolve relative paths; font preload kills FOUT; canonical tells Google which URL is authoritative across hash-route variants.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_robots_sitemap",
+      "label": "robots.txt and single-URL sitemap.xml",
+      "file_type": "rationale",
+      "rationale": "Hash-fragment deep links (#FRA) are not crawlable by any search engine, so the sitemap deliberately contains exactly one URL; adding per-country entries would inflate it with URLs that all resolve to the root.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_mit_license",
+      "label": "MIT LICENSE for repo code only",
+      "file_type": "rationale",
+      "rationale": "The README called the project 'free' but without a LICENSE that is unenforceable; MIT covers this repo's code while bundled data, fonts and flags retain upstream licenses documented in docs/systems/data.md.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_watchdog",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_watchdog",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_error_overlay",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_probe_basemap",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_basemap_banner",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_basemap_banner",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_error_overlay",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_init_sentry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_seo_metadata",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_robots_sitemap",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_mit_license",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_15_bugfix_and_proper_tests_two_project_split",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "map_reliability_degradation_chain",
+      "label": "Map reliability chain: probe, watchdog, overlay, banner",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_probe_basemap",
+        "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_watchdog",
+        "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_map_error_overlay",
+        "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_basemap_banner",
+        "docs_superpowers_plans_archive_2026_04_18_deferred_cleanups_stale_closure_fix"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-production-readiness-100k.md"
+    }
+  ]
+}

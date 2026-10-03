@@ -1,0 +1,135 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_workstream_a_adrs_plan",
+      "label": "Workstream A \u2014 ADRs & doc reconcile Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "line 1",
+      "rationale": "Pure documentation: four foundational ADRs backfilled into an empty docs/adr/, plus a README note reconciling the repo's existing 'no backfill' guidance with this deliberate foundational backfill, plus two stale doc references that the corrected ADR 0001 would otherwise contradict.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0001_maplibre_webgl2_basemap",
+      "label": "ADR 0001 \u2014 MapLibre GL with a WebGL2-required vector basemap",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 1",
+      "rationale": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0002_url_hash_single_source_of_truth",
+      "label": "ADR 0002 \u2014 URL hash as the single source of truth for selection and routing",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 1",
+      "rationale": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0003_usegamesession_reducer_model",
+      "label": "ADR 0003 \u2014 Single useGameSession reducer with a discriminated-union action set",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 1",
+      "rationale": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0004_daily_content_data_branch",
+      "label": "ADR 0004 \u2014 Daily content served from an orphan data branch",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 1",
+      "rationale": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_readme_reconcile",
+      "label": "ADR README reconciliation",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 2",
+      "rationale": "The existing README told authors not to backfill ADRs; backfilling four foundational records contradicts that unless the README explicitly carves out the foundational case, so a one-paragraph note is added rather than silently violating the repo's own filing convention.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0004_daily_content_data_branch",
+      "target": "docs_superpowers_plans_archive_2026_05_29_daily_content_data_branch_orphan_data_branch",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "File Structure \u2014 records the orphan data-branch daily-content decision (this session)",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_readme_reconcile",
+      "target": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_workstream_a_adrs_plan",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 2",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0003_usegamesession_reducer_model",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_gamecontroller_extraction_plan",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 1 ADR 3 \u2014 the extraction leaves the reducer untouched as the regression net",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0002_url_hash_single_source_of_truth",
+      "target": "docs_superpowers_plans_archive_2026_05_14_game_controller_extraction_usehashgamerouter",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md",
+      "source_location": "Task 1 ADR 2",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "four_foundational_adrs",
+      "label": "The four foundational ADRs backfilled in Workstream A",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0001_maplibre_webgl2_basemap",
+        "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0002_url_hash_single_source_of_truth",
+        "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0003_usegamesession_reducer_model",
+        "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_0004_daily_content_data_branch",
+        "docs_superpowers_plans_archive_2026_05_30_workstream_a_adrs_adr_readme_reconcile"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-30-workstream-a-adrs.md"
+    }
+  ]
+}

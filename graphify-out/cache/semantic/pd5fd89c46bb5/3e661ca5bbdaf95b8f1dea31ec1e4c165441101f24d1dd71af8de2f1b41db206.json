@@ -1,0 +1,101 @@
+{
+  "nodes": [
+    {
+      "id": "index_theme_bootstrap_script",
+      "label": "Inline theme bootstrap script (funworldmap-theme, FOUC guard)",
+      "file_type": "code",
+      "source_file": "index.html",
+      "source_location": "head inline script",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "index_cf_beacon",
+      "label": "Cloudflare Web Analytics beacon (VITE_CF_WA_TOKEN)",
+      "file_type": "code",
+      "source_file": "index.html",
+      "source_location": "head script",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "index_outfit_font_preload",
+      "label": "Outfit latin woff2 font preload",
+      "file_type": "code",
+      "source_file": "index.html",
+      "source_location": "head link preload",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "index_social_meta",
+      "label": "Canonical/OpenGraph/Twitter meta and theme-color pair",
+      "file_type": "code",
+      "source_file": "index.html",
+      "source_location": "head meta",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "index_theme_bootstrap_script",
+      "target": "design_space_dark_rule",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "index.html",
+      "source_location": "head inline script",
+      "weight": 1.0
+    },
+    {
+      "source": "index_theme_bootstrap_script",
+      "target": "docs_testing_game_unhappy_paths_f2_webgl_context_loss",
+      "relation": "conceptually_related_to",
+      "confidence": "AMBIGUOUS",
+      "confidence_score": 0.2,
+      "source_file": "index.html",
+      "source_location": "head inline script",
+      "weight": 1.0
+    },
+    {
+      "source": "index_cf_beacon",
+      "target": "_github_workflows_deploy_build_job",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "index.html",
+      "source_location": "head script data-cf-beacon token",
+      "weight": 1.0
+    },
+    {
+      "source": "index_cf_beacon",
+      "target": "product_no_barriers_ever",
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "index.html",
+      "source_location": "head script",
+      "weight": 1.0
+    },
+    {
+      "source": "index_social_meta",
+      "target": "product_funworldmap",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "index.html",
+      "source_location": "head meta",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

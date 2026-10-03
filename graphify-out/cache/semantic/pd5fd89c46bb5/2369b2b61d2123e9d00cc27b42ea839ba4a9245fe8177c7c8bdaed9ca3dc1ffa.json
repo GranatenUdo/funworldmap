@@ -1,0 +1,153 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_plan",
+      "label": "City Guessing Game Mode Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_city_guessing",
+      "label": "City Guessing mode (fixed 10 rounds, any map click counts)",
+      "file_type": "concept",
+      "rationale": "Distance-scored via round(100 * exp(-dKm/500)) \u2014 a tighter decay than country pinning because city targets are point features; reveal shows marker, line and fitBounds.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_discriminated_round_spec",
+      "label": "Discriminated RoundSpec / GuessInput / GuessOutcome unions",
+      "file_type": "rationale",
+      "rationale": "Three minimal generalisations let a second mode coexist: tagged round/reveal types, a reducer that honours outcome.endsGame instead of hard-coding lives, and a maxRounds field. Controller owns endsGame so modes stay session-state-free.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_cities_pipeline",
+      "label": "Build-time cities.json from Natural Earth Populated Places",
+      "file_type": "concept",
+      "rationale": "Fetched once by scripts/fetch-cities.ts and committed (~75 KB) rather than fetched at runtime, keeping the app backend-free and offline-capable.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_play_menu",
+      "label": "PlayMenu mode-picker popover",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_round_counter",
+      "label": "RoundCounter HUD badge for fixed-round modes",
+      "file_type": "concept",
+      "rationale": "HudShell renders RoundCounter instead of LivesIndicator when maxRounds is set, and hides the streak badge, so one shell serves both an endless and a fixed-length mode.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_framework",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_discriminated_round_spec",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_reducer",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_city_guessing",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_scoring",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_city_guessing",
+      "target": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_cities_pipeline",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_round_counter",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hud",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_play_menu",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hash_union",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "game_mode_framework_generalisation",
+      "label": "Game framework generalisation across country-pinning, city-guessing and daily play",
+      "nodes": [
+        "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_framework",
+        "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_session_reducer",
+        "docs_superpowers_plans_archive_2026_04_19_city_guessing_mode_discriminated_round_spec",
+        "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_2_daily_play_attempts_extension",
+        "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hash_union"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-19-city-guessing-mode.md"
+    }
+  ]
+}

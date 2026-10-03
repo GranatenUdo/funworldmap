@@ -5,7 +5,7 @@ import { CompareFieldRow } from './CompareFieldRow'
 import { BorderChip } from './BorderChip'
 import { COMPARE_FIELDS } from '../lib/compareFields'
 import { dispatchToast } from '../lib/toast'
-import { TOUCH_TARGET_FROM_36, TOUCH_TARGET_FROM_32 } from '../lib/layoutConstants'
+import { TOUCH_TARGET_FROM_32 } from '../lib/layoutConstants'
 import type { CompareColumn } from '../lib/compareMapClick'
 import { computeFieldSourceMarkers } from '../lib/fieldSourceMarkers'
 import { SourceMarker } from './SourceMarker'
@@ -92,11 +92,11 @@ export function CompareCountryPanel({
           <button
             type="button"
             onClick={onShareLink}
-            className={`p-2 rounded-xl hover:bg-sand-200 dark:hover:bg-dark-300 text-sand-600 dark:text-dark-100 transition-colors ${TOUCH_TARGET_FROM_36}`}
+            className={`p-2 rounded-lg border border-sand-300/65 dark:border-dark-200/70 hover:bg-sand-200/60 dark:hover:bg-dark-300/60 text-sand-600 dark:text-dark-100 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 ${TOUCH_TARGET_FROM_32}`}
             aria-label="Copy link to this comparison"
             title="Copy link"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -113,7 +113,7 @@ export function CompareCountryPanel({
             type="button"
             onClick={onExitCompare}
             data-testid="exit-compare"
-            className={`px-3 py-1.5 rounded-xl text-sm font-medium text-ice-accessible dark:text-ice hover:bg-sand-200 dark:hover:bg-dark-300 transition-colors ${TOUCH_TARGET_FROM_32}`}
+            className={`px-2.5 py-1.5 rounded-lg border border-sand-300/65 dark:border-dark-200/70 text-sm font-medium text-ice-accessible dark:text-ice hover:bg-ice-dim/8 dark:hover:bg-ice/8 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 ${TOUCH_TARGET_FROM_32}`}
           >
             Exit compare
           </button>
@@ -184,24 +184,24 @@ export function CompareCountryPanel({
             >
               {(
                 [
-                  { c: country, letter: 'A', color: 'a' },
-                  { c: compareWith, letter: 'B', color: 'b' },
+                  { side: country, letter: 'A', color: 'a' },
+                  { side: compareWith, letter: 'B', color: 'b' },
                 ] as const
-              ).map(({ c, letter, color }) => (
+              ).map(({ side, letter, color }) => (
                 <div key={letter} className="flex items-center gap-2 min-w-0">
                   <span className={`compare-badge compare-badge-${color}`}>{letter}</span>
                   <img
                     data-testid="country-flag"
-                    src={c.flag}
-                    alt={c.flagAlt || `Flag of ${c.name.common}`}
+                    src={side.flag}
+                    alt={side.flagAlt || `Flag of ${side.name.common}`}
                     className="w-7 h-5 object-cover rounded-sm shadow-sm shrink-0"
                   />
                   <h2 className="text-sm font-bold text-sand-900 dark:text-dark-50 truncate leading-tight">
-                    {c.name.common}
+                    {side.name.common}
                   </h2>
-                  {c.capital.length > 0 && (
+                  {side.capital.length > 0 && (
                     <span className="text-xs text-ice-accessible dark:text-ice truncate">
-                      {c.capital.join(', ')}
+                      {side.capital.join(', ')}
                     </span>
                   )}
                 </div>
@@ -219,18 +219,18 @@ export function CompareCountryPanel({
               ))}
               {(
                 [
-                  { c: country, column: 'a' as const },
-                  { c: compareWith, column: 'b' as const },
+                  { side: country, column: 'a' as const },
+                  { side: compareWith, column: 'b' as const },
                 ] as const
               ).map(
-                ({ c, column }) =>
-                  c.borders.length > 0 && (
-                    <div key={c.cca3}>
+                ({ side, column }) =>
+                  side.borders.length > 0 && (
+                    <div key={side.cca3}>
                       <div className="text-[11px] font-medium uppercase tracking-wider text-ice-accessible dark:text-ice mb-1.5">
-                        Borders — {c.name.common}
+                        Borders — {side.name.common}
                       </div>
                       <div className="flex flex-wrap gap-1">
-                        {c.borders.map((code) => (
+                        {side.borders.map((code) => (
                           <BorderChip
                             key={code}
                             code={code}

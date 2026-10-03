@@ -1,0 +1,201 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "label": "Review fixes batch 2 design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Four fix-shaped streams land now; per-country political tinting is deferred to its own design-first cycle (batch 3) because it needs genuine palette exploration. The selectionOriginRef threading simplification is consciously declined, not deferred \u2014 the mechanism works, is tested and documented, so collapsing it is churn without behavior change."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_basemap_visibility_owner",
+      "label": "applyBasemapLayerVisibility single owner",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Hiding symbol layers during play would be undone by useSatelliteMode's own layer flipping on a mid-game satellite toggle. Following the repo's single-owner pattern, basemap layer visibility gets ONE owner with one rule: a non-custom layer is visible iff !satellite, and symbol layers additionally require !playing. Tested as a truth table plus the toggle-mid-game ordering case."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_satellite_border_emphasis",
+      "label": "Satellite border emphasis while playing",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 1",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "applyCountryBaselinePaint, already the single owner of the border/fill baseline, gains a gameActive input; border width was previously set only at layer creation, so the owner starts writing line-width per mode change. Goal: active play never shows the answer (no labels in map view) while borders stay legible in satellite."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_panel_polish",
+      "label": "Panel polish \u2014 five verified defects",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 2",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Title truncation (line-clamp-2 instead of truncate), region-chip mid-phrase wrap, border chips for six non-selectable neighbors (ESH/GIB/GUF/HKG/MAC plus a static UNK->Kosovo fallback) so no raw code shows, a timezones '+N more' toggle, and dropping the focus ring from the programmatically-focused heading (Chromium matches :focus-visible for script focus, but the heading is never keyboard-focusable so the ring communicates nothing)."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_compare_camera",
+      "label": "Compare-view camera framing both countries",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 3",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "cameraForBounds over the two centroids with 80px padding (absorbing centroid-vs-outline underframing) plus the panel-aware offset. Exiting compare deliberately leaves the camera in place, following the preserve-the-user's-view philosophy. An antimeridian pair is asserted to produce a valid camera \u2014 verified, not assumed."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_layout_constants_drift_alarm",
+      "label": "Layout constants with a class-string drift alarm",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Tailwind class literals cannot consume TS constants, so a unit test asserts the panel components' class strings still contain the constant-derived values. Geometry drift then fails a test instead of silently mis-framing the camera. The test is intentionally brittle \u2014 that is its job \u2014 so its failure message must name which constant to update."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_extrusion_fade",
+      "label": "Zoom-interpolated extrusion fade",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 4",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Replaces batch 1's hard maxzoom:6 cliff with fill-extrusion-height interpolated from full height at z4.5 to 0 at z6.5 plus maxzoom:7 as a backstop, so the lift shrinks smoothly during flights instead of vanishing in one frame. EXTRUSION_MAX_ZOOM is exported so tests stop pinning a literal."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_spec",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Context \u2014 batch 1: PR #129",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_basemap_visibility_owner",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_satellite_border_emphasis",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 1",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_basemap_visibility_owner",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_baseline_paint_reconciler",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Following the repo's #111 single-owner pattern",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_satellite_border_emphasis",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_baseline_paint_reconciler",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "applyCountryBaselinePaint gains a gameActive input",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_panel_polish",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 2",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_compare_camera",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 3",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_compare_camera",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_panel_aware_framing",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "then apply the panel-aware screen offset",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_layout_constants_drift_alarm",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 4",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_extrusion_fade",
+      "target": "docs_superpowers_specs_2026_07_10_review_fixes_batch_1_design_extrusion_maxzoom",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 4 \u2014 replace the hard maxzoom:6 cliff",
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_07_10_review_fixes_batch_2_design_spec",
+      "target": "docs_superpowers_specs_2026_06_12_review_followups_design_shared_test_utilities",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-07-10-review-fixes-batch-2-design.md",
+      "source_location": "Stream 4 \u2014 fake-map consolidation into src/test/fakeMapRef.ts",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

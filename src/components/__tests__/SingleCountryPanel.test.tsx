@@ -338,10 +338,12 @@ describe('SingleCountryPanel — labeled compare entry (C5)', () => {
     )
   }
 
-  it('desktop: icon + "Compare" text pill, aria-label preserved, A13 constant consumed', () => {
+  it('desktop: icon + "Compare" text fitting, aria-label preserved, A13 constant consumed', () => {
     const { getByRole } = renderAt(true)
     // aria-label overrides content — every e2e locator keyed on this name
     // keeps working (WCAG 2.5.3 holds: the name contains the visible text).
+    // Calibrated header (2026-08-03): the pill became an 8px-radius hairline
+    // fitting; the ~32px box consumes TOUCH_TARGET_FROM_32.
     const btn = getByRole('button', { name: 'Compare with another country' })
     expect(btn.textContent).toBe('Compare')
     expect(btn.className).toContain('rounded-full')

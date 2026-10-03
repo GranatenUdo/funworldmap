@@ -1,7 +1,15 @@
-import { createContext, useContext, useMemo, useRef, type ReactNode, type MutableRefObject } from 'react'
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+  type ReactNode,
+  type MutableRefObject,
+} from 'react'
 import type maplibregl from 'maplibre-gl'
 
 interface MapRefs {
+  retryRef: MutableRefObject<(() => void) | null>
   mapRef: MutableRefObject<maplibregl.Map | null>
   tooltipRef: MutableRefObject<HTMLDivElement | null>
 }
@@ -9,11 +17,12 @@ interface MapRefs {
 const MapContext = createContext<MapRefs | null>(null)
 
 export function MapProvider({ children }: { children: ReactNode }) {
+  const retryRef = useRef<(() => void) | null>(null)
   const mapRef = useRef<maplibregl.Map | null>(null)
   const tooltipRef = useRef<HTMLDivElement | null>(null)
   // Stable value — refs are stable; an empty deps array keeps the context
   // identity constant across MapProvider re-renders so consumers don't churn.
-  const value = useMemo(() => ({ mapRef, tooltipRef }), [])
+  const value = useMemo(() => ({ mapRef, tooltipRef, retryRef }), [])
   return <MapContext.Provider value={value}>{children}</MapContext.Provider>
 }
 

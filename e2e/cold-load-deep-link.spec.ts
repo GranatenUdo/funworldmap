@@ -7,6 +7,7 @@ test.describe('Cold-load deep links bootstrap their target state', () => {
     await waitForAppReady(page)
     await waitForGameTestHook(page)
 
+    await expect.poll(async () => (await getSession(page)).status).toBe('playing')
     const session = await getSession(page)
     expect(session.status).toBe('playing')
     expect(session.modeId).toBe('country-pinning')
@@ -21,6 +22,7 @@ test.describe('Cold-load deep links bootstrap their target state', () => {
     await waitForAppReady(page)
     await waitForGameTestHook(page)
 
+    await expect.poll(async () => (await getSession(page)).status).toBe('playing')
     const session = await getSession(page)
     expect(session.status).toBe('playing')
     expect(session.modeId).toBe('city-guessing')

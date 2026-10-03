@@ -1,0 +1,120 @@
+{
+  "nodes": [
+    {
+      "id": "docs_adr_0002_url_hash_single_source_of_truth",
+      "label": "ADR 0002: URL hash as the single source of truth for selection and routing",
+      "file_type": "document",
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Deep-linkable selection (#FRA), shareable game routes (#game/<mode>), and working back/forward were required on a static host with no server-side routing. Rejected React state/context only (no deep links) and a router library like React Router (path-oriented, heavier than needed \u2014 YAGNI). Status Accepted, 2026-05-30."
+    },
+    {
+      "id": "docs_adr_0002_url_hash_single_source_of_truth_hashstate",
+      "label": "hashState module (parseHash / writeHash)",
+      "file_type": "concept",
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Parsing and serialization live in one module (src/lib/hashState.ts) because routing is hand-rolled string parsing rather than a router library \u2014 minimal surface, but the rules must stay authoritative in one place."
+    },
+    {
+      "id": "docs_adr_0002_url_hash_single_source_of_truth_useselectedcountry",
+      "label": "useSelectedCountry re-derivation from hash",
+      "file_type": "rationale",
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Components hold no independent selection state; the hook re-derives from the hash on every hashchange and applies deselection itself, because deselect clears the hash via history.replaceState, which fires no hashchange event."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_adr_0002_url_hash_single_source_of_truth",
+      "target": "docs_adr_0002_url_hash_single_source_of_truth_hashstate",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0002_url_hash_single_source_of_truth",
+      "target": "docs_adr_0002_url_hash_single_source_of_truth_useselectedcountry",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0002_url_hash_single_source_of_truth",
+      "target": "docs_systems_overview_selection_flow",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0002_url_hash_single_source_of_truth",
+      "target": "docs_systems_ui_layout_deep_linking",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0002_url_hash_single_source_of_truth_useselectedcountry",
+      "target": "docs_systems_overview_hook_responsibilities",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_adr_0002_url_hash_single_source_of_truth",
+      "target": "docs_systems_overview_state_management",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md",
+      "source_location": null,
+      "weight": 1
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "hash_as_single_source_of_truth_flow",
+      "label": "Every selection and routing path converges on the URL hash",
+      "nodes": [
+        "docs_adr_0002_url_hash_single_source_of_truth",
+        "docs_systems_overview_selection_flow",
+        "docs_systems_data_bidirectional_lookup",
+        "docs_systems_ui_layout_deep_linking",
+        "docs_systems_ui_layout_game_routes",
+        "docs_systems_map_rendering_interaction_model"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/adr/0002-url-hash-single-source-of-truth.md"
+    }
+  ]
+}

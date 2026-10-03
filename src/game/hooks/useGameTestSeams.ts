@@ -75,6 +75,7 @@ export function useGameTestSeams({
           kind: 'city-guessing',
           targetId: city.id,
           targetName: city.name,
+          targetCountryCca3: city.countryCca3,
           targetCountryName: city.countryName,
           targetCountryFlag: city.countryFlag,
           targetCentroid: centroidFromLatLng(city.latlng),

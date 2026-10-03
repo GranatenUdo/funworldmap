@@ -7,6 +7,7 @@ const round: CityRoundSpec = {
   kind: 'city-guessing',
   targetId: 'FRA-paris',
   targetName: 'Paris',
+  targetCountryCca3: 'FRA',
   targetCountryName: 'France',
   targetCountryFlag: 'flags/FR.svg',
   targetCentroid: paris,

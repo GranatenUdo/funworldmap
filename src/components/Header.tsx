@@ -39,7 +39,7 @@ export default function Header({
         <div className="pointer-events-auto hidden lg:flex items-baseline mr-4 shrink-0">
           <span
             data-testid="header-wordmark"
-            className="text-lg font-bold tracking-wide text-ice-accessible dark:text-ice drop-shadow-sm"
+            className="text-lg font-bold tracking-wide text-ice drop-shadow-sm"
           >
             funworldmap
           </span>
@@ -71,15 +71,18 @@ export default function Header({
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M8 5v14l11-7z" />
               </svg>
-              <span className="hidden sm:inline">Play</span>
+              <span className="inline">Play</span>
             </button>
           )}
 
           <button
             onClick={onSatelliteToggle}
+            // No aria-pressed: the accessible name already changes with state
+            // ("Switch to map view" ⇄ "Switch to satellite view"), and a
+            // changing action label PLUS a pressed state reads ambiguously
+            // (C-2). Tests read data-satellite-active instead.
             aria-label={satellite ? 'Switch to map view' : 'Switch to satellite view'}
             title={satellite ? 'Switch to map view' : 'Switch to satellite view'}
-            aria-pressed={satellite}
             data-satellite-active={satellite}
             className={`w-10 h-10 rounded-xl backdrop-blur-sm border flex items-center justify-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ice-dim/50 dark:focus-visible:ring-ice/50 ${
               satellite

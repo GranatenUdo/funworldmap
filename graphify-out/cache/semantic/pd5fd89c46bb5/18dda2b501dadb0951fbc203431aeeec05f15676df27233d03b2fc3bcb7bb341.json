@@ -1,0 +1,61 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_18_daily_already_played_ux_daily_already_played_ux_plan",
+      "label": "Daily-already-played UX Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-05-18-daily-already-played-ux.md",
+      "source_location": "line 3",
+      "rationale": "The played-state card read as 'the game instantly ended'; the fix gives a one-tap keep-playing affordance from both the played card and the reveal overlay. Tombstoned 2026-06-12: the daily feature it built was removed in PR #97.",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_05_18_daily_already_played_ux_play_unlimited_cta",
+      "label": "Play-unlimited CTA (card + reveal overlay)",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-05-18-daily-already-played-ux.md",
+      "source_location": "Tasks 1-2",
+      "rationale": "Teal primary 'Play City'/'Play Country' button demotes See-reveal to a small emerald secondary row, and DailyRevealOverlay shifts initial focus from the header X to the new Play button so keyboard users land on the forward action. Target mode resolves as revealState.modeId ?? readLastMode().",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_18_daily_already_played_ux_play_unlimited_cta",
+      "target": "docs_superpowers_plans_archive_2026_05_17_ux_smoothening_unlimited_vocabulary_rename",
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "docs/superpowers/plans/archive/2026-05-18-daily-already-played-ux.md",
+      "source_location": "Architecture \u2014 'Play unlimited rounds' CTA",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_18_daily_already_played_ux_daily_already_played_ux_plan",
+      "target": "docs_superpowers_plans_archive_2026_05_30_remove_daily_remove_daily_plan",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-05-18-daily-already-played-ux.md",
+      "source_location": "line 1 \u2014 Tombstone: removed in PR #97",
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_05_14_tier_1_continuation_panel_open_focus_management",
+      "target": "docs_superpowers_plans_archive_2026_05_18_daily_already_played_ux_play_unlimited_cta",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "docs/superpowers/plans/archive/2026-05-18-daily-already-played-ux.md",
+      "source_location": "Task 2 \u2014 both move initial focus to the meaningful landing target on overlay/panel open",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

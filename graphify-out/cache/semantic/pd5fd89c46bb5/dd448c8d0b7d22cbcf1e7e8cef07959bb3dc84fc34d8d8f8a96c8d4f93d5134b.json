@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    {
+      "id": "_github_workflows_deploy_build_job",
+      "label": "Deploy workflow build job (Vite build with secret env)",
+      "file_type": "code",
+      "source_file": ".github/workflows/deploy.yml",
+      "source_location": "jobs.build",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "_github_workflows_deploy_deploy_job",
+      "label": "Deploy workflow GitHub Pages deploy job",
+      "file_type": "code",
+      "source_file": ".github/workflows/deploy.yml",
+      "source_location": "jobs.deploy",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [],
+  "hyperedges": []
+}

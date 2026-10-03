@@ -1,0 +1,117 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_plan",
+      "label": "Retention Program v1 Phase 1: Foundation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_tombstone",
+      "label": "Daily-puzzle retention program tombstone (removed in PR #97)",
+      "file_type": "rationale",
+      "rationale": "Marked 2026-06-12: the daily-puzzle/retention feature these plans built was removed on 2026-05-30. The plans are kept unmodified for history and must not be implemented from.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_two_layer_analytics",
+      "label": "Two-layer Cloudflare analytics (Web Analytics + Worker/Analytics Engine)",
+      "file_type": "rationale",
+      "rationale": "CF Web Analytics covers page views cookie-free but its free tier has no custom events, so a Worker writing to Analytics Engine handles custom events; both run at $0/month for realistic v1 traffic.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_daily_content_pipeline",
+      "label": "Deterministic daily-content pipeline (picker, validator, index generator)",
+      "file_type": "concept",
+      "rationale": "A GitHub Actions cron emits a rolling public/daily/index.json from curated pools; a CI validator fails PRs whose pool references do not resolve in the bundled data.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_daily_hash_variant",
+      "label": "daily variant added to the HashState union",
+      "file_type": "concept",
+      "rationale": "Phase 1 ships the URL shape but the handler only redirects to / while firing deep_link_opened \u2014 zero user-visible change, purely additive.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_analytics_wrapper",
+      "label": "src/lib/analytics.ts track() wrapper with DNT and test-mode no-ops",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_tombstone",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_two_layer_analytics",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_analytics_wrapper",
+      "target": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_two_layer_analytics",
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_21_retention_program_v1_phase_1_foundation_daily_hash_variant",
+      "target": "docs_superpowers_plans_archive_2026_04_18_country_pinning_game_hash_union",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-21-retention-program-v1-phase-1-foundation.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}

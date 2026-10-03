@@ -1,0 +1,62 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_spec",
+      "label": "Preserve user zoom on country selection design",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-05-17-country-click-preserve-zoom-design.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_zoom_clamp",
+      "label": "Monotonic zoom clamp in flyToCountry",
+      "file_type": "concept",
+      "source_file": "docs/superpowers/specs/2026-05-17-country-click-preserve-zoom-design.md",
+      "source_location": "Item 1, src/lib/flyToCountry.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Math.max(map.getZoom(), zoomFromArea(area)) rather than skipping flyTo when computed <= current: a no-op would also skip the re-center, and clicking a country in the viewport corner should still bring it to centre \u2014 just without backing the camera out."
+    },
+    {
+      "id": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_search_autofit_tradeoff",
+      "label": "Search auto-fit tradeoff of the uniform clamp",
+      "file_type": "rationale",
+      "source_file": "docs/superpowers/specs/2026-05-17-country-click-preserve-zoom-design.md",
+      "source_location": "Tradeoff: search / hash auto-fit",
+      "source_url": null,
+      "captured_at": null,
+      "author": "Tobias Ens (with Claude)",
+      "contributor": null,
+      "rationale": "Accepted cost: searching Brazil while zoomed into Paris lands at z9 over Sao Paulo instead of auto-fitting the country. Scoping the clamp to clicks would mean threading an origin argument through three modules to fix a workflow with no telemetry. Documented migration path: thread origin and gate the Math.max on origin === 'click'."
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_spec",
+      "target": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_zoom_clamp",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-country-click-preserve-zoom-design.md",
+      "source_location": null,
+      "weight": 1
+    },
+    {
+      "source": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_zoom_clamp",
+      "target": "docs_superpowers_specs_2026_05_17_country_click_preserve_zoom_design_search_autofit_tradeoff",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1,
+      "source_file": "docs/superpowers/specs/2026-05-17-country-click-preserve-zoom-design.md",
+      "source_location": "Tradeoff",
+      "weight": 1
+    }
+  ],
+  "hyperedges": []
+}

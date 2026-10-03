@@ -234,12 +234,16 @@ describe('useFirstVisitHint', () => {
   })
 
   describe('hintCopy', () => {
-    it('gives fine pointers the click + slash copy', () => {
-      expect(hintCopy('explore', true)).toBe('Click a country to explore — or press / to search')
+    it('leads with Play on fine pointers, click phrasing for the explore clause (C-12)', () => {
+      expect(hintCopy('explore', true)).toBe(
+        'Hit Play for two quick geography games — or click any country to explore',
+      )
     })
 
-    it('gives coarse pointers tap copy without the slash clause', () => {
-      expect(hintCopy('explore', false)).toBe('Tap a country to explore')
+    it('leads with Play on coarse pointers, tap phrasing throughout (C-12/A14)', () => {
+      expect(hintCopy('explore', false)).toBe(
+        'Tap Play for two quick geography games — or tap any country to explore',
+      )
     })
 
     it('game copy is pointer-independent', () => {

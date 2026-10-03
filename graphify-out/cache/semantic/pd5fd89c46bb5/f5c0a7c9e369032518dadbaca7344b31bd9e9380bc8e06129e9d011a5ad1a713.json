@@ -1,0 +1,136 @@
+{
+  "nodes": [
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_plan",
+      "label": "Rename to funworldmap + Publish to Private GitHub Repo Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_rename",
+      "label": "polworldmap to funworldmap rename",
+      "file_type": "concept",
+      "rationale": "Pure rename with no behaviour change; the local directory stays E:\\polworldmap so the Claude memory path does not break.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_runtime_identifiers",
+      "label": "Runtime identifiers renamed in lockstep with their tests",
+      "file_type": "rationale",
+      "rationale": "window.__funworldmap_map, the funworldmap:toast custom event, funworldmap-hint-shown and funworldmap-theme storage keys all have test counterparts; renaming code and tests in one commit keeps every intermediate commit green.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_history_preserved",
+      "label": "Historical plans and specs deliberately not renamed",
+      "file_type": "rationale",
+      "rationale": "Files under docs/superpowers/plans/ and specs/ record work done under the polworldmap name; rewriting them would misrepresent the history, so the rename explicitly excludes them.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_pages_actions_source",
+      "label": "GitHub Pages enabled with GitHub Actions as source",
+      "file_type": "concept",
+      "rationale": "actions/deploy-pages@v4 requires Pages configured with build_type=workflow; until that one-time setting is applied the deploy job fails with 'Pages site not yet created' even though CI is green.",
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    }
+  ],
+  "edges": [
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_production_readiness_100k_seo_metadata",
+      "relation": "cites",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_plan",
+      "target": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_rename",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_rename",
+      "target": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_runtime_identifiers",
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_history_preserved",
+      "target": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_rename",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_pages_actions_source",
+      "target": "docs_superpowers_plans_archive_2026_04_15_phase_0_repository_foundation_deploy_workflow",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_runtime_identifiers",
+      "target": "docs_superpowers_plans_archive_2026_04_16_polish_keyboard_compare_toast",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docs_superpowers_plans_archive_2026_04_16_rename_and_publish_funworldmap_runtime_identifiers",
+      "target": "docs_superpowers_plans_archive_2026_04_16_fix_ci_bugs_and_perf_default_theme_system",
+      "relation": "shares_data_with",
+      "confidence": "INFERRED",
+      "confidence_score": 0.95,
+      "source_file": "docs/superpowers/plans/archive/2026-04-16-rename-and-publish-funworldmap.md",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}
