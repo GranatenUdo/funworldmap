@@ -17,7 +17,7 @@ import {
   makePointReveal,
   makeSession,
 } from '../../shared/__tests__/factories'
-import { byCca3Fixture } from './fixtures'
+import { byCca3Fixture, countryByCca3Fixture } from './fixtures'
 import { createFakeMapRef } from '../../../test/fakeMapRef'
 import { stubMatchMedia } from '../../../test/matchMediaStub'
 
@@ -27,6 +27,7 @@ interface BuildRevealArgsOverrides {
   session?: RevealArgs['session']
   mapRef?: RevealArgs['mapRef']
   byCca3?: RevealArgs['byCca3']
+  countryByCca3?: RevealArgs['countryByCca3']
   submitGuessInput?: RevealArgs['submitGuessInput']
 }
 
@@ -35,6 +36,7 @@ function buildRevealArgs(overrides: BuildRevealArgsOverrides = {}): RevealArgs {
     session: overrides.session ?? makeSession(),
     mapRef: overrides.mapRef ?? createFakeMapRef().ref,
     byCca3: overrides.byCca3 ?? byCca3Fixture,
+    countryByCca3: overrides.countryByCca3 ?? countryByCca3Fixture,
     submitGuessInput: overrides.submitGuessInput ?? vi.fn(),
   }
 }
@@ -88,7 +90,7 @@ describe('useRevealMapEffects', () => {
     cleanup()
   })
 
-  it('paints green correct-country border on round-ended (correct country reveal)', () => {
+  it('paints green correct-country border on country-reveal-border, keyed by ccn3', () => {
     const fake = createFakeMapRef()
     // Correct reveal with clickedCca3=null avoids triggering the arc-animation
     // path (computeRevealAnimationPlan returns null), so the only setFilter /
@@ -100,19 +102,21 @@ describe('useRevealMapEffects', () => {
       lastOutcome: makeOutcome(reveal),
     })
     renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
-    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-hover-border', [
+    // Feature ids are ccn3 strings ("250" = France). The reveal used to filter
+    // on the cca3 ("FRA"), which matched no feature, so it never drew.
+    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-reveal-border', [
       '==',
       ['get', 'id'],
-      'FRA',
+      '250',
     ])
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
-      'country-hover-border',
+      'country-reveal-border',
       'line-color',
       REVEAL_CORRECT,
     )
   })
 
-  it('paints signal wrong-country border on round-ended (wrong country reveal)', () => {
+  it('paints signal wrong-country border on country-reveal-border (wrong country reveal)', () => {
     const fake = createFakeMapRef()
     const reveal = makeCountryReveal({ correct: false, clickedCca3: null, distanceKm: null })
     const session = makeSession({
@@ -122,10 +126,49 @@ describe('useRevealMapEffects', () => {
     })
     renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
-      'country-hover-border',
+      'country-reveal-border',
       'line-color',
       REVEAL_WRONG,
     )
+  })
+
+  it('never writes the hover layers — hover owns country-hover-border and country-extrusion', () => {
+    // The reveal used to borrow country-hover-border: a programmatic camera move
+    // wiped it, hover overwrote it, and its colour/width leaked into every later hover.
+    const fake = createFakeMapRef()
+    const reveal = makeCountryReveal({ correct: false, clickedCca3: null, distanceKm: null })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'country-pinning',
+      lastOutcome: makeOutcome(reveal),
+    })
+    const args = buildRevealArgs({ session, mapRef: fake.ref })
+    const { rerender } = renderHook(({ s }) => useRevealMapEffects({ ...args, session: s }), {
+      initialProps: { s: session },
+    })
+    // Teardown included: advancing past the reveal must not touch them either.
+    rerender({ s: makeSession({ ...session, status: 'playing', lastOutcome: null }) })
+    const touchesHover = (call: unknown[]) =>
+      call[0] === 'country-hover-border' || call[0] === 'country-extrusion'
+    expect(fake.calls.setFilter.mock.calls.some(touchesHover)).toBe(false)
+    expect(fake.calls.setPaintProperty.mock.calls.some(touchesHover)).toBe(false)
+  })
+
+  it('skips the highlight when the target has no ccn3 (no layers added, nothing to clear)', () => {
+    const fake = createFakeMapRef()
+    const reveal = makeCountryReveal({ correct: true, clickedCca3: null, distanceKm: null })
+    const session = makeSession({
+      status: 'round-ended',
+      modeId: 'country-pinning',
+      lastOutcome: makeOutcome(reveal),
+    })
+    const args = buildRevealArgs({ session, mapRef: fake.ref, countryByCca3: new Map() })
+    const { rerender } = renderHook(({ s }) => useRevealMapEffects({ ...args, session: s }), {
+      initialProps: { s: session },
+    })
+    rerender({ s: makeSession({ ...session, status: 'playing', lastOutcome: null }) })
+    expect(fake.addedLayers).toHaveLength(0)
+    expect(fake.calls.setFilter).not.toHaveBeenCalled()
   })
 
   it('REVEAL_WRONG is the signal accent — E4 absorbed the old amber role', () => {
@@ -133,7 +176,7 @@ describe('useRevealMapEffects', () => {
     expect(REVEAL_CORRECT).toBe('#22c55e') // outcome green, not an accent — unchanged
   })
 
-  it('clears hoverBorder filter on cleanup (round-ended → playing)', () => {
+  it('clears the reveal border filter on cleanup (round-ended → playing)', () => {
     const fake = createFakeMapRef()
     const reveal = makeCountryReveal({ correct: true, clickedCca3: null, distanceKm: null })
     const session = makeSession({
@@ -149,7 +192,7 @@ describe('useRevealMapEffects', () => {
     // Transition to 'playing' invalidates the effect → cleanup runs → filter
     // is reset to the empty id.
     rerender({ s: makeSession({ ...session, status: 'playing', lastOutcome: null }) })
-    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-hover-border', [
+    expect(fake.calls.setFilter).toHaveBeenCalledWith('country-reveal-border', [
       '==',
       ['get', 'id'],
       '',
@@ -415,7 +458,7 @@ describe('useRevealMapEffects', () => {
     })
     renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
 
-    expect(fake.calls.easeTo).toHaveBeenCalledWith(expect.objectContaining({duration:0}))
+    expect(fake.calls.easeTo).toHaveBeenCalledWith(expect.objectContaining({ duration: 0 }))
     expect(fake.calls.easeTo).toHaveBeenCalled()
     const lastJumpTo = fake.calls.easeTo.mock.calls.at(-1)?.[0] as
       | { center: [number, number] }
@@ -481,7 +524,7 @@ describe('useRevealMapEffects — reveal fill pulse (B5)', () => {
     expect(fake.calls.setFilter).toHaveBeenCalledWith('country-reveal-fill', [
       '==',
       ['get', 'id'],
-      'FRA',
+      '250', // ccn3 — feature ids are not cca3
     ])
     expect(fake.calls.setPaintProperty).toHaveBeenCalledWith(
       'country-reveal-fill',
@@ -522,7 +565,7 @@ describe('useRevealMapEffects — reveal fill pulse (B5)', () => {
     raf.mockRestore()
   })
 
-  it('never touches the reveal fill for point (city) reveals', () => {
+  it('never touches the reveal fill or border for point (city) reveals', () => {
     const fake = createFakeMapRef()
     const reveal = makePointReveal({ clickedPoint: [-10, 40], distanceKm: 1500 })
     const session = makeSession({
@@ -532,6 +575,7 @@ describe('useRevealMapEffects — reveal fill pulse (B5)', () => {
     })
     renderRevealHook(buildRevealArgs({ session, mapRef: fake.ref }))
     expect(fake.addedLayers.some((l) => l.id === 'country-reveal-fill')).toBe(false)
+    expect(fake.addedLayers.some((l) => l.id === 'country-reveal-border')).toBe(false)
     const fillCalls = fake.calls.setPaintProperty.mock.calls.filter(
       (c) => c[0] === 'country-reveal-fill',
     )

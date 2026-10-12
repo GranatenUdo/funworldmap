@@ -67,13 +67,14 @@ test.describe('reveal animation', () => {
         { timeout: 10_000 },
       )
       .toBe(REVEAL_FILL_SETTLED)
-    // And it is filtered to the answer country (FRA), not the guess.
+    // And it is filtered to the answer country (France), not the guess. Feature
+    // ids are ccn3 strings ("250"), not cca3 — the old 'FRA' matched nothing.
     expect(
       await page.evaluate(
         (layerId) => window.__funworldmap_map?.getFilter(layerId),
         LAYER.revealFill,
       ),
-    ).toEqual(['==', ['get', 'id'], 'FRA'])
+    ).toEqual(['==', ['get', 'id'], '250'])
 
     // Advance to the next round and confirm reveal artifacts cleared.
     // The round-end panel opens with a "Continue" button

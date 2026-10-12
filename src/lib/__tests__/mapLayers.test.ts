@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import type maplibregl from 'maplibre-gl'
-import type { FillLayerSpecification } from 'maplibre-gl'
+import type { FillLayerSpecification, LineLayerSpecification } from 'maplibre-gl'
 import {
   addBaseCountryLayers,
   addCountryLabelLayer,
@@ -10,7 +10,7 @@ import {
   addSpotlightDimLayer,
   applyBasemapLayerVisibility,
   applyCountryBaselinePaint,
-  ensureRevealFillLayer,
+  ensureRevealLayers,
   spotlightDimFilter,
   COUNTRY_LABEL_SOURCE,
   EXTRUSION_MAX_ZOOM,
@@ -303,23 +303,56 @@ describe('B4 spotlight highlight-stack quieting', () => {
   )
 })
 
-describe('ensureRevealFillLayer', () => {
-  it('adds the dedicated country-reveal-fill layer, transparent and unfiltered', () => {
+describe('ensureRevealLayers', () => {
+  // addLayer's second argument (beforeId) is not in the fake's typed signature.
+  const beforeIds = (fake: ReturnType<typeof createFakeMapRef>) =>
+    (fake.calls.addLayer.mock.calls as unknown[][]).map((c) => c[1])
+
+  it('adds the dedicated fill then border, transparent and unfiltered, on the countries source', () => {
     const fake = createFakeMapRef()
-    ensureRevealFillLayer(fake.map)
-    const spec = fake.addedLayers.find((l) => l.id === LAYER.revealFill)
-    expect(spec?.type).toBe('fill')
-    const fill = spec as FillLayerSpecification
+    ensureRevealLayers(fake.map)
+    expect(fake.addedLayers.map((l) => l.id)).toEqual([LAYER.revealFill, LAYER.revealBorder])
+    const fill = fake.addedLayers[0] as FillLayerSpecification
+    expect(fill.type).toBe('fill')
     expect(fill.source).toBe('countries')
     expect(fill.paint?.['fill-opacity']).toBe(0)
     expect(fill.filter).toEqual(['==', ['get', 'id'], ''])
+    const border = fake.addedLayers[1] as LineLayerSpecification
+    expect(border.type).toBe('line')
+    expect(border.source).toBe('countries')
+    expect(border.paint?.['line-opacity']).toBe(0.6)
+    expect(border.filter).toEqual(['==', ['get', 'id'], ''])
   })
 
-  it('is idempotent — no addLayer when the layer already exists', () => {
+  it('inserts both layers below country-labels so the pulse never tints the answer label', () => {
     const fake = createFakeMapRef()
-    ;(fake.map.getLayer as ReturnType<typeof vi.fn>).mockReturnValue({ id: LAYER.revealFill })
-    ensureRevealFillLayer(fake.map)
+    ;(fake.map.getLayer as ReturnType<typeof vi.fn>).mockImplementation((id: string) =>
+      id === LAYER.countryLabels ? { id } : undefined,
+    )
+    ensureRevealLayers(fake.map)
+    expect(beforeIds(fake)).toEqual([LAYER.countryLabels, LAYER.countryLabels])
+  })
+
+  it('adds without a beforeId while country-labels is absent (MapLibre refuses a missing one)', () => {
+    const fake = createFakeMapRef()
+    ensureRevealLayers(fake.map)
+    expect(beforeIds(fake)).toEqual([undefined, undefined])
+  })
+
+  it('is idempotent — no addLayer when both layers already exist', () => {
+    const fake = createFakeMapRef()
+    ;(fake.map.getLayer as ReturnType<typeof vi.fn>).mockReturnValue({ id: 'exists' })
+    ensureRevealLayers(fake.map)
     expect(fake.calls.addLayer).not.toHaveBeenCalled()
+  })
+
+  it('tops up only the border when the fill already exists', () => {
+    const fake = createFakeMapRef()
+    ;(fake.map.getLayer as ReturnType<typeof vi.fn>).mockImplementation((id: string) =>
+      id === LAYER.revealFill ? { id } : undefined,
+    )
+    ensureRevealLayers(fake.map)
+    expect(fake.addedLayers.map((l) => l.id)).toEqual([LAYER.revealBorder])
   })
 })
 

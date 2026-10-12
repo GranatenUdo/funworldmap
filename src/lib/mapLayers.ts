@@ -247,23 +247,45 @@ export function addCompareLayers(map: maplibregl.Map): void {
   addHighlightStack(map, 'country-compare', ICE_MID)
 }
 
-/** Lazily add the game reveal fill layer (`country-reveal-fill`) — a
- *  dedicated fill over the answer country, pulsed by useRevealMapEffects at
- *  round end (B5, 2026-07-26 spec). Dedicated on purpose: borrowing the
- *  selection stack would couple reveal paint to selection paint (the
- *  single-owner lesson). Added lazily on first country reveal, like the
- *  reveal marker/line layers; idempotent. The `country-` prefix keeps it out
- *  of applyBasemapLayerVisibility's basemap sweep. Runtime paint/filter is
+/** Lazily add the game reveal layers over the answer country: a fill
+ *  (`country-reveal-fill`, pulsed by useRevealMapEffects at round end — B5,
+ *  2026-07-26 spec) and a border (`country-reveal-border`). Dedicated on
+ *  purpose: borrowing the selection stack would couple reveal paint to
+ *  selection paint (the single-owner lesson), and the border used to borrow
+ *  `country-hover-border` — a programmatic camera move (movestartClear) or any
+ *  hover then wiped it, and its colour/width leaked into every later hover.
+ *  Added lazily on first country reveal, like the reveal marker/line layers;
+ *  idempotent. Inserted just below `country-labels` so the pulse never tints
+ *  the answer's name label (the guard matters: MapLibre refuses, and logs, an
+ *  addLayer whose beforeId does not exist). The `country-` prefix keeps both
+ *  out of applyBasemapLayerVisibility's basemap sweep. Runtime paint/filter is
  *  owned by useRevealMapEffects (the reveal-paint owner). */
-export function ensureRevealFillLayer(map: maplibregl.Map): void {
-  if (map.getLayer(LAYER.revealFill)) return
-  map.addLayer({
-    id: LAYER.revealFill,
-    type: 'fill',
-    source: 'countries',
-    paint: { 'fill-color': REVEAL_WRONG, 'fill-opacity': 0 },
-    filter: EMPTY_FILTER,
-  })
+export function ensureRevealLayers(map: maplibregl.Map): void {
+  const before = map.getLayer(LAYER.countryLabels) ? LAYER.countryLabels : undefined
+  if (!map.getLayer(LAYER.revealFill)) {
+    map.addLayer(
+      {
+        id: LAYER.revealFill,
+        type: 'fill',
+        source: 'countries',
+        paint: { 'fill-color': REVEAL_WRONG, 'fill-opacity': 0 },
+        filter: EMPTY_FILTER,
+      },
+      before,
+    )
+  }
+  if (!map.getLayer(LAYER.revealBorder)) {
+    map.addLayer(
+      {
+        id: LAYER.revealBorder,
+        type: 'line',
+        source: 'countries',
+        paint: { 'line-color': REVEAL_WRONG, 'line-width': 4, 'line-opacity': 0.6 },
+        filter: EMPTY_FILTER,
+      },
+      before,
+    )
+  }
 }
 
 /** Add the B4 spotlight scrim: a dark fill over every country EXCEPT the
@@ -426,6 +448,7 @@ export const LAYER = {
   compareMarkers: 'country-compare-markers',
   countryLabels: 'country-labels',
   revealFill: 'country-reveal-fill',
+  revealBorder: 'country-reveal-border',
   satellite: 'satellite-layer',
 } as const
 
