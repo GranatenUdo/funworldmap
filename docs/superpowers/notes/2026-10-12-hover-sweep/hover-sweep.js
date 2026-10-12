@@ -20,6 +20,9 @@ async (page) => {
   const MODE = 'satellite' // 'satellite' | 'vector'
   const SWEEPS = 5
   const MOVES = 60
+  // CDP CPU slowdown factor for the page (1 = none). The dev machine has a fast GPU/CPU, so the
+  // old code barely drops frames at 1; 4 approximates a mid-range laptop and exposes the cost.
+  const THROTTLE = 1
   const URL = 'http://localhost:4173/'
   const ctx = page.context()
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -27,7 +30,7 @@ async (page) => {
   await page.addInitScript(() => {
     if (window.__s0Installed) return
     window.__s0Installed = true
-    const s = { first: null, firstRender: null, count: 0, armed: false }
+    const s = { first: null, firstRender: null, count: 0, hoverCount: 0, armed: false }
     const t = {
       qrf: { n: 0, ms: 0 },
       setFilter: { n: 0, ms: 0 },
@@ -78,6 +81,7 @@ async (page) => {
         timed(v, 'setFilter', 'setFilter')
         timed(v, 'setFeatureState', 'setFeatureState')
         v.on('sourcedata', (e) => {
+          if (e.sourceId === 'countries-hover' && e.tile && s.armed) s.hoverCount++
           if (e.sourceId === 'countries' && e.tile) {
             if (s.armed) s.count++
             if (s.first === null) {
@@ -176,6 +180,7 @@ async (page) => {
 
   const cdp = await ctx.newCDPSession(page)
   await cdp.send('Performance.enable')
+  if (THROTTLE > 1) await cdp.send('Emulation.setCPUThrottlingRate', { rate: THROTTLE })
   const taskMs = async () => {
     const { metrics } = await cdp.send('Performance.getMetrics')
     const get = (n) => (metrics.find((x) => x.name === n) || { value: 0 }).value * 1000
@@ -207,7 +212,23 @@ async (page) => {
         for (const e of l.getEntries()) m.long.push(e.duration)
       })
       m.po.observe({ type: 'longtask' })
+      // The hover overlay source exists only after this change; time its updateData lazily.
+      const overlay = window.__funworldmap_map.getSource('countries-hover')
+      if (overlay && !overlay.__wrapped) {
+        const orig = overlay.updateData.bind(overlay)
+        overlay.updateData = (...a) => {
+          const t0 = performance.now()
+          try {
+            return orig(...a)
+          } finally {
+            window.__t.updateData.n++
+            window.__t.updateData.ms += performance.now() - t0
+          }
+        }
+        overlay.__wrapped = true
+      }
       window.__s0.count = 0
+      window.__s0.hoverCount = 0
       window.__s0.armed = true
       requestAnimationFrame((ts) => {
         m.last = ts
@@ -229,7 +250,13 @@ async (page) => {
       m.run = false
       m.po.disconnect()
       window.__s0.armed = false
-      return { frames: m.frames, long: m.long, t: JSON.parse(JSON.stringify(window.__t)), reloads: window.__s0.count }
+      return {
+        frames: m.frames,
+        long: m.long,
+        t: JSON.parse(JSON.stringify(window.__t)),
+        reloads: window.__s0.count,
+        hoverReloads: window.__s0.hoverCount,
+      }
     })
     if (out.t.qrf.n === 0) {
       throw new Error('Sweep ' + s + ': 60 mouse moves produced 0 queryRenderedFeatures calls - pointer is not reaching the map (overlay?)')
@@ -237,6 +264,8 @@ async (page) => {
     if (s >= 0) {
       results.push({
         reloads: out.reloads,
+        hoverReloads: out.hoverReloads,
+        updateData: { n: out.t.updateData.n, ms: +out.t.updateData.ms.toFixed(1) },
         longTasks: out.long.length,
         longTaskMs: Math.round(out.long.reduce((a, b) => a + b, 0)),
         frameP50: +pct(out.frames, 0.5).toFixed(1),
@@ -259,11 +288,15 @@ async (page) => {
   }
   return {
     mode: MODE,
+    throttle: THROTTLE,
     info: { renderer: info.renderer, terrain: info.terrain, dpr: info.dpr },
     firstTilesMs: Math.round(firstTiles.firstRender),
     path: { moves: MOVES, ...crossings },
     median: {
       reloads: med('reloads'),
+      hoverReloads: med('hoverReloads'),
+      updateDataN: med('updateData', 'n'),
+      updateDataMs: med('updateData', 'ms'),
       longTasks: med('longTasks'),
       longTaskMs: med('longTaskMs'),
       frameP50: med('frameP50'),

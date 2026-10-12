@@ -337,11 +337,13 @@ export function setHoverOverlay(map: maplibregl.Map, id: string | null): void {
 
 Replace the remaining `'countries'` literals with `COUNTRY_SOURCE` (including `addCountrySource`). Fix the stale comment in `applyCountryBaselinePaint`'s compare branch: the hover fill tint is scalar there, and the border/extrusion overlay is cleared **once** on entry and can reappear on the next crossing (pre-existing).
 
+  **As built (refinement found by measurement):** both overlay layers are created with `layout: { visibility: 'none' }` and `setHoverOverlay` reveals them (`setLayoutProperty(..., 'visibility', 'visible')`, once, tracked by `overlay.revealed`) before its first `updateData`. A source whose layers are all hidden is unused and requests no tiles, so the extra source stays off the startup critical path; the startup cost that remains is quantified under Results. The layers carry no filter, as above.
+
 - [ ] **Step 4: Wire the callers.** `useMapInteractions.ts`: replace the two `setFilter`s with `setHoverOverlay(map, id)` and the two in `clearHoverArtifacts` with `setHoverOverlay(map, null)`; use `COUNTRY_SOURCE` in the three `setFeatureState` calls; drop the now-unused `EMPTY_FILTER` import; update the comment at the same-country early return. `useCompareViewHighlight.ts`: call `setHoverOverlay(map, null)` **after** the colour pins (a throw cannot skip them); drop the `EMPTY` import. `WorldMap.tsx`: `addHoverLayers(map, geojson)`.
 - [ ] **Step 5: Verify.** `npm run check` green; the e2e guard now passes; run `npm run test:e2e -- map-and-countries compare game-country-pinning mobile-tap --workers=2`. Re-run the sweep scripts against a fresh `npm run build:e2e` in both modes and record the after-table in this plan under Results. Visually compare (Playwright screenshots) hover border + extrusion in light, dark and satellite against `main`.
 - [ ] **Step 6: Commit** `perf(map): hover overlay on its own single-feature source — no more whole-source reload per crossing`.
 
-## Task 3: Hover tint off feature-state (Stage 1b) — GATED
+## Task 3: Hover tint off feature-state (Stage 1b) — REFUTED, NOT BUILT (see Results)
 
 **Run only if** satellite frame p95 misses its target after Task 2 (the feature-state revision bump still forces a draped-texture redraw per crossing). Otherwise record "skipped: target met" under Results.
 
@@ -364,4 +366,50 @@ Replace the remaining `'countries'` literals with `COUNTRY_SOURCE` (including `a
 
 ## Results
 
-_(filled in as stages land)_
+### Task 1 — the reveal highlight draws
+
+A/B in a normal browser (France as target, wrong guess Germany, reduced motion), old `main` against the fix:
+
+|                                   | Old                    | Fixed                                      |
+| --------------------------------- | ---------------------- | ------------------------------------------ |
+| `country-reveal-fill` filter      | `"FRA"`                | `"250"`                                    |
+| Fill features rendered            | `[]` (nothing)         | `["250"]`                                  |
+| `country-reveal-border`           | layer does not exist   | exists, renders `["250"]`                  |
+| Hover outline after one round     | width 3, `#ff8a4c`     | width 2, `#7dd3fc` (unpolluted)            |
+
+### Task 2 — hover overlay on its own source (Stage 1)
+
+**Like-for-like** (same session, old `main` and the fix interleaved; supersedes the Stage 0 table for any before/after claim). The display cadence on the dev machine drifted from 8.3 ms to 9.6 ms between the Stage 0 baseline and these runs, and the Stage 0 satellite run was taken under heavier machine load (busy 2,644 ms against 1,820 ms for the same old code later), so the Stage 0 absolute numbers must not be compared with these.
+
+| Metric (median of 5 sweeps)        |       Satellite old → new |        Vector old → new |
+| ---------------------------------- | ------------------------: | ----------------------: |
+| `countries` tile reloads           |                 667 → **0** |               667 → **0** |
+| `setFilter` calls                  |                    58 → 0 |                  58 → 0 |
+| Overlay source tile events         |        0 → 131 (29 `updateData`, 1.2 ms) | same |
+| Main-thread busy                   | 1,820 → 1,506 ms (**−17 %**) |  858 → 518 ms (**−40 %**) |
+| Frame p95 / worst frame            |   10.5 → 10.4 / 19.3 → 19.6 ms |  10.3 → 10.4 / 10.9 → 10.7 ms |
+
+Frame p95 is unchanged because this machine (RTX 5070 Ti, 120 Hz) barely drops frames on the old code at full speed. At **4× CPU slowdown** (CDP, a rough mid-range laptop) satellite is genuinely janky on both builds — old: 52 long tasks, p95 77.6 ms, worst frame 106 ms, busy 9.0 s; new: busy 8.4 s with long tasks 63–117 against 20–101 per sweep — i.e. **no measurable difference under throttling**.
+
+**Why: the remaining satellite cost is terrain draping, not hover hit-testing or the reload.** A CPU profile of a throttled sweep (new build) puts ~40 % of busy time in terrain rendering (`_getTerrainCoordsForRegularTile` 15 %, `uniformMatrix4fv` 11 %, native GL), and only 7 % in `readPixels`. Isolating the trigger (satellite, 4×, new build):
+
+| Hover visual that still runs                    | Busy time | Long tasks | Frame p95 |
+| ----------------------------------------------- | --------: | ---------: | --------: |
+| feature-state tint + overlay `updateData` (as shipped) | 8,426 ms |         99 |   91.6 ms |
+| overlay `updateData` only (tint disabled)       |  8,238 ms |         85 |   86.7 ms |
+| feature-state tint only (overlay disabled)      |  8,154 ms |         92 |   86.8 ms |
+| **neither**                                     | **1,002 ms** |      **0** | **10.6 ms** |
+
+Either visual alone costs the full ~7 s; removing both removes it. In terrain mode **any highlight change forces a heavy terrain re-render** (draped textures are invalidated), roughly 250 ms of throttled main-thread time per border crossing, independent of which mechanism triggers it.
+
+**Startup cost.** The extra source costs about **+23 ms (+15 %)** on the countries pipeline's first render (median of 25 loads: 152 → 175 ms) and **+16 ms (+4 %)** navigation to first render (382 → 398 ms), measured after hiding the overlay layers until the first hover (which MapLibre treats as an unused source, so it requests no tiles). Bisecting with a 7-load sample was misleading — the spread inside a run (144–230 ms) is as large as the effect — so only the 25-load figures are quoted. This misses the plan's "+10 %" first-tiles target.
+
+**Visual check:** hovering France on old and new builds (satellite, dark) is pixel-identical, Corsica included.
+
+**e2e:** the new guard goes red on the old build (32 `countries` reloads from 8 hover moves, expected 0) and green on the fix. The 40 specs covering compare view, map and hover, the pinning game and the reveal (including the CI-run reduced-motion spec with its new render assertions) all pass.
+
+### Gates
+
+- **Task 3 (Stage 1b) — not built.** Its hypothesis was that the feature-state tint's source-revision bump was the draping cost. Disabling the tint entirely changed nothing (8,238 vs 8,426 ms), so moving it onto the overlay source would not help.
+- **Task 4 (Stage 2) — gate met unthrottled** (`readPixels` is 20 % of busy time, 1,307 calls ≈ 21.6 per mouse move), **but its expected value is small**: under throttling `readPixels` is ~7 % of busy time, and with both hover visuals disabled the whole sweep is already 1.0 s. It would roughly halve a cost that is not the dominant one.
+- **Open question for the owner:** the dominant remaining cost is the per-crossing terrain re-render. The lever that scales is making fewer highlight changes during a fast sweep (a leading + trailing throttle on `setHoverOverlay`, e.g. one swap per ~100 ms), at the price of the outline/extrusion lagging the cursor by up to that interval during fast sweeps. That is a UX trade-off and is not built.

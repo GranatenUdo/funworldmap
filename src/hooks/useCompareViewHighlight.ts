@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { EMPTY_FILTER as EMPTY, applySelectionColor, LAYER } from '../lib/mapLayers'
+import { applySelectionColor, LAYER, setHoverOverlay } from '../lib/mapLayers'
 import { ICE, ICE_DEEP, ICE_MID, SIGNAL } from '../lib/mapPalette'
 import { useMap } from './useMap'
 
@@ -9,8 +9,8 @@ interface Options {
   resolvedTheme: 'light' | 'dark'
 }
 
-/** Compare-view highlight management: suppress hover layers while picking is
- *  meaningless, and pin the A/B colours to the panel badges (A = signal,
+/** Compare-view highlight management: clear the hover overlay once on entry
+ *  (picking a hover target is meaningless there), and pin the A/B colours to the panel badges (A = signal,
  *  B = ice-mid; E4). Baseline fill/border dimming lives in
  *  useCountryBaselinePaint, so baseline-paint call order no longer matters
  *  (#111 item 1). Call order: must still run AFTER useMapTheme — both write
@@ -24,8 +24,6 @@ export function useCompareViewHighlight({ loaded, compareWith, resolvedTheme }: 
     if (!map || !loaded) return
     try {
       if (compareWith !== null) {
-        map.setFilter(LAYER.hoverBorder, EMPTY)
-        map.setFilter(LAYER.extrusion, EMPTY)
         // Pin A = signal badge colour, B = ice-mid, overriding whatever
         // useMapTheme set (it writes the theme ice in both themes).
         applySelectionColor(map, SIGNAL)
@@ -33,6 +31,9 @@ export function useCompareViewHighlight({ loaded, compareWith, resolvedTheme }: 
         map.setPaintProperty(LAYER.compareBorder, 'line-color', ICE_MID)
         map.setPaintProperty(LAYER.compareGlow, 'line-color', ICE_MID)
         map.setPaintProperty(LAYER.compareExtrusion, 'fill-extrusion-color', ICE_MID)
+        // Last, so nothing here can skip the colour pins above. Clears the hover
+        // overlay once on entry; it can reappear on the next crossing (pre-existing).
+        setHoverOverlay(map, null)
       } else {
         // Restore the selection highlight to the theme-appropriate ice.
         applySelectionColor(map, resolvedTheme === 'dark' ? ICE : ICE_DEEP)

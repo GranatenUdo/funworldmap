@@ -3,7 +3,7 @@ import type maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { parseHash } from '../lib/hashState'
 import { FINE_POINTER_MEDIA_QUERY } from '../lib/layoutConstants'
-import { EMPTY_FILTER, LAYER } from '../lib/mapLayers'
+import { COUNTRY_SOURCE, LAYER, setHoverOverlay } from '../lib/mapLayers'
 import { markClickOrigin } from '../lib/selectionOrigin'
 import { clampTooltipPosition } from '../lib/tooltipPosition'
 import { useMap } from './useMap'
@@ -89,19 +89,21 @@ export function useMapInteractions({
       const tooltipsEnabled = mapHoverTooltipEnabled(sessionRef.current.status)
       if (!tooltipsEnabled) tooltipRef.current?.classList.remove('visible')
 
-      // Same country as last event — setFilter × 2, setFeatureState, and the
+      // Same country as last event — the overlay swap, setFeatureState, and the
       // tooltip DOM rebuild below would be no-ops on the rendered output but
       // cost real main-thread time at 60+ Hz. mousemovePosition still tracks
       // the tooltip's screen position.
       if (id === hoveredRef.current) return
 
       if (hoveredRef.current !== null) {
-        map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
+        map.setFeatureState({ source: COUNTRY_SOURCE, id: hoveredRef.current }, { hover: false })
       }
       hoveredRef.current = id
-      map.setFeatureState({ source: 'countries', id }, { hover: true })
-      map.setFilter(LAYER.extrusion, ['==', ['get', 'id'], id])
-      map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], id])
+      map.setFeatureState({ source: COUNTRY_SOURCE, id }, { hover: true })
+      // The outline + raised highlight live on their own single-feature source.
+      // Never setFilter them: that reloads the whole countries source (see
+      // addHoverLayers).
+      setHoverOverlay(map, id)
 
       if (!tooltipsEnabled) return
       const tooltip = tooltipRef.current
@@ -170,11 +172,10 @@ export function useMapInteractions({
     // and resetting to 'grab' would glitch the drag cursor.
     const clearHoverArtifacts = () => {
       if (hoveredRef.current !== null) {
-        map.setFeatureState({ source: 'countries', id: hoveredRef.current }, { hover: false })
+        map.setFeatureState({ source: COUNTRY_SOURCE, id: hoveredRef.current }, { hover: false })
         hoveredRef.current = null
       }
-      map.setFilter(LAYER.extrusion, EMPTY_FILTER)
-      map.setFilter(LAYER.hoverBorder, EMPTY_FILTER)
+      setHoverOverlay(map, null)
       const tooltip = tooltipRef.current
       if (tooltip) tooltip.classList.remove('visible')
     }

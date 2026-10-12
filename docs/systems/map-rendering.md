@@ -70,6 +70,8 @@ These are the five core layers. The hover overlay (border + extrusion, on the de
 
 > **Rule: never `setFilter` at pointer frequency on a layer that shares the `countries` source.** A filter change marks the layer's whole source for reload — every in-view tile is re-parsed for every layer on it, then re-uploaded — and, with terrain on, flushes every draped texture. This used to run on every border crossing and coast exit (measured: ~660 tile reloads per 60-move sweep, ~2.6 s of main-thread time in satellite mode). Layers whose geometry follows the pointer get their own source and `updateData`.
 
+The overlay layers start **hidden** and the first hover reveals them: a source whose layers are all hidden is unused and requests no tiles, which keeps the extra source's tile jobs out of the single worker queue while the first `countries` tiles load (touch devices never hover, so they never pay for it). Even so, the extra source costs about +23 ms (+15 %) on the countries pipeline's first render at load (median of 25 loads; +16 ms, +4 %, navigation to first render).
+
 On a wheel-zoom the overlay's tiles queue behind the `countries` tiles in the worker, so for a few frames the outline can render from a parent tile. In compare view the overlay is cleared once on entry (`useCompareViewHighlight`) and can reappear on the next crossing.
 
 **Click**: Clicking on the `country-fill` layer extracts the feature ID (ISO 3166-1 numeric code). This triggers country selection — see [System Overview — On Country Click](overview.md) for the full flow.

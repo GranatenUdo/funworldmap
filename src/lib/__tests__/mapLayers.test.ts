@@ -11,10 +11,12 @@ import {
   applyBasemapLayerVisibility,
   applyCountryBaselinePaint,
   ensureRevealLayers,
+  setHoverOverlay,
   spotlightDimFilter,
   COUNTRY_LABEL_SOURCE,
   EXTRUSION_MAX_ZOOM,
   extrusionHeightExpression,
+  HOVER_SOURCE,
   LAYER,
   addCompareMarkerLayer,
   applyCompareMarkers,
@@ -23,9 +25,32 @@ import { ICE_DEEP, ICE_MID, SIGNAL, SPOTLIGHT_DIM } from '../mapPalette'
 import { createFakeMapRef } from '../../test/fakeMapRef'
 import { makeCountryData } from '../../test/countryFixtures'
 
+const square = (lng: number): GeoJSON.Polygon => ({
+  type: 'Polygon',
+  coordinates: [
+    [
+      [lng, 0],
+      [lng + 1, 0],
+      [lng + 1, 1],
+      [lng, 1],
+      [lng, 0],
+    ],
+  ],
+})
+
+/** Both real feature shapes: a topojson feature (string id === properties.id) and an
+ *  island-patch feature (NUMERIC id, string properties.id — missingCountriesPatch). */
+const HOVER_FC: GeoJSON.FeatureCollection = {
+  type: 'FeatureCollection',
+  features: [
+    { type: 'Feature', id: '250', properties: { id: '250' }, geometry: square(0) },
+    { type: 'Feature', id: 798, properties: { id: '798' }, geometry: square(10) },
+  ],
+}
+
 describe('highlight extrusion layers', () => {
-  it.each([
-    ['hover', addHoverLayers, 60000],
+  it.each<[string, (map: maplibregl.Map) => void, number]>([
+    ['hover', (map) => addHoverLayers(map, HOVER_FC), 60000],
     ['selection', addSelectionLayers, 80000],
     ['compare', addCompareLayers, 80000],
   ])('%s extrusion fades with zoom and keeps a maxzoom backstop', (_n, add, peak) => {
@@ -53,7 +78,12 @@ describe('highlight extrusion layers', () => {
   })
 
   it('non-extrusion highlight layers stay unbounded (highlight must never vanish)', () => {
-    for (const add of [addHoverLayers, addSelectionLayers, addCompareLayers]) {
+    const adders: Array<(map: maplibregl.Map) => void> = [
+      (map) => addHoverLayers(map, HOVER_FC),
+      addSelectionLayers,
+      addCompareLayers,
+    ]
+    for (const add of adders) {
       const fake = createFakeMapRef()
       add(fake.map)
       const specs = fake.addedLayers
@@ -61,6 +91,127 @@ describe('highlight extrusion layers', () => {
       expect(others.length).toBeGreaterThan(0)
       for (const spec of others) expect(spec.maxzoom).toBeUndefined()
     }
+  })
+})
+
+describe('hover overlay (HOVER_SOURCE)', () => {
+  function setup() {
+    const fake = createFakeMapRef()
+    addHoverLayers(fake.map, HOVER_FC)
+    return fake
+  }
+  const lastDiff = (fake: ReturnType<typeof createFakeMapRef>) =>
+    fake.calls.updateData.mock.calls.at(-1)?.[0] as {
+      remove: string[]
+      add: GeoJSON.Feature[]
+    }
+
+  it('puts the hover border and extrusion on their own source, with no filter', () => {
+    // A filter change reloads every layer sharing the source — at pointer frequency.
+    const fake = setup()
+    expect(fake.addedLayers.map((l) => l.id)).toEqual([LAYER.hoverBorder, LAYER.extrusion])
+    for (const spec of fake.addedLayers) {
+      expect(spec).toMatchObject({ source: HOVER_SOURCE })
+      expect('filter' in spec).toBe(false)
+    }
+  })
+
+  it('adds the overlay layers HIDDEN, so the new source requests no tiles at startup', () => {
+    // A source whose layers are all hidden is unused and gets no tiles. Without this, the
+    // overlay's tile jobs queue in MapLibre's single worker ahead of the first countries
+    // tiles (measured: +28% to the first countries render). Revealed on the first hover.
+    const fake = setup()
+    expect(fake.addedLayers).toHaveLength(2)
+    for (const spec of fake.addedLayers) {
+      expect(spec.layout).toMatchObject({ visibility: 'none' })
+    }
+  })
+
+  it('reveals both layers on the first hover only', () => {
+    const fake = setup()
+    setHoverOverlay(fake.map, '250')
+    setHoverOverlay(fake.map, '798')
+    setHoverOverlay(fake.map, null)
+    expect(fake.calls.setLayoutProperty.mock.calls).toEqual([
+      [LAYER.hoverBorder, 'visibility', 'visible'],
+      [LAYER.extrusion, 'visibility', 'visible'],
+    ])
+  })
+
+  it('adds the source EMPTY with promoteId (no second geojson-vt index of the world)', () => {
+    const fake = setup()
+    expect(fake.calls.addSource).toHaveBeenCalledWith(HOVER_SOURCE, {
+      type: 'geojson',
+      data: { type: 'FeatureCollection', features: [] },
+      promoteId: 'id',
+    })
+  })
+
+  it('shows one normalised copy: id === properties.id even for numeric-id patch features', () => {
+    // MapLibre's updateData merge keys `add` by feature.id without promoteId; a numeric 798
+    // against string remove ids '798' would leave a stuck highlight on a busy worker.
+    const fake = setup()
+    setHoverOverlay(fake.map, '798')
+    const diff = lastDiff(fake)
+    expect(diff.remove).toEqual([])
+    expect(diff.add).toHaveLength(1)
+    expect(diff.add[0].id).toBe('798')
+    expect(diff.add[0].properties).toEqual({ id: '798' })
+    // Same geometry object the `countries` source got — the overlay can never drift from the fill.
+    expect(diff.add[0].geometry).toBe(HOVER_FC.features[1].geometry)
+  })
+
+  it('a different id removes the previous country and adds the next in one diff', () => {
+    const fake = setup()
+    setHoverOverlay(fake.map, '250')
+    setHoverOverlay(fake.map, '798')
+    expect(fake.calls.updateData).toHaveBeenCalledTimes(2)
+    const diff = lastDiff(fake)
+    expect(diff.remove).toEqual(['250'])
+    expect(diff.add.map((f) => f.id)).toEqual(['798'])
+  })
+
+  it('null removes the shown country; the same id again is a no-op', () => {
+    const fake = setup()
+    setHoverOverlay(fake.map, '250')
+    setHoverOverlay(fake.map, '250')
+    expect(fake.calls.updateData).toHaveBeenCalledTimes(1)
+    setHoverOverlay(fake.map, null)
+    expect(lastDiff(fake)).toEqual({ remove: ['250'], add: [] })
+    setHoverOverlay(fake.map, null)
+    expect(fake.calls.updateData).toHaveBeenCalledTimes(2)
+  })
+
+  it('ignores an unknown id and keeps what is shown', () => {
+    const fake = setup()
+    setHoverOverlay(fake.map, '250')
+    setHoverOverlay(fake.map, '999')
+    expect(fake.calls.updateData).toHaveBeenCalledTimes(1)
+    setHoverOverlay(fake.map, null)
+    expect(lastDiff(fake).remove).toEqual(['250'])
+  })
+
+  it('is a safe no-op for a map that never registered an overlay', () => {
+    const fake = createFakeMapRef()
+    expect(() => setHoverOverlay(fake.map, '250')).not.toThrow()
+    expect(fake.calls.updateData).not.toHaveBeenCalled()
+  })
+
+  it('never throws when the source is torn down, and retries on the next call', () => {
+    const fake = setup()
+    fake.calls.updateData.mockImplementationOnce(() => {
+      throw new Error('source removed')
+    })
+    expect(() => setHoverOverlay(fake.map, '250')).not.toThrow()
+    setHoverOverlay(fake.map, '250') // not marked as shown, so it tries again
+    expect(fake.calls.updateData).toHaveBeenCalledTimes(2)
+  })
+
+  it('never uses setFilter', () => {
+    const fake = setup()
+    setHoverOverlay(fake.map, '250')
+    setHoverOverlay(fake.map, null)
+    expect(fake.calls.setFilter).not.toHaveBeenCalled()
   })
 })
 

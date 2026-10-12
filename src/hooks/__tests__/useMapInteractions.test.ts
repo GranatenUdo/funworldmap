@@ -4,7 +4,7 @@ import type maplibregl from 'maplibre-gl'
 import type { GameSession, GameStatus } from '../../game/shared/types'
 import type { CountryData } from '../../lib/types'
 import { FINE_POINTER_MEDIA_QUERY } from '../../lib/layoutConstants'
-import { EMPTY_FILTER, LAYER } from '../../lib/mapLayers'
+import { LAYER, setHoverOverlay } from '../../lib/mapLayers'
 import { takeOrigin } from '../../lib/selectionOrigin'
 import { makeCountryData } from '../../test/countryFixtures'
 import { createFakeMapRef } from '../../test/fakeMapRef'
@@ -31,6 +31,11 @@ vi.mock('../useMap', () => ({
 vi.mock('../../game/shared/GameSessionProvider', () => ({
   useGameSessionContext: () => ({ session: h.session as unknown as GameSession }),
 }))
+// setHoverOverlay is unit-tested in mapLayers.test.ts; here only that the hook drives it.
+vi.mock('../../lib/mapLayers', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../lib/mapLayers')>()),
+  setHoverOverlay: vi.fn(),
+}))
 
 import { mapHoverTooltipEnabled, useMapInteractions } from '../useMapInteractions'
 
@@ -46,6 +51,7 @@ beforeEach(() => {
   h.mapRef.current = null
   h.tooltipRef.current = null
   h.session = { modeId: 'city-guessing', status: 'idle' }
+  vi.mocked(setHoverOverlay).mockClear()
 })
 
 describe('mapHoverTooltipEnabled', () => {
@@ -145,7 +151,7 @@ describe('useMapInteractions movestart', () => {
       { hover: true },
     )
     fake.calls.setFeatureState.mockClear()
-    fake.calls.setFilter.mockClear()
+    vi.mocked(setHoverOverlay).mockClear()
 
     // Programmatic moves (flyTo/easeTo) carry no originalEvent.
     fake.fire('movestart', null, {})
@@ -154,8 +160,7 @@ describe('useMapInteractions movestart', () => {
       { source: 'countries', id: country.ccn3 },
       { hover: false },
     )
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(setHoverOverlay).toHaveBeenCalledWith(fake.map, null)
     expect(tooltip.classList.contains('visible')).toBe(false)
   })
 
@@ -175,14 +180,14 @@ describe('useMapInteractions movestart', () => {
 
     fake.fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
     fake.calls.setFeatureState.mockClear()
-    fake.calls.setFilter.mockClear()
+    vi.mocked(setHoverOverlay).mockClear()
 
     // A stationary wheel-zoom fires movestart with the DOM event attached —
     // the hover under the cursor must survive it.
     fake.fire('movestart', null, { originalEvent: { type: 'wheel' } })
 
     expect(fake.calls.setFeatureState).not.toHaveBeenCalled()
-    expect(fake.calls.setFilter).not.toHaveBeenCalled()
+    expect(setHoverOverlay).not.toHaveBeenCalled()
     expect(tooltip.classList.contains('visible')).toBe(true)
   })
 
@@ -196,9 +201,42 @@ describe('useMapInteractions movestart', () => {
     fake.fire('movestart', null, {})
 
     expect(fake.calls.setFeatureState).not.toHaveBeenCalled()
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(setHoverOverlay).toHaveBeenCalledWith(fake.map, null)
     expect(tooltip.classList.contains('visible')).toBe(false)
+  })
+})
+
+describe('useMapInteractions hover overlay', () => {
+  it('moves the overlay with the hovered country and never calls setFilter', () => {
+    // setFilter on a layer sharing the `countries` source reloads the whole source — doing
+    // that on every crossing was the hover jank. The overlay lives on its own source instead.
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = document.createElement('div')
+    const fra = makeCountryData() // ccn3 250
+    const deu = makeCountryData({ cca3: 'DEU', ccn3: '276' })
+    renderHook(() =>
+      useMapInteractions({
+        ...baseOptions,
+        byNumeric: new Map([
+          [fra.ccn3, fra],
+          [deu.ccn3, deu],
+        ]),
+        loaded: true,
+      }),
+    )
+
+    fake.fire('mousemove', LAYER.fill, { features: [{ id: fra.ccn3 }] })
+    fake.fire('mousemove', LAYER.fill, { features: [{ id: fra.ccn3 }] }) // same country: nothing to do
+    fake.fire('mousemove', LAYER.fill, { features: [{ id: deu.ccn3 }] })
+    fake.fire('mouseleave', LAYER.fill, {})
+
+    expect(vi.mocked(setHoverOverlay).mock.calls).toEqual([
+      [fake.map, '250'],
+      [fake.map, '276'],
+      [fake.map, null],
+    ])
+    expect(fake.calls.setFilter).not.toHaveBeenCalled()
   })
 })
 

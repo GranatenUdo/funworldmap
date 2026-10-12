@@ -1,5 +1,11 @@
 import { test, expect } from '@playwright/test'
-import { ensureLauncherDismissed, waitForCountryTilesRendered, waitForMapLoaded } from './helpers'
+import {
+  ensureLauncherDismissed,
+  gotoAndWaitForMap,
+  waitForCountryTilesRendered,
+  waitForMapLoaded,
+  waitForMapSettled,
+} from './helpers'
 
 // This spec's map waits historically used a tighter 45 s budget than the helper's 60 s default.
 const MAP_LOAD_TIMEOUT = 45_000
@@ -277,5 +283,111 @@ test.describe('Hover interaction', () => {
         { timeout: 5_000 },
       )
       .toBe('pointer')
+  })
+
+  test('hovering across countries never reloads the countries source', async ({ page }) => {
+    // A setFilter on a layer that shares the `countries` source marks the whole source for
+    // reload: every in-view tile is re-parsed for every layer on it. Hover used to do that
+    // on every border crossing — the sweep jank. The overlay lives on its own source now.
+    await gotoAndWaitForMap(page, '/')
+    await ensureLauncherDismissed(page)
+    await waitForCountryTilesRendered(page)
+    // Let late reloads (baseline-paint feature state, terrain) land BEFORE arming the counter.
+    await waitForMapSettled(page)
+
+    // Two points over DIFFERENT countries — scanned, not hard-coded: the camera is viewport-dependent.
+    const targets = await page.evaluate(() => {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as {
+        getCanvas: () => HTMLCanvasElement
+        queryRenderedFeatures: (
+          point: [number, number],
+          options: { layers: string[] },
+        ) => { id?: string | number }[]
+      }
+      const canvas = map.getCanvas()
+      const cx = canvas.clientWidth / 2
+      const cy = canvas.clientHeight / 2
+      const found: { x: number; y: number; id: string }[] = []
+      for (let dx = -240; dx <= 240; dx += 40) {
+        for (let dy = -160; dy <= 160; dy += 40) {
+          const features = map.queryRenderedFeatures([cx + dx, cy + dy], {
+            layers: ['country-fill'],
+          })
+          if (features.length === 0) continue
+          const id = String(features[0].id)
+          if (!found.some((p) => p.id === id)) found.push({ x: cx + dx, y: cy + dy, id })
+          if (found.length === 2) return found
+        }
+      }
+      return found
+    })
+    expect(targets).toHaveLength(2)
+
+    await page.evaluate(() => {
+      const w = window as unknown as {
+        __countriesReloads: number
+        __funworldmap_map: {
+          on: (event: string, cb: (e: { sourceId?: string; tile?: unknown }) => void) => void
+        }
+      }
+      w.__countriesReloads = 0
+      w.__funworldmap_map.on('sourcedata', (e) => {
+        if (e.sourceId === 'countries' && e.tile) w.__countriesReloads++
+      })
+    })
+
+    for (let sweep = 0; sweep < 4; sweep++) {
+      for (const target of targets) {
+        await page.mouse.move(target.x, target.y)
+        // The hover handler sets feature-state synchronously — a state wait, not a sleep.
+        await expect
+          .poll(
+            () =>
+              page.evaluate(
+                ({ id }) =>
+                  !!(
+                    window as unknown as {
+                      __funworldmap_map: {
+                        getFeatureState: (f: { source: string; id: string }) => { hover?: boolean }
+                      }
+                    }
+                  ).__funworldmap_map.getFeatureState({ source: 'countries', id }).hover,
+                target,
+              ),
+            { timeout: 5_000 },
+          )
+          .toBe(true)
+      }
+    }
+
+    // So a RED run cannot pass because its reloads have not landed yet.
+    await waitForMapSettled(page)
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { __countriesReloads: number }).__countriesReloads,
+      ),
+    ).toBe(0)
+
+    // Asserted second: on old code the overlay source does not exist, and the reload count
+    // above is the real signal. A feature appears once per tile, so dedupe.
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => [
+            ...new Set(
+              (
+                window as unknown as {
+                  __funworldmap_map: {
+                    querySourceFeatures: (source: string) => { id?: string | number }[]
+                  }
+                }
+              ).__funworldmap_map
+                .querySourceFeatures('countries-hover')
+                .map((f) => String(f.id)),
+            ),
+          ]),
+        { timeout: 5_000 },
+      )
+      .toEqual([targets[1].id])
   })
 })

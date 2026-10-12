@@ -46,9 +46,17 @@ export function addRasterSources(map: maplibregl.Map): void {
   })
 }
 
+/** The country polygon source — fill, borders, casing, spotlight scrim, the
+ *  selection/compare stacks and the reveal layers all read it. */
+export const COUNTRY_SOURCE = 'countries'
+
+/** The hover overlay's own source: holds at most ONE feature (the hovered
+ *  country). See addHoverLayers for why it is not on COUNTRY_SOURCE. */
+export const HOVER_SOURCE = 'countries-hover'
+
 /** Add the country polygon source (caller supplies the fetched geojson). */
 export function addCountrySource(map: maplibregl.Map, geojson: GeoJSON.FeatureCollection): void {
-  map.addSource('countries', {
+  map.addSource(COUNTRY_SOURCE, {
     type: 'geojson',
     data: geojson,
     promoteId: 'id',
@@ -60,7 +68,7 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
   map.addLayer({
     id: LAYER.fill,
     type: 'fill',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     paint: {
       'fill-color': ICE_DEEP,
       'fill-opacity': DEFAULT_FILL_OPACITY,
@@ -73,7 +81,7 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
   map.addLayer({
     id: LAYER.bordersCasing,
     type: 'line',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     paint: {
       'line-color': BORDER_CASING_COLOR,
       'line-width': CASING_LINE_WIDTH,
@@ -84,7 +92,7 @@ export function addBaseCountryLayers(map: maplibregl.Map): void {
   map.addLayer({
     id: LAYER.borders,
     type: 'line',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     paint: { 'line-color': '#334155', 'line-width': 0.5, 'line-opacity': 0.4 },
   })
 }
@@ -158,29 +166,113 @@ export function addCountryLabelLayer(map: maplibregl.Map, labels: GeoJSON.Featur
   })
 }
 
-/** Add hover / extrusion overlays for the currently hovered country. */
-export function addHoverLayers(map: maplibregl.Map): void {
+interface HoverOverlay {
+  /** Normalised copies of every country, by ccn3 string — see addHoverLayers. */
+  features: Map<string, GeoJSON.Feature>
+  /** The ccn3 currently in the overlay source, or null when it is empty. */
+  shown: string | null
+  /** Whether the overlay layers have been revealed (they start hidden). */
+  revealed: boolean
+}
+
+const hoverOverlays = new WeakMap<maplibregl.Map, HoverOverlay>()
+
+/** Add the hover overlay: a border line and a raised highlight for the hovered
+ *  country, on their OWN source (HOVER_SOURCE) that holds at most one feature.
+ *
+ *  They used to sit on COUNTRY_SOURCE and be driven by setFilter. A filter
+ *  change marks the layer's whole source for reload: every in-view tile is
+ *  re-parsed for every layer on it (full-world fill earcut and globe
+ *  subdivision, borders, casing, the dim scrim), then re-uploaded — and with
+ *  terrain on, the resulting style `data` event frees every draped texture.
+ *  That ran on every border crossing and every coast exit. setHoverOverlay now
+ *  swaps one feature with updateData, which reloads only the tiles around the
+ *  old and new country and fires no style `data` event.
+ *
+ *  RULE: never setFilter at pointer frequency on a layer that shares
+ *  COUNTRY_SOURCE. The layers carry no filter — they render whatever the
+ *  source holds; setHoverOverlay is the single owner of that.
+ *
+ *  The source starts EMPTY (no second geojson-vt index of the world, no extra
+ *  work per tile on pan/zoom). Features are registered as NORMALISED COPIES —
+ *  id === properties.id, geometry shared with the countries source — because
+ *  MapLibre's updateData merge keys `add` by feature.id without promoteId,
+ *  while the island patch (missingCountriesPatch) has NUMERIC ids (798) with a
+ *  string properties.id ('798'): while the worker is busy, a merge of
+ *  remove('798') + add(798) would not cancel and would leave a stuck highlight.
+ *  The copies also keep MapLibre's promote/demote steps away from the objects
+ *  the countries source shares.
+ *
+ *  The layers start HIDDEN and are revealed by the first hover: a source whose
+ *  layers are all hidden is unused and requests no tiles, whereas an active
+ *  second source queues its tile jobs in MapLibre's single worker ahead of the
+ *  first countries tiles (measured: +28% to the first countries render). Touch
+ *  devices never hover, so they never pay for it. */
+export function addHoverLayers(map: maplibregl.Map, geojson: GeoJSON.FeatureCollection): void {
+  const features = new Map<string, GeoJSON.Feature>()
+  for (const feature of geojson.features) {
+    const id: unknown = feature.properties?.id
+    if (typeof id !== 'string') continue
+    features.set(id, { type: 'Feature', id, properties: { id }, geometry: feature.geometry })
+  }
+  hoverOverlays.set(map, { features, shown: null, revealed: false })
+
+  map.addSource(HOVER_SOURCE, {
+    type: 'geojson',
+    data: { type: 'FeatureCollection', features: [] },
+    promoteId: 'id',
+  })
+
   map.addLayer({
     id: LAYER.hoverBorder,
     type: 'line',
-    source: 'countries',
+    source: HOVER_SOURCE,
+    layout: { visibility: 'none' },
     paint: { 'line-color': ICE_DEEP, 'line-width': 2, 'line-opacity': 0.6 },
-    filter: EMPTY_FILTER,
   })
 
   map.addLayer({
     id: LAYER.extrusion,
     type: 'fill-extrusion',
-    source: 'countries',
+    source: HOVER_SOURCE,
     maxzoom: EXTRUSION_MAX_ZOOM,
+    layout: { visibility: 'none' },
     paint: {
       'fill-extrusion-color': ICE_DEEP,
       'fill-extrusion-height': extrusionHeightExpression(60000),
       'fill-extrusion-base': 0,
       'fill-extrusion-opacity': 0.65,
     },
-    filter: EMPTY_FILTER,
   })
+}
+
+/** Show the hovered country in the hover overlay (a ccn3 string), or clear it
+ *  (null). The single owner of the overlay's contents — hover and compare view
+ *  both go through it. A no-op when the country is already shown, when the id
+ *  is unknown, or when this map never registered an overlay; never throws (the
+ *  source may be torn down mid-hover by WebGL context-loss recovery, whose next
+ *  onLoad registers a fresh overlay). */
+export function setHoverOverlay(map: maplibregl.Map, id: string | null): void {
+  const overlay = hoverOverlays.get(map)
+  if (!overlay || overlay.shown === id) return
+  const next = id === null ? undefined : overlay.features.get(id)
+  if (id !== null && !next) return
+  const source = map.getSource<maplibregl.GeoJSONSource>(HOVER_SOURCE)
+  if (!source) return
+  try {
+    if (!overlay.revealed) {
+      map.setLayoutProperty(LAYER.hoverBorder, 'visibility', 'visible')
+      map.setLayoutProperty(LAYER.extrusion, 'visibility', 'visible')
+      overlay.revealed = true
+    }
+    source.updateData({
+      remove: overlay.shown === null ? [] : [overlay.shown],
+      add: next ? [next] : [],
+    })
+    overlay.shown = id
+  } catch {
+    /* source torn down — leave `shown` as is so the next call retries */
+  }
 }
 
 /** Add a 4-layer highlight stack (glow / fill / border / extrusion) under a
@@ -194,7 +286,7 @@ function addHighlightStack(
   map.addLayer({
     id: `${prefix}-glow`,
     type: 'line',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     // B4 spotlight: tight glow (was 10px / blur 5) — the country-dim scrim
     // now carries the emphasis; the glow only crisps the outline.
     paint: { 'line-color': color, 'line-width': 4, 'line-blur': 2, 'line-opacity': 0.3 },
@@ -205,7 +297,7 @@ function addHighlightStack(
   map.addLayer({
     id: fillId,
     type: 'fill',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     // B4 spotlight: faint fill (was 0.32) — the selected country must be the
     // MOST legible thing on screen, so the sticker fill nearly disappears.
     paint: { 'fill-color': color, 'fill-opacity': 0.1 },
@@ -214,14 +306,14 @@ function addHighlightStack(
   map.addLayer({
     id: `${prefix}-border`,
     type: 'line',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     paint: { 'line-color': color, 'line-width': 2.5 },
     filter: EMPTY_FILTER,
   })
   map.addLayer({
     id: `${prefix}-extrusion`,
     type: 'fill-extrusion',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     maxzoom: EXTRUSION_MAX_ZOOM,
     paint: {
       'fill-extrusion-color': color,
@@ -267,7 +359,7 @@ export function ensureRevealLayers(map: maplibregl.Map): void {
       {
         id: LAYER.revealFill,
         type: 'fill',
-        source: 'countries',
+        source: COUNTRY_SOURCE,
         paint: { 'fill-color': REVEAL_WRONG, 'fill-opacity': 0 },
         filter: EMPTY_FILTER,
       },
@@ -279,7 +371,7 @@ export function ensureRevealLayers(map: maplibregl.Map): void {
       {
         id: LAYER.revealBorder,
         type: 'line',
-        source: 'countries',
+        source: COUNTRY_SOURCE,
         paint: { 'line-color': REVEAL_WRONG, 'line-width': 4, 'line-opacity': 0.6 },
         filter: EMPTY_FILTER,
       },
@@ -299,7 +391,7 @@ export function addSpotlightDimLayer(map: maplibregl.Map): void {
   map.addLayer({
     id: LAYER.dim,
     type: 'fill',
-    source: 'countries',
+    source: COUNTRY_SOURCE,
     paint: { 'fill-color': SPOTLIGHT_DIM, 'fill-opacity': 0.25 },
     filter: EMPTY_FILTER,
   })
@@ -477,9 +569,12 @@ export function applyCountryBaselinePaint(
     // The casing is a satellite-legibility device; compare dims to the flat
     // hairline, so hide it (paint-owned, mirrors the width reset above).
     map.setPaintProperty(LAYER.bordersCasing, 'line-opacity', 0)
-    // Hover layers are suppressed in compare view (useCompareViewHighlight),
-    // so a scalar dim is fine — matched to the mode's baseline (satellite base
-    // is 0.03; the vector 0.05 would brighten over imagery).
+    // Compare view drops the hover TINT (scalar opacity, no hover feature-state
+    // branch). The border/extrusion overlay is only cleared once on entry
+    // (useCompareViewHighlight) and can reappear on the next crossing — a
+    // pre-existing gap, not closed here. The scalar is matched to the mode's
+    // baseline (satellite base is 0.03; the vector 0.05 would brighten over
+    // imagery).
     map.setPaintProperty(LAYER.fill, 'fill-opacity', opts.satellite ? 0.03 : 0.05)
   } else {
     applyBorderPaintForMode(map, { isDark: opts.isDark, satellite: opts.satellite })

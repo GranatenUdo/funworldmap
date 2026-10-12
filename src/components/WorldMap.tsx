@@ -65,7 +65,7 @@ export default function WorldMap({
     // B4 spotlight scrim: above base fill/borders, below the hover +
     // selection/compare stacks (layers render in add order).
     addSpotlightDimLayer(map)
-    addHoverLayers(map)
+    addHoverLayers(map, geojson)
     addSelectionLayers(map)
     addCompareLayers(map)
     // Added LAST so labels render above every other app layer. Starts hidden;
