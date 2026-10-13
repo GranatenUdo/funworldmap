@@ -105,29 +105,56 @@ describe('E4 retirement drift alarm — the teal/coral system must stay gone', (
   })
 })
 
+describe('round-result text colour (index.css)', () => {
+  // The reveal panel's text set no colour and inherited the browser default
+  // (black) — about 1.2:1 on the dark-400 panel, so the heading, guess line and
+  // metrics were invisible in dark mode. These blocks mirror .results-card. A
+  // regex for `.round-result {` would also match inside `.dark .round-result {`,
+  // so pin the exact blocks.
+  it('sets an explicit light-mode colour', () => {
+    expect(css).toContain(`.round-result {
+  text-align: left;
+  padding-top: 12px;
+  color: var(--color-sand-900);
+}`)
+  })
+
+  it('sets an explicit dark-mode colour', () => {
+    expect(css).toContain(`.dark .round-result {
+  color: var(--color-dark-50);
+}`)
+  })
+})
+
 describe('E2 type-role utilities (index.css)', () => {
   it('.text-readout is the system mono stack with tabular figures', () => {
-    expect(css.replace(/\s+/g, " ")).toContain(`.text-readout {
+    expect(css.replace(/\s+/g, ' ')).toContain(
+      `.text-readout {
     font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
     font-variant-numeric: tabular-nums;
-  }`.replace(/\s+/g, " "))
+  }`.replace(/\s+/g, ' '),
+    )
   })
 
   it('.text-display is Outfit 700 with tight tracking', () => {
-    expect(css.replace(/\s+/g, " ")).toContain(`.text-display {
+    expect(css.replace(/\s+/g, ' ')).toContain(
+      `.text-display {
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: -0.025em;
-  }`.replace(/\s+/g, " "))
+  }`.replace(/\s+/g, ' '),
+    )
   })
 
   it('.text-label is 11px uppercase with 0.12em tracking', () => {
-    expect(css.replace(/\s+/g, " ")).toContain(`.text-label {
+    expect(css.replace(/\s+/g, ' ')).toContain(
+      `.text-label {
     font-size: 11px;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-  }`.replace(/\s+/g, " "))
+  }`.replace(/\s+/g, ' '),
+    )
   })
 })
 

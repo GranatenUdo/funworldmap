@@ -1,5 +1,10 @@
 import { test, expect, type Locator, type Page } from '@playwright/test'
-import { ensureLauncherDismissed } from './helpers'
+import {
+  ensureLauncherDismissed,
+  gotoAndWaitForMap,
+  openLauncher,
+  waitForAppReady,
+} from './helpers'
 
 test.setTimeout(60_000)
 
@@ -49,6 +54,41 @@ test.describe('A11y + Contrast Pass', () => {
       const badge = result.getByTestId('region-badge')
       const px = await computedFontSizePx(badge)
       expect(px).toBeGreaterThanOrEqual(11)
+    })
+  })
+
+  test.describe('Reveal panel text colour', () => {
+    // The round-result text set no colour and inherited the browser default
+    // (black): ~1.2:1 on the dark panel, so it was invisible in dark mode.
+    // It now carries an explicit colour, mirroring .results-card.
+    const SAND_900_RGB = 'rgb(30, 27, 24)' // #1e1b18 — --color-sand-900
+    const DARK_50_RGB = 'rgb(241, 245, 249)' // #f1f5f9 — --color-dark-50
+
+    async function revealWrongGuess(page: Page, theme: 'light' | 'dark') {
+      await page.addInitScript((t) => window.localStorage.setItem('funworldmap-theme', t), theme)
+      await gotoAndWaitForMap(page, '/')
+      await waitForAppReady(page)
+      await openLauncher(page)
+      await page.getByTestId('launcher-card-country-pinning-play').click()
+      await expect(page.getByTestId('game-prompt-name')).toBeVisible({ timeout: 10_000 })
+      await page.evaluate(() => window.__funworldmap_game?.setRound?.('FRA'))
+      await expect(page.getByTestId('game-prompt-name')).toHaveText('France', { timeout: 10_000 })
+      await page.evaluate(() => window.__funworldmap_game?.submitCountryGuess?.('DEU'))
+      const result = page.getByTestId('round-result')
+      await expect(result).toBeVisible({ timeout: 10_000 })
+      return result
+    }
+
+    test('heading and metrics use dark-50 in dark mode', async ({ page }) => {
+      const result = await revealWrongGuess(page, 'dark')
+      await expect(result.getByTestId('game-prompt-name')).toHaveCSS('color', DARK_50_RGB)
+      await expect(result.locator('.result-metrics')).toHaveCSS('color', DARK_50_RGB)
+    })
+
+    test('heading and metrics use sand-900 in light mode', async ({ page }) => {
+      const result = await revealWrongGuess(page, 'light')
+      await expect(result.getByTestId('game-prompt-name')).toHaveCSS('color', SAND_900_RGB)
+      await expect(result.locator('.result-metrics')).toHaveCSS('color', SAND_900_RGB)
     })
   })
 

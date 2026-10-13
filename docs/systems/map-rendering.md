@@ -44,7 +44,8 @@ world-atlas npm package (TopoJSON, ~245KB gzipped)
     ↓ converted at runtime by
 topojson-client.feature() → GeoJSON FeatureCollection
     ↓ rendered by
-MapLibre GL as a GeoJSON source with multiple layers
+MapLibre GL as a GeoJSON source (`countries`) with multiple layers, plus a
+second single-feature source (`countries-hover`) for the hover overlay
 ```
 
 ### Map Layers
@@ -59,11 +60,21 @@ Five visual layers render on top of the basemap:
 | `country-dim`            | Selection spotlight scrim (B4) | Dark 25% fill over every country EXCEPT the selection (and both compare countries). Sits above the base layers, below the hover/highlight stacks. Filter owned by `useSelectionHighlight` via `spotlightDimFilter`; matches nothing when no country is selected, so games never show it. Never hit-tested — every `queryRenderedFeatures` caller stays scoped to `country-fill`. |
 | `country-selected`       | Selected country highlight     | Tight border glow (4px, blur 2) + faint 10% fill — the spotlight scrim carries the emphasis. Filtered to show only the selected country ID.                                                                                                                                                                                                                                      |
 
-These are the five core layers. Hover (border + extrusion), the 4-layer selection and compare highlight stacks, the satellite raster, the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above), the compare A/B centroid marker layer (`country-compare-markers`, B6 — signal "A" / ice-mid "B" symbols over the compared pair (E4 accents), owned by `applyCompareMarkers`), and the game reveal fill (`country-reveal-fill`, pulsed by `useRevealMapEffects` at round end) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (18 ids).
+These are the five core layers. The hover overlay (border + extrusion, on the dedicated `countries-hover` source — see Interaction Model), the 4-layer selection and compare highlight stacks, the satellite raster, the satellite-only `country-labels` symbol layer (app-built name points from bundled `latlng` centroids — see Basemap above), the compare A/B centroid marker layer (`country-compare-markers`, B6 — signal "A" / ice-mid "B" symbols over the compared pair (E4 accents), owned by `applyCompareMarkers`), and the game reveal highlight (`country-reveal-fill`, pulsed, and `country-reveal-border`, both driven by `useRevealMapEffects` at round end, keyed by the country's ccn3 and added just below `country-labels` so the answer's name stays untinted) complete the picture — the full registry is `LAYER` in `src/lib/mapLayers.ts` (19 ids).
 
 ### Interaction Model
 
 **Hover**: As the mouse moves over the `country-fill` layer, MapLibre's `feature-state` API sets `{ hover: true }` on the feature under the cursor. The layer paint expression reacts by increasing fill opacity. When the mouse leaves, hover is cleared. The cursor changes to `pointer` over countries.
+
+**Hover overlay**: the hover outline (`country-hover-border`) and the raised highlight (`country-extrusion`) live on their own `countries-hover` GeoJSON source, which holds **at most one feature**. `setHoverOverlay` in `src/lib/mapLayers.ts` is the single owner: it calls `updateData({ remove, add })` with the hovered country's geometry (a normalised copy registered by `addHoverLayers`), so a crossing reloads only the tiles around the old and new country.
+
+> **Rule: never `setFilter` at pointer frequency on a layer that shares the `countries` source.** A filter change marks the layer's whole source for reload — every in-view tile is re-parsed for every layer on it, then re-uploaded — and, with terrain on, flushes every draped texture. This used to run on every border crossing and coast exit (measured: ~660 tile reloads per 60-move sweep, ~2.6 s of main-thread time in satellite mode). Layers whose geometry follows the pointer get their own source and `updateData`.
+
+The overlay layers start **hidden** and the first hover reveals them: a source whose layers are all hidden is unused and requests no tiles, which keeps the extra source's tile jobs out of the single worker queue while the first `countries` tiles load (touch devices never hover, so they never pay for it). Even so, the extra source costs about +23 ms (+15 %) on the countries pipeline's first render at load (median of 25 loads; +16 ms, +4 %, navigation to first render).
+
+**Where the remaining hover cost is (terrain mode)**: with 3D terrain on (satellite, the default) the dominant cost of a hover sweep on a slow CPU is MapLibre's terrain depth/coords/draping redraw, paid once per scene change by whichever render or hit-test comes first (each `queryRenderedFeatures` also does about 10 synchronous `readPixels`). Two hover-side remedies were measured on a realistic open-loop flick at 4× CPU slowdown and rejected: throttling the highlight (the whole highlight is only ~18 % of the cost), and one hit-test per mouse move instead of two (queries −59 %, `readPixels` −57 %, main-thread busy time +4.5 %). Both reduce hover-side calls without touching the redraw. Moving the highlight onto its own source (above) removes the whole-source reload but only modestly improves satellite mode under a slowed CPU. The numbers are in `docs/superpowers/plans/archive/2026-10-12-hover-performance.md`.
+
+On a wheel-zoom the overlay's tiles queue behind the `countries` tiles in the worker, so for a few frames the outline can render from a parent tile. In compare view the overlay is cleared once on entry (`useCompareViewHighlight`) and can reappear on the next crossing.
 
 **Click**: Clicking on the `country-fill` layer extracts the feature ID (ISO 3166-1 numeric code). This triggers country selection — see [System Overview — On Country Click](overview.md) for the full flow.
 

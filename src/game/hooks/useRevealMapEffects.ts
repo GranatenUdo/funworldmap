@@ -1,7 +1,7 @@
 import { useEffect, type RefObject } from 'react'
 import type maplibregl from 'maplibre-gl'
 import type { CountryLike, GameSession, GuessInput, CompletedRound } from '../shared/types'
-import { EMPTY_FILTER, ensureRevealFillLayer, LAYER } from '../../lib/mapLayers'
+import { EMPTY_FILTER, ensureRevealLayers, LAYER } from '../../lib/mapLayers'
 import { REVEAL_CORRECT, REVEAL_WRONG, ICE_DEEP } from '../../lib/mapPalette'
 import { tessellateArc } from '../shared/distance'
 import {
@@ -110,6 +110,10 @@ export interface UseRevealMapEffectsArgs {
   ready?: boolean
   mapRef: RefObject<maplibregl.Map | null>
   byCca3: Map<string, CountryLike>
+  /** cca3 → map feature key. Country features are keyed by their ccn3 string
+   *  (`properties.id`), so the reveal layers must filter on that — filtering
+   *  on the cca3 matched no feature and the highlight never drew. */
+  countryByCca3: ReadonlyMap<string, { ccn3: string }>
   submitGuessInput: (input: GuessInput) => void
 }
 
@@ -123,6 +127,7 @@ export function useRevealMapEffects({
   ready = true,
   mapRef,
   byCca3,
+  countryByCca3,
   submitGuessInput,
 }: UseRevealMapEffectsArgs): void {
   // Reveal geometry: on round-ended, update marker + line sources, snap the
@@ -167,20 +172,30 @@ export function useRevealMapEffects({
     // correct guesses and skips.
     let pulseFrameId: number | null = null
 
-    if (reveal.kind === 'country') {
+    // Country features are keyed by ccn3, not cca3 (see countryByCca3). A target
+    // with no ccn3 gets no map highlight; the HUD/panel reveal is unaffected.
+    const targetCcn3 =
+      reveal.kind === 'country' ? countryByCca3.get(reveal.targetCca3)?.ccn3 : undefined
+    let revealLayersShown = false
+
+    if (reveal.kind === 'country' && targetCcn3) {
       try {
-        map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], reveal.targetCca3])
+        const targetFilter: maplibregl.FilterSpecification = ['==', ['get', 'id'], targetCcn3]
         const colour = reveal.correct ? REVEAL_CORRECT : REVEAL_WRONG
-        map.setPaintProperty(LAYER.hoverBorder, 'line-color', colour)
-        map.setPaintProperty(LAYER.hoverBorder, 'line-width', reduced ? 3 : 4)
+        // Dedicated layers — never the hover layers, which hover (useMapInteractions)
+        // and compare view own.
+        ensureRevealLayers(map)
+        revealLayersShown = true
+        map.setFilter(LAYER.revealBorder, targetFilter)
+        map.setPaintProperty(LAYER.revealBorder, 'line-color', colour)
+        map.setPaintProperty(LAYER.revealBorder, 'line-width', reduced ? 3 : 4)
 
         // B5: pulse the answer country's fill. Paint animations are
         // invisible to Element.getAnimations, so the waveform is the pure
         // unit-tested revealFillOpacityAt (revealAnimation.ts) and e2e
         // asserts the settled value through the map seam. Reduced motion:
         // one static write, no rAF.
-        ensureRevealFillLayer(map)
-        map.setFilter(LAYER.revealFill, ['==', ['get', 'id'], reveal.targetCca3])
+        map.setFilter(LAYER.revealFill, targetFilter)
         map.setPaintProperty(LAYER.revealFill, 'fill-color', colour)
         if (reduced) {
           map.setPaintProperty(LAYER.revealFill, 'fill-opacity', REVEAL_FILL_REDUCED)
@@ -215,16 +230,18 @@ export function useRevealMapEffects({
       }
     }
 
-    // Teardown for the reveal fill: cancel the pulse and restore the layer
-    // to its inert state (empty filter, transparent). Shared by both cleanup
-    // paths (planless early-return and the arc path), mirroring how the
-    // hover-border filter is restored. The layer itself persists, like the
-    // reveal marker/line layers.
-    const clearRevealFill = () => {
+    // Teardown for the reveal highlight: cancel the pulse and restore both
+    // layers to their inert state (empty filter, transparent fill). Shared by
+    // both cleanup paths (planless early-return and the arc path). The layers
+    // themselves persist, like the reveal marker/line layers. Skipped when this
+    // reveal never showed them (no ccn3) — the layers may not exist, and a
+    // setFilter on a missing layer logs a MapLibre error.
+    const clearRevealHighlight = () => {
       clearResize()
       if (pulseFrameId !== null) window.cancelAnimationFrame(pulseFrameId)
-      if (reveal.kind !== 'country') return
+      if (!revealLayersShown) return
       try {
+        map.setFilter(LAYER.revealBorder, EMPTY_FILTER)
         map.setFilter(LAYER.revealFill, EMPTY_FILTER)
         map.setPaintProperty(LAYER.revealFill, 'fill-opacity', 0)
       } catch {
@@ -251,14 +268,7 @@ export function useRevealMapEffects({
         }
       }
       return () => {
-        clearRevealFill()
-        if (reveal.kind === 'country') {
-          try {
-            map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
-          } catch {
-            /* no-op */
-          }
-        }
+        clearRevealHighlight()
         map.stop()
         clearRevealSources(map)
       }
@@ -361,14 +371,7 @@ export function useRevealMapEffects({
 
     return () => {
       if (frameId !== null) window.cancelAnimationFrame(frameId)
-      clearRevealFill()
-      if (reveal.kind === 'country') {
-        try {
-          map.setFilter(LAYER.hoverBorder, ['==', ['get', 'id'], ''])
-        } catch {
-          /* no-op */
-        }
-      }
+      clearRevealHighlight()
       // Always clear marker + line sources. Both country wrong-guesses (when
       // clickedCca3 is known) and city reveals draw these via
       // computeRevealAnimationPlan, so the cleanup is mode-neutral — even though
@@ -376,7 +379,16 @@ export function useRevealMapEffects({
       map.stop()
       clearRevealSources(map)
     }
-  }, [session.status, session.lastOutcome, byCca3, mapRef, review, ready, session.currentRound])
+  }, [
+    session.status,
+    session.lastOutcome,
+    byCca3,
+    countryByCca3,
+    mapRef,
+    review,
+    ready,
+    session.currentRound,
+  ])
 
   // City-mode any-click handler.
   useEffect(() => {

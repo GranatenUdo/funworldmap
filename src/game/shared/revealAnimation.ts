@@ -46,7 +46,7 @@ export function computeRevealAnimationPlan(
 }
 
 /** Reveal fill pulse (B5) — fill-opacity waveform for the dedicated
- *  `country-reveal-fill` layer (see ensureRevealFillLayer in
+ *  `country-reveal-fill` layer (see ensureRevealLayers in
  *  src/lib/mapLayers.ts; driven by useRevealMapEffects). Map paint
  *  animations are invisible to Element.getAnimations, so this pure
  *  function is the unit-tested animation contract — the same pattern as

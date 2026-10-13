@@ -105,7 +105,15 @@ export function GameController({
     session.status === 'game-over' && reviewIndex !== null
       ? (session.completedRounds[reviewIndex] ?? null)
       : null
-  useRevealMapEffects({ session, mapRef, byCca3, submitGuessInput, review: reviewEntry, ready })
+  useRevealMapEffects({
+    session,
+    mapRef,
+    byCca3,
+    countryByCca3: referenceCountries,
+    submitGuessInput,
+    review: reviewEntry,
+    ready,
+  })
 
   const leave = useCallback(
     (choose: boolean) => {

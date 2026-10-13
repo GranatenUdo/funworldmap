@@ -4,7 +4,7 @@ import type maplibregl from 'maplibre-gl'
 import type { GameSession, GameStatus } from '../../game/shared/types'
 import type { CountryData } from '../../lib/types'
 import { FINE_POINTER_MEDIA_QUERY } from '../../lib/layoutConstants'
-import { EMPTY_FILTER, LAYER } from '../../lib/mapLayers'
+import { LAYER, setHoverOverlay } from '../../lib/mapLayers'
 import { takeOrigin } from '../../lib/selectionOrigin'
 import { makeCountryData } from '../../test/countryFixtures'
 import { createFakeMapRef } from '../../test/fakeMapRef'
@@ -31,6 +31,11 @@ vi.mock('../useMap', () => ({
 vi.mock('../../game/shared/GameSessionProvider', () => ({
   useGameSessionContext: () => ({ session: h.session as unknown as GameSession }),
 }))
+// setHoverOverlay is unit-tested in mapLayers.test.ts; here only that the hook drives it.
+vi.mock('../../lib/mapLayers', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../lib/mapLayers')>()),
+  setHoverOverlay: vi.fn(),
+}))
 
 import { mapHoverTooltipEnabled, useMapInteractions } from '../useMapInteractions'
 
@@ -46,6 +51,7 @@ beforeEach(() => {
   h.mapRef.current = null
   h.tooltipRef.current = null
   h.session = { modeId: 'city-guessing', status: 'idle' }
+  vi.mocked(setHoverOverlay).mockClear()
 })
 
 describe('mapHoverTooltipEnabled', () => {
@@ -137,15 +143,15 @@ describe('useMapInteractions movestart', () => {
       }),
     )
 
-    // Seed hover state via the layer mousemove handler.
-    fake.fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
+    // Seed hover state through a mousemove over the country.
+    hoverOver(fake, country.ccn3)
     expect(tooltip.classList.contains('visible')).toBe(true)
     expect(fake.calls.setFeatureState).toHaveBeenCalledWith(
       { source: 'countries', id: country.ccn3 },
       { hover: true },
     )
     fake.calls.setFeatureState.mockClear()
-    fake.calls.setFilter.mockClear()
+    vi.mocked(setHoverOverlay).mockClear()
 
     // Programmatic moves (flyTo/easeTo) carry no originalEvent.
     fake.fire('movestart', null, {})
@@ -154,8 +160,7 @@ describe('useMapInteractions movestart', () => {
       { source: 'countries', id: country.ccn3 },
       { hover: false },
     )
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(setHoverOverlay).toHaveBeenCalledWith(fake.map, null)
     expect(tooltip.classList.contains('visible')).toBe(false)
   })
 
@@ -173,16 +178,16 @@ describe('useMapInteractions movestart', () => {
       }),
     )
 
-    fake.fire('mousemove', LAYER.fill, { features: [{ id: country.ccn3 }] })
+    hoverOver(fake, country.ccn3)
     fake.calls.setFeatureState.mockClear()
-    fake.calls.setFilter.mockClear()
+    vi.mocked(setHoverOverlay).mockClear()
 
     // A stationary wheel-zoom fires movestart with the DOM event attached —
     // the hover under the cursor must survive it.
     fake.fire('movestart', null, { originalEvent: { type: 'wheel' } })
 
     expect(fake.calls.setFeatureState).not.toHaveBeenCalled()
-    expect(fake.calls.setFilter).not.toHaveBeenCalled()
+    expect(setHoverOverlay).not.toHaveBeenCalled()
     expect(tooltip.classList.contains('visible')).toBe(true)
   })
 
@@ -196,9 +201,144 @@ describe('useMapInteractions movestart', () => {
     fake.fire('movestart', null, {})
 
     expect(fake.calls.setFeatureState).not.toHaveBeenCalled()
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.extrusion, EMPTY_FILTER)
-    expect(fake.calls.setFilter).toHaveBeenCalledWith(LAYER.hoverBorder, EMPTY_FILTER)
+    expect(setHoverOverlay).toHaveBeenCalledWith(fake.map, null)
     expect(tooltip.classList.contains('visible')).toBe(false)
+  })
+})
+
+describe('useMapInteractions hover overlay', () => {
+  it('moves the overlay with the hovered country and never calls setFilter', () => {
+    // setFilter on a layer sharing the `countries` source reloads the whole source — doing
+    // that on every crossing was the hover jank. The overlay lives on its own source instead.
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = document.createElement('div')
+    const fra = makeCountryData() // ccn3 250
+    const deu = makeCountryData({ cca3: 'DEU', ccn3: '276' })
+    renderHook(() =>
+      useMapInteractions({
+        ...baseOptions,
+        byNumeric: new Map([
+          [fra.ccn3, fra],
+          [deu.ccn3, deu],
+        ]),
+        loaded: true,
+      }),
+    )
+
+    hoverOver(fake, fra.ccn3)
+    hoverOver(fake, fra.ccn3) // same country: nothing to do
+    hoverOver(fake, deu.ccn3)
+    hoverOff(fake)
+
+    expect(vi.mocked(setHoverOverlay).mock.calls).toEqual([
+      [fake.map, '250'],
+      [fake.map, '276'],
+      [fake.map, null],
+    ])
+    expect(fake.calls.setFilter).not.toHaveBeenCalled()
+  })
+})
+
+type FakeMap = ReturnType<typeof createFakeMapRef>
+
+// The only two places that know how the hook receives hover events (MapLibre's delegated
+// layer listeners on country-fill).
+function hoverOver(fake: FakeMap, id: string) {
+  fake.fire('mousemove', LAYER.fill, { features: [{ id }] })
+}
+function hoverOff(fake: FakeMap) {
+  fake.fire('mouseleave', LAYER.fill, {})
+}
+
+describe('useMapInteractions cursor state machine', () => {
+  // Characterization tests: the cursor logic had no unit coverage (only an e2e checks
+  // 'pointer'), and it is about to move from delegated layer listeners to one plain
+  // mousemove, so pin today's behaviour first.
+  function setup(initialPicking = false) {
+    const fake = createFakeMapRef()
+    h.mapRef.current = fake.map
+    h.tooltipRef.current = document.createElement('div')
+    const fra = makeCountryData() // ccn3 250
+    const utils = renderHook(
+      ({ picking }: { picking: boolean }) =>
+        useMapInteractions({
+          ...baseOptions,
+          byNumeric: new Map([[fra.ccn3, fra]]),
+          loaded: true,
+          comparePickingMode: picking,
+        }),
+      { initialProps: { picking: initialPicking } },
+    )
+    return { fake, fra, ...utils }
+  }
+
+  it('starts with the grab cursor', () => {
+    const { fake } = setup()
+    expect(fake.canvas.style.cursor).toBe('grab')
+  })
+
+  it('shows pointer over a country and grab after leaving it', () => {
+    const { fake, fra } = setup()
+    hoverOver(fake, fra.ccn3)
+    expect(fake.canvas.style.cursor).toBe('pointer')
+    hoverOff(fake)
+    expect(fake.canvas.style.cursor).toBe('grab')
+  })
+
+  it('keeps the crosshair while picking a compare target, over a country and off it', () => {
+    const { fake, fra } = setup(true)
+    expect(fake.canvas.style.cursor).toBe('crosshair')
+    hoverOver(fake, fra.ccn3)
+    expect(fake.canvas.style.cursor).toBe('crosshair')
+    hoverOff(fake)
+    expect(fake.canvas.style.cursor).toBe('crosshair')
+  })
+
+  it('after a programmatic camera move clears the hover, leaving still resets pointer to grab', () => {
+    // movestartClear nulls the hovered id but writes no cursor (it can fire mid-drag), so
+    // the cursor is still 'pointer' while the pointer is over the ocean; the next leave
+    // must repair it. This pins the delegated listener's own "was inside" bookkeeping.
+    const { fake, fra } = setup()
+    hoverOver(fake, fra.ccn3)
+    fake.fire('movestart', null, {})
+    expect(fake.canvas.style.cursor).toBe('pointer')
+    hoverOff(fake)
+    expect(fake.canvas.style.cursor).toBe('grab')
+  })
+
+  it('dragstart shows grabbing; dragend restores pointer over a country, grab otherwise', () => {
+    const { fake, fra } = setup()
+    hoverOver(fake, fra.ccn3)
+    fake.fire('dragstart', null, {})
+    expect(fake.canvas.style.cursor).toBe('grabbing')
+    fake.fire('dragend', null, {})
+    expect(fake.canvas.style.cursor).toBe('pointer')
+
+    hoverOff(fake)
+    fake.fire('dragstart', null, {})
+    fake.fire('dragend', null, {})
+    expect(fake.canvas.style.cursor).toBe('grab')
+  })
+
+  it('dragend leaves the crosshair alone', () => {
+    const { fake } = setup(true)
+    fake.fire('dragstart', null, {})
+    fake.canvas.style.cursor = 'crosshair'
+    fake.fire('dragend', null, {})
+    expect(fake.canvas.style.cursor).toBe('crosshair')
+  })
+
+  it('ending compare picking restores pointer when hovering, grab otherwise', () => {
+    const { fake, fra, rerender } = setup(true)
+    hoverOver(fake, fra.ccn3)
+    rerender({ picking: false })
+    expect(fake.canvas.style.cursor).toBe('pointer')
+
+    rerender({ picking: true })
+    hoverOff(fake)
+    rerender({ picking: false })
+    expect(fake.canvas.style.cursor).toBe('grab')
   })
 })
 

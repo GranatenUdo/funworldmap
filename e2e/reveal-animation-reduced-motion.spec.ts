@@ -44,5 +44,29 @@ test.describe('reveal animation — reduced motion', () => {
         { timeout: 5_000 },
       )
       .toBe(REVEAL_FILL_REDUCED)
+
+    // The highlight must actually draw on the answer. Country features are keyed
+    // by ccn3 ("250" = France), not cca3: a 'FRA' filter matched nothing, and this
+    // spec used to pass anyway because it only read fill-opacity. Query the whole
+    // viewport (a point query never hits a line layer) and dedupe — a feature
+    // appears once per tile it spans.
+    for (const layerId of [LAYER.revealFill, LAYER.revealBorder]) {
+      await expect
+        .poll(
+          async () =>
+            await page.evaluate(
+              (id) => [
+                ...new Set(
+                  window.__funworldmap_map
+                    ?.queryRenderedFeatures({ layers: [id] })
+                    .map((f) => String(f.id)),
+                ),
+              ],
+              layerId,
+            ),
+          { timeout: 5_000 },
+        )
+        .toEqual(['250'])
+    }
   })
 })

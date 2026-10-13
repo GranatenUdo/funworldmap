@@ -6,11 +6,12 @@ type Handler = (...args: unknown[]) => void
 
 export function createFakeMapRef(opts: { zoom?: number; pitch?: number } = {}) {
   const setData = vi.fn()
+  const updateData = vi.fn()
   const setFilter = vi.fn()
   const setPaintProperty = vi.fn()
   const setLayoutProperty = vi.fn()
   const setFeatureState = vi.fn()
-  const getSource = vi.fn(() => ({ setData }))
+  const getSource = vi.fn(() => ({ setData, updateData }))
   const getLayer = vi.fn((): unknown => undefined)
   const addSource = vi.fn()
   const addedLayers: maplibregl.LayerSpecification[] = []
@@ -106,8 +107,9 @@ export function createFakeMapRef(opts: { zoom?: number; pitch?: number } = {}) {
       easeTo,
       flyTo,
       jumpTo,
-    stop,
+      stop,
       setData,
+      updateData,
       getZoom,
       getPitch,
       cameraForBounds,

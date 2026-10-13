@@ -107,7 +107,7 @@ export async function ensureLauncherDismissed(page: Page): Promise<void> {
  * map-first posture (PR2) means bare '/' no longer auto-opens the launcher.
  */
 export async function openLauncher(page: Page): Promise<void> {
-  if (await page.getByTestId("launcher").isVisible()) return
+  if (await page.getByTestId('launcher').isVisible()) return
   await waitForAppReady(page)
   await page.getByTestId('header-play').click()
   await page.getByTestId('launcher').waitFor({ state: 'visible', timeout: 5_000 })
@@ -197,6 +197,28 @@ export async function waitForCountryTilesRendered(page: Page, timeout = 10_000):
       { timeout, intervals: [250, 500, 1000, 1000] },
     )
     .toBeGreaterThan(0)
+}
+
+/**
+ * Wait until MapLibre has no pending work: style and sources loaded AND every
+ * visible tile (re)loaded. `map.loaded()` alone is not enough — it stays true
+ * while a source reload is queued but not yet applied, so a test that arms a
+ * reload counter right after it can be hit by an unrelated late reload (e.g. the
+ * baseline-paint feature-state change). Call it before arming any tile/reload
+ * observer, and again before reading one, so a run cannot pass merely because
+ * its reloads have not landed yet.
+ */
+export async function waitForMapSettled(page: Page, timeout = 15_000): Promise<void> {
+  await page.waitForFunction(
+    () => {
+      const map = (window as unknown as Record<string, unknown>).__funworldmap_map as
+        | { loaded: () => boolean; areTilesLoaded: () => boolean }
+        | undefined
+      return !!map && map.loaded() && map.areTilesLoaded()
+    },
+    undefined,
+    { timeout },
+  )
 }
 
 /**
