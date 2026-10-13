@@ -1,5 +1,5 @@
 /**
- * Hover-sweep measurement for docs/superpowers/plans/2026-10-12-hover-performance.md.
+ * Hover-sweep measurement for docs/superpowers/plans/archive/2026-10-12-hover-performance.md.
  *
  * A Playwright MCP `browser_run_code_unsafe` function (takes `page`), not a module.
  * Run against `npm run build:e2e && npm run preview -- --port 4173 --strictPort`

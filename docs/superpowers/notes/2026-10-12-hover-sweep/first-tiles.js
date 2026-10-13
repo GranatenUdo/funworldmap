@@ -1,5 +1,5 @@
 /**
- * First-tiles measurement for docs/superpowers/plans/2026-10-12-hover-performance.md:
+ * First-tiles measurement for docs/superpowers/plans/archive/2026-10-12-hover-performance.md:
  * time from the `countries` source starting to load to the first render after its
  * first tile, over repeated reloads (excludes the network-dependent basemap style
  * load that gates map `load`). Playwright MCP `browser_run_code_unsafe` function;
