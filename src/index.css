@@ -678,6 +678,10 @@ button:disabled {
 .round-result {
   text-align: left;
   padding-top: 12px;
+  color: var(--color-sand-900);
+}
+.dark .round-result {
+  color: var(--color-dark-50);
 }
 .round-result h2:focus {
   outline: none;
