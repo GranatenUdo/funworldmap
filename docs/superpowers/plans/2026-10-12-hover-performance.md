@@ -364,28 +364,31 @@ The owner approved a ~100 ms leading + trailing throttle of the whole highlight 
 - **The closed-loop sweeps were misleading.** `page.mouse.move` resolves only after the page has handled the event, so at 4× the real spacing between crossings was ~160 ms — already wider than a 100 ms interval — and a sweep stretched to 4–8 s of continuous rendering. A person moving a mouse does not wait for the page.
 - **The open-loop flick is the realistic test** (a move every 20 ms on a fixed schedule, 4× CPU slowdown, satellite). As shipped it costs **1,597 ms** of main-thread time; with **both** highlights disabled it still costs **1,313 ms**. The entire highlight is **18 %** of the cost.
 - **Review 4's go/no-go bar was ≥ 25 % lower busy time.** Removing every highlight change cannot reach it, so no throttle can. Disabling the symbol fade tail (`_fadeDuration = 0`, a hypothesis from Review 4) gained only 14 % in the closed-loop run, so that is not a lever either.
-- **The other ~82 % is hit-testing**: with no highlight at all, `queryRenderedFeatures` costs 680 ms and `readPixels` 539 ms per flick. That is Task 4.
+- **The other ~82 % looked like hit-testing**: with no highlight at all, `queryRenderedFeatures` costs 680 ms and `readPixels` 539 ms per flick. That led to Task 4, which then showed the queries were only absorbing a terrain redraw that happens anyway.
 
 **Decision:** not built, like Task 3. It would have added a timer state machine, a UX lag and a flush/cancel surface for at most a few percent. If it is ever revisited, Review 4's findings (Review record) are the checklist: every queue call must overwrite or cancel the pending id (an A → B → A sequence otherwise strands B), the cancel must precede early returns, `getSource` must sit inside the `try`, and the benchmark must be open-loop with a pre-registered threshold.
 
-## Task 4: One hit-test per mouse move (Stage 2) — APPROVED by the owner 2026-10-13; now the main lever
+## Task 4: One hit-test per mouse move (Stage 2) — REFUTED, REVERTED (approved 2026-10-13; missed its pre-registered bar)
 
-The unthrottled gate was met (`readPixels` is 20 % of busy time). The closed-loop throttled runs suggested a small value (~7 %), but the open-loop spike (Task 3b) shows hit-testing is ~82 % of a realistic flick's cost at 4×, so this is the main remaining lever; the owner chose to build it. Success bar, fixed in advance: **≥ 25 % lower median busy time** on the open-loop 4× satellite flick (20 ms per move, ≥ 15 sweeps per arm, alternating old and new builds).
+The owner approved replacing the two delegated `mousemove`/`mouseleave` layer listeners with one plain `mousemove` doing a single `queryRenderedFeatures`, after the open-loop spike (Task 3b) showed hit-testing was ~82 % of a realistic flick's cost with the highlight disabled. The bar was fixed in advance: **≥ 25 % lower median busy time** on the open-loop 4× satellite flick (20 ms per move), ≥ 15 sweeps per arm, alternating old and new builds across fresh page loads.
 
-**Design (refinements from reviews 2 and 3).** Replace the delegated `map.on('mousemove', LAYER.fill, …)` and `map.on('mouseleave', LAYER.fill, …)` with one plain `map.on('mousemove', hoverMove)` plus `map.on('mouseout', leaveFill)`. `hoverMove` runs a **single** `queryRenderedFeatures(e.point, { layers: [LAYER.fill] })`. The old `getLayer` guard is dropped: the effect only attaches after `loaded`, when the layer exists, and `queryRenderedFeatures` returns `[]` with no style.
+**What was built, test-first.** Seven characterization tests of the cursor/hover state machine (which had no unit coverage) written against the delegated implementation and confirmed green; the test helpers then switched to the plain event model (9 red); then the implementation with a separate `overFillRef` flag so a programmatic camera move still lets the next ocean move repair the `pointer` cursor, 34/34 green, 719 unit tests, lint and typecheck clean.
 
-- On a hit: set `overFillRef.current = true` and call the existing per-country body, refactored to take an id (`hoverCountry(id)`) — cursor `pointer` (unless `crosshair`) on every move, tooltip gating, then the early return when the id is unchanged.
-- On an empty result, or on `mouseout`: if `overFillRef.current` is true, set it false and run the leave path (`clearHoverArtifacts(false)` + cursor `grab` unless `crosshair`); otherwise do nothing.
-- **`overFillRef` is a separate flag from `hoveredRef`** (review 3 M5). It mirrors the delegated listener's internal `mousein`. `movestartClear` nulls `hoveredRef` but not `overFillRef`, so after a reveal fly-to or search jump the next ocean move still runs the leave path and resets the cursor from `pointer` to `grab`, exactly as today. Gating on `hoveredRef !== null` would have left `pointer` over the ocean.
-- The "must not clobber `grabbing`" rationale is corrected: map `mousemove` events do not fire while a pan/rotate handler is active (`map_event.ts`), so the leave path cannot run mid-drag from mousemove; the existing mid-drag cursor write comes from `mouseout`, which is unchanged behaviour and out of scope.
-- Synchronous, no rAF deferral, so no race with `movestartClear`. `mousemovePosition` (tooltip position) stays a separate listener.
+**Result (16 sweeps per arm, two alternating page loads each; old = the build before the change, served from a copy of `dist`):**
 
-**Tests (review 3 M6).** `useMapInteractions.test.ts` has no cursor tests today (only the e2e at `map-and-countries.spec.ts` checks `pointer`). So, in order: (1) add characterization tests for the **current** cursor/hover state machine — grab on load, pointer on hover, crosshair preserved while compare-picking, grab after leaving, leave after `movestart` clears `hoveredRef`, `dragStart`/`dragEnd`, compare-picking restore — written through a small `hoverOver(id)` / `hoverOff()` helper that fires the delegated events, and confirm they pass; (2) switch the helper to the plain model (stub `getLayer`-free `queryRenderedFeatures` to return `[{ id }]` or `[]`, fire plain `mousemove` with a `point`, and `mouseout`) and confirm the same assertions go red; (3) implement until green. The tests at the old `:147/:181/:229-232` keyed on `mousemove:country-fill`/`mouseleave:country-fill` (which make `fire` throw once those handlers are gone) are rewritten, not kept. Add: exactly one `queryRenderedFeatures` per move; an ocean move with nothing hovered writes no cursor; `mouseout` clears.
+| Metric (medians)                  | Old    | One hit-test | Change       |
+| --------------------------------- | -----: | -----------: | ------------ |
+| `queryRenderedFeatures` per sweep |     44 |           18 | −59 %        |
+| `readPixels` per sweep            |    467 |          200 | −57 %        |
+| Query time / `readPixels` time    | 279 / 243 ms | 147 / 116 ms | −47 % / −52 % |
+| **Main-thread busy**              | **2,056 ms** | **2,147 ms** | **+4.5 %**   |
+| Long tasks per sweep              | 12–14  |        12–14 | none         |
+| Catch-up after the flick          | ~900 ms |      ~970 ms | none         |
+| Frame p95                         | ~260 ms |      ~250 ms | none         |
 
-- [ ] Write the characterization tests; confirm green on the delegated implementation.
-- [ ] Switch the test helper to the plain event model; confirm red.
-- [ ] Implement (`overFillRef`, `hoverMove`, `leaveFill`, `hoverCountry`), delete the delegated listeners and their `off` calls; update `docs/systems/map-rendering.md` and this plan's File Structure in the same commit.
-- [ ] Re-measure `queryRenderedFeatures` and `readPixels` counts (target: ≈half); `npm run check` and the e2e list in Task 5; commit `perf(map): one hover hit-test per mouse move`.
+The hit-test did exactly what it was meant to do and the cost did not move. The expensive part is the terrain depth/coords redraw, which is paid **once per scene change by whichever render or query comes first**, so fewer queries do not reduce it (with the highlight disabled the queries cost 680 ms because they absorb that redraw; with it on, the render does).
+
+**Decision:** the hook change is reverted. The seven characterization tests are kept (restored to the delegated event model): they pin cursor behaviour that previously had no unit coverage and pass against the shipped implementation.
 
 ## Task 4b: The reveal panel's text is invisible in dark mode (owner-approved 2026-10-13)
 
@@ -409,7 +412,7 @@ Found while capturing the reveal screenshot; unrelated to hover. Measured in dar
 
 **Owner decision 2026-10-13:** push `fix/hover-performance` and open a PR against `main` (replaces the earlier "push only" answer). The PR body carries the measured tables, the decisions above, and the note that `reveal-animation.spec.ts` is local-only (#106).
 
-- [ ] Fill in **Results** (the Task 4 measurement) at the bottom of this plan. The `docs/systems/map-rendering.md` update for Task 4 lands in the same commit as its code, not here.
+- [x] Fill in **Results** at the bottom of this plan (Task 4 and the realistic-scenario number for Task 2).
 - [ ] `npm run check`, `npm run build:e2e`, then `npm run test:e2e -- --workers=2` for map-and-countries, reveal-animation + reduced-motion, compare, game-country-pinning, **a11y-contrast**, and the **mobile-chromium** project (mobile-tap, which exercises the coarse-pointer path through the changed handlers). Use `E2E_PORT` (project memory).
 - [ ] Move this plan to `docs/superpowers/plans/archive/` (shipped). Open the PR: measured table, and a note that `reveal-animation.spec.ts` is local-only (#106) while the reduced-motion spec covers the reveal in CI.
 
@@ -440,6 +443,8 @@ A/B in a normal browser (France as target, wrong guess Germany, reduced motion),
 
 Frame p95 is unchanged because this machine (RTX 5070 Ti, 120 Hz) barely drops frames on the old code at full speed. At **4× CPU slowdown** (CDP, a rough mid-range laptop) satellite is genuinely janky on both builds — old: 52 long tasks, p95 77.6 ms, worst frame 106 ms, busy 9.0 s; new: busy 8.4 s with long tasks 63–117 against 20–101 per sweep — i.e. **no measurable difference under throttling**.
 
+**Realistic scenario (open-loop flick, 4× CPU, satellite; old `main` against the shipped overlay, 8 sweeps each, one alternating pair):** whole-source tile reloads **~207 → 0** per sweep; main-thread busy **1,828 → 1,698 ms (−7 %)**; catch-up after the flick **632 → 473 ms**; long tasks 12 → 16 (no clear change). That is a small gain within the sweep-to-sweep noise (ranges overlap) and agrees with the closed-loop 4× result above (−6 %). The unthrottled figures in the table are the clearer win; under a slowed CPU in satellite mode the overlay change is a modest improvement, not a fix.
+
 **Why: the remaining satellite cost is terrain draping, not hover hit-testing or the reload.** A CPU profile of a throttled sweep (new build) puts ~40 % of busy time in terrain rendering (`_getTerrainCoordsForRegularTile` 15 %, `uniformMatrix4fv` 11 %, native GL), and only 7 % in `readPixels`. Isolating the trigger (satellite, 4×, new build):
 
 | Hover visual that still runs                    | Busy time | Long tasks | Frame p95 |
@@ -462,7 +467,8 @@ Either visual alone costs the full ~7 s; removing both removes it. In terrain mo
 - **Task 3 (Stage 1b) — not built.** Its hypothesis was that the feature-state tint's source-revision bump was the draping cost. Disabling the tint entirely changed nothing (8,238 vs 8,426 ms), so moving it onto the overlay source would not help.
 - **Task 4 (Stage 2) — gate met unthrottled** (`readPixels` is 20 % of busy time, 1,307 calls ≈ 21.6 per mouse move), **but its expected value is small**: under throttling `readPixels` is ~7 % of busy time, and with both hover visuals disabled the whole sweep is already 1.0 s. It would roughly halve a cost that is not the dominant one.
 - **Task 3b (highlight throttle) — approved 2026-10-13, refuted by the spike below, not built.** The whole highlight is only 18 % of a realistic flick's cost, below the pre-registered 25 % bar.
-- **Task 4 (single hit-test) — building**, now the main lever: hit-testing is ~82 % of the realistic cost.
+- **Task 4 (single hit-test) — built test-first, measured, refuted and reverted**: it halved the queries and the GPU read-backs but median busy time was +4.5 % against a pre-registered bar of −25 % (16 sweeps per arm). The hit-testing "cost" in the highlight-off run was the terrain redraw being absorbed by the queries, not the queries themselves.
+- **Net outcome for the satellite/terrain default on slower hardware:** nothing done on the hover side (the overlay, a highlight throttle, a single hit-test) moves the dominant cost, which is MapLibre's terrain depth/coords/draping redraw per scene change. The overlay change removes whole-source reloads and gives a modest gain; the rest would need a different approach (not drawing the highlight through MapLibre's terrain pipeline at all, or relaxing terrain in hover), which is out of scope here.
 
 ### Task 3b spike (Review 4's requested measurement)
 
