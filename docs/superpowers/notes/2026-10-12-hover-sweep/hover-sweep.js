@@ -23,6 +23,18 @@ async (page) => {
   // CDP CPU slowdown factor for the page (1 = none). The dev machine has a fast GPU/CPU, so the
   // old code barely drops frames at 1; 4 approximates a mid-range laptop and exposes the cost.
   const THROTTLE = 1
+  // Wall-clock gap between moves in ms. 0 = frame pacing (two rAFs per move), which is what the
+  // original numbers used. Note page.mouse.move resolves only after the page's main thread has
+  // handled the event, so under CPU throttle the real spacing is max(PACE_MS, frame time); the
+  // result reports the measured spacing (moveGapMs) and the number of map renders.
+  const PACE_MS = 0
+  // Open-loop sweep: when > 0, every move is dispatched on a fixed wall-clock schedule
+  // (one per OPEN_LOOP_MS) without waiting for the page, like a person moving a mouse at a
+  // fixed physical speed regardless of how busy the page is. The closed-loop modes above wait
+  // for the page, which hides backlog. Reports catchUpMs: time after the last move until idle.
+  const OPEN_LOOP_MS = 0
+  // Test-only: override the map's symbol fade duration (ms) before the sweeps. null = leave it.
+  const FADE_DURATION = null
   const URL = 'http://localhost:4173/'
   const ctx = page.context()
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -30,7 +42,7 @@ async (page) => {
   await page.addInitScript(() => {
     if (window.__s0Installed) return
     window.__s0Installed = true
-    const s = { first: null, firstRender: null, count: 0, hoverCount: 0, armed: false }
+    const s = { first: null, firstRender: null, count: 0, hoverCount: 0, renders: 0, moveTimes: [], armed: false }
     const t = {
       qrf: { n: 0, ms: 0 },
       setFilter: { n: 0, ms: 0 },
@@ -80,6 +92,12 @@ async (page) => {
         timed(v, 'queryRenderedFeatures', 'qrf')
         timed(v, 'setFilter', 'setFilter')
         timed(v, 'setFeatureState', 'setFeatureState')
+        v.on('render', () => {
+          if (s.armed) s.renders++
+        })
+        v.on('mousemove', () => {
+          if (s.armed) s.moveTimes.push(performance.now())
+        })
         v.on('sourcedata', (e) => {
           if (e.sourceId === 'countries-hover' && e.tile && s.armed) s.hoverCount++
           if (e.sourceId === 'countries' && e.tile) {
@@ -178,6 +196,11 @@ async (page) => {
     return { transitions: n, distinct: new Set(ids.filter(Boolean)).size, ocean: ids.filter((x) => x === null).length }
   }, pts)
 
+  if (FADE_DURATION !== null) {
+    await page.evaluate((d) => {
+      window.__funworldmap_map._fadeDuration = d
+    }, FADE_DURATION)
+  }
   const cdp = await ctx.newCDPSession(page)
   await cdp.send('Performance.enable')
   if (THROTTLE > 1) await cdp.send('Emulation.setCPUThrottlingRate', { rate: THROTTLE })
@@ -229,6 +252,8 @@ async (page) => {
       }
       window.__s0.count = 0
       window.__s0.hoverCount = 0
+      window.__s0.renders = 0
+      window.__s0.moveTimes = []
       window.__s0.armed = true
       requestAnimationFrame((ts) => {
         m.last = ts
@@ -237,13 +262,26 @@ async (page) => {
     })
     const b0 = await taskMs()
     const w0 = Date.now()
-    for (const p of pts) {
-      await page.mouse.move(p.x, p.y)
-      await page.evaluate(() => new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res))))
+    if (OPEN_LOOP_MS > 0) {
+      await Promise.all(
+        pts.map(
+          (p, i) =>
+            new Promise((res) => {
+              setTimeout(() => page.mouse.move(p.x, p.y).then(res, res), i * OPEN_LOOP_MS)
+            }),
+        ),
+      )
+    } else {
+      for (const p of pts) {
+        await page.mouse.move(p.x, p.y)
+        if (PACE_MS > 0) await new Promise((res) => setTimeout(res, PACE_MS))
+        else await page.evaluate(() => new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res))))
+      }
     }
     const wall = Date.now() - w0
     await page.mouse.move(r.left + 5, r.top + 5) // leave to a corner
     await settle()
+    const catchUp = Date.now() - w0 - wall
     const b1 = await taskMs()
     const out = await page.evaluate(() => {
       const m = window.__m
@@ -256,6 +294,8 @@ async (page) => {
         t: JSON.parse(JSON.stringify(window.__t)),
         reloads: window.__s0.count,
         hoverReloads: window.__s0.hoverCount,
+        renders: window.__s0.renders,
+        moveTimes: window.__s0.moveTimes,
       }
     })
     if (out.t.qrf.n === 0) {
@@ -265,6 +305,10 @@ async (page) => {
       results.push({
         reloads: out.reloads,
         hoverReloads: out.hoverReloads,
+        renders: out.renders,
+        moveEvents: out.moveTimes.length,
+        catchUpMs: catchUp,
+        moveGapMs: Math.round(pct(out.moveTimes.slice(1).map((t, i) => t - out.moveTimes[i]), 0.5)),
         updateData: { n: out.t.updateData.n, ms: +out.t.updateData.ms.toFixed(1) },
         longTasks: out.long.length,
         longTaskMs: Math.round(out.long.reduce((a, b) => a + b, 0)),
@@ -289,12 +333,19 @@ async (page) => {
   return {
     mode: MODE,
     throttle: THROTTLE,
+    paceMs: PACE_MS,
+    openLoopMs: OPEN_LOOP_MS,
+    fadeDuration: FADE_DURATION,
     info: { renderer: info.renderer, terrain: info.terrain, dpr: info.dpr },
     firstTilesMs: Math.round(firstTiles.firstRender),
     path: { moves: MOVES, ...crossings },
     median: {
       reloads: med('reloads'),
       hoverReloads: med('hoverReloads'),
+      renders: med('renders'),
+      moveEvents: med('moveEvents'),
+      catchUpMs: med('catchUpMs'),
+      moveGapMs: med('moveGapMs'),
       updateDataN: med('updateData', 'n'),
       updateDataMs: med('updateData', 'ms'),
       longTasks: med('longTasks'),
