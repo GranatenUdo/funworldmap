@@ -47,7 +47,7 @@ The repository uses the Pages artifact API, **not a `gh-pages` branch**. The dep
 
 It then checks out that SHA, builds production output with the optional telemetry settings, uploads the Pages artifact, rechecks the current branch tip, and deploys to the `github-pages` environment. PR, fork, scheduled-only, pending, failed, and stale runs cannot authorize deployment. Failed report aggregation also leaves the CI workflow unsuccessful and blocks release.
 
-Required PR checks are the aggregate **Required checks** job and CodeQL **Analyze (javascript-typescript)**. Report merging remains visible but is not part of the correctness aggregator. The aggregate fails unless frontend checks, Worker validation, documentation, and every Chromium shard succeed.
+After the post-merge protection switch documented in the runbook, required PR checks are the aggregate **Required checks** job and CodeQL **Analyze (javascript-typescript)**. Report merging remains visible but is not part of the correctness aggregator. The aggregate fails unless frontend checks, Worker validation, documentation, and every Chromium shard succeed.
 
 ## Budgets and hosting operations
 

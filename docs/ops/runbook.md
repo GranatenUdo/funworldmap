@@ -46,3 +46,16 @@ Keep credentials and personal data out of public issues, logs, and screenshots. 
 Dependabot covers the frontend, Worker, and GitHub Actions. Both npm projects need a clean install and appropriate validation after updates. The weekly/manual external-link workflow reports remote link failures independently of PR correctness gates.
 
 Before changing GitHub settings, save their current values. Main protection requires pull requests, resolved conversations, and successful checks without requiring a second person's approval. Required check names and their GitHub App must be observed before enforcement. Update documentation and required contexts together if jobs are renamed.
+
+### Protection rollout for this change
+
+The active ruleset currently requires the existing fast job, all four Chromium shards, and CodeQL, attributed to the GitHub Actions app. This preserves mergeability of prerequisite PRs whose workflows do not yet contain the aggregate job.
+
+After the documentation/automation PR has reached `main` and **Required checks** plus **Analyze (javascript-typescript)** have been observed on that workflow, replace the legacy contexts with the reviewed payload in [main-ruleset.json](main-ruleset.json):
+
+```bash
+gh api --method PUT repos/GranatenUdo/funworldmap/rulesets/15287021 --input docs/ops/main-ruleset.json
+gh api repos/GranatenUdo/funworldmap/rulesets/15287021
+```
+
+Do not apply that payload while the aggregate exists only on an unmerged branch. The switch is intentionally a post-merge action; it is not yet applied by this PR. Snapshot the current rule before applying and verify the result afterwards.
