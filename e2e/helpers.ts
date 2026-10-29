@@ -1,3 +1,4 @@
+import type * as maplibregl from 'maplibre-gl'
 import { expect, type Page, type JSHandle } from '@playwright/test'
 import { Buffer } from 'node:buffer'
 import type { GameSession } from '../src/game/shared/types'

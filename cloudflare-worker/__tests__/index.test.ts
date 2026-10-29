@@ -39,7 +39,6 @@ describe('analytics worker', () => {
     const res = await worker.fetch(
       post({ name: 'free_started', props: { mode: 'country-pinning' } }),
       env,
-      {} as ExecutionContext,
     )
     expect(res.status).toBe(204)
     expect(writes).toHaveLength(1)
@@ -50,11 +49,7 @@ describe('analytics worker', () => {
 
   it('rejects unknown event names with 400', async () => {
     const { env, writes } = makeEnv()
-    const res = await worker.fetch(
-      post({ name: 'not_a_real_event', props: {} }),
-      env,
-      {} as ExecutionContext,
-    )
+    const res = await worker.fetch(post({ name: 'not_a_real_event', props: {} }), env)
     expect(res.status).toBe(400)
     expect(writes).toHaveLength(0)
   })
@@ -62,7 +57,7 @@ describe('analytics worker', () => {
   it('rejects non-POST requests with 405', async () => {
     const { env } = makeEnv()
     const req = new Request('https://funworldmap.com/api/event', { method: 'GET' })
-    const res = await worker.fetch(req, env, {} as ExecutionContext)
+    const res = await worker.fetch(req, env)
     expect(res.status).toBe(405)
   })
 
@@ -73,7 +68,7 @@ describe('analytics worker', () => {
       headers: { 'content-type': 'application/json' },
       body: 'not json',
     })
-    const res = await worker.fetch(req, env, {} as ExecutionContext)
+    const res = await worker.fetch(req, env)
     expect(res.status).toBe(400)
   })
 
@@ -83,7 +78,7 @@ describe('analytics worker', () => {
       method: 'OPTIONS',
       headers: { origin: 'https://funworldmap.com' },
     })
-    const res = await worker.fetch(req, env, {} as ExecutionContext)
+    const res = await worker.fetch(req, env)
     expect(res.status).toBe(204)
     expect(res.headers.get('access-control-allow-origin')).toBe('https://funworldmap.com')
   })
@@ -98,7 +93,6 @@ describe('analytics worker', () => {
         },
       }),
       env,
-      {} as ExecutionContext,
     )
     const w = writes[0]
     expect(w.blobs?.[0]).toBe('launcher_dismissed')

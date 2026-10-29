@@ -364,7 +364,7 @@ funworldmap is a static-site frontend. There is no backend, no user accounts, no
 
 ## Reporting
 
-Email: tobias.ens@docuware.com (subject line starting with `[funworldmap security]`).
+Email: tobias.ens@proton.me (subject line starting with `[funworldmap security]`).
 
 This is a best-effort project with no SLA. I aim to acknowledge reports within seven days.
 

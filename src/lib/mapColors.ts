@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 
 // Warm Explorer basemap overrides.
 // Dark: deep warm charcoal ocean/land. Light: warm sand atlas feel.
@@ -23,7 +23,9 @@ export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void
 
   for (const [layerId, props] of Object.entries(overrides)) {
     if (!map.getLayer(layerId)) continue
-    for (const [prop, value] of Object.entries(props)) {
+    for (const prop of ['background-color', 'fill-color', 'line-color'] as const) {
+      const value = props[prop]
+      if (value === undefined) continue
       try {
         map.setPaintProperty(layerId, prop, value)
       } catch {
@@ -38,16 +40,8 @@ export function applyMapTheme(map: maplibregl.Map, mode: 'light' | 'dark'): void
   for (const layer of style.layers) {
     if (layer.type !== 'symbol') continue
     try {
-      map.setPaintProperty(
-        layer.id,
-        'text-color',
-        mode === 'dark' ? '#64748b' : '#78716c',
-      )
-      map.setPaintProperty(
-        layer.id,
-        'text-halo-color',
-        mode === 'dark' ? '#10141a' : '#e8e3da',
-      )
+      map.setPaintProperty(layer.id, 'text-color', mode === 'dark' ? '#64748b' : '#78716c')
+      map.setPaintProperty(layer.id, 'text-halo-color', mode === 'dark' ? '#10141a' : '#e8e3da')
     } catch {
       // Not all symbol layers have text paint — skip
     }

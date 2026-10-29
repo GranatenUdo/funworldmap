@@ -4,7 +4,7 @@ Thanks for your interest. funworldmap is an interactive political world map — 
 
 ## Local Development
 
-Requirements: Node.js 22, npm 10+.
+Requirements: Node.js 22.22.1 (see `.nvmrc`) and npm 10. Both the app and optional Worker use Node 22; newer Node major versions are not currently supported.
 
 ```bash
 git clone https://github.com/granatenudo/funworldmap.git
@@ -19,7 +19,7 @@ Scripts:
 - `npm run build` — production build to `dist/`
 - `npm run preview` — serve the production bundle locally
 - `npm run lint` — ESLint
-- `tsc -b` — TypeScript build/check
+- `npm run typecheck` — TypeScript build/check
 - `npm run test:unit` — Vitest (jsdom environment)
 - `npm run test:e2e` — Playwright (chromium on CI; mobile + firefox projects available locally — see `playwright.config.ts`)
 - `npm run update-data` — refresh `src/data/countries.json` from upstream sources

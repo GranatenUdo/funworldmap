@@ -61,11 +61,6 @@ vi.mock('maplibre-gl', () => {
   }
   class FakeControl {}
   return {
-    default: {
-      Map: FakeMap,
-      NavigationControl: FakeControl,
-      AttributionControl: FakeControl,
-    },
     Map: FakeMap,
     NavigationControl: FakeControl,
     AttributionControl: FakeControl,
@@ -194,13 +189,16 @@ describe('useMapInstance', () => {
 
   it('can retry without arming a reload that would discard results', () => {
     const spy = vi.spyOn(window, 'setTimeout')
-    const {result} = renderHook(() => {
-      const ref = useRef<HTMLDivElement | null>(document.getElementById('c') as HTMLDivElement)
-      return useMapInstance({containerRef:ref,onLoad:()=>Promise.resolve()})
-    },{wrapper:Wrapper})
-    const before = spy.mock.calls.filter(call => call[1] === 1000).length
+    const { result } = renderHook(
+      () => {
+        const ref = useRef<HTMLDivElement | null>(document.getElementById('c') as HTMLDivElement)
+        return useMapInstance({ containerRef: ref, onLoad: () => Promise.resolve() })
+      },
+      { wrapper: Wrapper },
+    )
+    const before = spy.mock.calls.filter((call) => call[1] === 1000).length
     result.current.retryWebGL(false)
-    expect(spy.mock.calls.filter(call => call[1] === 1000).length).toBe(before)
+    expect(spy.mock.calls.filter((call) => call[1] === 1000).length).toBe(before)
     spy.mockRestore()
   })
 

@@ -26,6 +26,6 @@ This Code of Conduct applies within all project spaces, and also applies when an
 
 ## Enforcement
 
-Issues or concerns can be reported to the project maintainer at **tobias.ens@docuware.com**. All complaints will be reviewed and investigated promptly and fairly. The project maintainer is obligated to respect the privacy and security of the reporter of any incident.
+Issues or concerns can be reported to the project maintainer at **tobias.ens@proton.me**. All complaints will be reviewed and investigated promptly and fairly. The project maintainer is obligated to respect the privacy and security of the reporter of any incident.
 
 For the full text — including enforcement guidelines (the four-level community-impact ladder), unacceptable-behavior examples, and attribution — see the canonical [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct.html).

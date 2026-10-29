@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { parseHash } from '../lib/hashState'
 import { FINE_POINTER_MEDIA_QUERY } from '../lib/layoutConstants'

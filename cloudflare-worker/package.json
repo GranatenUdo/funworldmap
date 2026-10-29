@@ -6,11 +6,17 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "test": "cd .. && npm run test:unit -- cloudflare-worker/"
+    "test": "cd .. && npm run test:unit -- cloudflare-worker/",
+    "typecheck": "tsc --noEmit",
+    "build:check": "wrangler deploy --dry-run --env=\"\" --outdir dist"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20260421.1",
+    "@cloudflare/workers-types": "^5.20261029.1",
     "typescript": "^6.0.3",
-    "wrangler": "^4.84.1"
+    "wrangler": "^4.156.0"
+  },
+  "engines": {
+    "node": ">=22.22.1 <23",
+    "npm": ">=10 <11"
   }
 }

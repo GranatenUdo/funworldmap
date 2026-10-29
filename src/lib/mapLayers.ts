@@ -1,4 +1,5 @@
-import type maplibregl from 'maplibre-gl'
+import { observeMapUpdate } from './observeMapUpdate'
+import type * as maplibregl from 'maplibre-gl'
 import type { CountryData } from './types'
 import {
   SATELLITE_TILES,
@@ -265,10 +266,12 @@ export function setHoverOverlay(map: maplibregl.Map, id: string | null): void {
       map.setLayoutProperty(LAYER.extrusion, 'visibility', 'visible')
       overlay.revealed = true
     }
-    source.updateData({
-      remove: overlay.shown === null ? [] : [overlay.shown],
-      add: next ? [next] : [],
-    })
+    observeMapUpdate(
+      source.updateData({
+        remove: overlay.shown === null ? [] : [overlay.shown],
+        add: next ? [next] : [],
+      }),
+    )
     overlay.shown = id
   } catch {
     /* source torn down — leave `shown` as is so the next call retries */
@@ -688,6 +691,6 @@ export function applyCompareMarkers(
         properties: { label },
       }))
     : []
-  source.setData({ type: 'FeatureCollection', features })
+  observeMapUpdate(source.setData({ type: 'FeatureCollection', features }))
   map.setLayoutProperty(LAYER.compareMarkers, 'visibility', pair ? 'visible' : 'none')
 }

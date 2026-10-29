@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { FillLayerSpecification, LineLayerSpecification } from 'maplibre-gl'
 import {
   addBaseCountryLayers,

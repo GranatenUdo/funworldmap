@@ -1,5 +1,6 @@
+import { observeMapUpdate } from '../../lib/observeMapUpdate'
 import { useEffect, type RefObject } from 'react'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { CountryLike, GameSession, GuessInput, CompletedRound } from '../shared/types'
 import { EMPTY_FILTER, ensureRevealLayers, LAYER } from '../../lib/mapLayers'
 import { REVEAL_CORRECT, REVEAL_WRONG, ICE_DEEP } from '../../lib/mapPalette'
@@ -97,8 +98,8 @@ function clearRevealSources(map: maplibregl.Map): void {
   const markerSrc = map.getSource<maplibregl.GeoJSONSource>(REVEAL_MARKER_SOURCE)
   const lineSrc = map.getSource<maplibregl.GeoJSONSource>(REVEAL_LINE_SOURCE)
   try {
-    markerSrc?.setData(emptyFc)
-    lineSrc?.setData(emptyFc)
+    observeMapUpdate(markerSrc?.setData(emptyFc))
+    observeMapUpdate(lineSrc?.setData(emptyFc))
   } catch {
     /* no-op */
   }
@@ -259,10 +260,12 @@ export function useRevealMapEffects({
         try {
           ensureRevealSources(map)
           const markerSrc = map.getSource(REVEAL_MARKER_SOURCE) as maplibregl.GeoJSONSource
-          markerSrc.setData({
-            type: 'FeatureCollection',
-            features: [markerFeature(reveal.targetCentroid, 'target')],
-          })
+          observeMapUpdate(
+            markerSrc.setData({
+              type: 'FeatureCollection',
+              features: [markerFeature(reveal.targetCentroid, 'target')],
+            }),
+          )
         } catch (err) {
           console.warn('reveal marker skipped:', err)
         }
@@ -291,20 +294,22 @@ export function useRevealMapEffects({
       if (reveal.kind === 'point') {
         markerFeatures.push(markerFeature(plan.from, 'guess'))
       }
-      markerSrc.setData({ type: 'FeatureCollection', features: markerFeatures })
+      observeMapUpdate(markerSrc.setData({ type: 'FeatureCollection', features: markerFeatures }))
 
       // Full arc loaded ONCE — line-gradient masks the visible portion per
       // frame, so no per-frame setData / tile rebuild.
-      lineSrc.setData({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: { type: 'LineString', coordinates: arc },
-            properties: {},
-          },
-        ],
-      })
+      observeMapUpdate(
+        lineSrc.setData({
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              geometry: { type: 'LineString', coordinates: arc },
+              properties: {},
+            },
+          ],
+        }),
+      )
 
       if (plan.durationMs === 0) {
         // Reduced-motion: snap line fully visible, jump camera to target.

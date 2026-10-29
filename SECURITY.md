@@ -18,7 +18,9 @@ funworldmap is a static-site frontend with no user accounts and no user-submitte
 
 ## Reporting
 
-Email: tobias.ens@docuware.com (subject line starting with `[funworldmap security]`).
+Prefer [GitHub private vulnerability reporting](https://github.com/GranatenUdo/funworldmap/security/advisories/new). If unavailable, use the email below. Please do not disclose vulnerabilities in public issues.
+
+Email: tobias.ens@proton.me (subject line starting with `[funworldmap security]`).
 
 This is a best-effort project with no SLA. I aim to acknowledge reports within seven days.
 
