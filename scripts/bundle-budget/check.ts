@@ -50,7 +50,7 @@ if (indexJs.length === 0) {
   console.error('No main JS chunk found in dist/assets/')
   process.exit(1)
 }
-const mainJsBytes = gzipSize(join(distAssets, indexJs[0].f))
+let mainJsBytes = gzipSize(join(distAssets, indexJs[0].f))
 accounted.add(indexJs[0].f)
 for (let i = 1; i < indexJs.length; i++) {
   lazyJsBytes += gzipSize(join(distAssets, indexJs[i].f))
@@ -60,7 +60,12 @@ for (let i = 1; i < indexJs.length; i++) {
 for (const f of files) {
   if (accounted.has(f)) continue
   const full = join(distAssets, f)
-  if (/^index-.*\.css$/.test(f)) {
+  if (/^maplibre-gl-worker-.*\.js$/.test(f)) {
+    // v5 embedded the worker in main; v6 emits it separately. Keep charging
+    // both to initial JavaScript so the migration cannot hide bandwidth.
+    mainJsBytes += gzipSize(full)
+    accounted.add(f)
+  } else if (/^index-.*\.css$/.test(f)) {
     cssBytes += gzipSize(full)
     accounted.add(f)
   } else if (f.startsWith('countries-') && f.endsWith('.js')) {
