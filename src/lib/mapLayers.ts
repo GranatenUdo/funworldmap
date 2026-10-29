@@ -174,6 +174,7 @@ interface HoverOverlay {
   shown: string | null
   /** Whether the overlay layers have been revealed (they start hidden). */
   revealed: boolean
+  revision: number
 }
 
 const hoverOverlays = new WeakMap<maplibregl.Map, HoverOverlay>()
@@ -216,7 +217,7 @@ export function addHoverLayers(map: maplibregl.Map, geojson: GeoJSON.FeatureColl
     if (typeof id !== 'string') continue
     features.set(id, { type: 'Feature', id, properties: { id }, geometry: feature.geometry })
   }
-  hoverOverlays.set(map, { features, shown: null, revealed: false })
+  hoverOverlays.set(map, { features, shown: null, revealed: false, revision: 0 })
 
   map.addSource(HOVER_SOURCE, {
     type: 'geojson',
@@ -266,11 +267,16 @@ export function setHoverOverlay(map: maplibregl.Map, id: string | null): void {
       map.setLayoutProperty(LAYER.extrusion, 'visibility', 'visible')
       overlay.revealed = true
     }
+    const previous = overlay.shown
+    const revision = ++overlay.revision
     observeMapUpdate(
       source.updateData({
         remove: overlay.shown === null ? [] : [overlay.shown],
         add: next ? [next] : [],
       }),
+      () => {
+        if (overlay.revision === revision) overlay.shown = previous
+      },
     )
     overlay.shown = id
   } catch {
