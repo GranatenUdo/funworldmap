@@ -10,6 +10,7 @@ export function isHistorical(path: string): boolean {
   return (
     path.startsWith('docs/superpowers/') ||
     path.startsWith('graphify-out/') ||
+    path.startsWith('.impeccable/') ||
     /(?:^|\/)\d{4}-\d{2}-\d{2}[^/]*\.md$/.test(path) ||
     /-\d{4}-\d{2}-\d{2}\.md$/.test(path)
   )
