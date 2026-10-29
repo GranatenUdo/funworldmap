@@ -28,8 +28,7 @@ test.describe('Satellite is the default basemap', () => {
   })
 
   test('satellite raster layer is visible on first load', async ({ page }) => {
-    await page.goto('/')
-    await waitForAppReady(page)
+    await gotoAndWaitForMap(page, '/')
     await ensureLauncherDismissed(page)
 
     // satellite-layer is added by addRasterSources() inside onLoad(), so we
@@ -52,12 +51,11 @@ test.describe('Satellite is the default basemap', () => {
   })
 
   test('user can still toggle back to vector basemap', async ({ page }) => {
-    await page.goto('/')
-    await waitForAppReady(page)
+    await gotoAndWaitForMap(page, '/')
     await ensureLauncherDismissed(page)
 
-    // Toggle click and data-satellite-active check work on React state
-    // alone — no map-loaded synchronisation needed.
+    // Wait for initialization before dismissing the chooser: its first render
+    // can follow data-app-ready, and the header is hidden while it is open.
     const toggle = page.getByTestId('satellite-toggle')
     await toggle.click()
     await expect(toggle).toHaveAttribute('data-satellite-active', 'false')
