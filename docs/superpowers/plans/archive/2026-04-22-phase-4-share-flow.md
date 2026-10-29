@@ -10,7 +10,7 @@
 
 **Tech Stack:** TypeScript, React 19, Vite 6, Vitest + jsdom, Playwright. Existing MapLibre/Tailwind unchanged.
 
-**Spec:** [`2026-04-22-retention-v1-finishing-design.md`](../specs/2026-04-22-retention-v1-finishing-design.md) §B.
+**Spec:** [`2026-04-22-retention-v1-finishing-design.md`](../../specs/2026-04-22-retention-v1-finishing-design.md) §B.
 
 ---
 

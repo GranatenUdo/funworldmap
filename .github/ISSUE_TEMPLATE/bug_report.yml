@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a reproducible problem with the site.
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: For vulnerabilities, use private security reporting. Do not include
+        credentials or personal information.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and what you expected.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include the page URL and a minimal sequence of steps.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Browser and device
+      description: Browser/version, operating system, and device or viewport.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or console output
+      description: Remove personal data before attaching logs.
+    validations:
+      required: false

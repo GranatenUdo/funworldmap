@@ -10,7 +10,7 @@
 
 **Tech Stack:** GitHub Actions (`actions/checkout@v6`), npm scripts (`tsx` generator), Vite 6 (`public/` → `dist/` copy), Playwright `webServer`.
 
-**Spec:** [`docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md`](../specs/2026-05-29-daily-content-data-branch-design.md)
+**Spec:** [`docs/superpowers/specs/2026-05-29-daily-content-data-branch-design.md`](../../specs/2026-05-29-daily-content-data-branch-design.md)
 
 ---
 

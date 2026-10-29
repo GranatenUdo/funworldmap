@@ -18,7 +18,7 @@
 
 ## Scope
 
-This plan implements **Phase 2** of [`2026-04-21-retention-program-v1-design.md`](../specs/2026-04-21-retention-program-v1-design.md). It depends on Phase 1 (`d64e36b`, merged) for `public/daily/index.json`, `src/lib/hashState.ts` `daily` variant, `src/lib/analytics.ts`, and `src/game/daily/dates.ts`.
+This plan implements **Phase 2** of [`2026-04-21-retention-program-v1-design.md`](../../specs/2026-04-21-retention-program-v1-design.md). It depends on Phase 1 (`d64e36b`, merged) for `public/daily/index.json`, `src/lib/hashState.ts` `daily` variant, `src/lib/analytics.ts`, and `src/game/daily/dates.ts`.
 
 ### In scope
 
@@ -101,7 +101,7 @@ This plan implements **Phase 2** of [`2026-04-21-retention-program-v1-design.md`
 - The `launcher-best-{modeId}` test id and all e2e references to it.
 - `e2e/launcher.spec.ts`'s `'clicking a mode card dismisses and starts that game'` test and the entire `Launcher — personal bests` describe block.
 
-Per the user feedback memory ([`feedback_remove_obsolete.md`](../../../../../../C:/Users/renade/.claude/projects/E--polworldmap/memory/feedback_remove_obsolete.md) — remove obsolete code and tests in the same change), these deletions happen in the same commits as their replacements, not a follow-up cleanup.
+Per the user feedback memory ([repository convention](../../../../AGENTS.md) — remove obsolete code and tests in the same change), these deletions happen in the same commits as their replacements, not a follow-up cleanup.
 
 ---
 

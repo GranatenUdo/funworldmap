@@ -1,0 +1,32 @@
+name: Data correction
+description: Report an incorrect or outdated country/city fact.
+body:
+  - type: input
+    id: place
+    attributes:
+      label: Country or city
+      description: Include the country name and ISO alpha-3 code when available.
+    validations:
+      required: true
+  - type: input
+    id: field
+    attributes:
+      label: Field and current value
+      description: Identify the exact field and value shown.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Correct value and source
+      description: Link an authoritative source, its date, and the expected value.
+        Explain conflicting sources when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots and geographic scope notes are welcome.
+    validations:
+      required: false

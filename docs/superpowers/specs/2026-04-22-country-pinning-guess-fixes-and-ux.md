@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-22
 **Status:** Draft — pending user review
-**Sibling plan (deferred):** [`2026-04-22-country-news-feed-design.md`](./2026-04-22-country-news-feed-design.md) (not yet written) — the country news-feed feature is a separate brainstorm scoped to its own plan because it introduces backend/external-API concerns orthogonal to this work.
+**Sibling plan (deferred):** [`2026-04-22-country-news-feed-design.md`](./2026-04-23-country-news-feed-design.md) (not yet written) — the country news-feed feature is a separate brainstorm scoped to its own plan because it introduces backend/external-API concerns orthogonal to this work.
 
 ---
 

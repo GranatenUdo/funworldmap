@@ -1,42 +1,35 @@
-# funworldmap Documentation
+# Documentation
 
-**Audience**: Developers implementing and maintaining the funworldmap application.
+## Start here
 
-## Reading Order
+| You want to…                       | Start with                                                                 |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| Play or understand the project     | [README](../README.md), [purpose](purpose.md)                              |
+| Run the project and contribute     | [Contributing](../CONTRIBUTING.md)                                         |
+| Ask a question or report a problem | [Support](../SUPPORT.md), [security policy](../SECURITY.md)                |
+| Understand the architecture        | [System overview](systems/overview.md)                                     |
+| Maintain or release the site       | [Build and deploy](systems/build.md), [operations runbook](ops/runbook.md) |
 
-Start with the purpose, then read the system overview for architecture context, then dive into individual systems as needed.
+## System guides
 
-### Project
+- [Data](systems/data.md) and [data collection](systems/data-collection.md): bundled sources, join strategy, licensing, field attribution, and refresh pipeline.
+- [Map rendering](systems/map-rendering.md): WebGL2 globe, basemaps, terrain, layers, and camera.
+- [Search](systems/search.md) and [UI layout](systems/ui-layout.md): lookup, panels, themes, and URL navigation.
+- [Accessibility](systems/accessibility.md): supported interactions, test coverage, and pointer-only gameplay limitations.
+- [Testing](systems/testing.md): unit/DOM/map testing, readiness helpers, and CI limits.
+- [Analytics](systems/analytics.md): optional browser telemetry and the separate Worker.
 
-- [Purpose](purpose.md) — what funworldmap is, who it's for, core principles, scope
+## Test references
 
-### Systems
+- [Playwright project matrix](testing/playwright-matrix.md)
+- [Game happy paths](testing/game-happy-paths.md) and [unhappy paths](testing/game-unhappy-paths.md)
 
-- [System Overview](systems/overview.md) — architecture, external dependencies, data flows, error handling
-- [Data System](systems/data.md) — data sources, join strategy, enriched data model with source attribution
-- [Data Collection](systems/data-collection.md) — multi-source data collection tool, aggregation pipeline, flag bundling
-- [Map Rendering](systems/map-rendering.md) — MapLibre GL, satellite + 3D terrain (default), Positron vector basemap, country layers, camera, dark mode
-- [Search](systems/search.md) — Fuse.js fuzzy search, autocomplete, keyboard navigation
-- [UI Layout](systems/ui-layout.md) — responsive layouts, panel, header, compare, theme system, deep linking
-- [Accessibility](systems/accessibility.md) — WCAG AA, keyboard navigation, screen readers, reduced motion
-- [Testing](systems/testing.md) — Playwright two-tier strategy, WebGL2 (ANGLE), shared helpers
-- [Build & Deploy](systems/build.md) — Vite 8 / Rolldown, Tailwind 4, build output, deployment
-- [Analytics](systems/analytics.md) — cookieless Cloudflare Web Analytics + a custom-events Worker, event schema
+## Product, decisions, and history
 
-### Operations
+- [Product record](../PRODUCT.md) and [design system](../DESIGN.md)
+- [Architecture decision records](adr/README.md)
+- [Roadmap](roadmap.md): deferred ideas, not a release schedule
+- [Planning workspace](superpowers/README.md): dated specs, plans, and historical evidence
+- [Agent conventions](../AGENTS.md): load-bearing engineering and review rules
 
-- [Runbook](ops/runbook.md) — bandwidth watch, data freshness, basemap degradation, incident response
-
-### Testing references
-
-- [Playwright project matrix](testing/playwright-matrix.md) — which project runs which spec, CI exclusions, quarantines
-- [Game happy paths](testing/game-happy-paths.md) / [unhappy paths](testing/game-unhappy-paths.md) — designed flows that test plans derive from
-
-### Decisions
-
-- [ADR README](adr/README.md) — architecture decision record filing convention
-
-### Process
-
-- [Superpowers Workspace](superpowers/README.md) — planning convention for `plans/` and `specs/`
-- [Roadmap](roadmap.md) — deferred work from shipped specs, organised by area
+Current system guides describe supported behavior. Dated plans and notes explain decisions at the time they were written; they are not current setup instructions. Documentation checks validate Markdown links throughout the repository while preserving historical formatting.

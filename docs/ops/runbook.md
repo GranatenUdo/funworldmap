@@ -1,66 +1,48 @@
-# Operations Runbook
+# Operations runbook
 
-Practical guidance for keeping funworldmap running.
+## Verify a release
 
-## Bandwidth Watch
+1. Identify the intended commit and its CI and CodeQL runs in [GitHub Actions](https://github.com/GranatenUdo/funworldmap/actions).
+2. Check that both push workflows succeeded for the same current `main` SHA. The Pages workflow rejects other events and stale SHAs.
+3. Confirm the Pages deployment succeeded, then open [funworldmap.com](https://funworldmap.com). Verify the chooser becomes playable, try a country and city round, open a country panel, and check mobile layout and both themes.
+4. Record the tested SHA, deployment URL, and any limitations in the PR or release record. A dry run or green unit suite is not production verification.
 
-GitHub Pages soft-caps free bandwidth at ~100 GB/month. Custom domains route through the same limit.
+## Broken release
 
-**How to check.** GitHub repo → Insights → Traffic. Daily unique visitors × average page weight (~680 KB gzipped main bundle + basemap tiles). Flag if monthly cumulative approaches 70 GB.
+Create a revert branch and pull request for the offending commit. Run the required checks, merge through the protected-branch process, and let CI plus CodeQL authorize the new deployment. Verify the live site after it completes. Do not push directly to protected `main` or bypass the release gate.
 
-**Response if approaching the cap.**
+Record the bad SHA, symptoms, corrective PR, and resulting deployment. Preserve traces or screenshots that explain the failure.
 
-1. Post a rate-limit advisory banner (extend `BasemapBanner` pattern).
-2. Migrate static hosting to Cloudflare Pages (free unlimited bandwidth). Custom-domain DNS can be re-pointed without rebuilding the bundle.
-3. Consider deferring any marketing / social push until migration is done.
+## Optional analytics Worker
 
-## Data Freshness
+The Worker is deployed separately from Pages. The frontend remains usable with all telemetry settings empty. Use the validation commands in [Contributing](../../CONTRIBUTING.md) before any intentional Worker release; `build:check` packages locally without publishing.
 
-`src/data/countries.json` is bundled at build time from multiple sources.
+The checked-in configuration defines the Analytics Engine binding at the top level and a production route under `env.production`. Wrangler environment bindings are not automatically inherited. Before an actual release, confirm the selected environment, dataset binding, route, and account configuration together; do not assume a successful top-level dry run validates production resources. See [Analytics](../systems/analytics.md).
 
-| Source                          | Cadence                             | Status        |
-| ------------------------------- | ----------------------------------- | ------------- |
-| REST Countries v3.1             | Quarterly review                    | Live upstream |
-| CIA World Factbook              | None — archive frozen Jan 2026      | Read-only     |
-| world-atlas (Natural Earth 50m) | On npm upstream release             | Stable        |
-| flagcdn.com (SVG flags)         | Refreshed on each `update-data` run | Static        |
+## Data freshness
 
-> **Action:** Quarterly review is currently unowned. When a review is due, file an issue against the repo with label `data-freshness` and assign to a maintainer.
+Country/city facts are bundled snapshots. Review source status and licensing in [Data](../systems/data.md) and [Data collection](../systems/data-collection.md) before refreshing.
 
-**Refresh procedure.**
+- REST Countries: review periodically; freshness is not automatic.
+- CIA World Factbook archive: frozen source, not a live feed.
+- world-atlas and flags: review upstream changes and attribution alongside updates.
 
-```bash
-npm run update-data
-git diff src/data/countries.json  # review field-by-field
-npm run test:unit && npm run build
-git add src/data/countries.json && git commit -m "chore(data): refresh from upstream sources"
-```
+For an intentional refresh, run `npm run update-data` or `npm run fetch-cities`, review every changed dataset/asset, then run checks and build. Large or surprising diffs need investigation before committing. Track the review date and source changes in the PR. Do not refresh data as an incidental part of dependency maintenance.
 
-If the diff is large (>10% of lines changed), bisect by source to find which upstream changed significantly before committing.
+## Map-service degradation
 
-## Basemap Degradation
+The basemap probe can show a degradation notice; other source or rendering failures may prevent map readiness. Country rendering is not guaranteed if initialization fails. Check browser network/console output and distinguish an external tile outage, unsupported WebGL2, context loss, and a shipped application regression.
 
-`probeBasemap` runs on map init with a 3s timeout. If the OpenFreeMap Positron CDN fails to respond, `BasemapBanner` surfaces a visible notice. Country polygons remain interactive; only the tile backdrop is unavailable.
+There is no configured automatic secondary-provider failover. Retry/reload may recover a transient outage. Never label an outage resolved solely because local fixtures passed: verify the real service and live site.
 
-**How to confirm.** Open the deployed site in a browser. If `BasemapBanner` is visible for multiple users without a regional network pattern, check OpenFreeMap status (https://openfreemap.org/). Cross-check by opening `https://tiles.openfreemap.org/styles/positron` directly in a browser — if it 5xx's, the CDN is the cause.
+## Capacity and privacy
 
-**Recovery today.** User-initiated reload via the banner's Retry action. There is no automated failover to a secondary basemap provider; this is tracked as future work (out of scope for the current spec).
+Use measured CDN/provider traffic and current account dashboards to assess capacity. Repository visitor counts are not bandwidth measurements, and map-provider traffic is separate from Pages traffic. Check current provider terms before proposing a hosting change; this repository does not promise a particular free quota.
 
-## Incident Response (Broken Deploy)
+Keep credentials and personal data out of public issues, logs, and screenshots. Use the [security policy](../../SECURITY.md) for sensitive reports.
 
-If a `main` commit ships a broken deploy:
+## Repository maintenance
 
-1. Open the GitHub Actions `Deploy to GitHub Pages` workflow for the bad SHA. Confirm it published.
-2. Revert the commit on `main`:
-   ```bash
-   git revert <SHA>
-   git push origin main
-   ```
-3. The deploy workflow will re-run on the revert commit and publish the prior good state.
-4. Post-mortem: open an issue with the SHA, the symptom, and the revert SHA. If the root cause needs a forward fix, track it separately from the revert.
+Dependabot covers the frontend, Worker, and GitHub Actions. Both npm projects need a clean install and appropriate validation after updates. The weekly/manual external-link workflow reports remote link failures independently of PR correctness gates.
 
-## Deploy Workflow
-
-`.github/workflows/deploy.yml` builds on every push to `main`, publishing via `actions/deploy-pages`. No manual deploy step. Secrets in use: `VITE_SENTRY_DSN`, `VITE_CF_WA_TOKEN`, `VITE_ANALYTICS_ENDPOINT` — all optional; each feature is env-gated and no-ops when unset.
-
-The orphan `data` branch that previously held the daily content index is no longer needed. It may be deleted as optional cleanup: `git push origin --delete data`.
+Before changing GitHub settings, save their current values. Main protection requires pull requests, resolved conversations, and successful checks without requiring a second person's approval. Required check names and their GitHub App must be observed before enforcement. Update documentation and required contexts together if jobs are renamed.

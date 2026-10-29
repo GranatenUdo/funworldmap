@@ -8,7 +8,7 @@
 
 **Tech Stack:** Markdown; the repo's `docs/adr/README.md` filing convention.
 
-**Spec:** [`docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md`](../specs/2026-05-30-flagship-continuation-roadmap-design.md) (Workstream A)
+**Spec:** [`docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md`](../../specs/2026-05-30-flagship-continuation-roadmap-design.md) (Workstream A)
 
 ---
 

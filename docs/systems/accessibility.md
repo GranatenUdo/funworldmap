@@ -2,7 +2,7 @@
 
 ## Standard
 
-WCAG 2.1 Level AA. This is a baseline requirement for every component from the start, not a final-phase add-on.
+WCAG 2.1 Level AA is the target for reference flows and application controls, not a claim of full-site conformance. Geography guesses currently require a pointer or touch; keyboard-only gameplay is not implemented. Automated axe checks cover selected states and cannot replace manual assistive-technology testing.
 
 ## Challenges Specific to Maps
 

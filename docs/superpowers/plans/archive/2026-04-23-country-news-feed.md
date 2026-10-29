@@ -10,7 +10,7 @@
 
 **Tech Stack:** TypeScript, `tsx` (existing script runner), React 19, Playwright. No new npm deps.
 
-**Spec:** [`2026-04-23-country-news-feed-design.md`](../specs/2026-04-23-country-news-feed-design.md).
+**Spec:** [`2026-04-23-country-news-feed-design.md`](../../specs/2026-04-23-country-news-feed-design.md).
 
 ---
 

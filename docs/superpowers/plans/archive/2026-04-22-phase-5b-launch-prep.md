@@ -10,7 +10,7 @@
 
 **Tech Stack:** Markdown docs; Playwright (existing `@axe-core/playwright` + `waitForAppReady` helper); SQL-like Cloudflare Analytics Engine query syntax (commented `.sql` files, not executed in CI).
 
-**Spec:** [`2026-04-22-retention-v1-finishing-design.md`](../specs/2026-04-22-retention-v1-finishing-design.md) §C "Docs" + "Launch checklist".
+**Spec:** [`2026-04-22-retention-v1-finishing-design.md`](../../specs/2026-04-22-retention-v1-finishing-design.md) §C "Docs" + "Launch checklist".
 
 ---
 

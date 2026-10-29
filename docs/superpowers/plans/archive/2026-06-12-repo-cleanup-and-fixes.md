@@ -10,7 +10,7 @@
 
 **Tech Stack:** React 19 + TypeScript (Vitest, Testing Library), Playwright, MapLibre GL; docs are plain Markdown.
 
-**Spec:** [`docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md`](../specs/2026-06-11-repo-cleanup-and-fixes-design.md) — includes the four user-confirmed scope decisions.
+**Spec:** [`docs/superpowers/specs/2026-06-11-repo-cleanup-and-fixes-design.md`](../../specs/2026-06-11-repo-cleanup-and-fixes-design.md) — includes the four user-confirmed scope decisions.
 
 ---
 

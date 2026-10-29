@@ -8,7 +8,7 @@
 
 **Tech Stack:** React 19, TypeScript, MapLibre GL, Playwright.
 
-**Spec:** [`2026-04-22-country-pinning-guess-fixes-and-ux.md`](../specs/2026-04-22-country-pinning-guess-fixes-and-ux.md).
+**Spec:** [`2026-04-22-country-pinning-guess-fixes-and-ux.md`](../../specs/2026-04-22-country-pinning-guess-fixes-and-ux.md).
 
 ---
 

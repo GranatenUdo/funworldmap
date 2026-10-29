@@ -1,15 +1,19 @@
-## Summary
+## Change
 
-<!-- 1-3 bullets describing what this PR does -->
+<!-- Explain the concrete problem and resulting behavior. Link the issue and reviewed spec/plan when applicable. -->
 
-## Test plan
+## Validation
 
-- [ ] `npm run test:unit` passes
-- [ ] `npm run lint` clean
-- [ ] `npm run build` succeeds
-- [ ] Relevant e2e specs pass locally
-- [ ] Visual changes verified in browser (light + dark mode)
+<!-- Record commands actually run and their outcomes. Mark unrun or inapplicable checks explicitly. -->
 
-## Related
+- [ ] `npm run check`
+- [ ] `npm run docs:check`
+- [ ] `npm run bundle:budget`
+- [ ] Relevant browser tests at two workers; note CI exclusions and local limitations
+- [ ] Worker install, typecheck, tests, and dry-run packaging when affected
+- [ ] Visual changes checked on desktop/mobile, light/dark themes, and reduced motion
+- [ ] Dependency updates audited in both affected npm roots
 
-<!-- Closes #N, refs #M, linked plan/spec doc -->
+## Review notes
+
+<!-- Screenshots for visual changes; compatibility, deployment, data/attribution changes, and remaining risks. Never include credentials or private data. -->

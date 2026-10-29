@@ -8,7 +8,7 @@ The games are the draw; the reference map is the world they live in. (Identity c
 
 ## Game Modes
 
-Two playable modes are available via the launcher (opened from the header Play button):
+Two playable modes are available in the initial chooser; the header Play button reopens it after dismissal:
 
 - **Country Pinning** — identify a country by clicking its polygon on the map. Three lives, unlimited rounds. Score is distance-weighted; each correct guess contributes to a running streak.
 - **City Guessing** — locate a named city by clicking anywhere on the map. 10 rounds per game, scored by distance from the true centroid. Ocean clicks are valid.

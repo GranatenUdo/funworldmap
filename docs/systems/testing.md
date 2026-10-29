@@ -60,7 +60,7 @@ Test map state by reaching into the MapLibre API through the browser's JavaScrip
 
 ### Exposing the Map Instance
 
-For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. Three modules contribute to the test seams: `useMapInstance.ts` exposes the map instance under `__funworldmap_map`, `GameController.tsx` adds game submission methods, and `GameSessionProvider.tsx` adds session lifecycle methods like `finalize` and `endGame`:
+For Tier 2 tests to work, the map instance must be accessible from `page.evaluate`. Three modules contribute to the test seams: `useMapInstance.ts` exposes the map instance under `__funworldmap_map`, `useGameTestSeams.ts` adds game submission methods, and `GameSessionProvider.tsx` adds session lifecycle methods like `finalize` and `endGame`:
 
 ```ts
 // useMapInstance.ts — single producer; assigns the MapLibre Map instance directly:
@@ -68,10 +68,10 @@ if (import.meta.env.VITE_TEST_HOOKS) {
   window.__funworldmap_map = map
 }
 
-// GameController.tsx + GameSessionProvider.tsx — both contribute methods to a shared bag:
+// useGameTestSeams.ts + GameSessionProvider.tsx — both contribute methods to a shared bag:
 if (import.meta.env.VITE_TEST_HOOKS) {
   if (!window.__funworldmap_game) window.__funworldmap_game = {}
-  window.__funworldmap_game.submitCountryGuess = ... // GameController
+  window.__funworldmap_game.submitCountryGuess = ... // useGameTestSeams
   window.__funworldmap_game.finalize = ...           // GameSessionProvider
   // (see source for complete list)
 }
@@ -132,7 +132,7 @@ e2e/
   satellite-default.spec.ts     # boots into satellite mode
   country-labels.spec.ts        # B1 satellite country labels — seam visibility contract
   compare-view-dimming.spec.ts  # compare + satellite: dimmed borders restore on exit
-  …                             # 39 specs total — see playwright.config.ts testMatch
+  …                             # see playwright.config.ts testMatch for the current inventory
 ```
 
 ## What Runs in CI
@@ -144,7 +144,7 @@ cross-browser baseline (roadmap). On top of that, the chromium project's
 `testIgnore` excludes nine specs on CI pending a self-hosted GPU runner
 (tracking issue #106; `docs/roadmap.md` § "Flaky-on-free-CI specs (need GPU runner)").
 
-Net effect: **12 of 39 spec files run locally only** — the nine `testIgnore`d
+Net effect: **the excluded interaction specs run locally only** — the nine `testIgnore`d
 specs plus `mobile-smoke`, `mobile-tap`, and `mobile-free-play`. Run them
 before merging changes that touch their areas:
 

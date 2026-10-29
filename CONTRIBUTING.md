@@ -1,72 +1,75 @@
 # Contributing to funworldmap
 
-Thanks for your interest. funworldmap is an interactive political world map — a static frontend (plus a small optional analytics Worker in `cloudflare-worker/`), no user accounts. Contributions that keep it fast, accessible, and honest about its data are welcome.
+Contributions that make geography more enjoyable, the data more transparent, or the project easier to maintain are welcome. Read the [code of conduct](CODE_OF_CONDUCT.md) and [product purpose](docs/purpose.md) first.
 
-## Local Development
+## Set up
 
-Requirements: Node.js 22.22.1 (see `.nvmrc`) and npm 10. Both the app and optional Worker use Node 22; newer Node major versions are not currently supported.
+Use Node.js **22.22.1** (`.nvmrc`) and its bundled npm **10**. Package engine declarations apply to both the app and Worker. Other Node major versions are not supported; when debugging localStorage/test-environment failures, check `node --version` first.
 
 ```bash
-git clone https://github.com/granatenudo/funworldmap.git
+git clone https://github.com/GranatenUdo/funworldmap.git
 cd funworldmap
 npm ci
-npm run dev    # http://localhost:5173
+npm run dev
 ```
 
-Scripts:
+Open [localhost:5173](http://localhost:5173). With nvm, run `nvm install` and `nvm use`; nvm-windows users can run `nvm install 22.22.1` and `nvm use 22.22.1`. The app's bundled datasets need no generation step.
 
-- `npm run dev` — Vite dev server with HMR
-- `npm run build` — production build to `dist/`
-- `npm run preview` — serve the production bundle locally
-- `npm run lint` — ESLint
-- `npm run typecheck` — TypeScript build/check
-- `npm run test:unit` — Vitest (jsdom environment)
-- `npm run test:e2e` — Playwright (chromium on CI; mobile + firefox projects available locally — see `playwright.config.ts`)
-- `npm run update-data` — refresh `src/data/countries.json` from upstream sources
+`.env.example` lists optional telemetry settings. Copy it to `.env.local` only if needed. All `VITE_*` values are included in browser builds: never put private credentials there. Leave telemetry empty for local development and tests.
 
-## Pull Request Expectations
+## Check a change
 
-Before opening a PR:
+```bash
+npm run check
+npm run docs:check
+npm run bundle:budget
+```
 
-- `npm run lint` — zero warnings
-- `tsc -b` — zero errors
-- `npm run test:unit` — all green
-- `npm run test:e2e` — all green
-- `npm run build` — succeeds
+`check` runs lint, type checking, and Vitest. `bundle:budget` builds production files in `dist/` and enforces the existing gzip ceilings. `npm run format` formats source files; `npm run docs:format` formats maintained documentation. Husky runs lint-staged on commits. Review formatter changes before committing.
 
-PR title uses the repo's observed convention: `type(scope): subject`, where `type` is one of `feat`, `fix`, `docs`, `test`, `chore`, `perf`, `refactor`, `revert`. Scope is optional but encouraged.
+### Browser tests
 
-Keep the PR description focused on _why_. The diff shows _what_.
+```bash
+npx playwright install chromium firefox webkit
+npm run test:e2e -- --project=chromium --workers=2
+npm run test:e2e -- --project=mobile-chromium --project=mobile-webkit --project=desktop-firefox-touch --workers=2
+```
 
-## Code Style
+On Linux, browser installation may require `npx playwright install --with-deps`. Playwright builds an e2e-specific bundle and starts its preview server. Set `E2E_PORT` if 5173 is occupied. Do not point tests at an ordinary production build: it has no test seams.
 
-- Prettier and ESLint are authoritative. Run `npm run format` before committing if in doubt.
-- TypeScript is strict. Do not introduce `any` or new `@ts-ignore`.
-- Follow the file/folder conventions already in the repo. If a file you're modifying has grown unwieldy, a targeted split in the same PR is welcome.
+CI runs a sharded Chromium subset. GPU-sensitive exclusions and the other browser projects require local checks; a green CI badge does not cover them. See [testing](docs/systems/testing.md), the [project matrix](docs/testing/playwright-matrix.md), and the deterministic-test rules in [AGENTS.md](AGENTS.md). Use readiness helpers and test seams; never add arbitrary sleeps, force-click workarounds, or extra retries to conceal failures.
 
-## Proposing a New Data Source
+### Optional analytics Worker
 
-funworldmap bundles `src/data/countries.json` at build time. The merge pipeline lives in `scripts/`. See `docs/systems/data-collection.md` for the full architecture.
+The frontend runs without this service. To validate Worker changes without deployment:
 
-To propose a new source:
+```bash
+npm ci --prefix cloudflare-worker
+npm run typecheck --prefix cloudflare-worker
+npm test --prefix cloudflare-worker
+npm run build:check --prefix cloudflare-worker
+```
 
-1. Prefer sources with CC0 / permissive licenses. Document the license.
-2. Add a fetch module under `scripts/sources/` that returns normalized `CountryData`.
-3. Register the source key and merge priority. Update `_sources` metadata in the output.
-4. Run `npm run update-data` and commit the resulting diff alongside the code change.
-5. Every new field must have a `_fieldSources` entry that resolves in the panel's sources footer (the field → source table, plus an exception marker where the source is non-dominant).
+Install the root dependencies first: Worker tests use root Vitest. The dry run packages the top-level Worker configuration; it neither publishes code nor proves production bindings exist. Both npm lockfiles are committed and both dependency trees must be checked when affected.
 
-Open an issue first if the source brings a new field shape — this helps align on the merge priority before you write the integration.
+## Make a focused pull request
 
-## Reporting Data Errors
+1. Open an issue before proposing major behavior, new data fields, or architecture changes.
+2. Branch from `main`. For a non-trivial change, commit the specification and reviewed implementation plan before code; see the [planning workflow](docs/superpowers/README.md).
+3. Add regression coverage for behavior changes, update the owning documentation, and remove obsolete code/tests in the same change.
+4. Run the relevant checks above. Report failures, browser/environment limitations, and checks you did not run.
+5. Explain the problem and resulting behavior in the PR, with screenshots for visual changes and issue/spec links where applicable.
 
-Open an issue with:
+Use `type(scope): subject` titles (`feat`, `fix`, `docs`, `test`, `chore`, `perf`, `refactor`, or `revert`; scope is optional). Maintained documentation lives outside dated planning artifacts. Preserve historical decisions when repairing archive links.
 
-- Country (name + ISO cca3)
-- Field in question
-- Current value shown by funworldmap
-- Expected value and the authoritative source
+The repository supports a solo maintainer: pull requests and successful required checks are expected; a second person's approval is not mandatory. Merge and deployment are separate from preparing a change.
 
-## Security
+## Data contributions
 
-See `SECURITY.md` for reporting procedure.
+Use the data-correction issue form with the country/ISO code, field, observed value, expected value, and an authoritative source. Avoid changing the canonical country scope incidentally.
+
+New sources must have documented licensing, normalized data, merge priority, and per-field attribution. The pipeline lives under `scripts/`; see [Data collection](docs/systems/data-collection.md). Run `npm run update-data` only for an intentional country-data refresh, review the data and flag changes, and commit them together. City refreshes use `npm run fetch-cities`.
+
+## Help and security
+
+See [Support](SUPPORT.md) for questions and [Security](SECURITY.md) for private vulnerability reports. Contact: [tobias.ens@proton.me](mailto:tobias.ens@proton.me).

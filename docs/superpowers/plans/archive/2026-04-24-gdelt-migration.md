@@ -12,7 +12,7 @@
 
 **Tech Stack:** TypeScript, `tsx`, React 19, Playwright. No new npm deps.
 
-**Spec:** [`2026-04-24-gdelt-migration-design.md`](../specs/2026-04-24-gdelt-migration-design.md).
+**Spec:** [`2026-04-24-gdelt-migration-design.md`](../../specs/2026-04-24-gdelt-migration-design.md).
 
 **Previous feature:** [`2026-04-23-country-news-feed.md`](./2026-04-23-country-news-feed.md) — shipped as PR #16 with Guardian.
 
