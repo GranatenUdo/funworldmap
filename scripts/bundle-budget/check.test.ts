@@ -38,7 +38,10 @@ it('charges the separately emitted MapLibre worker to initial JavaScript and tot
     const output = result.stdout + result.stderr
     expect(result.status).toBe(1)
     expect(output).not.toContain('not accounted for')
-    expect(output).toContain(String(gzipSync(main).length + gzipSync(worker).length))
+    const total = gzipSync(main).length + gzipSync(worker).length
+    for (const row of ['main-js-gzip', 'initial-total-gzip', 'total-with-async-gzip']) {
+      expect(output).toMatch(new RegExp(row + '\\s+' + total + '\\s+/'))
+    }
     expect(output).toMatch(/FAIL\s+main-js-gzip/)
   } finally {
     if (root.startsWith(join(tmpdir(), 'funworldmap-budget-'))) {
