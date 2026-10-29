@@ -1,12 +1,12 @@
 {
   "version": 1,
-  "comment": "Budgets are gzip sizes in bytes. Set to (measured + 10%) at creation 2026-05-14, after countries-50m swap (PR #50). Categories: main-js = the initial bundle Vite emits as the largest index-*.js (loaded by dist/index.html). lazy-js = OTHER dynamically-imported JS chunks (today: topojson-client). Under Vite 8/Rolldown this is emitted as src-*.js; under Rollup it was a second index-*.js. Both are lazy-loaded via dynamic import. css = sum of all index-*.css. async-countries = the countries-*.js chunk (lazy-loaded via dynamic import). initial-total = main-js + css (the first-paint blocker). total-with-async = initial + async-countries + lazy-js (full bandwidth a session may use). Updating a budget upward requires a separate PR with measurement evidence.",
+  "comment": "Budgets are gzip sizes in bytes. Initial JS and aggregate ceilings updated 2026-10-29 for the patched MapLibre 6.4.1 migration with approximately 10% measured headroom; see docs/superpowers/plans/2026-10-29-maplibre-budget.md. Other ceilings retain their prior measurements. Categories: main-js = the largest index-*.js plus separately emitted MapLibre worker JS (embedded in main before v6). lazy-js = OTHER dynamically-imported JS chunks (today: topojson-client). Under Vite 8/Rolldown this is emitted as src-*.js; under Rollup it was a second index-*.js. Both are lazy-loaded via dynamic import. css = sum of all index-*.css. async-countries = the countries-*.js chunk (lazy-loaded via dynamic import). initial-total = main-js + css (the first-paint blocker). total-with-async = initial + async-countries + lazy-js (full bandwidth a session may use). Updating a budget upward requires a separate PR with measurement evidence.",
   "budgets": {
-    "main-js-gzip": 540000,
+    "main-js-gzip": 640000,
     "lazy-js-gzip": 3000,
     "css-gzip": 24000,
     "async-countries-gzip": 260000,
-    "initial-total-gzip": 560000,
-    "total-with-async-gzip": 820000
+    "initial-total-gzip": 660000,
+    "total-with-async-gzip": 920000
   }
 }
