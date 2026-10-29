@@ -1,10 +1,9 @@
 import { test, expect } from '@playwright/test'
-import { getSession, waitForAppReady, waitForGameTestHook } from './helpers'
+import { getSession, gotoAndWaitForMap, waitForGameTestHook } from './helpers'
 
 test.describe('Cold-load deep links bootstrap their target state', () => {
   test('navigating directly to #game/country-pinning starts the game', async ({ page }) => {
-    await page.goto('/#game/country-pinning')
-    await waitForAppReady(page)
+    await gotoAndWaitForMap(page, '/#game/country-pinning')
     await waitForGameTestHook(page)
 
     await expect.poll(async () => (await getSession(page)).status).toBe('playing')
@@ -18,8 +17,7 @@ test.describe('Cold-load deep links bootstrap their target state', () => {
   })
 
   test('navigating directly to #game/city-guessing starts the game', async ({ page }) => {
-    await page.goto('/#game/city-guessing')
-    await waitForAppReady(page)
+    await gotoAndWaitForMap(page, '/#game/city-guessing')
     await waitForGameTestHook(page)
 
     await expect.poll(async () => (await getSession(page)).status).toBe('playing')

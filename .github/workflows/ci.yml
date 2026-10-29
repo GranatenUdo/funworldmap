@@ -13,7 +13,7 @@ concurrency:
 jobs:
   fast:
     name: lint + type + unit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
 
@@ -42,7 +42,7 @@ jobs:
 
   worker:
     name: Worker validation
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -62,7 +62,7 @@ jobs:
 
   e2e:
     name: e2e (${{ matrix.project }} shard ${{ matrix.shard }}/4)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -130,7 +130,7 @@ jobs:
     name: Merge e2e reports
     needs: [e2e]
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       # `actions: read` is required by `gh run download` to list workflow-run
