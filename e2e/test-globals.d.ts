@@ -2,7 +2,7 @@
 // repeating `(window as unknown as { __funworldmap_game?: ... }).__funworldmap_game`
 // in every spec.
 
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { GuessInput } from '../src/game/shared/types'
 
 declare global {
