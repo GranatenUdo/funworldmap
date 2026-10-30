@@ -9,8 +9,8 @@
 **Tech Stack:** Playwright 1.59, TypeScript 5.7, React 19 (synchronous state via `useState`), Vite 6 (CSS animations and transitions), CSS keyframes (`launcher-card-in 220ms`, `launcher-backdrop-in 220ms`, panel slide-ins).
 
 **Source documents:**
-- [`docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`](../notes/2026-04-28-flake-regression-analysis.md) — root-cause and recommendations A–D
-- [`docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md`](../specs/2026-04-25-e2e-timing-sweep-design.md) — Patterns 1–5 vocabulary
+- [`docs/superpowers/notes/2026-04-28-flake-regression-analysis.md`](../../notes/2026-04-28-flake-regression-analysis.md) — root-cause and recommendations A–D
+- [`docs/superpowers/specs/2026-04-25-e2e-timing-sweep-design.md`](../../specs/2026-04-25-e2e-timing-sweep-design.md) — Patterns 1–5 vocabulary
 - [`docs/superpowers/plans/2026-04-22-deflake-chromium-e2e.md`](2026-04-22-deflake-chromium-e2e.md) — load-time fix (round 1)
 - `CLAUDE.md` — codified rules whose violation causes the flake
 

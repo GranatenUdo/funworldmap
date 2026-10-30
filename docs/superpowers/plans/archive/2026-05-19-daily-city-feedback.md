@@ -10,7 +10,7 @@
 
 **Tech Stack:** React + TypeScript + Vitest + Playwright + MapLibre GL JS. Existing `useReducer`-driven game session unchanged.
 
-**Spec:** [docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md](../specs/2026-05-19-daily-city-feedback-design.md)
+**Spec:** [docs/superpowers/specs/2026-05-19-daily-city-feedback-design.md](../../specs/2026-05-19-daily-city-feedback-design.md)
 
 ---
 

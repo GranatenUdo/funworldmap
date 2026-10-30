@@ -14,7 +14,7 @@
 
 ## Scope
 
-This plan implements **Phase 3** of [`2026-04-21-retention-program-v1-design.md`](../specs/2026-04-21-retention-program-v1-design.md). Depends on Phase 2 (`f50fa4e`, merged) for `useDailyHistory`, `useDailyPuzzlesContext`, `LauncherModeCard`, `hashState.ts` `daily` variant including the `reveal` flag, and the `streak_reached_milestone` / `history_opened` / `history_cell_clicked` entries already present in the analytics event schema (added in Phase 1).
+This plan implements **Phase 3** of [`2026-04-21-retention-program-v1-design.md`](../../specs/2026-04-21-retention-program-v1-design.md). Depends on Phase 2 (`f50fa4e`, merged) for `useDailyHistory`, `useDailyPuzzlesContext`, `LauncherModeCard`, `hashState.ts` `daily` variant including the `reveal` flag, and the `streak_reached_milestone` / `history_opened` / `history_cell_clicked` entries already present in the analytics event schema (added in Phase 1).
 
 ### In scope
 

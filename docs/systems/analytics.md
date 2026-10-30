@@ -1,15 +1,15 @@
 # Analytics
 
-funworldmap uses two complementary layers of analytics. Both run on Cloudflare's free tiers at $0/month for realistic v1 traffic.
+funworldmap uses two complementary layers of analytics. They are optional, controlled by build-time configuration, and subject to the current Cloudflare account plan and limits.
 
 ## Layer 1 — Cloudflare Web Analytics (passive)
 
-Captures page views, unique visitors (IP-hashed, 24-h TTL), referrers, country stats, and Core Web Vitals. No cookies. No PII. Requires Cloudflare to be fronting the origin.
+Cloudflare Web Analytics supplies aggregate traffic/performance reporting through its browser beacon. Consult current provider documentation for collection and retention details; this repository does not establish a blanket no-personal-data guarantee. The custom-event Worker is a separate integration.
 
 **Setup:**
 
 1. Point the `funworldmap.com` domain at Cloudflare nameservers at the registrar.
-2. Add a proxied CNAME in CF: `funworldmap.com → funworldmap.github.io`.
+2. Add a proxied CNAME in CF: `funworldmap.com → granatenudo.github.io`.
 3. Enable Web Analytics on the CF dashboard, paired to `funworldmap.com`.
 4. Copy the site token and paste it into the `VITE_CF_WA_TOKEN` GitHub secret used by `deploy.yml`.
 
@@ -19,22 +19,22 @@ No custom events — CF WA free tier does not support them.
 
 The client POSTs event payloads to the Worker. The Worker validates and writes typed columns to Analytics Engine. Queries run via CF's GraphQL API or the Workers dashboard.
 
-**Free-tier ceilings:** Workers 100,000 req/day; Analytics Engine 10,000,000 writes/month.
+Check current Worker and Analytics Engine limits in the account dashboard before enabling or scaling this optional service.
 
 - **Worker source:** `cloudflare-worker/index.ts`
 - **Config:** `cloudflare-worker/wrangler.toml`
 - **Endpoint:** `https://funworldmap.com/api/event` (Worker Route on the proxied domain)
 - **Client wrapper:** `src/lib/analytics.ts` exports `track(name, props)`
 
-**Deploy:**
+**Validate locally (no publication):**
 
 ```
-cd cloudflare-worker
-wrangler login        # one-time
-wrangler deploy
+npm ci --prefix cloudflare-worker
+npm run typecheck --prefix cloudflare-worker
+npm run build:check --prefix cloudflare-worker
 ```
 
-In the CF dashboard, confirm that a Worker Route `funworldmap.com/api/event` exists for the deployed service.
+For an intentional deployment, explicitly choose and verify the environment and Analytics Engine binding first; production bindings are not inherited from the top-level configuration. See the operations runbook. In the CF dashboard, confirm that a Worker Route `funworldmap.com/api/event` exists for the deployed service.
 
 **Query:** CF dashboard → Workers & Pages → funworldmap-analytics → Analytics Engine tab. Or via GraphQL at `https://api.cloudflare.com/client/v4/graphql` (account-scoped token required).
 

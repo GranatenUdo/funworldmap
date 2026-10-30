@@ -61,13 +61,13 @@ Flag images and country metadata are bundled into the build. Beyond the tile CDN
 ### On Page Load
 
 1. Browser loads static HTML + JS + CSS from CDN
-2. React initializes, MapLibre GL creates a WebGL2 context (WebGL1 fallback); if the browser has no WebGL at all the `maplibregl.Map` constructor throws and the app shows an unsupported message (see Error Handling)
+2. React initializes, MapLibre GL creates a WebGL2 context; if the browser lacks supported WebGL2 the `maplibregl.Map` constructor throws and the app shows an unsupported message (see Error Handling)
 3. Basemap tiles stream from OpenFreeMap as user pans/zooms
 4. world-atlas TopoJSON loads asynchronously (Vite code-split chunk). While it loads, the user sees the basemap without country boundaries — no loading indicator is shown, as the basemap provides immediate visual content and country polygons appear within seconds.
 5. TopoJSON converted to GeoJSON via `topojson-client`, added as map source
 6. Country boundaries render as interactive layers; on the satellite basemap, app-owned `country-labels` name labels render above them (hidden while a game round is playing — see [Map Rendering](map-rendering.md))
 7. If URL has hash (e.g., `#FRA`), cca3 code is looked up → ccn3 numeric ID resolved → country selected and camera flies to it via `flyToCountry()`. Hash resolution is deferred until step 6 completes — the GeoJSON source must be loaded before a country can be selected and highlighted.
-8. If no hash, map shows default view: satellite basemap, centered at longitude 0, latitude 20, zoom 1.8, pitch 20° (3D; pitch 0 under `prefers-reduced-motion`)
+8. If no hash, the game chooser opens over the default map view: satellite basemap, centered at longitude 0, latitude 20, zoom 1.8, pitch 20° (3D; pitch 0 under `prefers-reduced-motion`)
 
 ### On Country Click
 
@@ -76,7 +76,7 @@ Flag images and country metadata are bundled into the build. Beyond the tile CDN
 3. Country metadata looked up via ccn3 join key (see [Data System](data.md))
 4. Numeric ID converted to cca3 code (e.g., "250" → "FRA") for URL hash
 5. Map animates to country center (`flyTo`, respects reduced motion)
-6. Panel slides in with country information (each field shows source via 'i' tooltip)
+6. Panel slides in with country information (sources appear in the panel footer and the Source by field disclosure)
 7. URL hash updates (`#FRA`)
 
 ### On Search

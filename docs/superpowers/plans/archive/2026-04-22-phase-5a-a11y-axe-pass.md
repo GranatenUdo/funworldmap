@@ -8,7 +8,7 @@
 
 **Tech Stack:** TypeScript, Playwright, `@axe-core/playwright` (already a dev dep), React 19, Tailwind CSS 3.
 
-**Spec:** [`2026-04-22-retention-v1-finishing-design.md`](../specs/2026-04-22-retention-v1-finishing-design.md) §C "Full WCAG 2 AA pass — surface inventory".
+**Spec:** [`2026-04-22-retention-v1-finishing-design.md`](../../specs/2026-04-22-retention-v1-finishing-design.md) §C "Full WCAG 2 AA pass — surface inventory".
 
 **Follow-up plan (not included here):** Phase 5b (manual NVDA / VoiceOver smoke + keyboard smoke + docs + CF Analytics dashboards + launch checklist + 72h monitor) is a separate plan to be drafted once Phase 5a merges. Phase 5a alone fulfils the "every axe violation closed or explicitly descoped" half of the §C criteria.
 

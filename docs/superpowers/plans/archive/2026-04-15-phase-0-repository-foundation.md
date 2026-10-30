@@ -766,7 +766,7 @@ npm run format        # Format source files with Prettier
 
 ## Documentation
 
-See [docs/index.md](docs/index.md) for the full system design documentation.
+See [docs/index.md](../../../index.md) for the full system design documentation.
 ```
 
 - [ ] **Step 2: Update index.html title and meta**

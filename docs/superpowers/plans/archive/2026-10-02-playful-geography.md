@@ -1,5 +1,7 @@
 # Playful geography implementation plan
 
+> Shipped in [PR #138](https://github.com/GranatenUdo/funworldmap/pull/138), merged 2026-10-03. Archived after verifying the merge record.
+
 Approved by the user 2026-10-02. Implement inline; preserve existing game rules/scoring and static delivery. Reference the chat audit and independent review by /root/adversarial_plan_review (GPT-6 Astra, medium), completed before implementation. One reviewer; all nine findings resolved below without changing approved direction.
 
 ## Design contract

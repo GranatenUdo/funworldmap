@@ -22,3 +22,11 @@ Node engine floors and actual hook execution; Worker dependency updates included
 
 ## Execution rulings
 The second PR is prepared as a dependent draft while PR1 awaits merging; it must be retargeted to main after PR1 lands. This fulfills reviewable delivery without assuming merge authorization. Existing data snapshots are not refreshed as an incidental side effect.
+
+### Final execution packaging
+
+The user approved a separate measured budget PR when patched MapLibre exceeded the old ceilings. MapLibre is pinned exactly to 6.4.1, with worker bytes charged to initial JS and both aggregate totals. The addendum received independent review by the original GPT-6 Astra reviewer.
+
+Hosted testing also exposed two unchanged-main CI assumptions (Ubuntu 26.04 unsupported by Playwright 1.59.1; missing global tsc). The already-planned fixes were isolated as a minimal CI prerequisite, independently checked by the same reviewer as a packaging correction. Final integration order: [CI baseline #143](https://github.com/GranatenUdo/funworldmap/pull/143) → [budget #141](https://github.com/GranatenUdo/funworldmap/pull/141) → [health #140](https://github.com/GranatenUdo/funworldmap/pull/140) → [documentation #142](https://github.com/GranatenUdo/funworldmap/pull/142). No merge or deployment performed.
+
+An independent implementation reviewer found no material defects. Main protection uses existing observed checks until the aggregate workflow reaches main; the post-merge replacement payload and instructions are in the operations runbook.

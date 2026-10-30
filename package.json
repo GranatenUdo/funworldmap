@@ -16,8 +16,7 @@
     "world-map",
     "geography",
     "maplibre",
-    "react",
-    "wcag-aa"
+    "react"
   ],
   "license": "MIT",
   "author": "Tobias Ens",
@@ -35,7 +34,9 @@
     "test:unit": "vitest run",
     "update-data": "tsx scripts/fetch-countries.ts",
     "fetch-cities": "tsx scripts/fetch-cities.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs:check": "tsx scripts/docs/check.ts",
+    "docs:format": "tsx scripts/docs/check.ts --format"
   },
   "dependencies": {
     "@sentry/react": "^10.53.1",
@@ -64,18 +65,21 @@
     "eslint-plugin-playwright": "^2.10.4",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
+    "github-slugger": "^2.0.0",
     "globals": "^17.6.0",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
     "lightningcss": "^1.32.0",
     "lint-staged": "^17.0.5",
+    "marked": "^17.0.6",
     "prettier": "^3.8.3",
     "tailwindcss": "^4.2.2",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.3",
     "vite": "^8.0.14",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.4",
+    "yaml": "^2.9.1"
   },
   "optionalDependencies": {
     "@rolldown/binding-win32-x64-msvc": "^1.0.2",

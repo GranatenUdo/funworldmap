@@ -8,7 +8,7 @@
 
 **Tech Stack:** React 19 + TypeScript (Vitest, Testing Library), Playwright + eslint-plugin-playwright, MapLibre GL.
 
-**Spec:** [`docs/superpowers/specs/2026-06-12-review-followups-design.md`](../specs/2026-06-12-review-followups-design.md). **Queues being drained:** issue #111; roadmap § "Deferred from the 2026-06 cleanup".
+**Spec:** [`docs/superpowers/specs/2026-06-12-review-followups-design.md`](../../specs/2026-06-12-review-followups-design.md). **Queues being drained:** issue #111; roadmap § "Deferred from the 2026-06 cleanup".
 
 ---
 

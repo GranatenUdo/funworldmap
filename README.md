@@ -1,85 +1,81 @@
 # funworldmap
 
-> **[Live demo →](https://funworldmap.com)** · Play geography on the real world — country-pinning and city-guessing games on an interactive political world map.
+**Find countries. Locate cities. Explore the world behind every guess.**
 
-![funworldmap launcher](docs/assets/hero.png)
+[Play now](https://funworldmap.com) · [Get started](#run-locally) · [Contribute](CONTRIBUTING.md) · [Documentation](docs/index.md)
 
-[![CI](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml/badge.svg)](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/GranatenUdo/funworldmap/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/GranatenUdo/funworldmap/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/GranatenUdo/funworldmap/actions/workflows/codeql.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Free geography games on a real political world map. Beat your personal best in two game modes — then explore countries, borders, and geopolitical facts through the same map-first interface.
+![The funworldmap game chooser over the interactive globe](docs/assets/hero.png)
 
-- **Country Pinning** — click the right country; three lives, unlimited rounds, personal-best tracked
-- **City Guessing** — pin where the city is; 10 rounds, distance-scored, personal-best tracked
-- 195 sovereign states (193 UN members + Vatican + Palestine), with data from REST Countries and CIA World Factbook archive
-- Fuzzy search by name, capital, region, or country code
-- Per-field source attribution (every data point shows where it came from)
-- Satellite imagery + 3D terrain by default, with a one-tap switch to a clean vector map
-- Light/dark/system theme with basemap adaptation
-- WCAG AA accessible: keyboard navigation, screen reader support, skip links
-- Client-side SPA — deployable to any static host; no application backend required to run it (an optional, cookieless analytics Worker records anonymous usage counts — see [docs/systems/analytics.md](docs/systems/analytics.md))
+Free, browser-based geography games on a real 3D world map. No account, installation, or payment required. Play a round, then explore countries and the sources behind their facts.
 
-## Development
+## Play and explore
+
+- **Find countries:** click the country you are asked to find. Three lives, distance-weighted scoring, and a running streak.
+- **Locate cities:** place ten pins as close as possible to the named cities. Scores depend on distance.
+- **Explore:** search countries, compare facts, follow neighboring countries, and inspect data sources. The reference dataset covers 193 UN members plus the Holy See and Palestine.
+- **Make it yours:** satellite imagery and terrain, a vector-map alternative, light/dark/system themes, and personal bests stored in your browser.
+
+<details>
+<summary>See the mobile interface</summary>
+
+![The game chooser on a phone](docs/assets/mobile.png)
+
+</details>
+
+## Run locally
+
+Use **Node.js 22.22.1** (the version in `.nvmrc`) and **npm 10**. Other Node major versions are not currently supported.
 
 ```bash
-npm install
-npm run dev           # Start dev server at localhost:5173
-npm run build         # Type-check and produce production build
-npm run test:e2e      # Run Playwright end-to-end tests
-npm run test:unit     # Run Vitest unit tests
-npm run lint          # Check for lint errors
-npm run format        # Format source files with Prettier
-npm run update-data   # Regenerate countries.json from source APIs
+git clone https://github.com/GranatenUdo/funworldmap.git
+cd funworldmap
+npm ci
+npm run dev
 ```
 
-No content-generation step is required before building or running tests — the app is fully client-side.
+Open [localhost:5173](http://localhost:5173). The country/city datasets and flags are already bundled; no API keys, accounts, data refresh, or Worker deployment are needed.
 
-## Architecture
+```bash
+npm run check          # ESLint, TypeScript, and unit tests
+npm run docs:check     # Documentation formatting, links, anchors, commands
+npm run bundle:budget  # Production build and gzip budgets
+```
 
-- **Map**: MapLibre GL JS — satellite imagery (EOX Sentinel-2) with 3D terrain by default; OpenFreeMap vector tiles (Positron) as the toggle-off map view
-- **Data**: REST Countries v3.1 + CIA World Factbook archive, merged with field-level source attribution; rendered set filtered to the canonical 195
-- **Search**: Fuse.js fuzzy search with weighted fields
-- **Stack**: Vite 8 (Rolldown), React 19, TypeScript, Tailwind CSS 4
-- **Testing**: Playwright e2e (ANGLE-backed WebGL2 — real GPU with software fallback), Vitest unit tests
+For browser installation, end-to-end tests, optional environment variables, and Worker development, see [Contributing](CONTRIBUTING.md).
 
-## Documentation
+## How it works
 
-See [docs/index.md](docs/index.md) for the full system design documentation.
+```mermaid
+flowchart LR
+  Pages[Static host / GitHub Pages] --> App[React + TypeScript]
+  Data[Bundled country and city data] --> App
+  App --> Map[MapLibre WebGL2 globe]
+  Tiles[External tile providers] --> Map
+  App --> Local[Browser personal bests]
+  App -. optional events .-> Worker[Cloudflare analytics Worker]
+```
 
-## Contributing
+Vite 8 builds the static app; Tailwind CSS 4 supplies styling. The browser runs the games and renders the map. Country selection and game navigation use URL hashes. The optional analytics Worker has its own package and lockfile.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, PR expectations, and how to propose a new data source.
+### Requirements and limitations
 
-## Security
+- A modern browser with **WebGL2** and network access to external map services is required for the full experience. Static hosting does not make the app an offline map.
+- Search, reference panels, and game controls provide keyboard and screen-reader affordances. **Placing guesses currently requires a pointer or touch.** Automated accessibility tests do not establish full WCAG conformance; see [Accessibility](docs/systems/accessibility.md).
+- Data reflects the bundled snapshots, not live geopolitical updates. See [data sources and attribution](docs/systems/data.md).
+- Optional telemetry is disabled when its build-time settings are empty. Details and configuration are in [Analytics](docs/systems/analytics.md).
 
-See [SECURITY.md](SECURITY.md) for reporting procedure.
+## Join in
 
-## Decision Records
+[Contribution guide](CONTRIBUTING.md) · [Report a bug or data error](https://github.com/GranatenUdo/funworldmap/issues/new/choose) · [Get support](SUPPORT.md) · [Code of conduct](CODE_OF_CONDUCT.md)
 
-Architectural decisions live under [docs/adr/](docs/adr/). See [docs/adr/README.md](docs/adr/README.md) for filing conventions.
+Start with the [documentation index](docs/index.md) for architecture, testing, deployment, and maintenance. The [roadmap](docs/roadmap.md) records deferred ideas, not delivery promises.
 
-## Operations
+Report vulnerabilities privately using the [security policy](SECURITY.md).
 
-See [docs/ops/runbook.md](docs/ops/runbook.md) for bandwidth watch, data freshness cadence, basemap degradation handling, and incident response.
+## License and credits
 
-## Error reporting
-
-Production builds can report runtime errors to Sentry. To enable:
-
-1. Create a project at https://sentry.io/ and copy its DSN.
-2. In this repo, go to Settings → Secrets and variables → Actions and add a new repository secret:
-   - Name: `VITE_SENTRY_DSN`
-   - Value: the DSN from step 1.
-3. Trigger a new deploy (empty commit + push).
-
-Without a DSN, the app works normally — Sentry is a no-op.
-
-## Roadmap
-
-See [docs/roadmap.md](docs/roadmap.md) for deferred work and architectural direction.
-
-## License
-
-Source code is MIT licensed — see [LICENSE](./LICENSE).
-
-Data, fonts, and flag assets retain their upstream licenses; see [docs/systems/data.md](docs/systems/data.md) for source-by-source attribution.
+Source code is [MIT licensed](LICENSE). Country data, map tiles, fonts, and flag assets retain their upstream terms; attribution and source details are documented in the [data system](docs/systems/data.md) and [map rendering system](docs/systems/map-rendering.md).

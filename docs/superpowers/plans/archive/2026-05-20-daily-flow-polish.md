@@ -10,7 +10,7 @@
 
 **Tech Stack:** React + TypeScript + Vitest + Playwright. No new libraries. Reducer untouched.
 
-**Spec:** [`docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md`](../specs/2026-05-20-daily-flow-polish-design.md)
+**Spec:** [`docs/superpowers/specs/2026-05-20-daily-flow-polish-design.md`](../../specs/2026-05-20-daily-flow-polish-design.md)
 
 ---
 

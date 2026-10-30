@@ -8,7 +8,7 @@
 
 **Tech Stack:** React 19 hooks, Vitest + `@testing-library/react` (`renderHook`, fake timers, jsdom `MutationObserver`).
 
-**Spec:** [`docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md`](../specs/2026-05-30-flagship-continuation-roadmap-design.md) (Workstream C2)
+**Spec:** [`docs/superpowers/specs/2026-05-30-flagship-continuation-roadmap-design.md`](../../specs/2026-05-30-flagship-continuation-roadmap-design.md) (Workstream C2)
 
 ---
 

@@ -8,7 +8,7 @@
 
 **Tech Stack:** React 19 (`useSyncExternalStore`, `useReducer`), TypeScript 5.7, Vite 6, Vitest 4 (unit, jsdom), Playwright 1.59 (e2e), `@testing-library/react` 16, MapLibre GL 5.
 
-**Source spec:** [`docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md`](../specs/2026-04-27-game-flow-cascade-fixes-design.md)
+**Source spec:** [`docs/superpowers/specs/2026-04-27-game-flow-cascade-fixes-design.md`](../../specs/2026-04-27-game-flow-cascade-fixes-design.md)
 
 ---
 

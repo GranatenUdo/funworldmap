@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Private security report
+    url: https://github.com/GranatenUdo/funworldmap/security/advisories/new
+    about: Report vulnerabilities privately; email fallback is in SECURITY.md.
+  - name: Support and contributor setup
+    url: https://github.com/GranatenUdo/funworldmap/blob/main/SUPPORT.md
+    about: Read the support guide before opening an issue.

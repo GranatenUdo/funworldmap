@@ -14,7 +14,7 @@
 
 ## Scope
 
-This plan implements **Phase 1** of [`2026-04-21-retention-program-v1-design.md`](../specs/2026-04-21-retention-program-v1-design.md). **Phases 2–5 get their own plan files**, authored just-in-time after each preceding phase merges, so later plans can absorb learnings from earlier work.
+This plan implements **Phase 1** of [`2026-04-21-retention-program-v1-design.md`](../../specs/2026-04-21-retention-program-v1-design.md). **Phases 2–5 get their own plan files**, authored just-in-time after each preceding phase merges, so later plans can absorb learnings from earlier work.
 
 ### Out of this plan (Phase 2+)
 - Daily session variant in the game framework (3 attempts, between-attempt feedback).
