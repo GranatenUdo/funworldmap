@@ -6,7 +6,7 @@ import {
   type ReactNode,
   type MutableRefObject,
 } from 'react'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 
 interface MapRefs {
   retryRef: MutableRefObject<(() => void) | null>

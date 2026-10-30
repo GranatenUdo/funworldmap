@@ -45,7 +45,10 @@ const EXEMPT = new Map([
   ['lib/regionTints.ts', 'Antarctic region tint — a data encoding, not chrome'],
 ])
 
-const modules = import.meta.glob('../../**/*.{ts,tsx}', { query: '?raw', eager: true })
+const modules = import.meta.glob<{ default: string }>('../../**/*.{ts,tsx}', {
+  query: '?raw',
+  eager: true,
+})
 
 /**
  * '../../components/Foo.tsx' -> 'components/Foo.tsx'.
@@ -83,7 +86,7 @@ describe('chrome uses the sand/dark ramps, not raw Tailwind neutrals', () => {
       if (path.includes('__tests__/')) continue
       if (EXEMPT.has(path)) continue
 
-      const source = (mod as { default: string }).default
+      const source = mod.default
       source.split('\n').forEach((line, i) => {
         const hit = RAW_NEUTRAL.exec(line)
         if (hit) offenders.push(`src/${path}:${i + 1} — ${hit[0]}`)
@@ -104,7 +107,7 @@ describe('chrome uses the sand/dark ramps, not raw Tailwind neutrals', () => {
     for (const path of EXEMPT.keys()) {
       const entry = Object.entries(modules).find(([k]) => toSrcRelative(k) === path)
       expect(entry, `EXEMPT lists ${path}, which no longer exists`).toBeDefined()
-      const source = (entry![1] as { default: string }).default
+      const source = entry![1].default
       expect(RAW_NEUTRAL.test(source), `${path} is exempt but has no raw neutral`).toBe(true)
     }
   })

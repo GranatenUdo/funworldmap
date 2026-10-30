@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { GameSession, GameStatus } from '../../game/shared/types'
 import type { CountryData } from '../../lib/types'
 import { FINE_POINTER_MEDIA_QUERY } from '../../lib/layoutConstants'

@@ -67,3 +67,6 @@ coverage/
 
 # Isolated redesign verification artifacts
 /.superpowers/playful-geography/
+
+# Task execution ledgers and validation logs
+/.superpowers/sdd/

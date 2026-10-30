@@ -1,5 +1,5 @@
 import { useEffect, type MutableRefObject } from 'react'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { CountryData } from '../lib/types'
 import { flyToCountry } from '../lib/flyToCountry'
 import { flyToComparePair } from '../lib/flyToComparePair'

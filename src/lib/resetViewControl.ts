@@ -1,4 +1,4 @@
-import maplibregl from 'maplibre-gl'
+import * as maplibregl from 'maplibre-gl'
 import { DEFAULT_CENTER, DEFAULT_ZOOM, DEFAULT_PITCH } from './mapStyles'
 import { prefersReducedMotion } from './motion'
 

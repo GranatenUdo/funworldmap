@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react'
-import maplibregl from 'maplibre-gl'
+import * as maplibregl from 'maplibre-gl'
+import mapWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import {
   BASEMAP_STYLE,
@@ -15,6 +16,9 @@ import { probeBasemap } from '../lib/probeBasemap'
 import { ResetViewControl, flyToHome } from '../lib/resetViewControl'
 import { prefersReducedMotion, subscribeReducedMotion } from '../lib/motion'
 import { useMap } from './useMap'
+
+// MapLibre 6 ships its worker separately; Vite must bundle its imports too.
+maplibregl.setWorkerUrl(mapWorkerUrl)
 
 export type MapErrorReason = 'timeout' | 'style' | 'country-data' | 'webgl-lost'
 const BASEMAP_PROBE_TIMEOUT_MS = 3_000

@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import type { MutableRefObject } from 'react'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 
 type Handler = (...args: unknown[]) => void
 

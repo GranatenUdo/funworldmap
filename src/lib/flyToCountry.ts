@@ -1,4 +1,4 @@
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { CountryData } from './types'
 import { DEFAULT_PITCH, MAX_ZOOM } from './mapStyles'
 import { prefersReducedMotion } from './motion'

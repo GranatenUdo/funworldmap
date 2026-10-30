@@ -1,6 +1,6 @@
 /// <reference types="vitest/config" />
 import { defineConfig, loadEnv } from 'vite'
-import { analyticsBeacon } from './scripts/vite/analyticsBeacon'
+import { analyticsBeacon } from './scripts/vite/analyticsBeacon.ts'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 

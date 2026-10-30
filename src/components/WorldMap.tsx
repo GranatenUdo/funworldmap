@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { useMap } from '../hooks/useMap'
 import { MapErrorOverlay } from './MapErrorOverlay'

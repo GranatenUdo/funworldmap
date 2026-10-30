@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main]
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -19,7 +18,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: npm
 
       - run: npm ci
@@ -39,6 +38,26 @@ jobs:
 
       - name: Unit tests
         run: npm run test:unit
+
+  worker:
+    name: Worker validation
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            cloudflare-worker/package-lock.json
+      - run: npm ci
+      - run: npm ci --prefix cloudflare-worker
+      - run: npm run typecheck --prefix cloudflare-worker
+      - run: npm test --prefix cloudflare-worker
+      - run: npm run build:check --prefix cloudflare-worker
+        env:
+          WRANGLER_SEND_METRICS: 'false'
 
   e2e:
     name: e2e (${{ matrix.project }} shard ${{ matrix.shard }}/4)
@@ -69,7 +88,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: npm
 
       - run: npm ci
@@ -125,7 +144,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version-file: '.nvmrc'
           cache: npm
 
       - run: npm ci

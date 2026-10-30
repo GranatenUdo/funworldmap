@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import { ResetViewControl } from '../resetViewControl'
 import { DEFAULT_CENTER, DEFAULT_ZOOM, DEFAULT_PITCH } from '../mapStyles'
 import { stubMatchMedia } from '../../test/matchMediaStub'

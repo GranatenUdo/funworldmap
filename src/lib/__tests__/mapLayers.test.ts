@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import type maplibregl from 'maplibre-gl'
+import type * as maplibregl from 'maplibre-gl'
 import type { FillLayerSpecification, LineLayerSpecification } from 'maplibre-gl'
 import {
   addBaseCountryLayers,
@@ -195,6 +195,17 @@ describe('hover overlay (HOVER_SOURCE)', () => {
     const fake = createFakeMapRef()
     expect(() => setHoverOverlay(fake.map, '250')).not.toThrow()
     expect(fake.calls.updateData).not.toHaveBeenCalled()
+  })
+
+  it('retries a hover after an asynchronous source rejection', async () => {
+    const fake = setup()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    fake.calls.updateData.mockRejectedValueOnce(new Error('source removed'))
+    setHoverOverlay(fake.map, '250')
+    await Promise.resolve()
+    setHoverOverlay(fake.map, '250')
+    expect(fake.calls.updateData).toHaveBeenCalledTimes(2)
+    warn.mockRestore()
   })
 
   it('never throws when the source is torn down, and retries on the next call', () => {
